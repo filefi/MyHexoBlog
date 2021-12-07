@@ -462,3 +462,375 @@ len: 2
 map: map[k1:7]
 prs: false
 map: map[foo:1 bar:2]
+```
+
+# range遍历
+
+`range` 迭代各种各样的数据结构。让我们来看看如何在我们已经学过的数据结构上使用 `range` 吧。
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// 这里我们使用 range 来统计一个 slice 的元素个数。数组也可以采用这种方法。
+    nums := []int{2, 3, 4}
+    sum := 0
+    for _, num := range nums { // 这里我们不需要索引，所以使用 空值定义符_ 来忽略它。有时候我们实际上是需要这个索引的。
+        sum += num
+    }
+    fmt.Println("sum:", sum) // sum: 9
+    
+	// range 在数组和 slice 中都同样提供每个项的索引和值。
+    for i, num := range nums {
+        if num == 3 {
+            fmt.Println("index:", i) // index: 1
+        }
+    }
+    
+	// range 在 map 中迭代键值对。
+    kvs := map[string]string{"a": "apple", "b": "banana"}
+    for k, v := range kvs {
+        fmt.Printf("%s -> %s\n", k, v) 
+        // a -> apple
+        // b -> banana
+    }
+    
+	// range 在字符串中迭代 unicode 编码。第一个返回值是rune 的起始字节位置，然后第二个是 rune 自己。
+    for i, c := range "go" {
+        fmt.Println(i, c)
+        // 0 103
+        // 1 111
+    }
+}
+```
+
+```bash
+	
+$ go run range.go 
+sum: 9
+index: 1
+a -> apple
+b -> banana
+0 103
+1 111
+```
+
+# 函数
+
+```go
+package main
+
+import "fmt"
+
+// 这里是一个函数，接受两个 int 并且以 int 返回它们的和
+func plus(a int, b int) int {
+	// Go 需要明确的返回值，例如，它不会自动返回最后一个表达式的值
+    return a + b
+}
+
+func main() {
+	// 正如你期望的那样，通过 name(args) 来调用一个函数，
+    res := plus(1, 2)
+    fmt.Println("1+2 =", res)
+}
+```
+
+``` bash
+$ go run functions.go 
+1+2 = 3
+```
+
+## 返回多个值
+
+Go 内建*多返回值* 支持。这个特性在 Go 语言中经常被用到，例如用来同时返回一个函数的结果和错误信息。
+
+```go
+package main
+
+import "fmt"
+
+// (int, int) 在这个函数中标志着这个函数返回 2 个 int。
+func vals() (int, int) {
+    return 3, 7
+}
+
+func main() {
+	// 这里我们通过多赋值 操作来使用这两个不同的返回值。
+    a, b := vals()
+    fmt.Println(a)
+    fmt.Println(b)
+
+    // 如果你仅仅想返回值的一部分的话，你可以使用空白定义符 _。
+    _, c := vals()
+    fmt.Println(c)
+}
+```
+
+```bash
+$ go run multiple-return-values.go
+3
+7
+7
+```
+
+## 可变参数函数
+
+[*可变参数函数*](http://zh.wikipedia.org/wiki/可變參數函數)。可以用任意数量的参数调用。例如，`fmt.Println` 是一个常见的变参函数。
+
+```go
+package main
+
+import "fmt"
+
+// 这个函数使用任意数目的 int 作为参数。
+func sum(nums ...int) {
+    fmt.Print(nums, " ")
+    total := 0
+    for _, num := range nums {
+        total += num
+    }
+    fmt.Println(total)
+}
+
+func main() {
+	// 变参函数使用常规的调用方式，除了参数比较特殊。
+    sum(1, 2)
+    sum(1, 2, 3)
+    
+	// 如果你的 slice 已经有了多个值，想把它们作为变参使用，你要这样调用 func(slice...)。
+    nums := []int{1, 2, 3, 4}
+    sum(nums...)
+}
+```
+
+```bash
+$ go run variadic-functions.go 
+[1 2] 3
+[1 2 3] 6
+[1 2 3 4] 10
+```
+
+## 闭包
+
+Go 支持通过 [*闭包*](http://zh.wikipedia.org/wiki/闭包_(计算机科学)) 来使用 [*匿名函数*](http://zh.wikipedia.org/wiki/匿名函数)。匿名函数在你想定义一个不需要命名的内联函数时是很实用的。
+
+```go
+package main
+
+import "fmt"
+
+// 这个 intSeq 函数返回另一个在 intSeq 函数体内定义的匿名函数。
+// 这个返回的匿名函数返回一个int类型；
+// 同时，这个返回的函数使用闭包的方式 隐藏 变量 i。
+func intSeq() func() int {
+    i := 0
+    return func() int {
+        i += 1
+        return i
+    }
+}
+
+func main() {
+	//我们调用 intSeq 函数，将返回值（也是一个函数）赋给nextInt。
+    // 这个函数的值包含了自己的值 i，这样在每次调用 nextInt 时都会更新 i 的值。
+    nextInt := intSeq()
+    
+	// 通过多次调用 nextInt 来看看闭包的效果。
+    fmt.Println(nextInt()) // 1
+    fmt.Println(nextInt()) // 2
+    fmt.Println(nextInt()) // 3
+
+    // 为了确认这个状态对于这个特定的函数是唯一的，我们重新创建并测试一下。
+    newInts := intSeq()
+    fmt.Println(newInts()) // 1
+}
+```
+
+```bash
+$ go run closures.go
+1
+2
+3
+1
+```
+
+## 递归
+
+```go
+package main
+
+import "fmt"
+
+// 这里是一个经典的阶乘示例。
+func fact(n int) int {
+    if n == 0 { // face 函数在到达 face(0) 前一直调用自身。
+        return 1
+    }
+    return n * fact(n-1)
+}
+
+func main() {
+    fmt.Println(fact(7))
+}
+```
+
+```bash
+$ go run recursion.go 
+5040
+```
+
+# 指针
+
+Go 支持 *[指针](http://zh.wikipedia.org/wiki/指標_(電腦科學))*，允许在程序中通过引用传递值或者数据结构。
+
+```go
+package main
+
+import "fmt"
+
+// 我们将通过两个函数：zeroval 和 zeroptr 来比较指针和值类型的不同。
+
+// zeroval 有一个 int 型参数，所以使用值传递。zeroval 将从调用它的那个函数中得到一个 ival形参的拷贝。
+func zeroval(ival int) {
+    ival = 0
+}
+
+// zeroptr 有一个和上面不同的 *int 参数，意味着它用了一个 int指针。
+// 函数体内的 *iptr 接着解引用 这个指针，从它内存地址得到这个地址对应的当前值。
+// 对一个解引用的指针赋值将会改变这个指针引用的真实地址的值。
+func zeroptr(iptr *int) {
+    *iptr = 0
+}
+
+func main() {
+    i := 1
+    fmt.Println("initial:", i)
+    zeroval(i)
+    fmt.Println("zeroval:", i)
+    
+	// 通过 &i 语法来取得 i 的内存地址，例如一个变量i 的指针。
+    zeroptr(&i)
+    fmt.Println("zeroptr:", i)
+
+    // 指针也是可以被打印的。
+    fmt.Println("pointer:", &i)
+}
+// zeroval 在 main 函数中不能改变 i 的值，但是zeroptr 可以，因为它有一个这个变量的内存地址的引用。
+```
+
+```bash
+$ go run pointers.go
+initial: 1
+zeroval: 1
+zeroptr: 0
+pointer: 0x42131100
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
