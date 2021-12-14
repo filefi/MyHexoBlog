@@ -730,11 +730,340 @@ pointer: 0x42131100
 
 
 
+# 结构体
+
+Go 的*结构体(struct)* 是带类型的字段(fields)集合。 这在组织数据时非常有用。
+
+```go
+package main
+
+import "fmt"
+
+// 这里的 person 结构体包含了 name 和 age 两个字段。
+type person struct {
+    name string
+    age  int
+}
+
+func main() {
+	// 使用这个语法创建新的结构体元素。
+    fmt.Println(person{"Bob", 20}) // {Bob 20}
+
+    // 你可以在初始化一个结构体元素时指定字段名字。
+    fmt.Println(person{name: "Alice", age: 30}) // {Alice 30}
+
+    // 省略的字段将被初始化为零值。
+    fmt.Println(person{name: "Fred"}) // {Fred 0}
+
+    // & 前缀生成一个结构体指针。
+    fmt.Println(&person{name: "Ann", age: 40}) // &{Ann 40}
+
+    // 使用.来访问结构体字段。
+    s := person{name: "Sean", age: 50}
+    fmt.Println(s.name) // Sean
+    
+	// 也可以对结构体指针使用. - 指针会被自动解引用。
+    sp := &s
+    fmt.Println(sp.age) // 50
+	
+    // 结构体是可变(mutable)的。
+    sp.age = 51
+    fmt.Println(sp.age) // 51
+}
+```
+
+
+```bash
+$ go run structs.go
+{Bob 20}
+{Alice 30}
+{Fred 0}
+&{Ann 40}
+Sean
+50
+51
+```
 
 
 
+# 方法
 
+Go 支持为结构体类型定义 ***方法** (methods)*  。
 
+```go
+package main
+
+import "fmt"
+
+type rect struct {
+    width, height int
+}
+
+// area 是一个方法，该方法拥有一个 *rect 类型（rect类型的指针）的接收器(receiver)。
+func (r *rect) area() int {
+    return r.width * r.height
+}
+
+// 方法的接收器(receiver)类型可以被定义为值类型或者指针类型。
+// 这是一个值类型接收器的例子。
+func (r rect) perim() int {
+    return 2*r.width + 2*r.height
+}
+
+func main() {
+    r := rect{width: 10, height: 5}
+    
+	// 这里我们调用上面为结构体定义的两个方法。
+    fmt.Println("area: ", r.area()) // area:  50
+    fmt.Println("perim:", r.perim()) // perim: 30
+
+    // 调用方法时，Go 会自动处理值和指针之间的转换。 
+    // 想要避免在调用方法时产生一个拷贝，或者想让方法可以修改接收的结构体， 你都可以使用指针来调用方法。
+    rp := &r
+    fmt.Println("area: ", rp.area()) // area:  50
+    fmt.Println("perim:", rp.perim()) // perim: 30
+    
+    // 与上面等价，注意，需要在取地址符外加上括号
+    fmt.Println("(&r).area(): ", (&r).area()) // (&r).area():  50
+    fmt.Println("(&r).perim():", (&r).perim()) // (&r).perim(): 30
+}
+```
+
+```bash
+$ go run methods.go
+area:  50
+perim: 30
+area:  50
+perim: 30
+(&r).area():  50
+(&r).perim(): 30
+```
+
+# 接口 (Interfaces)
+
+方法签名的集合叫做 ***接口** (Interfaces)*。
+
+```go
+package main
+
+import (
+    "fmt"
+    "math"
+)
+
+// 这是一个几何形状的基本接口。
+type geometry interface {
+    area() float64
+    perim() float64
+}
+
+// 在这个例子中，我们将为 rect 和 circle 实现该接口。
+type rect struct {
+    width, height float64
+}
+
+type circle struct {
+    radius float64
+}
+
+// 要在 Go 中实现一个接口，我们只需要实现接口中的所有方法。
+// 为 rect 实现 geometry 接口。
+func (r rect) area() float64 {
+    return r.width * r.height
+}
+
+func (r rect) perim() float64 {
+    return 2*r.width + 2*r.height
+}
+
+// 为 circle 实现 geometry 接口。
+func (c circle) area() float64 {
+    return math.Pi * c.radius * c.radius
+}
+
+func (c circle) perim() float64 {
+    return 2 * math.Pi * c.radius
+}
+
+// 如果一个变量实现了某个接口，我们就可以调用指定接口中的方法。 
+// 这有一个通用的 measure 函数，我们可以通过它来使用所有的 geometry。
+func measure(g geometry) {
+    fmt.Println("g :", g) 
+	fmt.Println("g.area() :", g.area())
+	fmt.Println("g.perim() :", g.perim())
+}
+
+func main() {
+    r := rect{width: 3, height: 4}
+    c := circle{radius: 5}
+
+    // 结构体类型 circle 和 rect 都实现了 geometry 接口， 所以我们可以将其实例作为 measure 的参数。
+    measure(r)
+    measure(c)
+}
+```
+
+```bash
+$ go run interfaces.go
+g : {3 4}
+g.area() : 12                
+g.perim() : 14               
+g : {5}                      
+g.area() : 78.53981633974483 
+g.perim() : 31.41592653589793
+```
+
+# 嵌入 (Embedding)
+
+Go support *embedding* of structs and interfaces to express a more seamless *composition* of types.
+
+Go 支持结构和接口的嵌入，以表达更无缝的类型组合。
+
+```go
+package main
+
+import "fmt"
+
+// 定义一个 base 结构体
+type base struct {
+    num int
+}
+
+// 定义一个base类型的方法
+func (b base) describe() string {
+    return fmt.Sprintf("base with num=%v", b.num)
+}
+
+// 定义一个 container 结构体，在 container 中嵌入 base。
+type container struct {
+    base // “嵌入”看起来像是没有名称的字段
+    str string
+}
+
+func main() {
+    // When creating structs with literals, we have to initialize the embedding explicitly; here the embedded type serves as the field name.
+    // 当使用字面量创建结构体时，必须显式地初始化“嵌入”。
+    co := container{
+        base: base{ // 这里为被嵌入的类型提供一个字段名 base。
+            num: 1,
+        },
+        str: "some name",
+    }
+    
+	// We can access the base’s fields directly on co, e.g. co.num.
+    fmt.Printf("co={num: %v, str: %v}\n", co.num, co.str) // co={num: 1, str: some name}
+
+    // Alternatively, we can spell out the full path using the embedded type name.
+    fmt.Println("co.base.num: ", co.base.num) // co.base.num:  1
+    
+	// Since container embeds base, the methods of base also become methods of a container. Here we invoke a method that was embedded from base directly on co.
+    fmt.Println("co.describe(): ", co.describe()) // co.describe():  base with num=1  
+    fmt.Println("co.base.describe(): ", co.base.describe()) // co.base.describe():  base with num=1
+    
+    type describer interface {
+        describe() string
+    }
+    
+	// Embedding structs with methods may be used to bestow interface implementations onto other structs. Here we see that a container now implements the describer interface because it embeds base.
+    // 使用方法嵌入结构体可用于将接口实现赋予其他结构体。
+    // 因为 container 嵌入了 base, 所以 container 也就实现了 describer 接口
+    var d describer = co
+    fmt.Println("d.describe(): ", d.describe()) // d.describe():  base with num=1
+}
+```
+
+```bash
+$ go run embedding.go
+co={num: 1, str: some name}
+co.base.num:  1
+co.describe():  base with num=1
+co.base.describe():  base with num=1
+d.describe():  base with num=1
+```
+
+# 错误
+
+In Go it’s idiomatic to communicate errors via an explicit, separate return value. This contrasts with the exceptions used in languages like Java and Ruby and the overloaded single result / error value sometimes used in C. Go’s approach makes it easy to see which functions return errors and to handle them using the same language constructs employed for any other, non-error tasks.
+
+符合 Go 语言习惯的做法是使用一个独立、明确的返回值来传递错误信息。 这与 Java、Ruby 使用的异常（exception） 以及在 C 语言中有时用到的重载 (overloaded) 的单返回/错误值有着明显的不同。 Go 语言的处理方式能清楚的知道哪个函数返回了错误，并使用跟其他（无异常处理的）语言类似的方式来处理错误。
+
+```go
+package main
+
+import (
+    "errors"
+    "fmt"
+)
+
+// 按照惯例，错误通常是最后一个返回值并且是 error 类型，它是一个内建的接口。
+func f1(arg int) (int, error) {
+    if arg == 42 {
+        // errors.New 使用给定的错误信息构造一个基本的 error 值。
+        return -1, errors.New("can't work with 42")
+    }
+    
+	// A nil value in the error position indicates that there was no error.
+    // 返回的错误值为 nil 代表没有错误。
+    return arg + 3, nil
+}
+
+// It’s possible to use custom types as errors by implementing the Error() method on them. Here’s a variant on the example above that uses a custom type to explicitly represent an argument error.
+// 你还可以通过实现 Error() 方法来自定义 error 类型。 
+// 这里是上面示例的一个变体，使用自定义错误类型来表示参数错误。
+type argError struct {
+    arg  int
+    prob string
+}
+
+func (e *argError) Error() string {
+    return fmt.Sprintf("%d - %s", e.arg, e.prob)
+}
+
+func f2(arg int) (int, error) {
+    if arg == 42 {
+		// In this case we use &argError syntax to build a new struct, supplying values for the two fields arg and prob.
+        // 在这个例子中，我们使用 &argError 语法来建立一个新的结构体， 并提供了 arg 和 prob 两个字段的值。
+        return -1, &argError{arg, "can't work with it"} 
+        // return -1, &(argError{arg, "can't work with it"})
+    }
+    return arg + 3, nil
+}
+
+func main() {
+	// The two loops below test out each of our error-returning functions. Note that the use of an inline error check on the if line is a common idiom in Go code.
+    for _, i := range []int{7, 42} {
+        if r, e := f1(i); e != nil {
+            fmt.Println("f1 failed:", e)
+        } else {
+            fmt.Println("f1 worked:", r)
+        }
+    }
+    for _, i := range []int{7, 42} {
+        if r, e := f2(i); e != nil {
+            fmt.Println("f2 failed:", e)
+        } else {
+            fmt.Println("f2 worked:", r)
+        }
+    }
+    
+	// If you want to programmatically use the data in a custom error, you’ll need to get the error as an instance of the custom error type via type assertion.
+    _, e := f2(42)
+    if ae, ok := e.(*argError); ok {
+        fmt.Println(ae.arg)
+        fmt.Println(ae.prob)
+    }
+}
+```
+
+```bash
+$ go run errors.go
+f1 worked: 10
+f1 failed: can't work with 42
+f2 worked: 10
+f2 failed: 42 - can't work with it
+42
+can't work with it
+```
 
 
 
