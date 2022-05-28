@@ -105,7 +105,14 @@ theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
+  # type: git
+  # repo: https://github.com/filefi/filefi.github.io
+  # branch: master
+  # token: ''
+  # name: filefi
+  # email: ifelif@qq.com
+  # ignore_hidden: false # default is true
+  # ignore_pattern: regexp
 
 sitemap:
   path: sitemap.xml
