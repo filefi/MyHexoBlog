@@ -3,19 +3,18 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
-description: ''
-keywords:
-author: John Doe
-language: en
-timezone: ''
+title: 正经人谁写日记
+subtitle:
+description:
+keywords: blog,javascript,nodejs,vue,python,C/C++,golang
+author: filefi
+language: zh-CN
+timezone: 'Asia/Shanghai'
 
 # URL
-## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
-root: /
-permalink: :year/:month/:day/:title/
+## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
+url: https://filefi.github.io
+permalink: :year/:title/
 permalink_defaults:
 pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
@@ -41,16 +40,24 @@ external_link:
   exclude: ''
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
+marked:
+  prependRoot: true
+  postAsset: true
 relative_link: false
 future: true
 highlight:
-  enable: true
-  line_number: true
+  enable: false
+  line_number: false
   auto_detect: false
   tab_replace: ''
   wrap: true
   hljs: false
+prismjs:
+  enable: true
+  preprocess: true
+  line_number: false
+  tab_replace: ''
 
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
@@ -76,8 +83,8 @@ meta_generator: true
 ## http://momentjs.com/docs/#/displaying/format/
 date_format: YYYY-MM-DD
 time_format: HH:mm:ss
-## Use post's date for updated date unless set in front-matter
-use_date_for_updated: false
+## updated_option supports 'mtime', 'date', 'empty'
+updated_option: 'mtime'
 
 # Pagination
 ## Set per_page to 0 to disable pagination
@@ -93,9 +100,36 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: next
 
 # Deployment
-## Docs: https://hexo.io/docs/deployment.html
+## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: ''
+
+sitemap:
+  path: sitemap.xml
+  #  template: ./sitemap_template.xml
+  rel: false
+  tags: true
+  categories: false
+
+search:
+  path: search.xml
+  field: post
+  content: true
+  format: html
+
+feed:
+  enable: true
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub:
+  content:
+  content_limit: 140
+  content_limit_delim: ' '
+  order_by: -date
+  icon: icon.png
+  autodiscovery: true
+  template:
