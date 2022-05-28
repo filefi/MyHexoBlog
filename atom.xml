@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>正经人谁写日记</title>
+  <icon>https://filefi.github.io/icon.png</icon>
+  
+  <link href="https://filefi.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://filefi.github.io/"/>
+  <updated>2022-05-28T17:16:55.520Z</updated>
+  <id>https://filefi.github.io/</id>
+  
+  <author>
+    <name>filefi</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>first post</title>
+    <link href="https://filefi.github.io/2022/first-post/"/>
+    <id>https://filefi.github.io/2022/first-post/</id>
+    <published>2022-05-28T16:10:21.000Z</published>
+    <updated>2022-05-28T17:16:55.520Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;span id=&quot;more&quot;&gt;&lt;/span&gt;
+
+&lt;h1 id=&quot;first-post&quot;&gt;&lt;a href=&quot;#first-post&quot; class=&quot;headerlink&quot; title=&quot;first post&quot;&gt;&lt;/a&gt;first post&lt;/h1&gt;&lt;p&gt;this is a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="C++" scheme="https://filefi.github.io/tags/C/"/>
+    
+  </entry>
+  
+</feed>
