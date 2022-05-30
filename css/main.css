@@ -1783,7 +1783,7 @@ pre code {
   white-space: nowrap;
 }
 .post-toc .nav .nav-child {
-  display: none;
+  display: block;
 }
 .post-toc .nav .active > .nav-child {
   display: block;
@@ -3092,7 +3092,7 @@ mark.search-keyword {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #0b1637;
+  background: #6fff5d;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
