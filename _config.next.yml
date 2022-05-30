@@ -84,7 +84,9 @@ creative_commons:
 menu:
   home: / || fa fa-home
   tags: /tags/ || fa fa-tags
-  # categories: /categories/ || fa fa-th
+  categories: /categories/ || fa fa-th
+  专栏:
+    default: /docs/ || fa fa-book
   archives: /archives/ || fa fa-archive
   # 项目: /projects/ || fa fa-star
   about: /about/ || fa fa-user
