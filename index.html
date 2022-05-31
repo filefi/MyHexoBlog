@@ -1016,70 +1016,14 @@ If you're having problems, simply head over to forum.cheatengine.org, then click
 
 <h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><h4 id="步骤1：选择要附加的进程"><a href="#步骤1：选择要附加的进程" class="headerlink" title="步骤1：选择要附加的进程"></a>步骤1：选择要附加的进程</h4><p><img src="/2022/cheat_engine_tutorial/image-20220215145836858.png"></p>
 <p><img src="/2022/cheat_engine_tutorial/image-20220215150314077.png"></p>
-<h2 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h2><h3 id="Description-1"><a href="#Description-1" class="headerlink" title="Description"></a>Description</h3><pre class="language-none"><code class="language-none">Step 2: Exact Value scanning (PW&#x3D;090453)
-Now that you have opened the tutorial with Cheat Engine let&#39;s get on with the next step.
-
-You can see at the bottom of this window is the text Health: xxx
-Each time you click &#39;Hit me&#39;  your health gets decreased.
-
-To get to the next step you have to find this value and change it to 1000
-
-To find the value there are different ways, but I&#39;ll tell you about the easiest, &#39;Exact Value&#39;:
-First make sure value type is set to at least 2-bytes or 4-bytes. 1-byte will also work, but you&#39;ll run into an easy to fix problem when you&#39;ve found the address and want to change it. The 8-byte may perhaps works if the bytes after the address are 0, but I wouldn&#39;t take the bet.
-Single, double, and the other scans just don&#39;t work, because they store the value in a different way.
-
-When the value type is set correctly, make sure the scantype is set to &#39;Exact Value&#39;
-Then fill in the number your health is in the value box. And click &#39;First Scan&#39;
-After a while (if you have an extremely slow pc) the scan is done and the results are shown in the list on the left.
-
-If you find more than 1 address and you don&#39;t know for sure which address it is, click &#39;Hit me&#39;, fill in the new health value into the value box, and click &#39;Next Scan&#39;
-repeat this until you&#39;re sure you&#39;ve found it. (that includes that there&#39;s only 1 address in the list.....)
-
-Now double click the address in the list on the left. This makes the address pop-up in the list at the bottom, showing you the current value.
-Double click the value, (or select it and press enter), and change the value to 1000.
-
-If everything went ok the Next button should become enabled, and you&#39;re ready for the next step.
-
-
-Note:
-If you did anything wrong while scanning, click &quot;New Scan&quot; and repeat the scanning again.
-Also, try playing around with the value and click &#39;Hit me&#39;.</code></pre>
-
-<h3 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h3><p><img src="/2022/cheat_engine_tutorial/image-20220215151801088.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215152155476.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215152500187.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215152558471.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215152638141.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215152855906.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215153108418.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215153634400.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215153905170.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215154113896.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215154508980.png"></p>
-<h2 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h2><h3 id="Description-2"><a href="#Description-2" class="headerlink" title="Description"></a>Description</h3><pre class="language-none"><code class="language-none">Step 3: Unknown initial value (PW&#x3D;419482)
-Ok, seeing that you&#39;ve figured out how to find a value using exact value let&#39;s move on to the next step.
-
-First things first though. Since you are doing a new scan, you have to click on New Scan first, to start a new scan. (You may think this is straighforward, but you&#39;d be surprised how many people get stuck on that step) I won&#39;t be explaining this step again, so keep this in mind.
-Now that you&#39;ve started a new scan, let&#39;s continue.
-
-In the previous test we knew the initial value so we could do an exact value search, but now we have a status bar where we don&#39;t know the starting value.
-We only know that the value is between 0 and 500. And each time you click &#39;Hit me&#39; you lose some health. The amount you lose each time is shown above the status bar.
-
-Again there are several different ways to find the value. (like doing a decreased value by... scan), but I&#39;ll only explain the easiest. &quot;Unknown initial value&quot;, and decreased value.
-Because you don&#39;t know the value it is right now, exact value wont do any good, so choose as scantype &#39;Unknown initial value&#39;, again, the value type is 4-bytes. (Most windows apps use 4-bytes.) Click First scan and wait till it&#39;s done.
-
-When it is done click &#39;Hit me&#39;. You&#39;ll lose some of your health. (the amount you lost shows for a few seconds and then disappears, but you don&#39;t need that)
-Now go to Cheat Engine, and choose &#39;Decreased Value&#39; and click &#39;Next Scan&#39;
-When that scan is done, click &#39;Hit me&#39; again, and repeat the above till you only find a few. 
-
-We know the value is between 0 and 500, so pick the one that is most likely the address we need, and add it to the list.
-Now change the health to 5000, to proceed to the next step.</code></pre>
-
-<h3 id="操作-2"><a href="#操作-2" class="headerlink" title="操作"></a>操作</h3><p><img src="/2022/cheat_engine_tutorial/image-20220215173831872.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215173929270.png"><img src="/2022/cheat_engine_tutorial/image-20220215174056856.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215174649344.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215174800299.png"><img src="/2022/cheat_engine_tutorial/image-20220215174937499.png"><img src="/2022/cheat_engine_tutorial/image-20220215175020697.png"></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/cheat_engine_tutorial/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
