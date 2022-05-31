@@ -37,7 +37,7 @@ If you're having problems, simply head over to forum.cheatengine.org, then click
 
 ![](image-20220215150314077.png)
 
-
+<!-- more -->
 
 ## Step 2
 
