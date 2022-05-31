@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2022-05-31T01:59:20.336Z</updated>
+  <updated>2022-05-31T02:01:40.048Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2022-05-31T01:59:20.336Z</updated>
+    <updated>2022-05-31T02:01:40.048Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -60,7 +60,7 @@ hello world&lt;/code&gt;&lt;/pre&gt;</summary>
     <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
     <id>https://ifelif.cn/2022/ansible_user_guide/</id>
     <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2022-05-31T01:59:20.308Z</updated>
+    <updated>2022-05-31T02:01:40.020Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
@@ -106,7 +106,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/docker_practice/"/>
     <id>https://ifelif.cn/2022/docker_practice/</id>
     <published>2022-04-28T15:56:21.000Z</published>
-    <updated>2022-05-31T01:59:20.324Z</updated>
+    <updated>2022-05-31T02:01:40.036Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;什么是-Docker&quot;&gt;&lt;a href=&quot;#什么是-Docker&quot; class=&quot;headerlink&quot; title=&quot;什么是 Docker&quot;&gt;&lt;/a&gt;什么是 Docker&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;Docker&lt;/strong&gt; 使用 &lt;code&gt;Google&lt;/code&gt; 公司推出的 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go 语言&lt;/a&gt; 进行开发实现，基于 &lt;code&gt;Linux&lt;/code&gt; 内核的 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Cgroups&quot;&gt;cgroup&lt;/a&gt;，&lt;a href=&quot;https://en.wikipedia.org/wiki/Linux_namespaces&quot;&gt;namespace&lt;/a&gt;，以及 &lt;a href=&quot;https://docs.docker.com/storage/storagedriver/overlayfs-driver/&quot;&gt;OverlayFS&lt;/a&gt; 类的 &lt;a href=&quot;https://en.wikipedia.org/wiki/Union_mount&quot;&gt;Union FS&lt;/a&gt; 等技术，对进程进行封装隔离，属于 &lt;a href=&quot;https://en.wikipedia.org/wiki/Operating-system-level_virtualization&quot;&gt;操作系统层面的虚拟化技术&lt;/a&gt;。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。&lt;/p&gt;
@@ -131,7 +131,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/some_pieces_of_nginx/"/>
     <id>https://ifelif.cn/2022/some_pieces_of_nginx/</id>
     <published>2022-04-14T15:41:21.000Z</published>
-    <updated>2022-05-31T01:59:20.336Z</updated>
+    <updated>2022-05-31T02:01:40.048Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;nginx及其衍生版本&quot;&gt;&lt;a href=&quot;#nginx及其衍生版本&quot; class=&quot;headerlink&quot; title=&quot;nginx及其衍生版本&quot;&gt;&lt;/a&gt;nginx及其衍生版本&lt;/h1&gt;&lt;ul&gt;
@@ -210,7 +210,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/linux_firewall/"/>
     <id>https://ifelif.cn/2022/linux_firewall/</id>
     <published>2022-04-10T08:35:21.000Z</published>
-    <updated>2022-05-31T01:59:20.336Z</updated>
+    <updated>2022-05-31T02:01:40.048Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;iptables&quot;&gt;&lt;a href=&quot;#iptables&quot; class=&quot;headerlink&quot; title=&quot;iptables&quot;&gt;&lt;/a&gt;iptables&lt;/h1&gt;&lt;h2 id=&quot;netfilter-和-iptables&quot;&gt;&lt;a href=&quot;#netfilter-和-iptables&quot; class=&quot;headerlink&quot; title=&quot;netfilter 和 iptables&quot;&gt;&lt;/a&gt;netfilter 和 iptables&lt;/h2&gt;&lt;ul&gt;
@@ -257,7 +257,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/entry%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%EF%BC%8Ctext%E5%AE%9E%E6%97%B6%E8%8E%B7%E5%BE%97%E5%91%BD%E4%BB%A4%E8%BE%93%E5%87%BA/"/>
     <id>https://ifelif.cn/2022/entry%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%EF%BC%8Ctext%E5%AE%9E%E6%97%B6%E8%8E%B7%E5%BE%97%E5%91%BD%E4%BB%A4%E8%BE%93%E5%87%BA/</id>
     <published>2022-02-16T15:56:21.000Z</published>
-    <updated>2022-05-31T01:59:20.336Z</updated>
+    <updated>2022-05-31T02:01:40.048Z</updated>
     
     
       
@@ -286,7 +286,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/tkinter_geometry_manager/"/>
     <id>https://ifelif.cn/2022/tkinter_geometry_manager/</id>
     <published>2022-02-16T15:56:21.000Z</published>
-    <updated>2022-05-31T01:59:20.336Z</updated>
+    <updated>2022-05-31T02:01:40.048Z</updated>
     
     
     <summary type="html">&lt;p&gt;本文讲述如何使用 tkinter 的布局管理 (被称作 layout managers 或 geometry managers)。tkinter 有三种布局管理方式：&lt;/p&gt;
@@ -324,7 +324,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/cheat_engine_tutorial/"/>
     <id>https://ifelif.cn/2022/cheat_engine_tutorial/</id>
     <published>2022-02-16T13:41:21.000Z</published>
-    <updated>2022-05-31T01:59:20.308Z</updated>
+    <updated>2022-05-31T02:01:40.020Z</updated>
     
     
       
