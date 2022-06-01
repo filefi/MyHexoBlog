@@ -1,7 +1,7 @@
 ---
 title: BIG-IP Local Traffic Manager Concepts v11.5.0
 date: 2017-11-30 11:30:15
-tags: [F5, loadbalance]
+tags: [F5, LoadBalance]
 categories: F5
 ---
 

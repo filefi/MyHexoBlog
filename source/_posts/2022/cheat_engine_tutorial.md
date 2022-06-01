@@ -1,7 +1,7 @@
 ---
 title: CheatEngine Tutorial
 date: 2022-02-16 21:41:21
-tags: [pwn, reverse, re]
+tags: [PWN, Reverse]
 categories: PWN
 ---
 

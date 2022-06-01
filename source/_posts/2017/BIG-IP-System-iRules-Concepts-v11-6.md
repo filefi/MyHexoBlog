@@ -1,7 +1,7 @@
 ---
 title: BIG-IP System iRules Concepts v11.6
 date: 2017-11-30 09:05:31
-tags: [F5, loadbalance]
+tags: [F5, LoadBalance]
 categories: F5
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Ansible 用户指南
 date: 2022-05-17 00:01:21
-tags: [linux, ansible]
+tags: [Linux, ansible]
 categories: Linux
 ---
 

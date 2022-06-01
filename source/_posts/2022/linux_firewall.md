@@ -1,7 +1,7 @@
 ---
 title: Linux Firewall 学习笔记
 date: 2022-04-10 16:35:21
-tags: [linux, iptables, firewalld, nftables]
+tags: [Linux, iptables, firewalld, nftables]
 categories: Linux
 ---
 

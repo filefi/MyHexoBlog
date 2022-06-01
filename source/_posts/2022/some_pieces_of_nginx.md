@@ -1,7 +1,7 @@
 ---
 title: Nginx小记
 date: 2022-04-14 23:41:21
-tags: [linux, nginx]
+tags: [Linux, Nginx]
 categories: Linux
 ---
 

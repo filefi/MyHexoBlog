@@ -1,7 +1,7 @@
 ---
 title: 批量将某li某li特定关注组中的UP修改为悄悄关注
 date: 2022-06-01 23:21:23
-tags: [JavaScript, reverse, PWN]
+tags: [JavaScript, Reverse, PWN]
 categories: JavaScript
 ---
 
