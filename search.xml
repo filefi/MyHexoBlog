@@ -115,7 +115,7 @@
       </categories>
       <tags>
         <tag>F5</tag>
-        <tag>loadbalance</tag>
+        <tag>LoadBalance</tag>
       </tags>
   </entry>
   <entry>
@@ -421,7 +421,7 @@
       </categories>
       <tags>
         <tag>F5</tag>
-        <tag>loadbalance</tag>
+        <tag>LoadBalance</tag>
       </tags>
   </entry>
   <entry>
@@ -513,7 +513,7 @@ $ <span class="token builtin class-name">eval</span> <span class="token variable
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
+        <tag>Linux</tag>
         <tag>ansible</tag>
       </tags>
   </entry>
@@ -599,7 +599,7 @@ $ <span class="token builtin class-name">eval</span> <span class="token variable
       </categories>
       <tags>
         <tag>JavaScript</tag>
-        <tag>reverse</tag>
+        <tag>Reverse</tag>
         <tag>PWN</tag>
       </tags>
   </entry>
@@ -694,9 +694,8 @@ Now change the health to 5000, to proceed to the next step.</code></pre>
         <category>PWN</category>
       </categories>
       <tags>
-        <tag>reverse</tag>
-        <tag>pwn</tag>
-        <tag>re</tag>
+        <tag>Reverse</tag>
+        <tag>PWN</tag>
       </tags>
   </entry>
   <entry>
@@ -6572,7 +6571,7 @@ public <span class="token punctuation">(</span>active<span class="token punctuat
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
+        <tag>Linux</tag>
         <tag>iptables</tag>
         <tag>firewalld</tag>
         <tag>nftables</tag>
@@ -7160,8 +7159,8 @@ networks:
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>linux</tag>
-        <tag>nginx</tag>
+        <tag>Linux</tag>
+        <tag>Nginx</tag>
       </tags>
   </entry>
   <entry>
