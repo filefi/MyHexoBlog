@@ -85,8 +85,8 @@ menu:
   home: / || fa fa-home
   tags: /tags/ || fa fa-tags
   categories: /categories/ || fa fa-th
-  专栏:
-    default: /docs/ || fa fa-book
+  专题:
+    default: /topics/ || fa fa-book
   archives: /archives/ || fa fa-archive
   # 项目: /projects/ || fa fa-star
   about: /about/ || fa fa-user
@@ -241,9 +241,9 @@ post_meta:
   item_text: false
   created_at: true
   updated_at:
-    enable: false
+    enable: true
     another_day: true
-  categories: false
+  categories: true
 
 # Post wordcount display settings
 # Dependencies: https://github.com/next-theme/hexo-word-counter

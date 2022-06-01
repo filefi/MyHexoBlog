@@ -1,11 +1,12 @@
 ---
 title: tkinter 一例
 date: 2022-02-16 23:56:21
+updated:
 tags: [Python, tkinter, GUI]
 categories: Python
 ---
 
-
+entry输入命令，text实时获得命令输出：
 ```python
 import tkinter as tk
 import tkinter.ttk as ttk
