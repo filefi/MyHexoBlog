@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"ifelif.cn","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/config.min.js"></script>
+
+    <meta name="description" content="本文是 F5官方文档 BIG-IP System iRules Concepts v11.6 的中文翻译版。初次于2017年11月30日发布在 此repo。  1 iRules介绍什么是iRuleiRule是BIG-IP本地流量管理器（LTM）中的一个强大而灵活的功能，你可以用它来管理你的网络流量。使用基于行业标准工具命令语言（Tcl）的语法，iRules功能不仅允许您根据报头数据（header">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BIG-IP System iRules Concepts v11.6">
+<meta property="og:url" content="https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/index.html">
+<meta property="og:site_name" content="正经人谁写日记">
+<meta property="og:description" content="本文是 F5官方文档 BIG-IP System iRules Concepts v11.6 的中文翻译版。初次于2017年11月30日发布在 此repo。  1 iRules介绍什么是iRuleiRule是BIG-IP本地流量管理器（LTM）中的一个强大而灵活的功能，你可以用它来管理你的网络流量。使用基于行业标准工具命令语言（Tcl）的语法，iRules功能不仅允许您根据报头数据（header">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-11-30T01:05:31.000Z">
+<meta property="article:modified_time" content="2022-06-01T03:29:52.609Z">
+<meta property="article:author" content="filefi">
+<meta property="article:tag" content="F5">
+<meta property="article:tag" content="loadbalance">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/","path":"2017/BIG-IP-System-iRules-Concepts-v11-6/","title":"BIG-IP System iRules Concepts v11.6"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>BIG-IP System iRules Concepts v11.6 | 正经人谁写日记</title>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/third-party/analytics/baidu-analytics.min.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?3f08a6c1407c206aa070325c05c2844d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="正经人谁写日记" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">正经人谁写日记</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-专题"><a href="/topics/" rel="section"><i class="fa fa-book fa-fw"></i>专题</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-iRules%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">1 iRules介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFiRule"><span class="nav-number">1.1.</span> <span class="nav-text">什么是iRule</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iRule%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.1.</span> <span class="nav-text">iRule命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E5%91%BD%E4%BB%A4%EF%BC%88Statement-Commands%EF%BC%89"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">声明命令（Statement Commands）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%88%96%E6%93%8D%E7%BA%B5%E6%95%B0%E6%8D%AE%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">查询或操纵数据的命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E5%91%BD%E4%BB%A4%EF%BC%88Utility-Commands%EF%BC%89"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">工具命令（Utility Commands）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%A3%B0%E6%98%8E"><span class="nav-number">1.1.2.</span> <span class="nav-text">事件声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">1.1.3.</span> <span class="nav-text">运算符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAiRule"><span class="nav-number">1.2.</span> <span class="nav-text">创建iRule</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-iRule%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">2 iRule命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#iRule%E5%91%BD%E4%BB%A4%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">iRule命令类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.1.</span> <span class="nav-text">声明命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E5%92%8C%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.2.</span> <span class="nav-text">查询和操作命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.3.</span> <span class="nav-text">工具命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pool%E5%91%BD%E4%BB%A4"><span class="nav-number">2.2.</span> <span class="nav-text">pool命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#node%E5%91%BD%E4%BB%A4"><span class="nav-number">2.3.</span> <span class="nav-text">node命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%B1%A0%EF%BC%88pool%EF%BC%89%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="nav-number">2.4.</span> <span class="nav-text">选择缓存服务器池（pool）的命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-redirect%E5%91%BD%E4%BB%A4"><span class="nav-number">2.5.</span> <span class="nav-text">HTTP::redirect命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#snat%E5%92%8Csnatpool%E5%91%BD%E4%BB%A4"><span class="nav-number">2.6.</span> <span class="nav-text">snat和snatpool命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-iRule%E8%AF%84%E4%BC%B0%EF%BC%88evaluation%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">3 iRule评估（evaluation）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EiRule%E8%AF%84%E4%BC%B0%EF%BC%88evaluation%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">关于iRule评估（evaluation）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">事件类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iRule%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%88context%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">iRule上下文（context）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VS%E7%9A%84iRules%E5%88%86%E9%85%8D"><span class="nav-number">3.4.</span> <span class="nav-text">VS的iRules分配</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-iRules%E4%B8%8E%E7%AE%A1%E7%90%86%E5%88%86%E5%8C%BA"><span class="nav-number">4.</span> <span class="nav-text">4 iRules与管理分区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-iRules%E4%B8%8E%E6%9C%AC%E5%9C%B0%E6%B5%81%E9%87%8FProfiles"><span class="nav-number">5.</span> <span class="nav-text">5 iRules与本地流量Profiles</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#iRules%E4%B8%8E%E6%A8%A1%E6%9D%BF%EF%BC%88Profiles%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">iRules与模板（Profiles）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#profile%E5%91%BD%E4%BB%A4"><span class="nav-number">5.2.</span> <span class="nav-text">profile命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E6%A8%A1%E6%9D%BF%EF%BC%88profile%EF%BC%89%E9%85%8D%E7%BD%AE%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="nav-number">5.3.</span> <span class="nav-text">覆盖模板（profile）配置的命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E6%95%B0%E6%8D%AE%E7%BB%84-Data-Groups"><span class="nav-number">6.</span> <span class="nav-text">6 数据组 - Data Groups</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E7%BB%84"><span class="nav-number">6.1.</span> <span class="nav-text">关于数据组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eclass-match%E5%91%BD%E4%BB%A4"><span class="nav-number">6.1.1.</span> <span class="nav-text">关于class match命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E9%80%89%E9%A1%B9"><span class="nav-number">6.1.2.</span> <span class="nav-text">存储选项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%B5%8C%E5%AD%98%E5%82%A8%EF%BC%88in-line-storage%EF%BC%89"><span class="nav-number">6.1.2.1.</span> <span class="nav-text">内嵌存储（in-line storage）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E5%AD%98%E5%82%A8%EF%BC%88External-storage%EF%BC%89"><span class="nav-number">6.1.2.2.</span> <span class="nav-text">外部存储（External storage）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Edata-groups%E7%9A%84%E6%96%87%E4%BB%B6%E5%AF%BC%E5%85%A5"><span class="nav-number">6.1.3.</span> <span class="nav-text">关于data groups的文件导入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5data-group%E7%9A%84%E6%96%87%E4%BB%B6"><span class="nav-number">6.1.3.1.</span> <span class="nav-text">导入data group的文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%B7%B2%E5%AF%BC%E5%85%A5%E7%9A%84data-group%E6%96%87%E4%BB%B6%E7%9A%84%E5%88%97%E8%A1%A8"><span class="nav-number">6.1.3.2.</span> <span class="nav-text">查看已导入的data group文件的列表</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-iFiles"><span class="nav-number">7.</span> <span class="nav-text">7 iFiles</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EiRules%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%85%A5"><span class="nav-number">7.1.</span> <span class="nav-text">关于iRules文件的导入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BAiRule%E5%AF%BC%E5%85%A5%E6%96%87%E4%BB%B6"><span class="nav-number">7.1.1.</span> <span class="nav-text">为iRule导入文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%B7%B2%E5%AF%BC%E5%85%A5%E6%96%87%E4%BB%B6%E7%9A%84%E5%88%97%E8%A1%A8"><span class="nav-number">7.1.2.</span> <span class="nav-text">查看已导入文件的列表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EiFiles"><span class="nav-number">7.2.</span> <span class="nav-text">关于iFiles</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8BiFiles%E5%88%97%E8%A1%A8"><span class="nav-number">7.2.1.</span> <span class="nav-text">查看iFiles列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAiFile"><span class="nav-number">7.2.2.</span> <span class="nav-text">创建iFile</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8iFile%E7%9A%84iRule%E5%91%BD%E4%BB%A4"><span class="nav-number">7.3.</span> <span class="nav-text">引用iFile的iRule命令</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="filefi"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">filefi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/filefi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;filefi" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://filefi.github.io/" title="https:&#x2F;&#x2F;filefi.github.io" rel="noopener" target="_blank">github home page</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/filefi" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="filefi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="BIG-IP System iRules Concepts v11.6 | 正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BIG-IP System iRules Concepts v11.6<a href="https://github.com/filefi/MyHexoBlog/tree/master/source/_posts/2017/BIG-IP-System-iRules-Concepts-v11-6.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-11-30 09:05:31" itemprop="dateCreated datePublished" datetime="2017-11-30T09:05:31+08:00">2017-11-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-06-01 11:29:52" itemprop="dateModified" datetime="2022-06-01T11:29:52+08:00">2022-06-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/F5/" itemprop="url" rel="index"><span itemprop="name">F5</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>本文是 F5官方文档 <a target="_blank" rel="noopener" href="https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-system-irules-concepts-11-6-0.html">BIG-IP System iRules Concepts v11.6</a> 的中文翻译版。初次于2017年11月30日发布在 <a target="_blank" rel="noopener" href="https://github.com/filefi/CN_BIG-IP_System_iRules_Concepts_v11.6">此repo</a>。</p>
+</blockquote>
+<h1 id="1-iRules介绍"><a href="#1-iRules介绍" class="headerlink" title="1 iRules介绍"></a>1 iRules介绍</h1><h2 id="什么是iRule"><a href="#什么是iRule" class="headerlink" title="什么是iRule"></a>什么是iRule</h2><p>iRule是BIG-IP本地流量管理器（LTM）中的一个强大而灵活的功能，你可以用它来管理你的网络流量。使用基于行业标准工具命令语言（Tcl）的语法，iRules功能不仅允许您根据报头数据（header data）选择Pools，还可以通过搜索您自定义的任何类型的内容数据来定向流量。因此，iRules功能显著地增强了您自定义内容交换（content switching）以适应您确切需求的能力。</p>
+<blockquote>
+<p>重要：有关iRules语法的完整和详细信息，请参阅F5 Networks DevCentral网站 <a target="_blank" rel="noopener" href="http://devcentral.f5.com.请注意,irules必须符合标准的tcl语法规则/">http://devcentral.f5.com。请注意，iRules必须符合标准的Tcl语法规则</a>; 因此，有关Tcl语法的更多信息，请参见 <a target="_blank" rel="noopener" href="http://tmml.sourceforge.net/doc/tcl/index.html%E3%80%82">http://tmml.sourceforge.net/doc/tcl/index.html。</a></p>
+</blockquote>
+<p>如果您想要单独的连接来命中（target）除为Virtual Server定义的默认Pool之外的Pool，则你就可以写这样一个iRule脚本。iRules允许您更直接地指定要将流量定向到你想要的目的地。使用iRules，您不仅可以将流量发送到Pool，还可以向单个Pool Member，端口或URI发送流量。您创建的iRules可以很简单，也可以很复杂，具体取决于您的内容交换（content-switching）需求。</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when CLIENT_ACCEPTED <span class="token punctuation">&#123;</span>
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>IP::addr <span class="token punctuation">[</span>IP::client_addr<span class="token punctuation">]</span> equals 10.10.10.10<span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        pool my_pool 
+    <span class="token punctuation">&#125;</span> 
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>当客户端连接被接受时，这条iRule会被触发。这时，如果客户端的地址与 <code>10.10.10.10</code> 相匹配，将使得本地流量管理器（LTM）将数据包发送到my_pool池。</p>
+<span id="more"></span>
+
+<p>使用称为通用检查引擎（Universal Inspection Engine）的功能，您可以编写一个搜索数据包头部或实际数据包内容的iRule，然后根据该检索结果来定向数据包。iRules还可以根据客户端认证的结果来定向数据包。</p>
+<p>iRules不仅可以将流量定向到特定Pool，还可以将流量定向到单个Pool Member，甚至包括特定端口号和URI路径，以实现会话保持（persistence）或满足特定的负载均衡要求。</p>
+<p>用于编写iRules的语法是基于工具命令语言（Tcl）编程标准。因此，您可以使用许多标准Tcl命令，以及本地流量管理器（LTM）提供的强大的扩展集，以帮助您进一步提高负载均衡效率。</p>
+<blockquote>
+<p>重要提示：引用iRule中的对象时，必须包含对象的完整路径名。</p>
+</blockquote>
+<h3 id="iRule命令"><a href="#iRule命令" class="headerlink" title="iRule命令"></a>iRule命令</h3><p>iRule中的 <em><strong>iRule命令</strong></em> 会使本地流量管理器（LTM）采取一些动作，如查询数据，操作数据，或指定流量的目的地。您可以在iRules中包含的命令类型有：</p>
+<h4 id="声明命令（Statement-Commands）"><a href="#声明命令（Statement-Commands）" class="headerlink" title="声明命令（Statement Commands）"></a>声明命令（Statement Commands）</h4><p>这些命令会引起诸如选择流量目的地或分配SNAT转换地址等动作。语句命令的一个例子是<code>pool &lt;name&gt;</code>，它将流量引导到命名的负载平衡池（Pool）。</p>
+<h4 id="查询或操纵数据的命令"><a href="#查询或操纵数据的命令" class="headerlink" title="查询或操纵数据的命令"></a>查询或操纵数据的命令</h4><p>一些命令会搜索报头（header）和内容数据，而其他命令执行数据操作，例如将header插入到HTTP请求中。查询命令的一个例子是 <code>IP:: remote_addr</code>，它搜索并返回连接的远程IP地址。数据操作命令的一个例子是<code>HTTP::header remove &lt;name&gt;</code>，它从请求或响应中删除命名的header的最后一次事件（occurrence）。</p>
+<h4 id="工具命令（Utility-Commands）"><a href="#工具命令（Utility-Commands）" class="headerlink" title="工具命令（Utility Commands）"></a>工具命令（Utility Commands）</h4><p>这些命令是对解析和操作内容非常有用的功能。一个工具命令的例子是<code>decode_uri &lt;string&gt;</code>，它使用HTTP URI编码解码命名的字符串并返回结果。</p>
+<h3 id="事件声明"><a href="#事件声明" class="headerlink" title="事件声明"></a>事件声明</h3><p>iRules是事件驱动的，这意味着本地流量管理器(LTM)会根据您在iRule中指定的事件来触发iRule。<em><strong>事件声明</strong></em> 是iRule中一个事件的详细描述，这个事件会导致本地流量管理器（LTM）不论何时，只要事件发生就触发iRule。事件<code>HTTP_REQUEST</code>是触发iRule事件声明的例子，每当系统收到HTTP请求时，此事件会触发iRule；还有事件<code> CLIENT_ACCCEPTED</code>，此事件会在客户端建立连接时触发iRule。</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span> 
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> contains <span class="token string">"aol"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        pool aol_pool 
+    <span class="token punctuation">&#125;</span> <span class="token builtin">else</span> <span class="token punctuation">&#123;</span> 
+        pool all_pool 
+    <span class="token punctuation">&#125;</span> 
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h3><p>iRule运算符会比较表达式中的两个操作数。</p>
+<p>例如，您可以使用<code>contains</code>运算符将变量操作数与常量进行比较。您可以通过创建一个if语句来表示以下内容：“如果HTTP URI包含aol，发送到aol_pool池。</p>
+<h2 id="创建iRule"><a href="#创建iRule" class="headerlink" title="创建iRule"></a>创建iRule</h2><p>您创建一个iRule来自定义BIG-IP系统处理流量的方式。</p>
+<ol>
+<li>在主选项卡（Main Tab）上，以此点击<strong>Local Traffic &gt; iRules</strong>.</li>
+<li>点击<strong>Create</strong>。</li>
+<li>在<strong>Name</strong>字段中，键入名称，如my_irule.iRule的完整路径名称不能超过255个字符.</li>
+<li>在<strong>Definition</strong>字段中，使用“工具命令语言（Tcl）”语法键入iRule的语法。 有关iRules语法的完整和详细信息，请参阅F5 Networks DevCentral网站 <a target="_blank" rel="noopener" href="http://devcentral.f5.com/">http://devcentral.f5.com</a>.</li>
+<li>点击<strong>Finished</strong>.</li>
+</ol>
+<hr>
+<h1 id="2-iRule命令"><a href="#2-iRule命令" class="headerlink" title="2 iRule命令"></a>2 iRule命令</h1><h2 id="iRule命令类型"><a href="#iRule命令类型" class="headerlink" title="iRule命令类型"></a>iRule命令类型</h2><p>有三种iRule命令类型：</p>
+<ul>
+<li>声明命令（Statement Commands）</li>
+<li>查询与操作命令（Query and Manipulation Commands）</li>
+<li>工具（Utility）命令（也称为函数）</li>
+</ul>
+<h3 id="声明命令"><a href="#声明命令" class="headerlink" title="声明命令"></a>声明命令</h3><p>iRules中一些可用的命令被称为声明命令（Statement Commands）。<em><strong>声明命令</strong></em> 使得LTM能够执行各种不同的动作。例如，其中一些命令可以指定要使用LTM来重定向的pool和server。其他命令指定实现SNAT连接的翻译地址（Translation Address）。还有其他命令用于指定类似data group或者persistence profile的对象。</p>
+<blockquote>
+<p>有关语句命令的完整列表，请参阅F5 Networks DevCentral网站 <a target="_blank" rel="noopener" href="http://devcentral.f5.com./">http://devcentral.f5.com。</a></p>
+</blockquote>
+<h3 id="查询和操作命令"><a href="#查询和操作命令" class="headerlink" title="查询和操作命令"></a>查询和操作命令</h3><p>使用iRules命令，你可以查询包含在一个请求或相应的头部（Header）或内容中的特定数据，或者操作这些数据。数据处理指的是插入，替换和删除数据，以及设置在头部（Header）和Cookie中找到的某些值。</p>
+<p>例如，使用iRules中的<code>IP::idle_timeout</code>命令，你可以查询当前被设置在数据包报头中的空闲超时（Idle Timeout）值，然后相对应地对数据包进行负载均衡。你也可以使用<code>IP :: idle_timeout</code>命令将空闲超时设置为您选择的特定值。</p>
+<blockquote>
+<p>有关iRules命令的命名空间的完整列表，请参阅F5 Networks DevCentral网站 <a target="_blank" rel="noopener" href="http://devcentral.f5.com./">http://devcentral.f5.com。</a></p>
+</blockquote>
+<h3 id="工具命令"><a href="#工具命令" class="headerlink" title="工具命令"></a>工具命令</h3><p>LTM包括一些你可以在iRules中使用的工具命令。你可以使用这些命令来解析和检索内容，将数据编码为ASCII格式，校验数据完整性，以及检索关于Active的pool和pool member的信息。</p>
+<h2 id="pool命令"><a href="#pool命令" class="headerlink" title="pool命令"></a>pool命令</h2><p>一旦你已经在iRules中指定了一个查询，你就可以使用<code>pool</code>命令来选择一个你希望LTM向其发送请求的负载均衡Pool。这是一个此命令的示例：</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span> 
+    <span class="token keyword">set</span> <span class="token variable">uri</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> 
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> $<span class="token variable">uri</span> ends_with <span class="token string">".gif"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        pool my_pool 
+    <span class="token punctuation">&#125;</span> <span class="token builtin">elseif</span> <span class="token punctuation">&#123;</span> $<span class="token variable">uri</span> ends_with <span class="token string">".jpg"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        pool your_pool
+    <span class="token punctuation">&#125;</span> 
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h2 id="node命令"><a href="#node命令" class="headerlink" title="node命令"></a>node命令</h2><p>作为<code>pool</code>命令的替代命令，你也可以写一个定向流量到指定服务器（server）的iRule。要这样做，你可以使用<code>node</code>命令。</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span> 
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> ends_with <span class="token string">".gif"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        node 10.1.2.200 80 
+    <span class="token punctuation">&#125;</span> 
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h2 id="选择缓存服务器池（pool）的命令"><a href="#选择缓存服务器池（pool）的命令" class="headerlink" title="选择缓存服务器池（pool）的命令"></a>选择缓存服务器池（pool）的命令</h2><p>你可以创建一个iRule，这个iRule可以从缓存服务器池（pool）中选择一个服务器（Server）。这是一个从缓存服务器池中选择一个服务器的示例：</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span>
+    <span class="token comment"># This line specifies the expressions that determine whether the BIG-IP system sends requests to the cache pool:</span>
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> ends_with <span class="token string">"html"</span> or <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> ends_with <span class="token string">"gif"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        pool cache_pool
+        <span class="token keyword">set</span> <span class="token variable">key</span> <span class="token punctuation">[</span>crc32 <span class="token punctuation">[</span><span class="token keyword">concat</span> <span class="token punctuation">[</span>domain <span class="token punctuation">[</span>HTTP::host<span class="token punctuation">]</span> 2<span class="token punctuation">]</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+        <span class="token keyword">set</span> <span class="token variable">cache_mbr</span> <span class="token punctuation">[</span>persist lookup hash $<span class="token variable">key</span> node<span class="token punctuation">]</span>
+        <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> $<span class="token variable">cache_mbr</span> <span class="token operator">ne</span> <span class="token string">""</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment"># This line verifies that the request is not coming from the cache:</span>
+            <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>IP::addr <span class="token punctuation">[</span>IP::remote_addr<span class="token punctuation">]</span> equals $<span class="token variable">cache_mbr</span><span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment"># This line sends the request from the cache to the origin pool:</span>
+                pool origin_pool
+                <span class="token builtin">return</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token comment">#These lines ensure that the persistence record is added for this host/URI:</span>
+    persist hash $<span class="token variable">key</span>
+    <span class="token punctuation">&#125;</span> <span class="token builtin">else</span> <span class="token punctuation">&#123;</span>
+        pool origin_pool
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>注意：LTM是在BIG-IP系统接收到URI的请求时，重定向URI到一个新的缓存服务器，而不是在pool member变为不可用时进行这一重定向操作。</p>
+</blockquote>
+<h2 id="HTTP-redirect命令"><a href="#HTTP-redirect命令" class="headerlink" title="HTTP::redirect命令"></a><code>HTTP::redirect</code>命令</h2><p>除了配置iRule来选择指定的pool，你也可以使用 <code>HTTP::redirect</code> iRule命令来重定向HTTP请求到特定位置（location）。这个位置（location）可以是一个主机名或是一个URI。</p>
+<p>以下是一个被配置来重定向HTTP响应的iRule。</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_RESPONSE <span class="token punctuation">&#123;</span>
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::status<span class="token punctuation">]</span> contains <span class="token string">"404"</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        HTTP::redirect <span class="token string">"http://www.siterequest.com/"</span> 
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>这是一个重定向HTTP请求的iRule示例：</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span>
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> contains <span class="token string">"secure"</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span> 
+        HTTP::redirect <span class="token string">"https://[HTTP::host][HTTP::uri]"</span>
+    <span class="token punctuation">&#125;</span> 
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h2 id="snat和snatpool命令"><a href="#snat和snatpool命令" class="headerlink" title="snat和snatpool命令"></a><code>snat</code>和<code>snatpool</code>命令</h2><p>iRules功能包括2个声明命令<code>snat</code>和<code>snatpool</code>。使用<code>snat</code>命令可以为iRule中的初始（Original）IP地址分配一个指定的翻译地址（Translation Address），而不是使用BIG-IP Configuration utility中的SNAT界面。</p>
+<p>使用<code>snatpool</code>命令也可以为初始（Original）IP地址分配翻译地址（Translation Address），尽管不像<code>snat</code>命令，<code>snatpool</code>命令使得LTM从你之前创建的一个特定SNAT池（pool）中选择翻译地址。</p>
+<hr>
+<h1 id="3-iRule评估（evaluation）"><a href="#3-iRule评估（evaluation）" class="headerlink" title="3 iRule评估（evaluation）"></a>3 iRule评估（evaluation）</h1><h2 id="关于iRule评估（evaluation）"><a href="#关于iRule评估（evaluation）" class="headerlink" title="关于iRule评估（evaluation）"></a>关于iRule评估（evaluation）</h2><p>在不存在iRule的基本系统配置中，LTM将入站流量引导到接收这些流量的VS的默认pool。然而，你可能想让LTM引导某些连接到其他目的地。如果想这样做，可以写一个引导流量到其他目的地的iRule，但这依赖于某种类型的事件发生。否则，流量继续被引导到给VS所分配的默认pool。</p>
+<p>因此，每当一个你已经在iRule中指定的事件发生时，iRules都将被评估（evaluate）。例如，如果iRule包含事件声明<code>CLIENT_ACCEPTED</code>，那么每当LTM接受一个客户端连接，iRule将被触发。然后，LTM遵循iRule的剩余部分来决定数据包的目的地。</p>
+<blockquote>
+<p>注意：当你对iRule进行持久化修改，如果连接表中已经存在连接，那么，修改只有在连接到期后才会生效。同理，当你启用iRule的日志，然后修改iRule（或者变更日志消息本身），也是类似的。</p>
+</blockquote>
+<h2 id="事件类型"><a href="#事件类型" class="headerlink" title="事件类型"></a>事件类型</h2><p>iRule命令语法包括几种你可以在iRule中指定的事件声明类型。例如：</p>
+<ul>
+<li>全局事件，例如<code>CLIENT_ACCEPTED</code></li>
+<li>HTTP事件，例如<code>HTTP_REQUEST</code></li>
+<li>SSL事件，例如<code>CLIENTSSL_HANDSAKE</code></li>
+<li>认证（Authentication）事件，例如<code>AUTH_SUCCESS</code></li>
+</ul>
+<blockquote>
+<p>有关iRule事件及其说明的完整列表，请参阅F5 Networks DevCentral网站 <a target="_blank" rel="noopener" href="http://devcentral.f5.com./">http://devcentral.f5.com。</a></p>
+</blockquote>
+<h2 id="iRule上下文（context）"><a href="#iRule上下文（context）" class="headerlink" title="iRule上下文（context）"></a>iRule上下文（context）</h2><p>对于每个你在iRule中指定的事件，你也可以指定由关键字<code>clientside</code>或<code>serverside</code>所表示的上下文（context）。因为每个事件都有与之关联的默认上下文，所以，如果你想要修改默认的上下文（context），你只需要声明一个上下文（context）。</p>
+<p>这个例子展示了<code>my_iRule1</code>，它包含事件声明 <code>CLIENT_ACCEPTED</code>，以及iRule命令<code>IP::remote_addr</code>。在这种情况下，iRule命令返回的IP地址是客户端的IP地址。因为事件声明<code>CLIENT_ACCEPED</code>的默认上下文（context）是<code>clientside</code>。</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when CLIENT_ACCEPTED <span class="token punctuation">&#123;</span> 
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>IP::addr <span class="token punctuation">[</span>IP::remote_addr<span class="token punctuation">]</span> equals 10.1.1.80<span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        pool my_pool1 
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>同样地，如果你在iRule中包括事件声明<code>SERVER_CONNECTED</code>，以及iRule命令<code>IP::remote_addr</code>，那么iRule命令返回的IP地址就是服务器的IP地址。因为，事件声明<code>SERVER_CONNECTED</code>的默认上下文是<code>serverside</code>。</p>
+<p>上述例子展示了当你在处理iRule命令时，编写使用默认上下文（context）的iRule<br>将发生什么。然而，你可以显式地指定关键字<code>clientside</code>和<code>serverside</code>来变更iRule命令的行为。</p>
+<p>继续之前的例子，下面的例子展示了事件声明<code>SERVER_CONNECTED</code>和显式地为iRule命令<code>IP::remote_addr</code>指定关键字<code>clientside</code>。在这种情况下，iRule命令返回的IP地址就是客户端的IP地址，尽管事件声明的默认上下文是服务器端。</p>
+<pre class="language-none"><code class="language-none">when SERVER_CONNECTED &#123;
+    if &#123; [IP::addr [IP::addr [clientside &#123;IP::remote_addr&#125;] equals 10.1.1.80] &#125; &#123;
+        discard 
+    &#125; 
+&#125;</code></pre>
+
+<blockquote>
+<p>注意：你可以通过使用一个紧跟在事件名后的关键字<code>when</code>在iRule中进行事件声明。这展示了iRule中事件声明的一个例子。</p>
+</blockquote>
+<h2 id="VS的iRules分配"><a href="#VS的iRules分配" class="headerlink" title="VS的iRules分配"></a>VS的iRules分配</h2><p>当你将多个iRules作为资源分配给VS时，考虑这些iRules在VS中被列出的顺序是很重要的。这是因为LTM以可用的iRules被列出的顺序来处理重复的iRule事件。因此，一个iRule事件可以终结事件触发，从而阻止LTM触发随后的事件。</p>
+<blockquote>
+<p>如果一个iRule引用了一个profile，LTM最后处理这种类型的iRule，而不管它本身在VS的iRules列表中的顺序。</p>
+</blockquote>
+<hr>
+<h1 id="4-iRules与管理分区"><a href="#4-iRules与管理分区" class="headerlink" title="4 iRules与管理分区"></a>4 iRules与管理分区</h1><p>你应该了解与管理分区相关的某些iRule配置概念：</p>
+<ul>
+<li>iRule可以引用任何对象，无论所引用的对象属于哪个分区。例如，贮存（reside）在分区 <em>partition_a</em> 的iRule可以包含指定了贮存（reside）在分区 <em>partition_b</em> 的pool对象的pool语句。</li>
+<li>你可以只从贮存（reside）在当前写入分区（Write Partition）或分区 <em>Common</em> 中的VS里删除iRule分配。</li>
+<li>注意：你可以只将iRule与贮存（reside）在当前写分区（Write partition）或分区 <em>Common</em> 中的VS进行关联。</li>
+<li>你可以将现有的iRule与多个VS进行关联。在这种情况下，iRule将成为与在当前写分区（Write partition）中的每个VS相关联的唯一iRule。因为这条命令覆盖了之前所有的iRule分配。F5不推荐使用此命令。</li>
+</ul>
+<hr>
+<h1 id="5-iRules与本地流量Profiles"><a href="#5-iRules与本地流量Profiles" class="headerlink" title="5 iRules与本地流量Profiles"></a>5 iRules与本地流量Profiles</h1><h2 id="iRules与模板（Profiles）"><a href="#iRules与模板（Profiles）" class="headerlink" title="iRules与模板（Profiles）"></a>iRules与模板（Profiles）</h2><p>当你在写iRule时，你可能想要iRule识别特定模板（profile）配置的值，以便能够做出更加有根据的流量管理决定。幸运的是，iRules功能包括这样一个命令，这个命令是专门设计来读取你在iRule脚本中指定的模板（profile）设置的值。</p>
+<p>iRule不仅可以读取模板（profile）配置的值，还可以覆盖某些设置的值。这意味着你可以针对个别连接（connection）应用不同的配置值。这里的个别连接指的是所配置的值与LTM应用于大多数通过VS的连接的配置值所不同的连接。</p>
+<h2 id="profile命令"><a href="#profile命令" class="headerlink" title="profile命令"></a><code>profile</code>命令</h2><p>iRules功能包含一个叫作<code>PROFILE</code>的命令。当你在iRule中指定<code>PROFILE</code>命令和指定模板（profile）类型和设置，iRule会读取指定模板（profile）的配置值。为此，iRule会找到分配给VS的指定模板（profile）类型，然后读取你在<code>PROFILE</code>中命令序列中指定的配置值。然后，iRule可以使用此信息来管理流量。</p>
+<p>例如，你可以在你的iRule中指定命令<code>PROFILE::tcp idle_timeout</code>。然后，LTM会找到分配给VS的TCP profile（比如，<code>my_tcp</code>）,并查询你给空闲超时（Idel Timeout）设置所分配的值。</p>
+<h2 id="覆盖模板（profile）配置的命令"><a href="#覆盖模板（profile）配置的命令" class="headerlink" title="覆盖模板（profile）配置的命令"></a>覆盖模板（profile）配置的命令</h2><p>一些用于查询和造作报头和数据内容的iRule命令在各种profile中有着等价的配置。当你在iRule中使用这些命令，并且一个事件触发了这条iRule，LTM将使用在iRule中指定的值覆盖这些profile设置的值。</p>
+<p>例如，HTTP profile可能指定某个用于压缩HTTP数据的缓冲区大小，但是你可能想要为特定类型的HTTP连接指定一个不同的缓冲区大小。在这种情况下，你可以在你的iRule中包含命令<code>HTTP::compress_buffer_size</code>，以指定一个不同于profile中的值。</p>
+<hr>
+<h1 id="6-数据组-Data-Groups"><a href="#6-数据组-Data-Groups" class="headerlink" title="6 数据组 - Data Groups"></a>6 数据组 - Data Groups</h1><h2 id="关于数据组"><a href="#关于数据组" class="headerlink" title="关于数据组"></a>关于数据组</h2><p>编写iRules时，数据组是非常有用的。一个数据组只是一组相关的元素，例如AOL客户端的一组IP地址。当您用<code>class match</code>命令或 运算符<code>contains</code>指定数据组时，您不需要在iRule表达式中列出多个值作为参数。</p>
+<p>您可以定义三种类型的数据组：地址，整数和字符串。</p>
+<p>BIG-IP系统包括三个预配置数据组： <em>private_net</em>，<em>images</em>，和 <em>aol</em>。</p>
+<p>要了解数据组的有用性，首先要了解<code>class match</code>命令和运算符<code>contains</code>。</p>
+<blockquote>
+<p>注意：您只能根据你的用户角色和分区访问分配来管理您有权限管理的那些数据组。</p>
+</blockquote>
+<blockquote>
+<p>警告：不要试图修改或删除三种预配置数据组中的任何一种（private_net，images，和aol）。否则可能会产生不良后果。</p>
+</blockquote>
+<h3 id="关于class-match命令"><a href="#关于class-match命令" class="headerlink" title="关于class match命令"></a>关于<code>class match</code>命令</h3><p>BIG-IP系统包括一个称为<code>class</code>的iRule命令 ，此命令具有一个<code>match</code>选项，根据iRule中使用的命令是否表示特定数据组的成员，您可以使用该命令来选择Pool。当你使用<code>class</code>命令，BIG-IP系统知道跟在标识符后面的字符串是数据组的名称。</p>
+<p>例如，如果<code>IP::remote_addr</code>命令的值是数据组AOL的成员，使用<code>class</code>命令，您可以使BIG-IP系统将所有入站的AOL连接负载均衡到aol_pool池。在这种情况下，<code>class match</code>命令表示命名为aol的对象是一个值的集合（即一个数据组）。</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when CLIENT_ACCEPTED <span class="token punctuation">&#123;</span> 
+    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>class match <span class="token punctuation">[</span>IP::remote_addr<span class="token punctuation">]</span> equals aol<span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        pool aol_pool 
+    <span class="token punctuation">&#125;</span> <span class="token builtin">else</span> <span class="token punctuation">&#123;</span>
+        pool all_pool
+    <span class="token punctuation">&#125;</span> 
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="存储选项"><a href="#存储选项" class="headerlink" title="存储选项"></a>存储选项</h3><p>使用LTM，你能够以2种方式存储数据，<em>内嵌存储（in-line storage）</em> 或者 <em>外部存储</em>。</p>
+<h4 id="内嵌存储（in-line-storage）"><a href="#内嵌存储（in-line-storage）" class="headerlink" title="内嵌存储（in-line storage）"></a>内嵌存储（in-line storage）</h4><p>当你创建data group时，LTM会自动把所创建的data group完整地保存在配置文件<code>bigip.conf</code>中。这种存储类型称为</p>
+<p>一般来说，由于对大数据组（data group）有大量检索要求，<em>内嵌存储（in-line storage）</em> 会使用额外的系统资源。因此，LTM向你提供了外部存储数据的能力，也就是，存储在<code>bigip.conf</code>文件以外的文件。</p>
+<h4 id="外部存储（External-storage）"><a href="#外部存储（External-storage）" class="headerlink" title="外部存储（External storage）"></a>外部存储（External storage）</h4><p>你可以选择将数据组（data group）存储在BIG-IP系统上的其他位置，也就是说，<code>bigip.conf</code>以外的文件。这样的数据组（data group）称为<em>外部数据组（external data groups）</em>。因为数据组（data group）被存储在其他位置，<code>bigip.conf</code>文件本身只包含数据组（data group）的文件名和元数据（meta-data）。在外部存储的数据组（data group）文件中的数据以逗号分隔的值的列表（CSV格式）被存储。</p>
+<blockquote>
+<p>重要：如果你尝试加载包含外部数据组（data group）元数据（meta-data）的<code>bigip.conf</code>文件，并且此文件是BIP-IP 系统v9.4之前的版本创建的，系统将产生错误。外部数据组的元数据（meta-data）包含关键字<code>extern</code>，也就是这个关键字导致了加载过程中错误的产生。BIP-IP 系统v9.4及其以后版本，<code>bigip.conf</code>文件已经不再需要关键字<code>extern</code>了。</p>
+</blockquote>
+<p>为了创建外部数据组，你要先使用BIG-IP Configuration utility的 <strong>System</strong> 选项从其他位置导入一个文件。然后，使用<strong>Local Traffic iRules</strong>配置界面，来创建一个基于该导入文件的外部数据组。</p>
+<p>根据平台硬件和可用内存（建议使用8GB或更多内存）外部数据组（external data group）扩展到超过10,000,000条条目。拥有更大数据项目的数据组可以用较少条目的外部数据来支持。此外，对外部数据组的更新是完全原子的（atomic）：例如，只有新数据成功完成加载后，系统才会更新数据组。你可以使用命令<code>[class exists xyz]</code>来检查数据组是否已经完成加载了。</p>
+<h3 id="关于data-groups的文件导入"><a href="#关于data-groups的文件导入" class="headerlink" title="关于data groups的文件导入"></a>关于data groups的文件导入</h3><p>使用BIG-IP Configuration utility，你可以导入包含你想要在data group中使用的内容的外部文件。当你将一个现有文件导入BIG-IP系统，那么BIG-IP系统会创建一个包含指定内容（地址，字符串或整数）类型的data group。</p>
+<h4 id="导入data-group的文件"><a href="#导入data-group的文件" class="headerlink" title="导入data group的文件"></a>导入data group的文件</h4><p>使用BIG-IP Configuration utility，你可以从外部系统导入文件，并使用此文件来创建data group。</p>
+<ol>
+<li>在主标签页，依次点击 <strong>System &gt; File Management &gt; Data Group File List &gt; Import</strong>。</li>
+<li>对于文件名设置，点击 <strong>Browse</strong>。系统将打开一个浏览窗口，以便你可以定位到你希望导入到BIG-IP系统的文件。</li>
+<li>在<strong>Name</strong>字段中，为导入的文件输入一个新名字。</li>
+<li>从<strong>File Content</strong>列表中选择数据组的内容类型。</li>
+<li>在<strong>Key&#x2F;Value Pair Separator</strong>字段中，保留默认值或删除值，然后指定一个新的分隔符。</li>
+<li>在<strong>Data Group Name</strong>字段中，输入data group的名字。</li>
+<li>点击<strong>Import</strong>按钮。</li>
+</ol>
+<h4 id="查看已导入的data-group文件的列表"><a href="#查看已导入的data-group文件的列表" class="headerlink" title="查看已导入的data group文件的列表"></a>查看已导入的data group文件的列表</h4><p>使用BIG-IP Configuration utility，你可以查看已经导入到BIG-IP系统的data group文件的列表。</p>
+<ol>
+<li>在主界标签页，依次点击 <strong>System &gt; File Management &gt; Data Group File List</strong>。</li>
+<li>在名字列，查看文件的列表。</li>
+</ol>
+<hr>
+<h1 id="7-iFiles"><a href="#7-iFiles" class="headerlink" title="7 iFiles"></a>7 iFiles</h1><h2 id="关于iRules文件的导入"><a href="#关于iRules文件的导入" class="headerlink" title="关于iRules文件的导入"></a>关于iRules文件的导入</h2><p>如果你想要写iRule，而这个iRule要引用一个贮存（reside）在其他系统上的文件，你必须先将此文件导入到BIG-IP系统里。然后，你可以将此文件转换为iRule可以引用的iFile。</p>
+<h3 id="为iRule导入文件"><a href="#为iRule导入文件" class="headerlink" title="为iRule导入文件"></a>为iRule导入文件</h3><p>在你执行此操作之前，你想要导入的此文件必须贮存（reside）在你指定的系统上。</p>
+<p>你可以将文件从其他系统导入到BIG-IP系统，这是编写引用该文件的iRule的第一步。</p>
+<ol>
+<li>在主标签页，依次点击 <strong>System &gt; File Management &gt; iFile List &gt; Import</strong>。</li>
+<li>对于<strong>File Name</strong>的设置，点击 <strong>Browse</strong>。系统将打开一个浏览窗口，以便你可以定位到你希望导入到BIG-IP系统的文件。</li>
+<li>浏览文件，然后点击<strong>Open</strong>。你选择的文件的名字将出现在<strong>File Name</strong>设置中。</li>
+<li>在<strong>Name</strong>字段，输入新的文件名，例如<em>1k.html</em>。新的文件名将出现在导入的文件的列表中。</li>
+<li>点击<strong>Import</strong>按钮。</li>
+</ol>
+<p>在你执行此任务后，你导入的文件将贮存（reside）在BIG-IP系统上。</p>
+<h3 id="查看已导入文件的列表"><a href="#查看已导入文件的列表" class="headerlink" title="查看已导入文件的列表"></a>查看已导入文件的列表</h3><p>出于在iRule中引用这些文件的目的，你可以执行此操作来查看已经导入到BIG-IP系统的文件的列表。</p>
+<ol>
+<li>在主标签页，依次点击 <strong>System &gt; File Management &gt; iFile List</strong>。</li>
+<li>在名字列，查看iFiles的列表。</li>
+<li>点击<strong>Cancel</strong>按钮。</li>
+</ol>
+<h2 id="关于iFiles"><a href="#关于iFiles" class="headerlink" title="关于iFiles"></a>关于iFiles</h2><p>使用BIG-IP Configuration utility，你可以创建被称为iFile的特殊文件。一个 <em>iFile</em>是一个文件，此文件基于你之前从其他系统导入到BIG-IP系统上的外部文件。基于所指定的一个iRule事件，你可以从iRule中引用一个iFile。</p>
+<p>为了创建一个iFile，并在iRule中使用它，你要从主标签页的<strong>Local Traffic</strong>选项开始。</p>
+<blockquote>
+<p>重要：在创建iFile之前，你必须将文件从其他系统导入到BIG-IP系统。</p>
+</blockquote>
+<h3 id="查看iFiles列表"><a href="#查看iFiles列表" class="headerlink" title="查看iFiles列表"></a>查看iFiles列表</h3><p>出于在iRule中引用这些文件的目的，你可以执行此操作来查看已经导入到BIG-IP系统的文件的列表。</p>
+<ol>
+<li>在主标签页，依次点击 <strong>Local Traffic &gt; iRules &gt; iFile List</strong>。</li>
+<li>在名字列，查看你之前在BIG-IP上创建的iFiles的列表。</li>
+</ol>
+<h3 id="创建iFile"><a href="#创建iFile" class="headerlink" title="创建iFile"></a>创建iFile</h3><p>作为先决条件，确保当前管理分区被设置为你想要保存（reside）iFile的分区。还要确保该文件已经导入到BIG-IP系统了。</p>
+<p>你可以执行此操作来创建你之后能够在iRule中引用的iFile。</p>
+<ol>
+<li>在主标签页，依次点击 <strong>Local Traffic &gt; iRules &gt; iFile List</strong>。</li>
+<li>点击<strong>Create</strong>。</li>
+<li>在<strong>Name</strong>字段中，输入新的iFile文件名，例如 <em>ifileURL</em>。</li>
+<li>从<strong>File Name</strong>列表中，选择导入的文件对象的名字，例如 <em>1k.html</em>。</li>
+<li>点击<strong>Finished</strong>。新的iFile就会出现在iFiles列表中。</li>
+</ol>
+<p>这个操作的结果是，你现在有了一个iRule可以引用的文件。</p>
+<h2 id="引用iFile的iRule命令"><a href="#引用iFile的iRule命令" class="headerlink" title="引用iFile的iRule命令"></a>引用iFile的iRule命令</h2><p>有了这些iRule命令，你可以从iRule中引用新的iFile：</p>
+<ul>
+<li><code>[ifile get IFILENAME]</code></li>
+<li><code>[ifile listall]</code></li>
+<li><code>[ifile attributes IFILENAME]</code></li>
+<li><code>[ifile size IFILENAME]</code></li>
+<li><code>[ifile last_updated_by IFILENAME]</code></li>
+<li><code>[ifile last_update_time IFILENAME]</code></li>
+<li><code>[ifile revision IFILENAME]</code></li>
+<li><code>[ifile checksum IFILENAME]</code></li>
+<li><code>array set [file attributes IFILENAME]</code></li>
+</ul>
+<p>这个简单的iRule展示这些命令中的其中一些：</p>
+<pre class="language-tcl" data-language="tcl"><code class="language-tcl">ltm rule ifile_rule <span class="token punctuation">&#123;</span> 
+    when HTTP_RESPONSE <span class="token punctuation">&#123;</span> 
+        <span class="token comment"># return a list of iFiles in all partitions </span>
+        <span class="token keyword">set</span> <span class="token variable">listifiles</span> <span class="token punctuation">[</span>ifile listall<span class="token punctuation">]</span>
+        log local0. <span class="token string">"list of ifiles: $listifiles"</span>
+        
+        <span class="token comment"># return the attributes of an iFile specified </span>
+        <span class="token keyword">array</span> <span class="token keyword">set</span> array_attributes <span class="token punctuation">[</span>ifile attributes <span class="token string">"/Common/ifileURL"</span><span class="token punctuation">]</span>
+        
+        <span class="token builtin">foreach</span> <span class="token punctuation">&#123;</span>array attr<span class="token punctuation">&#125;</span> <span class="token punctuation">[</span><span class="token keyword">array</span> get array_attributes <span class="token punctuation">]</span> <span class="token punctuation">&#123;</span>
+            log local0. <span class="token string">"$array : $attr"</span>
+        <span class="token punctuation">&#125;</span> 
+        
+        <span class="token comment"># serve an iFile when http status is 404. </span>
+        <span class="token keyword">set</span> <span class="token variable">file</span> <span class="token punctuation">[</span>ifile get <span class="token string">"Common/ifileURL"</span><span class="token punctuation">]</span> 
+        log local0. <span class="token string">"file: $ifile"</span> 
+        <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::status<span class="token punctuation">]</span> equals <span class="token string">"404"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+            HTTP::respond 200 ifile <span class="token string">"/Common/ifileURL"</span> 
+        <span class="token punctuation">&#125;</span> 
+    <span class="token punctuation">&#125;</span> 
+<span class="token punctuation">&#125;</span></code></pre>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="filefi 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="filefi 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>filefi
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/" title="BIG-IP System iRules Concepts v11.6">https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/atom.xml">
+          <span class="icon">
+            <i class="fa fa-rss"></i>
+          </span>
+
+          <span class="label">RSS</span>
+        </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/F5/" rel="tag"># F5</a>
+              <a href="/tags/loadbalance/" rel="tag"># loadbalance</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/" rel="next" title="BIG-IP Local Traffic Manager Concepts v11.5.0">
+                  BIG-IP Local Traffic Manager Concepts v11.5.0 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">filefi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.45" zIndex="-1" src="/plugins/ribbon.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/comments.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/schemes/muse.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/next-boot.min.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/third-party/search/local-search.min.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

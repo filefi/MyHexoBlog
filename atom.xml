@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2022-05-31T09:04:04.258Z</updated>
+  <updated>2022-06-01T03:29:52.637Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2022-05-31T09:04:04.258Z</updated>
+    <updated>2022-06-01T03:29:52.637Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -60,7 +60,7 @@ hello world&lt;/code&gt;&lt;/pre&gt;</summary>
     <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
     <id>https://ifelif.cn/2022/ansible_user_guide/</id>
     <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2022-05-31T09:04:04.234Z</updated>
+    <updated>2022-06-01T03:29:52.609Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
@@ -106,7 +106,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/docker_practice/"/>
     <id>https://ifelif.cn/2022/docker_practice/</id>
     <published>2022-04-28T15:56:21.000Z</published>
-    <updated>2022-05-31T09:04:04.246Z</updated>
+    <updated>2022-06-01T03:29:52.629Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;什么是-Docker&quot;&gt;&lt;a href=&quot;#什么是-Docker&quot; class=&quot;headerlink&quot; title=&quot;什么是 Docker&quot;&gt;&lt;/a&gt;什么是 Docker&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;Docker&lt;/strong&gt; 使用 &lt;code&gt;Google&lt;/code&gt; 公司推出的 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go 语言&lt;/a&gt; 进行开发实现，基于 &lt;code&gt;Linux&lt;/code&gt; 内核的 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Cgroups&quot;&gt;cgroup&lt;/a&gt;，&lt;a href=&quot;https://en.wikipedia.org/wiki/Linux_namespaces&quot;&gt;namespace&lt;/a&gt;，以及 &lt;a href=&quot;https://docs.docker.com/storage/storagedriver/overlayfs-driver/&quot;&gt;OverlayFS&lt;/a&gt; 类的 &lt;a href=&quot;https://en.wikipedia.org/wiki/Union_mount&quot;&gt;Union FS&lt;/a&gt; 等技术，对进程进行封装隔离，属于 &lt;a href=&quot;https://en.wikipedia.org/wiki/Operating-system-level_virtualization&quot;&gt;操作系统层面的虚拟化技术&lt;/a&gt;。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。&lt;/p&gt;
@@ -131,7 +131,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/some_pieces_of_nginx/"/>
     <id>https://ifelif.cn/2022/some_pieces_of_nginx/</id>
     <published>2022-04-14T15:41:21.000Z</published>
-    <updated>2022-05-31T09:04:04.258Z</updated>
+    <updated>2022-06-01T03:29:52.641Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;nginx及其衍生版本&quot;&gt;&lt;a href=&quot;#nginx及其衍生版本&quot; class=&quot;headerlink&quot; title=&quot;nginx及其衍生版本&quot;&gt;&lt;/a&gt;nginx及其衍生版本&lt;/h1&gt;&lt;ul&gt;
@@ -210,7 +210,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/linux_firewall/"/>
     <id>https://ifelif.cn/2022/linux_firewall/</id>
     <published>2022-04-10T08:35:21.000Z</published>
-    <updated>2022-05-31T09:04:04.258Z</updated>
+    <updated>2022-06-01T03:29:52.641Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;iptables&quot;&gt;&lt;a href=&quot;#iptables&quot; class=&quot;headerlink&quot; title=&quot;iptables&quot;&gt;&lt;/a&gt;iptables&lt;/h1&gt;&lt;h2 id=&quot;netfilter-和-iptables&quot;&gt;&lt;a href=&quot;#netfilter-和-iptables&quot; class=&quot;headerlink&quot; title=&quot;netfilter 和 iptables&quot;&gt;&lt;/a&gt;netfilter 和 iptables&lt;/h2&gt;&lt;ul&gt;
@@ -257,14 +257,15 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/entry%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%EF%BC%8Ctext%E5%AE%9E%E6%97%B6%E8%8E%B7%E5%BE%97%E5%91%BD%E4%BB%A4%E8%BE%93%E5%87%BA/"/>
     <id>https://ifelif.cn/2022/entry%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%EF%BC%8Ctext%E5%AE%9E%E6%97%B6%E8%8E%B7%E5%BE%97%E5%91%BD%E4%BB%A4%E8%BE%93%E5%87%BA/</id>
     <published>2022-02-16T15:56:21.000Z</published>
-    <updated>2022-05-31T09:04:04.258Z</updated>
+    <updated>2022-06-01T03:29:52.637Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;pre class=&quot;language-python&quot; data-language=&quot;python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; tkinter &lt;span</summary>
+    <summary type="html">&lt;p&gt;entry输入命令，text实时获得命令输出：&lt;/p&gt;
+&lt;pre class=&quot;language-python&quot; data-language=&quot;python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token</summary>
         
       
     
@@ -286,7 +287,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/tkinter_geometry_manager/"/>
     <id>https://ifelif.cn/2022/tkinter_geometry_manager/</id>
     <published>2022-02-16T15:56:21.000Z</published>
-    <updated>2022-05-31T09:04:04.258Z</updated>
+    <updated>2022-06-01T03:29:52.641Z</updated>
     
     
     <summary type="html">&lt;p&gt;本文讲述如何使用 tkinter 的布局管理 (被称作 layout managers 或 geometry managers)。tkinter 有三种布局管理方式：&lt;/p&gt;
@@ -324,7 +325,7 @@ $ python -m pip &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt
     <link href="https://ifelif.cn/2022/cheat_engine_tutorial/"/>
     <id>https://ifelif.cn/2022/cheat_engine_tutorial/</id>
     <published>2022-02-16T13:41:21.000Z</published>
-    <updated>2022-05-31T09:04:04.234Z</updated>
+    <updated>2022-06-01T03:29:52.609Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;CheatEngine-Tutorial&quot;&gt;&lt;a href=&quot;#CheatEngine-Tutorial&quot; class=&quot;headerlink&quot; title=&quot;CheatEngine Tutorial&quot;&gt;&lt;/a&gt;CheatEngine Tutorial&lt;/h1&gt;&lt;h2 id=&quot;Step-1&quot;&gt;&lt;a href=&quot;#Step-1&quot; class=&quot;headerlink&quot; title=&quot;Step 1&quot;&gt;&lt;/a&gt;Step 1&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2022/cheat_engine_tutorial/image-20220215145201605.png&quot;&gt;&lt;/p&gt;
@@ -356,6 +357,70 @@ If you&#39;re having problems, simply head over to forum.cheatengine.org, then c
     <category term="reverse" scheme="https://ifelif.cn/tags/reverse/"/>
     
     <category term="re" scheme="https://ifelif.cn/tags/re/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>BIG-IP Local Traffic Manager Concepts v11.5.0</title>
+    <link href="https://ifelif.cn/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/"/>
+    <id>https://ifelif.cn/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/</id>
+    <published>2017-11-30T03:30:15.000Z</published>
+    <updated>2022-06-01T03:29:52.609Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;本文是 F5官方文档 &lt;a href=&quot;https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ltm-concepts-11-5-0.html&quot;&gt;BIG-IP Local Traffic Manager Concepts v11.5.0&lt;/a&gt; 的中文翻译版。初次于2017年11月30日发布在 &lt;a href=&quot;https://github.com/filefi/CN_BIG-IP_Local_Traffic_Manager_Concepts_v11.5.0&quot;&gt;此repo&lt;/a&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;第1章-介绍本地流量管理器（Local-Traffic-Manager）&quot;&gt;&lt;a href=&quot;#第1章-介绍本地流量管理器（Local-Traffic-Manager）&quot; class=&quot;headerlink&quot; title=&quot;第1章 介绍本地流量管理器（Local Traffic Manager）&quot;&gt;&lt;/a&gt;第1章 介绍本地流量管理器（Local Traffic Manager）&lt;/h1&gt;&lt;h2 id=&quot;1-1-什么是BIG-IP本地流量管理器？&quot;&gt;&lt;a href=&quot;#1-1-什么是BIG-IP本地流量管理器？&quot; class=&quot;headerlink&quot; title=&quot;1.1 什么是BIG-IP本地流量管理器？&quot;&gt;&lt;/a&gt;1.1 什么是BIG-IP本地流量管理器？&lt;/h2&gt;&lt;p&gt;BIG-IP本地流量管理（Local Traffic Manager）控制流入或流出局域网LAN（包括内联网intranet）的网络流量。&lt;/p&gt;
+&lt;p&gt;出于智能地调整网络服务器上负载的目的，LTM的一个常用功能是它拦截和重定向入站网络流量的能力。但是，调整服务器负载并不是唯一的本地流量管理方式。&lt;/p&gt;
+&lt;p&gt;LTM包含了各种功能，例如，执行检查和转换报头和内容数据，管理基于SSL证书的认证，以及压缩HTTP响应。这样做，BIG-IP系统不仅会定向流量到适合的服务器资源，而且还通过执行Web服务器通常执行的任务来增强了网络安全，并释放了服务器资源。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意： BIG-IP LTM是组成BIG-IP产品系列的几种产品之一。BIG-IP产品线中的所有产品都运行在强大的流量管理操作系统（Traffic Management Operating System）（通常称为TMOS）上。&lt;/p&gt;
+&lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="F5" scheme="https://ifelif.cn/categories/F5/"/>
+    
+    
+    <category term="F5" scheme="https://ifelif.cn/tags/F5/"/>
+    
+    <category term="loadbalance" scheme="https://ifelif.cn/tags/loadbalance/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>BIG-IP System iRules Concepts v11.6</title>
+    <link href="https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/"/>
+    <id>https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/</id>
+    <published>2017-11-30T01:05:31.000Z</published>
+    <updated>2022-06-01T03:29:52.609Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;本文是 F5官方文档 &lt;a href=&quot;https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-system-irules-concepts-11-6-0.html&quot;&gt;BIG-IP System iRules Concepts v11.6&lt;/a&gt; 的中文翻译版。初次于2017年11月30日发布在 &lt;a href=&quot;https://github.com/filefi/CN_BIG-IP_System_iRules_Concepts_v11.6&quot;&gt;此repo&lt;/a&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;1-iRules介绍&quot;&gt;&lt;a href=&quot;#1-iRules介绍&quot; class=&quot;headerlink&quot; title=&quot;1 iRules介绍&quot;&gt;&lt;/a&gt;1 iRules介绍&lt;/h1&gt;&lt;h2 id=&quot;什么是iRule&quot;&gt;&lt;a href=&quot;#什么是iRule&quot; class=&quot;headerlink&quot; title=&quot;什么是iRule&quot;&gt;&lt;/a&gt;什么是iRule&lt;/h2&gt;&lt;p&gt;iRule是BIG-IP本地流量管理器（LTM）中的一个强大而灵活的功能，你可以用它来管理你的网络流量。使用基于行业标准工具命令语言（Tcl）的语法，iRules功能不仅允许您根据报头数据（header data）选择Pools，还可以通过搜索您自定义的任何类型的内容数据来定向流量。因此，iRules功能显著地增强了您自定义内容交换（content switching）以适应您确切需求的能力。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;重要：有关iRules语法的完整和详细信息，请参阅F5 Networks DevCentral网站 &lt;a href=&quot;http://devcentral.f5.com.请注意,irules必须符合标准的tcl语法规则/&quot;&gt;http://devcentral.f5.com。请注意，iRules必须符合标准的Tcl语法规则&lt;/a&gt;; 因此，有关Tcl语法的更多信息，请参见 &lt;a href=&quot;http://tmml.sourceforge.net/doc/tcl/index.html%E3%80%82&quot;&gt;http://tmml.sourceforge.net/doc/tcl/index.html。&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如果您想要单独的连接来命中（target）除为Virtual Server定义的默认Pool之外的Pool，则你就可以写这样一个iRule脚本。iRules允许您更直接地指定要将流量定向到你想要的目的地。使用iRules，您不仅可以将流量发送到Pool，还可以向单个Pool Member，端口或URI发送流量。您创建的iRules可以很简单，也可以很复杂，具体取决于您的内容交换（content-switching）需求。&lt;/p&gt;
+&lt;pre class=&quot;language-tcl&quot; data-language=&quot;tcl&quot;&gt;&lt;code class=&quot;language-tcl&quot;&gt;when CLIENT_ACCEPTED &lt;span class=&quot;token punctuation&quot;&gt;&amp;#123;&lt;/span&gt;
+    &lt;span class=&quot;token builtin&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&amp;#123;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;IP::addr &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;IP::client_addr&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; equals 10.10.10.10&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&amp;#125;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&amp;#123;&lt;/span&gt;
+        pool my_pool 
+    &lt;span class=&quot;token punctuation&quot;&gt;&amp;#125;&lt;/span&gt; 
+&lt;span class=&quot;token punctuation&quot;&gt;&amp;#125;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当客户端连接被接受时，这条iRule会被触发。这时，如果客户端的地址与 &lt;code&gt;10.10.10.10&lt;/code&gt; 相匹配，将使得本地流量管理器（LTM）将数据包发送到my_pool池。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="F5" scheme="https://ifelif.cn/categories/F5/"/>
+    
+    
+    <category term="F5" scheme="https://ifelif.cn/tags/F5/"/>
+    
+    <category term="loadbalance" scheme="https://ifelif.cn/tags/loadbalance/"/>
     
   </entry>
   
