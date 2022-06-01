@@ -1,7 +1,6 @@
 ---
 title: 批量将某li某li特定关注组中的UP修改为悄悄关注
 date: 2022-06-01 23:21:23
-updated: 2022-06-01 23:21:23
 tags: [JavaScript, reverse, PWN]
 categories: JavaScript
 ---
@@ -17,9 +16,12 @@ categories: JavaScript
 *@param tagid {number} 要被批量修改的关注组的组id
 */
 async function batchModify(mid, tagid, maxPageNum=100) {
-    let map = new Map();
-    document.cookie.split('; ').forEach(item=>{return map.set(item.split('=')[0], item.split('=')[1])});
-    const csrf = map.get('bili_jct');
+    let csrf;
+    document.cookie.split('; ').forEach(item => {
+        if (item.startsWith('bili_jct')) {
+            csrf = item.split('=')[1];
+        }
+    });
     for (let pn = 1; pn <= maxPageNum; pn++) {
         const resp = await fetch(`https://api.bilibili.com/x/relation/tag?mid=${mid}&tagid=${tagid}&pn=${pn}&ps=20&json=json&callback=__jp16`, {
         "headers": {
