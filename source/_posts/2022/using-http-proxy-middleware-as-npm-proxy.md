@@ -8,7 +8,19 @@ categories: Node.js
 
 在上一篇中，我们使用 [goproxy](https://github.com/snail007/goproxy/releases) 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 `http-proxy-middleware` 包，我们也可以使用 Node.js 来创建 HTTP 代理。
 
+**环境**
+- 开发计算机：
+  - Windows 10
+  - 可以访问服务器，也可访问互联网
+  - IP: 192.168.200.1
+- 服务器：
+  - CentOS 8 
+  - 仅可访问开发主机，无法直接访问互联网
+  - IP: 192.168.200.129
+
+
 <!-- more -->
+
 
 **安装依赖**
 ```bash
@@ -42,9 +54,25 @@ app.use(proxy);
 app.listen(33080);
 ```
 
+**服务器配置**
+
+在服务器上启用全局http代理。注意，以下为临时启用，直接设置`http_proxy`和`https_proxy`环境变量。如果需要重启后依然生效，则需要将其写入配置文件。
+> 注意：这里 `http_proxy` 和 `https_proxy` 都是指向 `http://` 而不是 `https://` 。
+```bash
+export http_proxy=http://192.168.200.1:33080
+export https_proxy=http://192.168.200.1:33080
+```
+
+配置 NPM 代理，将 `proxy` 和 `https-proxy` 同时指向 `http://192.168.200.1:33080`。
+> 注意：这里 `proxy` 和 `https-proxy` 都是指向 `http://` 而不是 `https://` 。
+```bash
+npm config set proxy http://192.168.200.1:33080
+npm config set https-proxy http://192.168.200.1:33080
+```
+
 **修改 npm registry**
 
-由于我们的实现没有使用HTTPS，需要修改 npm registry 为`http://`。
+**注意，由于我们的实现没有使用HTTPS，需要修改 npm registry 为`http://`。**
 ```
 npm config set registry http://registry.npmmirror.com
 ```
