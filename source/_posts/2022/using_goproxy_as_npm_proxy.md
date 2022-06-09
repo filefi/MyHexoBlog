@@ -25,7 +25,7 @@ categories: Node.js
 第1步：在开发计算机上使用 [goproxy ](https://github.com/snail007/goproxy/releases) 创建 http 代理。
 > `--max-conns-rate` 参数控制每秒客户端的最大连接数, 默认20, 0为不限制。有时候 npm 包依赖太多，并发会超过默认的20；超过限制后，goproxy 会杀掉超过的会话，导致 npm 包安装失败。
 ```cmd
-.\proxy.exe http -t tcp -p "192.168.200.1:33080" --max-conns-rate 0 --forever
+.\proxy.exe http -t tcp -p ":33080" --max-conns-rate 0 --forever
 ```
 
 第2步：在服务器上启用全局http代理。注意，以下为临时启用，直接设置`http_proxy`和`https_proxy`环境变量。如果需要重启后依然生效，则需要将其写入配置文件。
@@ -54,47 +54,27 @@ npm config set registry https://registry.npmmirror.com
 使用 npm 安装 `nrm` ，测试 http 代理是否可用。
 ```bash
 $ npm i nrm -g
-npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
 npm WARN deprecated har-validator@5.1.5: this library is no longer supported
 npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
 npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
 
-changed 73 packages, and audited 316 packages in 10s
+added 58 packages in 4s
 
-13 packages are looking for funding
+11 packages are looking for funding
   run `npm fund` for details
-
-4 vulnerabilities (1 moderate, 1 high, 2 critical)
-
-To address all issues, run:
-  npm audit fix
-
-Run `npm audit` for details.
 ```
 可以看到处于内网的服务器已经成功安装了 `nrm` 包。同时，开发计算机的控制台也输出了来自服务器的相关 log ： 
 
 ```cmd
- E:\proxy-windows-amd64>.\proxy.exe http -t tcp -p "192.168.200.1:33080" --max-conns-rate 0 --forever
-2022/06/09 20:36:25.234653 INFO worker E:\proxy-windows-amd64\proxy.exe [PID] 54012 running...
-2022/06/09 20:36:25.343617 INFO tcp http(s) proxy on 192.168.200.1:33080
-2022/06/09 20:36:28.837921 INFO CONNECT:registry.npmmirror.com:443
-2022/06/09 20:36:28.837921 INFO use parent : false, registry.npmmirror.com:443
-2022/06/09 20:36:28.854774 INFO conn 192.168.200.129:55558 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022/06/09 20:36:28.999728 INFO conn 192.168.200.129:55558 - 39.130.171.71:443 released [registry.npmmirror.com:443]
-2022/06/09 20:36:29.091544 INFO CONNECT:registry.npmmirror.com:443
-2022/06/09 20:36:29.091544 INFO use parent : false, registry.npmmirror.com:443
-2022/06/09 20:36:29.091544 INFO CONNECT:registry.npmmirror.com:443
-2022/06/09 20:36:29.091544 INFO use parent : false, registry.npmmirror.com:443
-2022/06/09 20:36:29.096564 INFO CONNECT:registry.npmmirror.com:443
-2022/06/09 20:36:29.096564 INFO use parent : false, registry.npmmirror.com:443
-2022/06/09 20:36:29.097565 INFO CONNECT:registry.npmmirror.com:443
-2022/06/09 20:36:29.097565 INFO use parent : false, registry.npmmirror.com:443
-2022/06/09 20:36:29.098247 INFO conn 192.168.200.129:55560 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022/06/09 20:36:29.098753 INFO conn 192.168.200.129:55562 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022/06/09 20:36:29.102769 INFO CONNECT:registry.npmmirror.com:443
-2022/06/09 20:36:29.102769 INFO use parent : false, registry.npmmirror.com:443
-2022/06/09 20:36:29.102903 INFO CONNECT:registry.npmmirror.com:443
-2022/06/09 20:36:29.102903 INFO CONNECT:registry.npmmirror.com:443
-2022/06/09 20:36:29.102903 INFO use parent : false, registry.npmmirror.com:443
-2022/06/09 20:36:29.102903 INFO use parent : false, registry.npmmirror.com:443
+ E:\proxy-windows-amd64>.\proxy.exe http -t tcp -p ":33080" --max-conns-rate 0 --forever
+2022/06/09 22:49:12.715429 INFO worker E:\Downloads\Chrome\proxy-windows-amd64\proxy.exe [PID] 88516 running...
+2022/06/09 22:49:12.821243 INFO tcp http(s) proxy on [::]:33080
+2022/06/09 22:49:19.266803 INFO CONNECT:registry.npmmirror.com:443
+2022/06/09 22:49:19.266803 INFO use parent : false, registry.npmmirror.com:443
+2022/06/09 22:49:19.291648 INFO conn 192.168.200.129:55892 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
+2022/06/09 22:49:19.576069 INFO conn 192.168.200.129:55892 - 39.130.171.71:443 released [registry.npmmirror.com:443]
+2022/06/09 22:49:19.641743 INFO CONNECT:registry.npmmirror.com:443
+2022/06/09 22:49:19.641743 INFO use parent : false, registry.npmmirror.com:443
+2022/06/09 22:49:19.664109 INFO conn 192.168.200.129:55894 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
+2022/06/09 22:49:19.939819 INFO conn 192.168.200.129:55894 - 39.130.171.71:443 released [registry.npmmirror.com:443]
 ```
