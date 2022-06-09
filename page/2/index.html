@@ -156,7 +156,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -167,7 +167,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -226,6 +226,106 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="filefi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/" class="post-title-link" itemprop="url">BIG-IP Local Traffic Manager Concepts v11.5.0</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-11-30 11:30:15" itemprop="dateCreated datePublished" datetime="2017-11-30T11:30:15+08:00">2017-11-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-06-09 21:23:17" itemprop="dateModified" datetime="2022-06-09T21:23:17+08:00">2022-06-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/F5/" itemprop="url" rel="index"><span itemprop="name">F5</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>本文是 F5官方文档 <a target="_blank" rel="noopener" href="https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ltm-concepts-11-5-0.html">BIG-IP Local Traffic Manager Concepts v11.5.0</a> 的中文翻译版。初次于2017年11月30日发布在 <a target="_blank" rel="noopener" href="https://github.com/filefi/CN_BIG-IP_Local_Traffic_Manager_Concepts_v11.5.0">此repo</a>。</p>
+</blockquote>
+<h1 id="第1章-介绍本地流量管理器（Local-Traffic-Manager）"><a href="#第1章-介绍本地流量管理器（Local-Traffic-Manager）" class="headerlink" title="第1章 介绍本地流量管理器（Local Traffic Manager）"></a>第1章 介绍本地流量管理器（Local Traffic Manager）</h1><h2 id="1-1-什么是BIG-IP本地流量管理器？"><a href="#1-1-什么是BIG-IP本地流量管理器？" class="headerlink" title="1.1 什么是BIG-IP本地流量管理器？"></a>1.1 什么是BIG-IP本地流量管理器？</h2><p>BIG-IP本地流量管理（Local Traffic Manager）控制流入或流出局域网LAN（包括内联网intranet）的网络流量。</p>
+<p>出于智能地调整网络服务器上负载的目的，LTM的一个常用功能是它拦截和重定向入站网络流量的能力。但是，调整服务器负载并不是唯一的本地流量管理方式。</p>
+<p>LTM包含了各种功能，例如，执行检查和转换报头和内容数据，管理基于SSL证书的认证，以及压缩HTTP响应。这样做，BIG-IP系统不仅会定向流量到适合的服务器资源，而且还通过执行Web服务器通常执行的任务来增强了网络安全，并释放了服务器资源。</p>
+<blockquote>
+<p>注意： BIG-IP LTM是组成BIG-IP产品系列的几种产品之一。BIG-IP产品线中的所有产品都运行在强大的流量管理操作系统（Traffic Management Operating System）（通常称为TMOS）上。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -262,7 +362,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-06-02 00:00:05" itemprop="dateModified" datetime="2022-06-02T00:00:05+08:00">2022-06-02</time>
+      <time title="修改时间：2022-06-09 21:23:17" itemprop="dateModified" datetime="2022-06-09T21:23:17+08:00">2022-06-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
