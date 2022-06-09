@@ -2,7 +2,7 @@
 title: 使用 goproxy 为处于内网环境的开发服务器提供 npm 代理
 date: 2022-06-09 20:40:55
 updated: 2022-06-09 20:40:55
-tags: [goproxy, Proxy, 代理]
+tags: [Proxy, Node.js, NPM]
 categories: Node.js
 ---
 
@@ -22,7 +22,7 @@ categories: Node.js
 
 **具体操作**
 
-第1步：在开发计算机上使用 [goproxy ](https://github.com/snail007/goproxy/releases) 创建 http 代理。
+第1步：在开发计算机上使用 [goproxy](https://github.com/snail007/goproxy/releases) 创建 http 代理。
 > `--max-conns-rate` 参数控制每秒客户端的最大连接数, 默认20, 0为不限制。有时候 npm 包依赖太多，并发会超过默认的20；超过限制后，goproxy 会杀掉超过的会话，导致 npm 包安装失败。
 ```cmd
 .\proxy.exe http -t tcp -p ":33080" --max-conns-rate 0 --forever
