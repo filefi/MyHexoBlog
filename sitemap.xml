@@ -2,51 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://ifelif.cn/categories/index.html</loc>
-    
-    <lastmod>2022-06-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/projects/index.html</loc>
-    
-    <lastmod>2022-06-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/index.html</loc>
-    
-    <lastmod>2022-06-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/topics/index.html</loc>
-    
-    <lastmod>2022-06-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/2022/entry%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%EF%BC%8Ctext%E5%AE%9E%E6%97%B6%E8%8E%B7%E5%BE%97%E5%91%BD%E4%BB%A4%E8%BE%93%E5%87%BA/</loc>
-    
-    <lastmod>2022-06-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/2022/learn_gobyexample/</loc>
     
     <lastmod>2022-06-09</lastmod>
@@ -92,25 +47,52 @@
   </url>
   
   <url>
+    <loc>https://ifelif.cn/categories/index.html</loc>
+    
+    <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/projects/index.html</loc>
+    
+    <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/index.html</loc>
+    
+    <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/topics/index.html</loc>
+    
+    <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/entry%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%EF%BC%8Ctext%E5%AE%9E%E6%97%B6%E8%8E%B7%E5%BE%97%E5%91%BD%E4%BB%A4%E8%BE%93%E5%87%BA/</loc>
+    
+    <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://ifelif.cn/2022/docker_practice/</loc>
-    
-    <lastmod>2022-06-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/</loc>
-    
-    <lastmod>2022-06-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/</loc>
     
     <lastmod>2022-06-09</lastmod>
     
@@ -138,6 +120,33 @@
   
   <url>
     <loc>https://ifelif.cn/2022/cheat_engine_tutorial/</loc>
+    
+    <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/</loc>
+    
+    <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/</loc>
+    
+    <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/using-http-proxy-middleware-as-npm-proxy/</loc>
     
     <lastmod>2022-06-09</lastmod>
     
@@ -283,13 +292,6 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/goproxy/</loc>
-    <lastmod>2022-06-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/tags/Proxy/</loc>
     <lastmod>2022-06-09</lastmod>
     <changefreq>weekly</changefreq>
@@ -297,7 +299,14 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/%E4%BB%A3%E7%90%86/</loc>
+    <loc>https://ifelif.cn/tags/Node-js/</loc>
+    <lastmod>2022-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/NPM/</loc>
     <lastmod>2022-06-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

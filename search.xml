@@ -7498,7 +7498,78 @@ mainloop<span class="token punctuation">(</span><span class="token punctuation">
       </tags>
   </entry>
   <entry>
-    <title>使用 goproxy 为处于内网环境的开发服务器提供npm代理</title>
+    <title>使用 http-proxy-middleware 创建 npm 代理</title>
+    <url>/2022/using-http-proxy-middleware-as-npm-proxy/</url>
+    <content><![CDATA[<p>在上一篇中，我们使用 <a href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 <code>http-proxy-middleware</code> 包，我们也可以使用 Node.js 来创建 HTTP 代理。</p>
+<span id="more"></span>
+
+<p><strong>安装依赖</strong></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i express http-proxy-middleware</code></pre>
+
+<p><strong>代码实现</strong></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// proxy.js</span>
+
+<span class="token comment">// include dependencies</span>
+<span class="token keyword">const</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> createProxyMiddleware <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http-proxy-middleware'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// proxy middleware options</span>
+<span class="token comment">/** @type &#123;import('http-proxy-middleware/dist/types').Options&#125; */</span>
+<span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'https://registry.npmmirror.com'</span><span class="token punctuation">,</span> <span class="token comment">// target host with the same base path</span>
+<span class="token comment">//   changeOrigin: true, // needed for virtual hosted sites</span>
+  <span class="token literal-property property">logger</span><span class="token operator">:</span> console<span class="token punctuation">,</span>
+  <span class="token literal-property property">secure</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">// don't verify the SSL certs</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token comment">// create the proxy</span>
+<span class="token keyword">const</span> proxy <span class="token operator">=</span> <span class="token function">createProxyMiddleware</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// mount `exampleProxy` in web server</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>proxy<span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">33080</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p><strong>修改 npm registry</strong></p>
+<p>由于我们的实现没有使用HTTPS，需要修改 npm registry 为<code>http://</code>。</p>
+<pre class="language-none"><code class="language-none">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</code></pre>
+
+<p><strong>测试</strong></p>
+<p>在开发用的电脑上运行我们实现的代码：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">node</span> proxy.js</code></pre>
+
+<p>在服务器上使用 npm 安装外部依赖包：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i <span class="token function">npm</span> -g
+
+changed <span class="token number">14</span> packages <span class="token keyword">in</span> 3s
+
+<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
+  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
+
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm -g
+<span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
+<span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
+<span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+
+changed <span class="token number">73</span> packages <span class="token keyword">in</span> 6s
+
+<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
+  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
+
+<p>可以看到，内网服务器同样可以通过我们实现的 HTTP 代理使用 npm 安装第三方外部依赖了。</p>
+]]></content>
+      <categories>
+        <category>Node.js</category>
+      </categories>
+      <tags>
+        <tag>Proxy</tag>
+        <tag>Node.js</tag>
+        <tag>NPM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用 goproxy 为处于内网环境的开发服务器提供 npm 代理</title>
     <url>/2022/using_goproxy_as_npm_proxy/</url>
     <content><![CDATA[<p>通常，企业内部使用的 Web 应用，其服务器通常无法直接与外网通信，导致没法直接在服务器上使用 npm 或 yarn 等工具安装第三方外部依赖。而开发使用的电脑通常是可以访问互联网的，那么，就可以在开发电脑上使用 goproxy 创建一个 http 代理，通过这个 http 代理临时为服务器提供外网访问，以便可以使用 npm 或 yarn 安装第三方外部依赖。</p>
 <p><strong>环境</strong></p>
@@ -7519,8 +7590,11 @@ mainloop<span class="token punctuation">(</span><span class="token punctuation">
 <span id="more"></span>
 
 <p><strong>具体操作</strong></p>
-<p>第1步：在开发计算机上使用 <a href="https://github.com/snail007/goproxy/releases">goproxy </a> 创建 http 代理：</p>
-<pre class="language-cmd" data-language="cmd"><code class="language-cmd">.\proxy.exe http -t tcp -p &quot;192.168.200.1:33080&quot; --max-conns-rate 0 --forever</code></pre>
+<p>第1步：在开发计算机上使用 <a href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 http 代理。</p>
+<blockquote>
+<p><code>--max-conns-rate</code> 参数控制每秒客户端的最大连接数, 默认20, 0为不限制。有时候 npm 包依赖太多，并发会超过默认的20；超过限制后，goproxy 会杀掉超过的会话，导致 npm 包安装失败。</p>
+</blockquote>
+<pre class="language-cmd" data-language="cmd"><code class="language-cmd">.\proxy.exe http -t tcp -p &quot;:33080&quot; --max-conns-rate 0 --forever</code></pre>
 
 <p>第2步：在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
 <blockquote>
@@ -7544,50 +7618,33 @@ mainloop<span class="token punctuation">(</span><span class="token punctuation">
 <p><strong>测试</strong></p>
 <p>使用 npm 安装 <code>nrm</code> ，测试 http 代理是否可用。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm -g
-<span class="token function">npm</span> WARN config global <span class="token variable"><span class="token variable">`</span>--global<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>--local<span class="token variable">`</span></span> are deprecated. Use <span class="token variable"><span class="token variable">`</span>--location<span class="token operator">=</span>global<span class="token variable">`</span></span> instead.
 <span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
 <span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
 <span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
 
-changed <span class="token number">73</span> packages, and audited <span class="token number">316</span> packages <span class="token keyword">in</span> 10s
+added <span class="token number">58</span> packages <span class="token keyword">in</span> 4s
 
-<span class="token number">13</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details
-
-<span class="token number">4</span> vulnerabilities <span class="token punctuation">(</span><span class="token number">1</span> moderate, <span class="token number">1</span> high, <span class="token number">2</span> critical<span class="token punctuation">)</span>
-
-To address all issues, run:
-  <span class="token function">npm</span> audit fix
-
-Run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> audit<span class="token variable">`</span></span> <span class="token keyword">for</span> details.</code></pre>
+<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
+  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
 <p>可以看到处于内网的服务器已经成功安装了 <code>nrm</code> 包。同时，开发计算机的控制台也输出了来自服务器的相关 log ： </p>
-<pre class="language-cmd" data-language="cmd"><code class="language-cmd"> E:\proxy-windows-amd64&gt;.\proxy.exe http -t tcp -p &quot;192.168.200.1:33080&quot; --max-conns-rate 0 --forever
-2022&#x2F;06&#x2F;09 20:36:25.234653 INFO worker E:\proxy-windows-amd64\proxy.exe [PID] 54012 running...
-2022&#x2F;06&#x2F;09 20:36:25.343617 INFO tcp http(s) proxy on 192.168.200.1:33080
-2022&#x2F;06&#x2F;09 20:36:28.837921 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:28.837921 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:28.854774 INFO conn 192.168.200.129:55558 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 20:36:28.999728 INFO conn 192.168.200.129:55558 - 39.130.171.71:443 released [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 20:36:29.091544 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.091544 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.091544 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.091544 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.096564 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.096564 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.097565 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.097565 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.098247 INFO conn 192.168.200.129:55560 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 20:36:29.098753 INFO conn 192.168.200.129:55562 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 20:36:29.102769 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.102769 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.102903 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.102903 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.102903 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 20:36:29.102903 INFO use parent : false, registry.npmmirror.com:443</code></pre>]]></content>
+<pre class="language-cmd" data-language="cmd"><code class="language-cmd"> E:\proxy-windows-amd64&gt;.\proxy.exe http -t tcp -p &quot;:33080&quot; --max-conns-rate 0 --forever
+2022&#x2F;06&#x2F;09 22:49:12.715429 INFO worker E:\Downloads\Chrome\proxy-windows-amd64\proxy.exe [PID] 88516 running...
+2022&#x2F;06&#x2F;09 22:49:12.821243 INFO tcp http(s) proxy on [::]:33080
+2022&#x2F;06&#x2F;09 22:49:19.266803 INFO CONNECT:registry.npmmirror.com:443
+2022&#x2F;06&#x2F;09 22:49:19.266803 INFO use parent : false, registry.npmmirror.com:443
+2022&#x2F;06&#x2F;09 22:49:19.291648 INFO conn 192.168.200.129:55892 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
+2022&#x2F;06&#x2F;09 22:49:19.576069 INFO conn 192.168.200.129:55892 - 39.130.171.71:443 released [registry.npmmirror.com:443]
+2022&#x2F;06&#x2F;09 22:49:19.641743 INFO CONNECT:registry.npmmirror.com:443
+2022&#x2F;06&#x2F;09 22:49:19.641743 INFO use parent : false, registry.npmmirror.com:443
+2022&#x2F;06&#x2F;09 22:49:19.664109 INFO conn 192.168.200.129:55894 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
+2022&#x2F;06&#x2F;09 22:49:19.939819 INFO conn 192.168.200.129:55894 - 39.130.171.71:443 released [registry.npmmirror.com:443]</code></pre>]]></content>
+      <categories>
+        <category>Node.js</category>
+      </categories>
       <tags>
-        <tag>goproxy</tag>
         <tag>Proxy</tag>
-        <tag>代理</tag>
+        <tag>Node.js</tag>
+        <tag>NPM</tag>
       </tags>
   </entry>
 </search>
