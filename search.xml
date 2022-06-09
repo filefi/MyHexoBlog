@@ -6054,530 +6054,6 @@ done<span class="token punctuation">..</span>.</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>Linux Firewall 学习笔记</title>
-    <url>/2022/linux_firewall/</url>
-    <content><![CDATA[<h1 id="iptables"><a href="#iptables" class="headerlink" title="iptables"></a>iptables</h1><h2 id="netfilter-和-iptables"><a href="#netfilter-和-iptables" class="headerlink" title="netfilter 和 iptables"></a>netfilter 和 iptables</h2><ul>
-<li>netfilter：内核态，即不以文件的形式存在的防火墙。</li>
-<li>iptables：用户态，在<code>/sbin/iptables</code>存在的防火墙。</li>
-</ul>
-<h2 id="防火墙的分类"><a href="#防火墙的分类" class="headerlink" title="防火墙的分类"></a>防火墙的分类</h2><p>按保护范围划分:</p>
-<ul>
-<li>主机防火墙:服务范围为当前一台主机</li>
-<li>网络防火墙:服务范围为防火墙一侧的局域网</li>
-</ul>
-<h2 id="4-Tables"><a href="#4-Tables" class="headerlink" title="4 Tables"></a>4 Tables</h2><ul>
-<li>filter</li>
-<li>nat</li>
-<li>mangle</li>
-<li>raw</li>
-<li>security</li>
-</ul>
-<h2 id="5-Chains"><a href="#5-Chains" class="headerlink" title="5 Chains"></a>5 Chains</h2><ul>
-<li>PREROUTING</li>
-<li>INPUT</li>
-<li>FORWARD</li>
-<li>OUTPUT</li>
-<li>POSTROUTING</li>
-</ul>
-<span id="more"></span>
-
-<h2 id="Targets"><a href="#Targets" class="headerlink" title="Targets"></a>Targets</h2><p>A  firewall rule specifies criteria for a packet and a target.  If the packet does not match, the next rule in the chain is examined; if it does match, then the next rule is specified by the value of the target, which can be the name of a user-defined chain, one of the  targets  described in <em>iptables-extensions(8)</em>, or one of the special values <code>ACCEPT</code>, <code>DROP</code> or <code>RETURN</code>. </p>
-<ul>
-<li><code>ACCEPT</code>  : means to let the packet through. </li>
-<li><code>DROP</code> : means to drop the packet on the floor. </li>
-<li><code>RETURN</code> : means stop traversing this chain and resume at the next rule in the previous (calling) chain.  If the end of a built-in chain is reached or a rule in  a  built-in  chain  with  target  <code>RETURN</code>  is matched, the target specified by the chain policy determines the fate of the packet.<code>RETURN</code>代表停止遍历当前链，然后返回之前的链（调用当前链的链），并继续匹配之前链中的下一条规则。如果到达了内建链的底部，或者某条内建链中目标（target）为<code>RETURN</code>的规则被匹配，那么这条内建链的默认策略 (policy)决定了当前数据包的归宿。</li>
-</ul>
-<h1 id="firewalld"><a href="#firewalld" class="headerlink" title="firewalld"></a>firewalld</h1><p>基于zone概念：</p>
-<ol>
-<li>源IP或源网段关联到zone；</li>
-<li>接口（网卡）关联到zone；</li>
-<li>没有被源IP（源网段）或接口关联的zone所匹配时，关联到default zone；<strong>所以，default zone中不要轻易放置服务！</strong></li>
-</ol>
-<h2 id="查看默认zone"><a href="#查看默认zone" class="headerlink" title="查看默认zone"></a>查看默认zone</h2><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --get-default-zone</span>
-public</code></pre>
-
-<h2 id="设置默认zone"><a href="#设置默认zone" class="headerlink" title="设置默认zone"></a>设置默认zone</h2><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --set-default-zone=home</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --get-default-zone</span>
-home</code></pre>
-
-<h2 id="将源网段关联到zone"><a href="#将源网段关联到zone" class="headerlink" title="将源网段关联到zone"></a>将源网段关联到zone</h2><p>相关命令：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --help | grep source</span>
-  --get-zone-of-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
-                       Print name of the zone the <span class="token builtin class-name">source</span> is bound to <span class="token punctuation">[</span>P<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add a new <span class="token builtin class-name">source</span> port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove a <span class="token builtin class-name">source</span> port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-source-ports
-                       List <span class="token builtin class-name">source</span> ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --list-source-ports  List <span class="token builtin class-name">source</span> ports added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add the <span class="token builtin class-name">source</span> port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
-  --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove the <span class="token builtin class-name">source</span> port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-                       sources <span class="token keyword">in</span> a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
-                       sources <span class="token keyword">in</span> a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-                       and sources has been enabled <span class="token keyword">for</span> a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --list-sources       List sources that are bound to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --add-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
-                       Bind the <span class="token builtin class-name">source</span> to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --change-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
-                       Change zone the <span class="token builtin class-name">source</span> is bound to <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --query-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
-                       Query whether the <span class="token builtin class-name">source</span> is bound to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --remove-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
-                       Remove binding of the <span class="token builtin class-name">source</span> from a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span></code></pre>
-
-<p>将源网段192.168.16.0&#x2F;24关联到zone home：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --permanent --add-source=192.168.16.0/24 --zone=home</span>
-success</code></pre>
-
-<p>查看配置没有生效，需要重新加载配置：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=home</span>
-home <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client mdns samba-client <span class="token function">ssh</span>
-  ports: 
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: </code></pre>
-
-<p>重新加载配置：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
-success</code></pre>
-
-<p>再次查看zone配置，发现配置已生效：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=home</span>
-home <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: <span class="token number">192.168</span>.16.0/24
-  services: cockpit dhcpv6-client mdns samba-client <span class="token function">ssh</span>
-  ports: 
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: </code></pre>
-
-<p>查询某个网段是否被添加到某个zone：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --query-source=192.168.16.0/24 --zone=home</span>
-<span class="token function">yes</span>
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --query-source=192.168.1.0/24 --zone=home</span>
-no</code></pre>
-
-<p>将某个zone中的网段切换到另一个zone中：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --change-source=192.168.16.0/24 --zone=public --permanent</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: 
-  sources: <span class="token number">192.168</span>.16.0/24
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: 
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --query-source=192.168.16.0/24 --zone=public</span>
-<span class="token function">yes</span></code></pre>
-
-<p>从一个zone中移除关联的网段：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --remove-source=192.168.16.0/24 --zone=public --permanent</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public
-  target: default
-  icmp-block-inversion: no
-  interfaces: 
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: 
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-sources --zone=public</span>
-</code></pre>
-
-<h2 id="将接口（网卡）关联到zone"><a href="#将接口（网卡）关联到zone" class="headerlink" title="将接口（网卡）关联到zone"></a>将接口（网卡）关联到zone</h2><p>相关命令：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd -h | grep interface</span>
-  --get-default-zone   Print default zone <span class="token keyword">for</span> connections and interfaces
-  --get-zone-of-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
-                       Print name of the zone the interface is bound to <span class="token punctuation">[</span>P<span class="token punctuation">]</span>
-  --add-forward        Enable forwarding of packets between interfaces and
-  --remove-forward     Disable forwarding of packets between interfaces and
-  --query-forward      Return whether forwarding of packets between interfaces
-  --list-interfaces    List interfaces that are bound to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --add-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
-                       Bind the <span class="token operator">&lt;</span>interface<span class="token operator">></span> to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --change-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
-                       Change zone the <span class="token operator">&lt;</span>interface<span class="token operator">></span> is bound to <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --query-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
-                       Query whether <span class="token operator">&lt;</span>interface<span class="token operator">></span> is bound to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --remove-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
-                       Remove binding of <span class="token operator">&lt;</span>interface<span class="token operator">></span> from a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span></code></pre>
-
-<p>查看zone所绑定的接口：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: 
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-interfaces --zone=public</span>
-ens160</code></pre>
-
-<p>将接口添加进zone：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --add-interface=ens160 --zone=public --permanent</span>
-Warning: ZONE_ALREADY_SET: <span class="token string">'ens160'</span> already bound to <span class="token string">'public'</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: 
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-interfaces --zone=public</span>
-ens160</code></pre>
-
-<p>将接口从zone中删除：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --remove-interface=ens160 --zone=public --permanent</span>
-The interface is under control of NetworkManager and already bound to the default zone
-The interface is under control of NetworkManager, setting zone to default.
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-interface --zone=public</span>
-
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public
-  target: default
-  icmp-block-inversion: no
-  interfaces: 
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: </code></pre>
-
-<p>注意：当将一个接口（网卡）从一个zone中移除时，NetworkManager服务会自动将其添加进default zone。下例中，将接口<code>ens160</code>从zone public中移除，但default zone正好就是zone public，所以NetworkManager又将接口<code>ens160</code>绑定回了default zone即 zone public：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --get-default-zone</span>
-public
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --remove-interface=ens160 --zone=public --permanent</span>
-The interface is under control of NetworkManager and already bound to the default zone
-The interface is under control of NetworkManager, setting zone to default.
-success</code></pre>
-
-<h2 id="基本规则"><a href="#基本规则" class="headerlink" title="基本规则"></a>基本规则</h2><p>firewalld基本规则只能以白名单方式添加端口或服务。</p>
-<h3 id="添加服务"><a href="#添加服务" class="headerlink" title="添加服务"></a>添加服务</h3><p>相关命令：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd -h | grep service</span>
-  --get-services       Print predefined services <span class="token punctuation">[</span>P<span class="token punctuation">]</span>
-  --new-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Add a new <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --new-service-from-file<span class="token operator">=</span><span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token punctuation">[</span>--name<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span><span class="token punctuation">]</span>
-                       Add a new <span class="token function">service</span> from <span class="token function">file</span> with optional name <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --delete-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Delete an existing <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --load-service-defaults<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-  --info-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Print information about a <span class="token function">service</span>
-  --path-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Print <span class="token function">file</span> path of a <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --set-description<span class="token operator">=</span><span class="token operator">&lt;</span>description<span class="token operator">></span>
-                       Set new description to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-description
-                       Print description <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --set-short<span class="token operator">=</span><span class="token operator">&lt;</span>description<span class="token operator">></span>
-                       Set new short description to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-short
-                       Print short description <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add a new port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove a port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-ports
-                       List ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-protocol<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add a new protocol to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-protocol<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove a protocol from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-protocol<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the protocol has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-protocols
-                       List protocols of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add a new <span class="token builtin class-name">source</span> port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove a <span class="token builtin class-name">source</span> port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-source-ports
-                       List <span class="token builtin class-name">source</span> ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span>
-                       Add a new helper to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span>
-                       Remove a helper from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span>
-                       Return whether the helper has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-service-helpers
-                       List helpers of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --set-destination<span class="token operator">=</span><span class="token operator">&lt;</span>ipv<span class="token operator">></span>:<span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span>
-                       Set destination <span class="token keyword">for</span> ipv to address <span class="token keyword">in</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-destination<span class="token operator">=</span><span class="token operator">&lt;</span>ipv<span class="token operator">></span>
-                       Disable destination <span class="token keyword">for</span> ipv i <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-destination<span class="token operator">=</span><span class="token operator">&lt;</span>ipv<span class="token operator">></span>:<span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span>
-                       Return whether destination ipv is <span class="token builtin class-name">set</span> <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-destinations
-                       List destinations <span class="token keyword">in</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-include<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Add a new include to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-include<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Remove a include from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-include<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Return whether the include has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-includes
-                       List includes of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --list-services      List services added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
-  --add-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Add a <span class="token function">service</span> <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
-  --remove-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Remove a <span class="token function">service</span> <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --query-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
-                       Return whether <span class="token function">service</span> has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span></code></pre>
-
-<p>添加服务到指定zone：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: 
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --add-service=http --zone=public --permanent</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client http <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: </code></pre>
-
-<p>将http服务从zone public中移除：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --permanent --remove-service=http --zone=public</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-services --zone=public</span>
-cockpit dhcpv6-client <span class="token function">ssh</span>
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: </code></pre>
-
-
-
-<h3 id="添加端口"><a href="#添加端口" class="headerlink" title="添加端口"></a>添加端口</h3><p>相关命令：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd -h | grep port</span>
-  --get-ipset-types    Print the supported ipset types
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add a new port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove a port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-ports
-                       List ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add a new <span class="token builtin class-name">source</span> port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove a <span class="token builtin class-name">source</span> port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-source-ports
-                       List <span class="token builtin class-name">source</span> ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --list-ports         List ports added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --add-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add the port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
-  --remove-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove the port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --query-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the port has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --list-source-ports  List <span class="token builtin class-name">source</span> ports added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add the <span class="token builtin class-name">source</span> port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
-  --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove the <span class="token builtin class-name">source</span> port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --list-forward-ports List IPv4 forward ports added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --add-forward-port<span class="token operator">=</span>port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>:proto<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span><span class="token punctuation">[</span>:toport<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">[</span>:toaddr<span class="token operator">=</span><span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span>
-                       Add the IPv4 forward port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
-  --remove-forward-port<span class="token operator">=</span>port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>:proto<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span><span class="token punctuation">[</span>:toport<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">[</span>:toaddr<span class="token operator">=</span><span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span>
-                       Remove the IPv4 forward port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --query-forward-port<span class="token operator">=</span>port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>:proto<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span><span class="token punctuation">[</span>:toport<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">[</span>:toaddr<span class="token operator">=</span><span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span>
-                       Return whether the IPv4 forward port has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
-  --helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span> --add-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Add a new port to helper <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span> --remove-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Remove a port from helper <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span> --query-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
-                       Return whether the port has been added <span class="token keyword">for</span> helper <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
-  --helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span> --get-ports
-                       List ports of helper <span class="token punctuation">[</span>P only<span class="token punctuation">]</span></code></pre>
-
-<p>添加tcp端口8888到zone public：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: 
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --permanent --add-port=8888/tcp --zone=public</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp <span class="token number">8888</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: </code></pre>
-
-<p>将tcp端口8888从zone public中移除：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --permanent --remove-port=8888/tcp --zone=public</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
-success
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-ports --zone=public</span>
-<span class="token number">3306</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp <span class="token number">8080</span>/tcp <span class="token number">8090</span>/tcp
-<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
-public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
-  target: default
-  icmp-block-inversion: no
-  interfaces: ens160
-  sources: 
-  services: cockpit dhcpv6-client <span class="token function">ssh</span>
-  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
-  protocols: 
-  forward: no
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules: </code></pre>
-
-<h2 id="富规则（Rich-Rules）"><a href="#富规则（Rich-Rules）" class="headerlink" title="富规则（Rich Rules）"></a>富规则（Rich Rules）</h2><p>使用<code>--add-rich-rule</code>参数添加富规则。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>iptables</tag>
-        <tag>firewalld</tag>
-        <tag>nftables</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nginx小记</title>
     <url>/2022/some_pieces_of_nginx/</url>
     <content><![CDATA[<h1 id="nginx及其衍生版本"><a href="#nginx及其衍生版本" class="headerlink" title="nginx及其衍生版本"></a>nginx及其衍生版本</h1><ul>
@@ -7164,6 +6640,530 @@ networks:
       </tags>
   </entry>
   <entry>
+    <title>Linux Firewall 学习笔记</title>
+    <url>/2022/linux_firewall/</url>
+    <content><![CDATA[<h1 id="iptables"><a href="#iptables" class="headerlink" title="iptables"></a>iptables</h1><h2 id="netfilter-和-iptables"><a href="#netfilter-和-iptables" class="headerlink" title="netfilter 和 iptables"></a>netfilter 和 iptables</h2><ul>
+<li>netfilter：内核态，即不以文件的形式存在的防火墙。</li>
+<li>iptables：用户态，在<code>/sbin/iptables</code>存在的防火墙。</li>
+</ul>
+<h2 id="防火墙的分类"><a href="#防火墙的分类" class="headerlink" title="防火墙的分类"></a>防火墙的分类</h2><p>按保护范围划分:</p>
+<ul>
+<li>主机防火墙:服务范围为当前一台主机</li>
+<li>网络防火墙:服务范围为防火墙一侧的局域网</li>
+</ul>
+<h2 id="4-Tables"><a href="#4-Tables" class="headerlink" title="4 Tables"></a>4 Tables</h2><ul>
+<li>filter</li>
+<li>nat</li>
+<li>mangle</li>
+<li>raw</li>
+<li>security</li>
+</ul>
+<h2 id="5-Chains"><a href="#5-Chains" class="headerlink" title="5 Chains"></a>5 Chains</h2><ul>
+<li>PREROUTING</li>
+<li>INPUT</li>
+<li>FORWARD</li>
+<li>OUTPUT</li>
+<li>POSTROUTING</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="Targets"><a href="#Targets" class="headerlink" title="Targets"></a>Targets</h2><p>A  firewall rule specifies criteria for a packet and a target.  If the packet does not match, the next rule in the chain is examined; if it does match, then the next rule is specified by the value of the target, which can be the name of a user-defined chain, one of the  targets  described in <em>iptables-extensions(8)</em>, or one of the special values <code>ACCEPT</code>, <code>DROP</code> or <code>RETURN</code>. </p>
+<ul>
+<li><code>ACCEPT</code>  : means to let the packet through. </li>
+<li><code>DROP</code> : means to drop the packet on the floor. </li>
+<li><code>RETURN</code> : means stop traversing this chain and resume at the next rule in the previous (calling) chain.  If the end of a built-in chain is reached or a rule in  a  built-in  chain  with  target  <code>RETURN</code>  is matched, the target specified by the chain policy determines the fate of the packet.<code>RETURN</code>代表停止遍历当前链，然后返回之前的链（调用当前链的链），并继续匹配之前链中的下一条规则。如果到达了内建链的底部，或者某条内建链中目标（target）为<code>RETURN</code>的规则被匹配，那么这条内建链的默认策略 (policy)决定了当前数据包的归宿。</li>
+</ul>
+<h1 id="firewalld"><a href="#firewalld" class="headerlink" title="firewalld"></a>firewalld</h1><p>基于zone概念：</p>
+<ol>
+<li>源IP或源网段关联到zone；</li>
+<li>接口（网卡）关联到zone；</li>
+<li>没有被源IP（源网段）或接口关联的zone所匹配时，关联到default zone；<strong>所以，default zone中不要轻易放置服务！</strong></li>
+</ol>
+<h2 id="查看默认zone"><a href="#查看默认zone" class="headerlink" title="查看默认zone"></a>查看默认zone</h2><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --get-default-zone</span>
+public</code></pre>
+
+<h2 id="设置默认zone"><a href="#设置默认zone" class="headerlink" title="设置默认zone"></a>设置默认zone</h2><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --set-default-zone=home</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --get-default-zone</span>
+home</code></pre>
+
+<h2 id="将源网段关联到zone"><a href="#将源网段关联到zone" class="headerlink" title="将源网段关联到zone"></a>将源网段关联到zone</h2><p>相关命令：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --help | grep source</span>
+  --get-zone-of-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
+                       Print name of the zone the <span class="token builtin class-name">source</span> is bound to <span class="token punctuation">[</span>P<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add a new <span class="token builtin class-name">source</span> port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove a <span class="token builtin class-name">source</span> port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-source-ports
+                       List <span class="token builtin class-name">source</span> ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --list-source-ports  List <span class="token builtin class-name">source</span> ports added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add the <span class="token builtin class-name">source</span> port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
+  --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove the <span class="token builtin class-name">source</span> port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+                       sources <span class="token keyword">in</span> a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
+                       sources <span class="token keyword">in</span> a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+                       and sources has been enabled <span class="token keyword">for</span> a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --list-sources       List sources that are bound to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --add-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
+                       Bind the <span class="token builtin class-name">source</span> to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --change-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
+                       Change zone the <span class="token builtin class-name">source</span> is bound to <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --query-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
+                       Query whether the <span class="token builtin class-name">source</span> is bound to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --remove-source<span class="token operator">=</span><span class="token operator">&lt;</span>source<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token operator">&lt;</span>MAC<span class="token operator">>|</span>ipset:<span class="token operator">&lt;</span>ipset<span class="token operator">></span>
+                       Remove binding of the <span class="token builtin class-name">source</span> from a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span></code></pre>
+
+<p>将源网段192.168.16.0&#x2F;24关联到zone home：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --permanent --add-source=192.168.16.0/24 --zone=home</span>
+success</code></pre>
+
+<p>查看配置没有生效，需要重新加载配置：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=home</span>
+home <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client mdns samba-client <span class="token function">ssh</span>
+  ports: 
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: </code></pre>
+
+<p>重新加载配置：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
+success</code></pre>
+
+<p>再次查看zone配置，发现配置已生效：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=home</span>
+home <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: <span class="token number">192.168</span>.16.0/24
+  services: cockpit dhcpv6-client mdns samba-client <span class="token function">ssh</span>
+  ports: 
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: </code></pre>
+
+<p>查询某个网段是否被添加到某个zone：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --query-source=192.168.16.0/24 --zone=home</span>
+<span class="token function">yes</span>
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --query-source=192.168.1.0/24 --zone=home</span>
+no</code></pre>
+
+<p>将某个zone中的网段切换到另一个zone中：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --change-source=192.168.16.0/24 --zone=public --permanent</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: <span class="token number">192.168</span>.16.0/24
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --query-source=192.168.16.0/24 --zone=public</span>
+<span class="token function">yes</span></code></pre>
+
+<p>从一个zone中移除关联的网段：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --remove-source=192.168.16.0/24 --zone=public --permanent</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-sources --zone=public</span>
+</code></pre>
+
+<h2 id="将接口（网卡）关联到zone"><a href="#将接口（网卡）关联到zone" class="headerlink" title="将接口（网卡）关联到zone"></a>将接口（网卡）关联到zone</h2><p>相关命令：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd -h | grep interface</span>
+  --get-default-zone   Print default zone <span class="token keyword">for</span> connections and interfaces
+  --get-zone-of-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
+                       Print name of the zone the interface is bound to <span class="token punctuation">[</span>P<span class="token punctuation">]</span>
+  --add-forward        Enable forwarding of packets between interfaces and
+  --remove-forward     Disable forwarding of packets between interfaces and
+  --query-forward      Return whether forwarding of packets between interfaces
+  --list-interfaces    List interfaces that are bound to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --add-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
+                       Bind the <span class="token operator">&lt;</span>interface<span class="token operator">></span> to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --change-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
+                       Change zone the <span class="token operator">&lt;</span>interface<span class="token operator">></span> is bound to <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --query-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
+                       Query whether <span class="token operator">&lt;</span>interface<span class="token operator">></span> is bound to a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --remove-interface<span class="token operator">=</span><span class="token operator">&lt;</span>interface<span class="token operator">></span>
+                       Remove binding of <span class="token operator">&lt;</span>interface<span class="token operator">></span> from a zone <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span></code></pre>
+
+<p>查看zone所绑定的接口：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-interfaces --zone=public</span>
+ens160</code></pre>
+
+<p>将接口添加进zone：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --add-interface=ens160 --zone=public --permanent</span>
+Warning: ZONE_ALREADY_SET: <span class="token string">'ens160'</span> already bound to <span class="token string">'public'</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-interfaces --zone=public</span>
+ens160</code></pre>
+
+<p>将接口从zone中删除：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --remove-interface=ens160 --zone=public --permanent</span>
+The interface is under control of NetworkManager and already bound to the default zone
+The interface is under control of NetworkManager, setting zone to default.
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-interface --zone=public</span>
+
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: </code></pre>
+
+<p>注意：当将一个接口（网卡）从一个zone中移除时，NetworkManager服务会自动将其添加进default zone。下例中，将接口<code>ens160</code>从zone public中移除，但default zone正好就是zone public，所以NetworkManager又将接口<code>ens160</code>绑定回了default zone即 zone public：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --get-default-zone</span>
+public
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --remove-interface=ens160 --zone=public --permanent</span>
+The interface is under control of NetworkManager and already bound to the default zone
+The interface is under control of NetworkManager, setting zone to default.
+success</code></pre>
+
+<h2 id="基本规则"><a href="#基本规则" class="headerlink" title="基本规则"></a>基本规则</h2><p>firewalld基本规则只能以白名单方式添加端口或服务。</p>
+<h3 id="添加服务"><a href="#添加服务" class="headerlink" title="添加服务"></a>添加服务</h3><p>相关命令：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd -h | grep service</span>
+  --get-services       Print predefined services <span class="token punctuation">[</span>P<span class="token punctuation">]</span>
+  --new-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Add a new <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --new-service-from-file<span class="token operator">=</span><span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token punctuation">[</span>--name<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span><span class="token punctuation">]</span>
+                       Add a new <span class="token function">service</span> from <span class="token function">file</span> with optional name <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --delete-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Delete an existing <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --load-service-defaults<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+  --info-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Print information about a <span class="token function">service</span>
+  --path-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Print <span class="token function">file</span> path of a <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --set-description<span class="token operator">=</span><span class="token operator">&lt;</span>description<span class="token operator">></span>
+                       Set new description to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-description
+                       Print description <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --set-short<span class="token operator">=</span><span class="token operator">&lt;</span>description<span class="token operator">></span>
+                       Set new short description to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-short
+                       Print short description <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add a new port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove a port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-ports
+                       List ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-protocol<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add a new protocol to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-protocol<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove a protocol from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-protocol<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the protocol has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-protocols
+                       List protocols of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add a new <span class="token builtin class-name">source</span> port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove a <span class="token builtin class-name">source</span> port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-source-ports
+                       List <span class="token builtin class-name">source</span> ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span>
+                       Add a new helper to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span>
+                       Remove a helper from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span>
+                       Return whether the helper has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-service-helpers
+                       List helpers of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --set-destination<span class="token operator">=</span><span class="token operator">&lt;</span>ipv<span class="token operator">></span>:<span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span>
+                       Set destination <span class="token keyword">for</span> ipv to address <span class="token keyword">in</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-destination<span class="token operator">=</span><span class="token operator">&lt;</span>ipv<span class="token operator">></span>
+                       Disable destination <span class="token keyword">for</span> ipv i <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-destination<span class="token operator">=</span><span class="token operator">&lt;</span>ipv<span class="token operator">></span>:<span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span>
+                       Return whether destination ipv is <span class="token builtin class-name">set</span> <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-destinations
+                       List destinations <span class="token keyword">in</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-include<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Add a new include to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-include<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Remove a include from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-include<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Return whether the include has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-includes
+                       List includes of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --list-services      List services added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span>
+  --add-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Add a <span class="token function">service</span> <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
+  --remove-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Remove a <span class="token function">service</span> <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --query-service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span>
+                       Return whether <span class="token function">service</span> has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span></code></pre>
+
+<p>添加服务到指定zone：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --add-service=http --zone=public --permanent</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client http <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: </code></pre>
+
+<p>将http服务从zone public中移除：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --permanent --remove-service=http --zone=public</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-services --zone=public</span>
+cockpit dhcpv6-client <span class="token function">ssh</span>
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: </code></pre>
+
+
+
+<h3 id="添加端口"><a href="#添加端口" class="headerlink" title="添加端口"></a>添加端口</h3><p>相关命令：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd -h | grep port</span>
+  --get-ipset-types    Print the supported ipset types
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add a new port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove a port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-ports
+                       List ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add a new <span class="token builtin class-name">source</span> port to <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove a <span class="token builtin class-name">source</span> port from <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token keyword">for</span> <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --service<span class="token operator">=</span><span class="token operator">&lt;</span>service<span class="token operator">></span> --get-source-ports
+                       List <span class="token builtin class-name">source</span> ports of <span class="token function">service</span> <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --list-ports         List ports added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --add-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add the port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
+  --remove-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove the port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --query-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the port has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --list-source-ports  List <span class="token builtin class-name">source</span> ports added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --add-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add the <span class="token builtin class-name">source</span> port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
+  --remove-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove the <span class="token builtin class-name">source</span> port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --query-source-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the <span class="token builtin class-name">source</span> port has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --list-forward-ports List IPv4 forward ports added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --add-forward-port<span class="token operator">=</span>port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>:proto<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span><span class="token punctuation">[</span>:toport<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">[</span>:toaddr<span class="token operator">=</span><span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+                       Add the IPv4 forward port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span>
+  --remove-forward-port<span class="token operator">=</span>port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>:proto<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span><span class="token punctuation">[</span>:toport<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">[</span>:toaddr<span class="token operator">=</span><span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+                       Remove the IPv4 forward port <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --query-forward-port<span class="token operator">=</span>port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>:proto<span class="token operator">=</span><span class="token operator">&lt;</span>protocol<span class="token operator">></span><span class="token punctuation">[</span>:toport<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">[</span>:toaddr<span class="token operator">=</span><span class="token operator">&lt;</span>address<span class="token operator">></span><span class="token punctuation">[</span>/<span class="token operator">&lt;</span>mask<span class="token operator">></span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+                       Return whether the IPv4 forward port has been added <span class="token punctuation">[</span>P<span class="token punctuation">]</span> <span class="token punctuation">[</span>Z<span class="token punctuation">]</span> <span class="token punctuation">[</span>O<span class="token punctuation">]</span>
+  --helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span> --add-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Add a new port to helper <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span> --remove-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Remove a port from helper <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span> --query-port<span class="token operator">=</span><span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">[</span>-<span class="token operator">&lt;</span>portid<span class="token operator">></span><span class="token punctuation">]</span>/<span class="token operator">&lt;</span>protocol<span class="token operator">></span>
+                       Return whether the port has been added <span class="token keyword">for</span> helper <span class="token punctuation">[</span>P only<span class="token punctuation">]</span>
+  --helper<span class="token operator">=</span><span class="token operator">&lt;</span>helper<span class="token operator">></span> --get-ports
+                       List ports of helper <span class="token punctuation">[</span>P only<span class="token punctuation">]</span></code></pre>
+
+<p>添加tcp端口8888到zone public：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --permanent --add-port=8888/tcp --zone=public</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp <span class="token number">8888</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: </code></pre>
+
+<p>将tcp端口8888从zone public中移除：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --permanent --remove-port=8888/tcp --zone=public</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --reload</span>
+success
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-ports --zone=public</span>
+<span class="token number">3306</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp <span class="token number">8080</span>/tcp <span class="token number">8090</span>/tcp
+<span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># firewall-cmd --list-all --zone=public</span>
+public <span class="token punctuation">(</span>active<span class="token punctuation">)</span>
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client <span class="token function">ssh</span>
+  ports: <span class="token number">8080</span>/tcp <span class="token number">3306</span>/tcp <span class="token number">8090</span>/tcp <span class="token number">8001</span>/tcp <span class="token number">8002</span>/tcp
+  protocols: 
+  forward: no
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: </code></pre>
+
+<h2 id="富规则（Rich-Rules）"><a href="#富规则（Rich-Rules）" class="headerlink" title="富规则（Rich Rules）"></a>富规则（Rich Rules）</h2><p>使用<code>--add-rich-rule</code>参数添加富规则。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>iptables</tag>
+        <tag>firewalld</tag>
+        <tag>nftables</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python tkinter 布局管理</title>
     <url>/2022/tkinter_geometry_manager/</url>
     <content><![CDATA[<p>本文讲述如何使用 tkinter 的布局管理 (被称作 layout managers 或 geometry managers)。tkinter 有三种布局管理方式：</p>
@@ -7501,7 +7501,23 @@ mainloop<span class="token punctuation">(</span><span class="token punctuation">
     <title>使用 http-proxy-middleware 创建 npm 代理</title>
     <url>/2022/using-http-proxy-middleware-as-npm-proxy/</url>
     <content><![CDATA[<p>在上一篇中，我们使用 <a href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 <code>http-proxy-middleware</code> 包，我们也可以使用 Node.js 来创建 HTTP 代理。</p>
+<p><strong>环境</strong></p>
+<ul>
+<li>开发计算机：<ul>
+<li>Windows 10</li>
+<li>可以访问服务器，也可访问互联网</li>
+<li>IP: 192.168.200.1</li>
+</ul>
+</li>
+<li>服务器：<ul>
+<li>CentOS 8 </li>
+<li>仅可访问开发主机，无法直接访问互联网</li>
+<li>IP: 192.168.200.129</li>
+</ul>
+</li>
+</ul>
 <span id="more"></span>
+
 
 <p><strong>安装依赖</strong></p>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i express http-proxy-middleware</code></pre>
@@ -7531,8 +7547,23 @@ mainloop<span class="token punctuation">(</span><span class="token punctuation">
 app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>proxy<span class="token punctuation">)</span><span class="token punctuation">;</span>
 app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">33080</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
+<p><strong>服务器配置</strong></p>
+<p>在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
+<blockquote>
+<p>注意：这里 <code>http_proxy</code> 和 <code>https_proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
+</blockquote>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">http_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">https_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080</code></pre>
+
+<p>配置 NPM 代理，将 <code>proxy</code> 和 <code>https-proxy</code> 同时指向 <code>http://192.168.200.1:33080</code>。</p>
+<blockquote>
+<p>注意：这里 <code>proxy</code> 和 <code>https-proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
+</blockquote>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> proxy http://192.168.200.1:33080
+<span class="token function">npm</span> config <span class="token builtin class-name">set</span> https-proxy http://192.168.200.1:33080</code></pre>
+
 <p><strong>修改 npm registry</strong></p>
-<p>由于我们的实现没有使用HTTPS，需要修改 npm registry 为<code>http://</code>。</p>
+<p><strong>注意，由于我们的实现没有使用HTTPS，需要修改 npm registry 为<code>http://</code>。</strong></p>
 <pre class="language-none"><code class="language-none">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</code></pre>
 
 <p><strong>测试</strong></p>
