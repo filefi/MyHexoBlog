@@ -3677,7 +3677,7 @@ end</code></pre>
 <span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#redistribute connected
 <span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#redistribute rip
 <span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#exit<span class="token operator">-</span>address<span class="token operator">-</span>family</code></pre>
-<h1 id="验证与调试："><a href="#验证与调试：" class="headerlink" title="验证与调试："></a>验证与调试：</h1><p>以ping 8.8.8.8的ICMP包转发交换过程为例，验证并解释MPLS VPN中数据包交换过程；</p>
+<h3 id="验证与调试："><a href="#验证与调试：" class="headerlink" title="验证与调试："></a>验证与调试：</h3><p>以ping 8.8.8.8的ICMP包转发交换过程为例，验证并解释MPLS VPN中数据包交换过程；</p>
 <pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//在VPN A站点1的C路由器R6上ping远程VPN A站点2的C路由器R8；</span>
 R6#ping <span class="token number">8.8</span><span class="token number">.8</span><span class="token number">.8</span>
 Type escape sequence to abort<span class="token punctuation">.</span>
