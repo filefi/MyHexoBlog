@@ -1604,7 +1604,7 @@ end</code></pre>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
-<h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net"></a></p>
+<h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_3/topo.png"></p>
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
@@ -2402,6 +2402,880 @@ C        <span class="token number">192.168</span><span class="token number">.21
 L        <span class="token number">192.168</span><span class="token number">.21</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
 <span class="token comment">//注意：关闭LDP-IGP同步后，即使没有从F0/0口收到R2通告的标签，R1的路由表中还是出现两条去往2.2.2.2/32的等价路径；</span>
 <span class="token comment">//如果这种情况出现是在MPLS VPN，AToM 或 VPLS环境中P路由器上，可以能会出现丢包现象；</span></code></pre>]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>MPLS</tag>
+        <tag>Network</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MPLS 实验4：MPLS vs BGP同步</title>
+    <url>/2014/MPLS_Lab_4/</url>
+    <content><![CDATA[<span id="more"></span>
+
+
+<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+<li>模拟器：GNS3 0.8.6</li>
+<li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
+</ul>
+<p>GNS3实验拓扑文件：<br><a href="topology.net">拓扑文件</a></p>
+<h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_4/topo.png"></p>
+<h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
+!
+ip cef
+!
+mpls label protocol ldp
+!
+interface Loopback0
+    ip address 1.1.1.1 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.12.1 255.255.255.0
+    ip ospf 1 area 0
+    no shut
+mpls ip
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.15.1 255.255.255.0
+    no shut
+!
+router ospf 1
+    router-id 1.1.1.1
+!
+router bgp 1
+    bgp router-id 1.1.1.1
+    bgp log-neighbor-changes
+    network 1.1.1.1 mask 255.255.255.255
+    neighbor 4.4.4.4 remote-as 1
+    neighbor 4.4.4.4 update-source Loopback0
+    neighbor 4.4.4.4 next-hop-self
+    neighbor 192.168.15.5 remote-as 2
+!
+mpls ldp router-id Loopback0 force
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R2"><a href="#R2" class="headerlink" title="R2:"></a>R2:</h2><pre class="language-none"><code class="language-none">hostname R2
+!
+ip cef
+!
+mpls label protocol ldp
+!
+interface Loopback0
+    ip address 2.2.2.2 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.12.2 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.23.2 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+router ospf 1
+    router-id 2.2.2.2
+!
+mpls ldp router-id Loopback0 force
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R3"><a href="#R3" class="headerlink" title="R3:"></a>R3:</h2><pre class="language-none"><code class="language-none">hostname R3
+!
+ip cef
+!
+mpls label protocol ldp
+!
+interface Loopback0
+    ip address 3.3.3.3 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.34.3 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.23.3 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+router ospf 1
+    router-id 3.3.3.3
+!
+mpls ldp router-id Loopback0 force
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R4"><a href="#R4" class="headerlink" title="R4:"></a>R4:</h2><pre class="language-none"><code class="language-none">hostname R4
+!
+ip cef
+!
+mpls label protocol ldp
+!
+interface Loopback0
+    ip address 4.4.4.4 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.34.4 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.47.4 255.255.255.0
+    no shutdown
+!
+router ospf 1
+    router-id 4.4.4.4
+!
+router bgp 1
+    bgp router-id 4.4.4.4
+    bgp log-neighbor-changes
+    network 4.4.4.4 mask 255.255.255.255
+    neighbor 1.1.1.1 remote-as 1
+    neighbor 1.1.1.1 update-source Loopback0
+    neighbor 1.1.1.1 next-hop-self
+    neighbor 192.168.47.7 remote-as 3
+!
+mpls ldp router-id Loopback0 force
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h3 id="R5"><a href="#R5" class="headerlink" title="R5:"></a>R5:</h3><pre class="language-none"><code class="language-none">hostname R5
+!
+ip cef
+!
+interface Loopback0
+    ip address 5.5.5.5 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.56.5 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.15.5 255.255.255.0
+    no shutdown
+!
+router ospf 1
+    router-id 5.5.5.5
+!
+router bgp 2
+    bgp router-id 5.5.5.5
+    bgp log-neighbor-changes
+    network 5.5.5.5 mask 255.255.255.255
+    neighbor 192.168.15.1 remote-as 1
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R6"><a href="#R6" class="headerlink" title="R6:"></a>R6:</h2><pre class="language-none"><code class="language-none">hostname R6
+!
+ip cef
+!
+interface Loopback0
+    ip address 6.6.6.6 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.56.6 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+!
+router ospf 1
+    router-id 6.6.6.6
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R7"><a href="#R7" class="headerlink" title="R7:"></a>R7:</h2><pre class="language-none"><code class="language-none">hostname R7
+!
+ip cef
+!
+interface Loopback0
+    ip address 7.7.7.7 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.78.7 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.47.7 255.255.255.0
+    no shutdown
+!
+router ospf 1
+    router-id 7.7.7.7
+!
+router bgp 3
+    bgp router-id 7.7.7.7
+    bgp log-neighbor-changes
+    network 7.7.7.7 mask 255.255.255.255
+    neighbor 192.168.47.4 remote-as 1
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R8"><a href="#R8" class="headerlink" title="R8:"></a>R8:</h2><pre class="language-none"><code class="language-none">hostname R8
+!
+ip cef
+!
+interface Loopback0
+    ip address 8.8.8.8 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.78.8 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+!
+router ospf 1
+    router-id 8.8.8.8
+!         
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h1 id="实验目的："><a href="#实验目的：" class="headerlink" title="实验目的："></a>实验目的：</h1><ol>
+<li>使用MPLS解决BGP关闭同步后IBGP非全互联造成的路由黑洞问题；</li>
+<li>研究以递归方式为前缀分配标签是如何运作的；</li>
+</ol>
+<h1 id="实验与调试："><a href="#实验与调试：" class="headerlink" title="实验与调试："></a>实验与调试：</h1><h2 id="实验1："><a href="#实验1：" class="headerlink" title="实验1："></a>实验1：</h2><p>验证：从R5上，以R5的Loopback做源ping R7的Loopback0；</p>
+<pre class="language-c" data-language="c"><code class="language-c">R5#ping <span class="token number">7.7</span><span class="token number">.7</span><span class="token number">.7</span> source l0
+Type escape sequence to abort<span class="token punctuation">.</span>
+Sending <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token operator">-</span>byte ICMP Echos to <span class="token number">7.7</span><span class="token number">.7</span><span class="token number">.7</span><span class="token punctuation">,</span> timeout is <span class="token number">2</span> seconds<span class="token operator">:</span>
+Packet sent with a source address of <span class="token number">5.5</span><span class="token number">.5</span><span class="token number">.5</span> 
+<span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span>
+Success rate is <span class="token number">100</span> <span class="token function">percent</span> <span class="token punctuation">(</span><span class="token number">5</span><span class="token operator">/</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span> round<span class="token operator">-</span>trip min<span class="token operator">/</span>avg<span class="token operator">/</span>max <span class="token operator">=</span> <span class="token number">112</span><span class="token operator">/</span><span class="token number">124</span><span class="token operator">/</span><span class="token number">140</span> ms
+<span class="token comment">//成功了！</span></code></pre>
+
+<p><strong>问题：</strong></p>
+<ul>
+<li>在该实验中，R2和R3作为P路由器，并没有运行BGP，为什么以R5的Loopback0做源可以ping通R7的Loopback0？</li>
+<li>为什么数据包R2和R3在没有5.5.5.5&#x2F;32和7.7.7.7&#x2F;32的路由的情况下没有丢弃包？</li>
+</ul>
+<p>模拟ping包的交换过程，假设此时R1收到了来自R5的ping包：</p>
+<blockquote>
+<p>注意：当数据包进入R1时，数据包并未携带标签，此时R1作为LSP中的第一台LSR，也是入站LSR，R1需要查找CEF来为这个标准的IP数据包打上标签；</p>
+</blockquote>
+<p>查看R1的路由表：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R1#sh ip route
+Codes<span class="token operator">:</span> L <span class="token operator">-</span> local<span class="token punctuation">,</span> C <span class="token operator">-</span> connected<span class="token punctuation">,</span> S <span class="token operator">-</span> <span class="token keyword">static</span><span class="token punctuation">,</span> R <span class="token operator">-</span> RIP<span class="token punctuation">,</span> M <span class="token operator">-</span> mobile<span class="token punctuation">,</span> B <span class="token operator">-</span> BGP
+        D <span class="token operator">-</span> EIGRP<span class="token punctuation">,</span> EX <span class="token operator">-</span> EIGRP external<span class="token punctuation">,</span> O <span class="token operator">-</span> OSPF<span class="token punctuation">,</span> IA <span class="token operator">-</span> OSPF inter area 
+        N1 <span class="token operator">-</span> OSPF NSSA external type <span class="token number">1</span><span class="token punctuation">,</span> N2 <span class="token operator">-</span> OSPF NSSA external type <span class="token number">2</span>
+        E1 <span class="token operator">-</span> OSPF external type <span class="token number">1</span><span class="token punctuation">,</span> E2 <span class="token operator">-</span> OSPF external type <span class="token number">2</span>
+        i <span class="token operator">-</span> IS<span class="token operator">-</span>IS<span class="token punctuation">,</span> su <span class="token operator">-</span> IS<span class="token operator">-</span>IS summary<span class="token punctuation">,</span> L1 <span class="token operator">-</span> IS<span class="token operator">-</span>IS level<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> L2 <span class="token operator">-</span> IS<span class="token operator">-</span>IS level<span class="token operator">-</span><span class="token number">2</span>
+        ia <span class="token operator">-</span> IS<span class="token operator">-</span>IS inter area<span class="token punctuation">,</span> <span class="token operator">*</span> <span class="token operator">-</span> candidate <span class="token keyword">default</span><span class="token punctuation">,</span> U <span class="token operator">-</span> per<span class="token operator">-</span>user <span class="token keyword">static</span> route
+        o <span class="token operator">-</span> ODR<span class="token punctuation">,</span> P <span class="token operator">-</span> periodic downloaded <span class="token keyword">static</span> route<span class="token punctuation">,</span> H <span class="token operator">-</span> NHRP<span class="token punctuation">,</span> l <span class="token operator">-</span> LISP
+        <span class="token operator">+</span> <span class="token operator">-</span> replicated route<span class="token punctuation">,</span> <span class="token operator">%</span> <span class="token operator">-</span> next hop override
+
+Gateway of last resort is not set
+
+        <span class="token number">1.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+C        <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> is directly connected<span class="token punctuation">,</span> Loopback0
+        <span class="token number">2.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span><span class="token punctuation">,</span> <span class="token number">01</span><span class="token operator">:</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">09</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">3.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">3</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span><span class="token punctuation">,</span> <span class="token number">01</span><span class="token operator">:</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">09</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">4.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">4</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span><span class="token punctuation">,</span> <span class="token number">01</span><span class="token operator">:</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">09</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">5.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+B        <span class="token number">5.5</span><span class="token number">.5</span><span class="token number">.5</span> <span class="token punctuation">[</span><span class="token number">20</span><span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.5</span><span class="token punctuation">,</span> <span class="token number">00</span><span class="token operator">:</span><span class="token number">17</span><span class="token operator">:</span><span class="token number">45</span>
+        <span class="token number">7.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+B        <span class="token number">7.7</span><span class="token number">.7</span><span class="token number">.7</span> <span class="token punctuation">[</span><span class="token number">200</span><span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">]</span> via <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token punctuation">,</span> <span class="token number">00</span><span class="token operator">:</span><span class="token number">16</span><span class="token operator">:</span><span class="token number">46</span>
+        <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is variably subnetted<span class="token punctuation">,</span> <span class="token number">2</span> subnets<span class="token punctuation">,</span> <span class="token number">2</span> masks
+C        <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+L        <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is variably subnetted<span class="token punctuation">,</span> <span class="token number">2</span> subnets<span class="token punctuation">,</span> <span class="token number">2</span> masks
+C        <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+L        <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+O     <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span><span class="token punctuation">,</span> <span class="token number">01</span><span class="token operator">:</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">09</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+O     <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">3</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span><span class="token punctuation">,</span> <span class="token number">01</span><span class="token operator">:</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">09</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+<span class="token comment">//在R1上，路由表递归查找下一跳可以发现：要去往7.7.7.7/32必须先到达4.4.4.4；</span>
+<span class="token comment">//要到达4.4.4.4/32必须先到达192.168.12.2；</span></code></pre>
+
+<p>查看R1的LFIB表：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R1#show mpls forwarding<span class="token operator">-</span>table
+Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop    
+Label      Label      or Tunnel Id     Switched      interface              
+<span class="token number">16</span>         <span class="token number">16</span>         <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>
+<span class="token number">17</span>         <span class="token number">17</span>         <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>
+<span class="token number">18</span>         Pop Label  <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>
+<span class="token number">19</span>         <span class="token number">18</span>         <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span>  <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>
+<span class="token number">20</span>         Pop Label  <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span>  <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>
+<span class="token comment">//由LFIB表可以得出，去往前缀4.4.4.4/32的出标签为16；</span></code></pre>
+
+<p>沿路由递归查看CEF表：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R1#sh ip cef <span class="token number">7.7</span><span class="token number">.7</span><span class="token number">.7</span> detail
+<span class="token number">7.7</span><span class="token number">.7</span><span class="token number">.7</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> epoch <span class="token number">0</span><span class="token punctuation">,</span> flags rib only nolabel<span class="token punctuation">,</span> rib defined all labels
+    recursive via <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span>
+    nexthop <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span> label <span class="token number">16</span>
+
+R1#sh ip cef <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> detail
+<span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> epoch <span class="token number">0</span>
+    local label info<span class="token operator">:</span> global<span class="token operator">/</span><span class="token number">16</span>
+    <span class="token number">1</span> RR source <span class="token punctuation">[</span>no flags<span class="token punctuation">]</span>
+    nexthop <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span> label <span class="token number">16</span>
+<span class="token comment">//由于路由递归查找的关系，去往前缀7.7.7.7/32的数据包在出站时被打上了和去往前缀4.4.4.4/32的数据包相同的出标签16（R1的出标签，R2的入标签）；</span></code></pre>
+
+<pre class="language-none"><code class="language-none">R1#sh ip cef 192.168.12.2 detail
+192.168.12.2&#x2F;32, epoch 0, flags attached
+    Adj source: IP adj out of FastEthernet0&#x2F;0, addr 192.168.12.2 6819DAE0
+    Dependent covered prefix type adjfib cover 192.168.12.0&#x2F;24
+    attached to FastEthernet0&#x2F;0
+&#x2F;&#x2F;由于R1与192.168.12.0&#x2F;24直连，所以不再需要在进行标签转发，所以R1没有关于192.168.12.0&#x2F;24的出标签；</code></pre>
+
+<p><strong>此时数据达到了R2：</strong></p>
+<p>查看R2的IP路由表：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R2#show ip route
+Codes<span class="token operator">:</span> L <span class="token operator">-</span> local<span class="token punctuation">,</span> C <span class="token operator">-</span> connected<span class="token punctuation">,</span> S <span class="token operator">-</span> <span class="token keyword">static</span><span class="token punctuation">,</span> R <span class="token operator">-</span> RIP<span class="token punctuation">,</span> M <span class="token operator">-</span> mobile<span class="token punctuation">,</span> B <span class="token operator">-</span> BGP
+        D <span class="token operator">-</span> EIGRP<span class="token punctuation">,</span> EX <span class="token operator">-</span> EIGRP external<span class="token punctuation">,</span> O <span class="token operator">-</span> OSPF<span class="token punctuation">,</span> IA <span class="token operator">-</span> OSPF inter area 
+        N1 <span class="token operator">-</span> OSPF NSSA external type <span class="token number">1</span><span class="token punctuation">,</span> N2 <span class="token operator">-</span> OSPF NSSA external type <span class="token number">2</span>
+        E1 <span class="token operator">-</span> OSPF external type <span class="token number">1</span><span class="token punctuation">,</span> E2 <span class="token operator">-</span> OSPF external type <span class="token number">2</span>
+        i <span class="token operator">-</span> IS<span class="token operator">-</span>IS<span class="token punctuation">,</span> su <span class="token operator">-</span> IS<span class="token operator">-</span>IS summary<span class="token punctuation">,</span> L1 <span class="token operator">-</span> IS<span class="token operator">-</span>IS level<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> L2 <span class="token operator">-</span> IS<span class="token operator">-</span>IS level<span class="token operator">-</span><span class="token number">2</span>
+        ia <span class="token operator">-</span> IS<span class="token operator">-</span>IS inter area<span class="token punctuation">,</span> <span class="token operator">*</span> <span class="token operator">-</span> candidate <span class="token keyword">default</span><span class="token punctuation">,</span> U <span class="token operator">-</span> per<span class="token operator">-</span>user <span class="token keyword">static</span> route
+        o <span class="token operator">-</span> ODR<span class="token punctuation">,</span> P <span class="token operator">-</span> periodic downloaded <span class="token keyword">static</span> route<span class="token punctuation">,</span> H <span class="token operator">-</span> NHRP<span class="token punctuation">,</span> l <span class="token operator">-</span> LISP
+        <span class="token operator">+</span> <span class="token operator">-</span> replicated route<span class="token punctuation">,</span> <span class="token operator">%</span> <span class="token operator">-</span> next hop override
+
+Gateway of last resort is not set
+
+        <span class="token number">1.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.1</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">42</span><span class="token operator">:</span><span class="token number">35</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">2.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+C        <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span> is directly connected<span class="token punctuation">,</span> Loopback0
+        <span class="token number">3.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.3</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">42</span><span class="token operator">:</span><span class="token number">45</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+        <span class="token number">4.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">3</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.3</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">42</span><span class="token operator">:</span><span class="token number">45</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+        <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is variably subnetted<span class="token punctuation">,</span> <span class="token number">2</span> subnets<span class="token punctuation">,</span> <span class="token number">2</span> masks
+C        <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+L        <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is variably subnetted<span class="token punctuation">,</span> <span class="token number">2</span> subnets<span class="token punctuation">,</span> <span class="token number">2</span> masks
+C        <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+L        <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+O     <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.3</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">42</span><span class="token operator">:</span><span class="token number">45</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+<span class="token comment">//可以看到，由于R2没有运行BGP，所以R2的路由表中没有关于前缀7.7.7.7/32的路由条目；</span>
+<span class="token comment">//注意：递归查找路由表只会发生在运行BGP并与其他PE路由器建立IBGP关系的PE路由器，</span>
+<span class="token comment">//而在P路由器上，由于没有运行BGP，不可能有相关路由信息，所以只按照标签转发。</span></code></pre>
+
+<p>查看R2的LFIB：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R2#show mpls forwarding<span class="token operator">-</span>table
+Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop    
+Label      Label      or Tunnel Id     Switched      interface              
+<span class="token number">16</span>         <span class="token number">16</span>         <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">38689</span>         Fa0<span class="token operator">/</span><span class="token number">1</span>      <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.3</span>
+<span class="token number">17</span>         Pop Label  <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">1</span>      <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.3</span>
+<span class="token number">18</span>         Pop Label  <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span>  <span class="token number">686</span>           Fa0<span class="token operator">/</span><span class="token number">1</span>      <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.3</span>
+<span class="token number">19</span>         Pop Label  <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">41711</span>         Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.1</span>
+<span class="token comment">//尽管R2没有关于前缀7.7.7.7/32的路由条目，但由于AS1是MPLS域，路由器都使用标签转发数据，</span>
+<span class="token comment">//加之因为路由的递归查找，使得前缀7.7.7.7/32“继承了”前缀4.4.4.4/32的标签；</span>
+<span class="token comment">//所以，当R2收到去往7.7.7.7/32的数据包时，此数据包携带了前缀4.4.4.4/32的入标签16（R2的入标签，R1的出标签）；</span>
+<span class="token comment">//于是，R2作出转发决定，并给数据包打上出标签16（R2的出标签，R3的入标签），然后转发给R3；</span></code></pre>
+
+<p><strong>此时数据到达了R3：</strong></p>
+<p>查看R3的IP路由表：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R3#show ip route
+Codes<span class="token operator">:</span> L <span class="token operator">-</span> local<span class="token punctuation">,</span> C <span class="token operator">-</span> connected<span class="token punctuation">,</span> S <span class="token operator">-</span> <span class="token keyword">static</span><span class="token punctuation">,</span> R <span class="token operator">-</span> RIP<span class="token punctuation">,</span> M <span class="token operator">-</span> mobile<span class="token punctuation">,</span> B <span class="token operator">-</span> BGP
+        D <span class="token operator">-</span> EIGRP<span class="token punctuation">,</span> EX <span class="token operator">-</span> EIGRP external<span class="token punctuation">,</span> O <span class="token operator">-</span> OSPF<span class="token punctuation">,</span> IA <span class="token operator">-</span> OSPF inter area 
+        N1 <span class="token operator">-</span> OSPF NSSA external type <span class="token number">1</span><span class="token punctuation">,</span> N2 <span class="token operator">-</span> OSPF NSSA external type <span class="token number">2</span>
+        E1 <span class="token operator">-</span> OSPF external type <span class="token number">1</span><span class="token punctuation">,</span> E2 <span class="token operator">-</span> OSPF external type <span class="token number">2</span>
+        i <span class="token operator">-</span> IS<span class="token operator">-</span>IS<span class="token punctuation">,</span> su <span class="token operator">-</span> IS<span class="token operator">-</span>IS summary<span class="token punctuation">,</span> L1 <span class="token operator">-</span> IS<span class="token operator">-</span>IS level<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> L2 <span class="token operator">-</span> IS<span class="token operator">-</span>IS level<span class="token operator">-</span><span class="token number">2</span>
+        ia <span class="token operator">-</span> IS<span class="token operator">-</span>IS inter area<span class="token punctuation">,</span> <span class="token operator">*</span> <span class="token operator">-</span> candidate <span class="token keyword">default</span><span class="token punctuation">,</span> U <span class="token operator">-</span> per<span class="token operator">-</span>user <span class="token keyword">static</span> route
+        o <span class="token operator">-</span> ODR<span class="token punctuation">,</span> P <span class="token operator">-</span> periodic downloaded <span class="token keyword">static</span> route<span class="token punctuation">,</span> H <span class="token operator">-</span> NHRP<span class="token punctuation">,</span> l <span class="token operator">-</span> LISP
+        <span class="token operator">+</span> <span class="token operator">-</span> replicated route<span class="token punctuation">,</span> <span class="token operator">%</span> <span class="token operator">-</span> next hop override
+
+Gateway of last resort is not set
+
+        <span class="token number">1.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">3</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">55</span><span class="token operator">:</span><span class="token number">45</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+        <span class="token number">2.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">55</span><span class="token operator">:</span><span class="token number">55</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+        <span class="token number">3.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+C        <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span> is directly connected<span class="token punctuation">,</span> Loopback0
+        <span class="token number">4.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.4</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">56</span><span class="token operator">:</span><span class="token number">35</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+O     <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">55</span><span class="token operator">:</span><span class="token number">55</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+        <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is variably subnetted<span class="token punctuation">,</span> <span class="token number">2</span> subnets<span class="token punctuation">,</span> <span class="token number">2</span> masks
+C        <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+L        <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+        <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is variably subnetted<span class="token punctuation">,</span> <span class="token number">2</span> subnets<span class="token punctuation">,</span> <span class="token number">2</span> masks
+C        <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+L        <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+<span class="token comment">//同样的，由于R2没有运行BGP，所以R3的路由表中没有关于前缀7.7.7.7/32的路由条目；</span></code></pre>
+
+<p>查看R3的LFIB表：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R3#sh mpls forwarding<span class="token operator">-</span>table
+Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop    
+Label      Label      or Tunnel Id     Switched      interface              
+<span class="token number">16</span>         Pop Label  <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">35742</span>         Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.4</span>
+<span class="token number">17</span>         Pop Label  <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">1</span>      <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span>
+<span class="token number">18</span>         Pop Label  <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span>  <span class="token number">1064</span>          Fa0<span class="token operator">/</span><span class="token number">1</span>      <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span>
+<span class="token number">19</span>         <span class="token number">19</span>         <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">43006</span>         Fa0<span class="token operator">/</span><span class="token number">1</span>      <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span>
+<span class="token comment">//尽管R2没有关于前缀7.7.7.7/32的路由条目，但由于AS1是MPLS域，路由器都使用标签转发数据，</span>
+<span class="token comment">//加之因为路由的递归查找，使得前缀7.7.7.7/32“继承了”前缀4.4.4.4/32的标签；</span>
+<span class="token comment">//所以，当R3收到去往7.7.7.7/32的数据包时，此数据包携带了前缀4.4.4.4/32的入标签16（R3的入标签，R2的出标签）；</span>
+<span class="token comment">//于是，R3作出转发决定，并将数据包的标签弹出（R3的出标签为隐式空标签，R4的通告给R3的入标签为隐式空标签），然后转发给R4；</span></code></pre>
+
+<p><strong>此时数据到达了R4:</strong></p>
+<p>由于R4是LSP中的最后一台LSR，即出站LSR，所以R4负责移除标签，然后查找CEF，按照IP数据包的标准流程进行处理；</p>
+<p>查看R4的LFIB表：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R4#sh mpls forwarding<span class="token operator">-</span>table
+Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop    
+Label      Label      or Tunnel Id     Switched      interface              
+<span class="token number">16</span>         Pop Label  <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
+<span class="token number">17</span>         Pop Label  <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span>  <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
+<span class="token number">18</span>         <span class="token number">17</span>         <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
+<span class="token number">19</span>         <span class="token number">19</span>         <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
+<span class="token number">20</span>         <span class="token number">18</span>         <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span>  <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
+```           
+                
+查看R4的IP路由表：
+```c
+R4#show ip route
+Codes<span class="token operator">:</span> L <span class="token operator">-</span> local<span class="token punctuation">,</span> C <span class="token operator">-</span> connected<span class="token punctuation">,</span> S <span class="token operator">-</span> <span class="token keyword">static</span><span class="token punctuation">,</span> R <span class="token operator">-</span> RIP<span class="token punctuation">,</span> M <span class="token operator">-</span> mobile<span class="token punctuation">,</span> B <span class="token operator">-</span> BGP
+        D <span class="token operator">-</span> EIGRP<span class="token punctuation">,</span> EX <span class="token operator">-</span> EIGRP external<span class="token punctuation">,</span> O <span class="token operator">-</span> OSPF<span class="token punctuation">,</span> IA <span class="token operator">-</span> OSPF inter area 
+        N1 <span class="token operator">-</span> OSPF NSSA external type <span class="token number">1</span><span class="token punctuation">,</span> N2 <span class="token operator">-</span> OSPF NSSA external type <span class="token number">2</span>
+        E1 <span class="token operator">-</span> OSPF external type <span class="token number">1</span><span class="token punctuation">,</span> E2 <span class="token operator">-</span> OSPF external type <span class="token number">2</span>
+        i <span class="token operator">-</span> IS<span class="token operator">-</span>IS<span class="token punctuation">,</span> su <span class="token operator">-</span> IS<span class="token operator">-</span>IS summary<span class="token punctuation">,</span> L1 <span class="token operator">-</span> IS<span class="token operator">-</span>IS level<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> L2 <span class="token operator">-</span> IS<span class="token operator">-</span>IS level<span class="token operator">-</span><span class="token number">2</span>
+        ia <span class="token operator">-</span> IS<span class="token operator">-</span>IS inter area<span class="token punctuation">,</span> <span class="token operator">*</span> <span class="token operator">-</span> candidate <span class="token keyword">default</span><span class="token punctuation">,</span> U <span class="token operator">-</span> per<span class="token operator">-</span>user <span class="token keyword">static</span> route
+        o <span class="token operator">-</span> ODR<span class="token punctuation">,</span> P <span class="token operator">-</span> periodic downloaded <span class="token keyword">static</span> route<span class="token punctuation">,</span> H <span class="token operator">-</span> NHRP<span class="token punctuation">,</span> l <span class="token operator">-</span> LISP
+        <span class="token operator">+</span> <span class="token operator">-</span> replicated route<span class="token punctuation">,</span> <span class="token operator">%</span> <span class="token operator">-</span> next hop override
+
+Gateway of last resort is not set
+
+        <span class="token number">1.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">4</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span><span class="token punctuation">,</span> <span class="token number">04</span><span class="token operator">:</span><span class="token number">16</span><span class="token operator">:</span><span class="token number">48</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">2.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">3</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span><span class="token punctuation">,</span> <span class="token number">04</span><span class="token operator">:</span><span class="token number">16</span><span class="token operator">:</span><span class="token number">48</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">3.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+O        <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span><span class="token punctuation">,</span> <span class="token number">04</span><span class="token operator">:</span><span class="token number">17</span><span class="token operator">:</span><span class="token number">36</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">4.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+C        <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> is directly connected<span class="token punctuation">,</span> Loopback0
+        <span class="token number">5.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+B        <span class="token number">5.5</span><span class="token number">.5</span><span class="token number">.5</span> <span class="token punctuation">[</span><span class="token number">200</span><span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">]</span> via <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">14</span><span class="token operator">:</span><span class="token number">32</span>
+        <span class="token number">7.0</span><span class="token number">.0</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">32</span> is subnetted<span class="token punctuation">,</span> <span class="token number">1</span> subnets
+B        <span class="token number">7.7</span><span class="token number">.7</span><span class="token number">.7</span> <span class="token punctuation">[</span><span class="token number">20</span><span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.7</span><span class="token punctuation">,</span> <span class="token number">03</span><span class="token operator">:</span><span class="token number">13</span><span class="token operator">:</span><span class="token number">34</span>
+O     <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">3</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span><span class="token punctuation">,</span> <span class="token number">04</span><span class="token operator">:</span><span class="token number">16</span><span class="token operator">:</span><span class="token number">48</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+O     <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> <span class="token punctuation">[</span><span class="token number">110</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">]</span> via <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span><span class="token punctuation">,</span> <span class="token number">04</span><span class="token operator">:</span><span class="token number">17</span><span class="token operator">:</span><span class="token number">36</span><span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is variably subnetted<span class="token punctuation">,</span> <span class="token number">2</span> subnets<span class="token punctuation">,</span> <span class="token number">2</span> masks
+C        <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+L        <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
+        <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is variably subnetted<span class="token punctuation">,</span> <span class="token number">2</span> subnets<span class="token punctuation">,</span> <span class="token number">2</span> masks
+C        <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+L        <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span> is directly connected<span class="token punctuation">,</span> FastEthernet0<span class="token operator">/</span><span class="token number">1</span></code></pre>
+
+<p>查看R4的CEF表：</p>
+<pre class="language-c" data-language="c"><code class="language-c">R4#show ip cef <span class="token number">7.7</span><span class="token number">.7</span><span class="token number">.7</span> detail
+<span class="token number">7.7</span><span class="token number">.7</span><span class="token number">.7</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> epoch <span class="token number">0</span><span class="token punctuation">,</span> flags rib only nolabel<span class="token punctuation">,</span> rib defined all labels
+    recursive via <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.7</span>
+    attached to FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
+
+<span class="token comment">//至此，ping包被按照普通IP数据包转发给了R7，echo reply包的转发交换方向相反，但过程相同；</span></code></pre>
+
+
+<h1 id="实验结论："><a href="#实验结论：" class="headerlink" title="实验结论："></a>实验结论：</h1><ol>
+<li>在分配标签时，标签可以以路由递归的方式被继承；</li>
+<li>MPLS 不但可以解决BGP关闭同步后需要IBGP全互联的问题，更高效的是，MPLS可以让MPLS域内的P路由器不必运行BGP；</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Network</category>
+      </categories>
+      <tags>
+        <tag>MPLS</tag>
+        <tag>Network</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MPLS 实验5：MPLS VPN using Static Routing on the PE-CE link</title>
+    <url>/2014/MPLS_Lab_5/</url>
+    <content><![CDATA[<span id="more"></span>
+
+<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+<li>模拟器：GNS3 0.8.6</li>
+<li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
+</ul>
+<h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
+<h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_5/topo.png"></p>
+<h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
+!
+ip cef
+!
+mpls label protocol ldp
+!
+interface Loopback0
+    ip address 1.1.1.1 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.12.1 255.255.255.0
+    ip ospf 1 area 0
+    no shut
+mpls ip
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.15.1 255.255.255.0
+    no shut
+!
+router ospf 1
+    router-id 1.1.1.1
+!         
+mpls ldp router-id Loopback0 force
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R2"><a href="#R2" class="headerlink" title="R2:"></a>R2:</h2><pre class="language-none"><code class="language-none">hostname R2
+!
+ip cef
+!
+mpls label protocol ldp
+!
+interface Loopback0
+    ip address 2.2.2.2 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.12.2 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.23.2 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+router ospf 1
+    router-id 2.2.2.2
+!
+mpls ldp router-id Loopback0 force
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R3"><a href="#R3" class="headerlink" title="R3:"></a>R3:</h2><pre class="language-none"><code class="language-none">hostname R3
+!
+ip cef
+!
+mpls label protocol ldp
+!
+interface Loopback0
+    ip address 3.3.3.3 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.34.3 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.23.3 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+router ospf 1
+    router-id 3.3.3.3
+!
+mpls ldp router-id Loopback0 force
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R4"><a href="#R4" class="headerlink" title="R4:"></a>R4:</h2><pre class="language-none"><code class="language-none">hostname R4
+!
+ip cef
+!
+mpls label protocol ldp
+!
+interface Loopback0
+    ip address 4.4.4.4 255.255.255.255
+    ip ospf 1 area 0
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.34.4 255.255.255.0
+    ip ospf 1 area 0
+    no shutdown
+mpls ip
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.47.4 255.255.255.0
+    no shutdown
+!
+router ospf 1
+    router-id 4.4.4.4
+!
+mpls ldp router-id Loopback0 force
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R5"><a href="#R5" class="headerlink" title="R5:"></a>R5:</h2><pre class="language-none"><code class="language-none">hostname R5
+!
+ip cef
+!
+interface Loopback0
+    ip address 5.5.5.5 255.255.255.255
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.56.5 255.255.255.0
+    no shutdown
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.15.5 255.255.255.0
+    no shutdown
+!
+ip route 6.6.6.6 255.255.255.255 192.168.56.6
+ip route 0.0.0.0 0.0.0.0 192.168.15.1
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R6"><a href="#R6" class="headerlink" title="R6:"></a>R6:</h2><pre class="language-none"><code class="language-none">hostname R6
+!
+ip cef
+!
+interface Loopback0
+    ip address 6.6.6.6 255.255.255.255
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.56.6 255.255.255.0
+    no shutdown
+!
+ip route 0.0.0.0 0.0.0.0 192.168.56.5
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R7"><a href="#R7" class="headerlink" title="R7:"></a>R7:</h2><pre class="language-none"><code class="language-none">hostname R7
+!
+ip cef
+!
+interface Loopback0
+    ip address 7.7.7.7 255.255.255.255
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.78.7 255.255.255.0
+    no shutdown
+!
+interface FastEthernet0&#x2F;1
+    ip address 192.168.47.7 255.255.255.0
+    no shutdown
+!
+ip route 0.0.0.0 0.0.0.0 192.168.47.4
+ip route 8.8.8.8 255.255.255.255 192.168.78.8
+!
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+
+<h2 id="R8"><a href="#R8" class="headerlink" title="R8:"></a>R8:</h2><pre class="language-none"><code class="language-none">hostname R8
+!
+ip cef
+!
+interface Loopback0
+    ip address 8.8.8.8 255.255.255.255
+!
+interface FastEthernet0&#x2F;0
+    ip address 192.168.78.8 255.255.255.0
+    no shutdown
+!
+ip route 0.0.0.0 0.0.0.0 192.168.78.7
+!         
+line con 0
+    exec-timeout 0 0
+    logging synchronous
+!
+end</code></pre>
+<h1 id="MPLS-VPN配置步骤："><a href="#MPLS-VPN配置步骤：" class="headerlink" title="MPLS VPN配置步骤："></a>MPLS VPN配置步骤：</h1><ol>
+<li>创建VRF（VRF名本地有效）：<ul>
+<li>指定RD（提供全局唯一的私网单播地址）；</li>
+<li>指定RT的导出（导出：把重分发进MP-BGP的VPNv4路由打上MP-BGP扩展团体属性RT）和导入（导入：把MP-BGP里的VPNv4路由进行RT的匹配，匹配成功的VPNv4路由将放进相应的VRF）；</li>
+<li>将与CE相连的PE接口关联特定VRF；</li>
+</ul>
+</li>
+<li>配置MP-BGP：<ul>
+<li>配置建立PE之间的IBGP邻居关系；</li>
+<li>启用VPNv4地址族（AF），并激活与其他PE设备的邻居关系；</li>
+</ul>
+</li>
+<li>配置PE-CE路由；<ul>
+<li>配置IGP，并启用IGP的地址族（AF）；</li>
+<li>配置启用MP-BGP IPv4 VRF地址族，然后激活与其他PE路由器的MP-BGP IPv4 VRF邻居关系；</li>
+</ul>
+</li>
+</ol>
+<h1 id="实验与调试："><a href="#实验与调试：" class="headerlink" title="实验与调试："></a>实验与调试：</h1><h2 id="实验1：配置MPLS-VPN"><a href="#实验1：配置MPLS-VPN" class="headerlink" title="实验1：配置MPLS VPN"></a>实验1：配置MPLS VPN</h2><h3 id="在PE上创建VRF"><a href="#在PE上创建VRF" class="headerlink" title="在PE上创建VRF"></a><strong>在PE上创建VRF</strong></h3><p>在PE1（R1）上创建VRF，并命名为A-Site1，表示该VRF为VPN A的站点1服务；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#ip vrf A<span class="token operator">-</span>Site1   
+```            
+
+指定RD，为<span class="token number">1</span><span class="token operator">:</span><span class="token number">1</span>，如果按照AS：num命名法，以下RD表示AS1中的第<span class="token number">2</span>个VRF；
+```c
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>vrf<span class="token punctuation">)</span>#rd <span class="token number">1</span><span class="token operator">:</span><span class="token number">1</span></code></pre>
+
+<p>指定RT的导入和导出，这里我将RT指定为导入和导出1：1；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>vrf<span class="token punctuation">)</span>#route<span class="token operator">-</span>target <span class="token operator">?</span>        
+    ASN<span class="token operator">:</span>nn or IP<span class="token operator">-</span>address<span class="token operator">:</span>nn  Target VPN Extended Community
+    both                     Both import and export Target<span class="token operator">-</span>VPN community
+    export                   Export Target<span class="token operator">-</span>VPN community
+    import                   Import Target<span class="token operator">-</span>VPN community
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>vrf<span class="token punctuation">)</span>#route<span class="token operator">-</span>target both <span class="token number">1</span><span class="token operator">:</span><span class="token number">1</span></code></pre>
+
+<p>将PE1（R1）上与CE相连的PE接口F0&#x2F;1关联到VRF A-Site1；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">int</span> f0<span class="token operator">/</span><span class="token number">1</span>
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#ip vrf forwarding A<span class="token operator">-</span>Site1
+<span class="token operator">%</span> Interface FastEthernet0<span class="token operator">/</span><span class="token number">1</span> IPv4 disabled and <span class="token function">address</span><span class="token punctuation">(</span>es<span class="token punctuation">)</span> removed due to enabling VRF A<span class="token operator">-</span>Site1
+<span class="token comment">//切记先将接口关联VRF，然后再配置IP地址；</span>
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#ip add <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.1</span> <span class="token number">255.255</span><span class="token number">.255</span><span class="token number">.0</span></code></pre>
+<p>在PE2（R4）上创建VRF，并命名为A-Site2，表示该VRF为VPN A的站点2服务；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#ip vrf A<span class="token operator">-</span>Site2</code></pre>
+
+<p>指定RD，为1:2，如果按照AS：num命名法，以下RD表示AS1中的第2个VRF；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>vrf<span class="token punctuation">)</span>#rd <span class="token number">1</span><span class="token operator">:</span><span class="token number">2</span></code></pre>
+
+<p>指定RT的导入和导出，这里我将RT指定为导入和导出1：1；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>vrf<span class="token punctuation">)</span>#route<span class="token operator">-</span>target both <span class="token number">1</span><span class="token operator">:</span><span class="token number">1</span>
+<span class="token comment">//这里因为PE1（R1）的RT导出和PE2（R4）的RT导入能够匹配成功，所以R4能够学到R1导入到MP-BGP中的VPNv4路由；</span>
+<span class="token comment">//又因为PE2（R4）的RT导出和PE1（1）的RT导入能够匹配成对，所以R1能够学到R4导入到MP-BGP中的VPNv4路由；</span></code></pre>
+
+<p>将PE2（R4）上与CE相连的PE接口F0&#x2F;1关联到VRF A-Site2；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">int</span> f0<span class="token operator">/</span><span class="token number">1</span>
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#ip vrf forwarding A<span class="token operator">-</span>Site2
+<span class="token operator">%</span> Interface FastEthernet0<span class="token operator">/</span><span class="token number">1</span> IPv4 disabled and <span class="token function">address</span><span class="token punctuation">(</span>es<span class="token punctuation">)</span> removed due to enabling VRF A<span class="token operator">-</span>Site2
+    <span class="token comment">//切记先将接口关联VRF，然后再配置IP地址；</span>
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#ip add <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.4</span> <span class="token number">255.255</span><span class="token number">.255</span><span class="token number">.0</span></code></pre>
+<h3 id="配置MP-BGP"><a href="#配置MP-BGP" class="headerlink" title="配置MP-BGP"></a><strong>配置MP-BGP</strong></h3><p>在PE1（R1）上配置MP-BGP，使之与其他PE建立IBGP关系，在此实验中只有PE1和PE2两台PE设备；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#router bgp <span class="token number">1</span>
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#neighbor <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> remote<span class="token operator">-</span>as <span class="token number">1</span>
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#neighbor <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> update<span class="token operator">-</span>source l0
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#neighbor <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> next<span class="token operator">-</span>hop<span class="token operator">-</span>self
+```  
+
+启用PE1（R1）的VPNv4地址族，并激活与IBGP邻居PE2（R4）的MP<span class="token operator">-</span>BGP VPNv4邻居关系；
+```c
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#address<span class="token operator">-</span>family vpnv4
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#neighbor <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> activate
+<span class="token comment">//激活与IBGP邻居R4的VPNv4关系；</span>
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#neighbor <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> send<span class="token operator">-</span>community <span class="token operator">?</span>
+    both      Send Standard and Extended Community attributes
+    extended  Send Extended Community attribute
+    standard  Send Standard Community attribute
+    <span class="token operator">&lt;</span>cr<span class="token operator">></span>
+
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#neighbor <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> send<span class="token operator">-</span>community both
+<span class="token comment">//由于BGP团体属性为可选传递属性，所以必须手动指定R1向IBGP邻居R4发送拓展团体属性和标准团体属性；</span>
+
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#exit<span class="token operator">-</span>address<span class="token operator">-</span>family
+<span class="token comment">//退出AF配置模式；</span></code></pre>
+<p>在PE2（R4）上配置MP-BGP，使之与其他PE建立IBGP关系，</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#router bgp <span class="token number">1</span>
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#nei <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> remote<span class="token operator">-</span>as <span class="token number">1</span>
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> update<span class="token operator">-</span>source l0
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> next<span class="token operator">-</span>hop<span class="token operator">-</span>self</code></pre>
+
+<p>启用PE2（R4）的VPNv4地址族，并激活与IBGP邻居PE1（R1）的MP-BGP VPNv4邻居关系；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#address<span class="token operator">-</span>family vpnv4
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> activate
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> send<span class="token operator">-</span>community both</code></pre>
+<h3 id="配置PE-CE路由"><a href="#配置PE-CE路由" class="headerlink" title="配置PE-CE路由"></a><strong>配置PE-CE路由</strong></h3><p>配置PE1（R1）的静态路由；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#ip route vrf A<span class="token operator">-</span>Site1 <span class="token number">6.6</span><span class="token number">.6</span><span class="token number">.6</span> <span class="token number">255.255</span><span class="token number">.255</span><span class="token number">.255</span> <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.5</span></code></pre>
+
+<p>配置PE1（R1）的MP-BGP IPv4 VRF地址族（AF）；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#router bgp <span class="token number">1</span>
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#address<span class="token operator">-</span>family ipv4 vrf A<span class="token operator">-</span>Site1
+<span class="token comment">//进入MP-BGP的IPv4 VRF地址族（AF）；</span>
+
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#redistribute <span class="token keyword">static</span> 
+<span class="token comment">//将静态路由中VRF名字与MP-BGP中IPv4 VRF名字相同的静态路由重分布进MP-BGP的IPv4 VRF AF；</span>
+
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#redistribute connected 
+<span class="token comment">//如果用户在CE路由器上ping远程网络的另一个VPN站点中的CE或C路由器，</span>
+<span class="token comment">//为了使其在没有指定其源地址情况下（即默认使用CE路由器出站接口IP地址），Echo Reply包能够有路由并正常返回,</span>
+<span class="token comment">//将PE路由器的直连路由重分布进MP-BGP的IPv4 VRF AF中；</span>
+
+<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#exit<span class="token operator">-</span>address<span class="token operator">-</span>family 
+<span class="token comment">//退出MP-BGP的IPv4 VRF地址族（AF）模式；</span></code></pre>
+<p>配置PE2（R4）的静态路由；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#ip route vrf A<span class="token operator">-</span>Site1 <span class="token number">6.6</span><span class="token number">.6</span><span class="token number">.6</span> <span class="token number">255.255</span><span class="token number">.255</span><span class="token number">.255</span> <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.5</span></code></pre>
+
+<p>配置PE2（R4）的MP-BGP IPv4 VRF地址族（AF）；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#router bgp <span class="token number">1</span>
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#address<span class="token operator">-</span>family ipv4 vrf A<span class="token operator">-</span>Site2
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#redistribute connected
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#redistribute <span class="token keyword">static</span>
+<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token operator">-</span>af<span class="token punctuation">)</span>#exit<span class="token operator">-</span>address<span class="token operator">-</span>family</code></pre>
+
+<h1 id="实验与调试"><a href="#实验与调试" class="headerlink" title="实验与调试"></a>实验与调试</h1><p>在VPN A站点1的C路由器R6上ping远程VPN A站点2的C路由器R8，并且指定源为R6的接口Loopback0；</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R6</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> p <span class="token number">8.8</span><span class="token number">.8</span><span class="token number">.8</span> source <span class="token number">6.6</span><span class="token number">.6</span><span class="token number">.6</span>
+Type escape sequence to abort<span class="token punctuation">.</span>
+Sending <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token operator">-</span>byte ICMP Echos to <span class="token number">8.8</span><span class="token number">.8</span><span class="token number">.8</span><span class="token punctuation">,</span> timeout is <span class="token number">2</span> seconds<span class="token operator">:</span>
+Packet sent with a source address of <span class="token number">6.6</span><span class="token number">.6</span><span class="token number">.6</span> 
+<span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span>
+Success rate is <span class="token number">100</span> <span class="token function">percent</span> <span class="token punctuation">(</span><span class="token number">5</span><span class="token operator">/</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span> round<span class="token operator">-</span>trip min<span class="token operator">/</span>avg<span class="token operator">/</span>max <span class="token operator">=</span> <span class="token number">128</span><span class="token operator">/</span><span class="token number">159</span><span class="token operator">/</span><span class="token number">200</span> ms</code></pre>
+<p>成功！</p>
+]]></content>
       <categories>
         <category>Network</category>
       </categories>

@@ -2,51 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://ifelif.cn/2022/entry%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%EF%BC%8Ctext%E5%AE%9E%E6%97%B6%E8%8E%B7%E5%BE%97%E5%91%BD%E4%BB%A4%E8%BE%93%E5%87%BA/</loc>
-    
-    <lastmod>2022-06-12</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/2022/learn_gobyexample/</loc>
-    
-    <lastmod>2022-06-12</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/2022/linux_firewall/</loc>
-    
-    <lastmod>2022-06-12</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/2022/some_pieces_of_nginx/</loc>
-    
-    <lastmod>2022-06-12</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/2022/tkinter_geometry_manager/</loc>
-    
-    <lastmod>2022-06-12</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/about/index.html</loc>
     
     <lastmod>2022-06-12</lastmod>
@@ -84,6 +39,51 @@
   
   <url>
     <loc>https://ifelif.cn/topics/index.html</loc>
+    
+    <lastmod>2022-06-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/entry%E8%BE%93%E5%85%A5%E5%91%BD%E4%BB%A4%EF%BC%8Ctext%E5%AE%9E%E6%97%B6%E8%8E%B7%E5%BE%97%E5%91%BD%E4%BB%A4%E8%BE%93%E5%87%BA/</loc>
+    
+    <lastmod>2022-06-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/learn_gobyexample/</loc>
+    
+    <lastmod>2022-06-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/linux_firewall/</loc>
+    
+    <lastmod>2022-06-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/some_pieces_of_nginx/</loc>
+    
+    <lastmod>2022-06-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/tkinter_geometry_manager/</loc>
     
     <lastmod>2022-06-12</lastmod>
     
@@ -158,6 +158,24 @@
     <loc>https://ifelif.cn/2022/using_goproxy_as_npm_proxy/</loc>
     
     <lastmod>2022-06-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2014/MPLS_Lab_5/</loc>
+    
+    <lastmod>2014-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2014/MPLS_Lab_4/</loc>
+    
+    <lastmod>2014-03-14</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
