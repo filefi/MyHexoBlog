@@ -3,14 +3,14 @@
   <entry>
     <title>MPLS 实验1</title>
     <url>/2014/MPLS_Lab_1/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>路由器IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_1/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
 ip cef
@@ -826,15 +826,14 @@ Label      Label      or Tunnel Id     Switched      interface
   <entry>
     <title>MPLS 实验10：OSPF Loop Prevention in MPLS VPN</title>
     <url>/2014/MPLS_Lab_10/</url>
-    <content><![CDATA[<span id="more"></span>
-
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_10/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-c" data-language="c"><code class="language-c">hostname R1
 <span class="token operator">!</span>
 ip cef
@@ -1099,15 +1098,14 @@ end</code></pre>
   <entry>
     <title>MPLS 实验11：MPLS VPN running eBGP on the PE-CE link</title>
     <url>/2014/MPLS_Lab_11/</url>
-    <content><![CDATA[<span id="more"></span>
-
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_11/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-c" data-language="c"><code class="language-c">hostname R1
 <span class="token operator">!</span>
 ip cef
@@ -1592,14 +1590,13 @@ r<span class="token operator">></span> <span class="token number">192.168</span>
   <entry>
     <title>MPLS 实验12：SOO and EIGRP on Backdoor Link</title>
     <url>/2014/MPLS_Lab_12/</url>
-    <content><![CDATA[<span id="more"></span>
-
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_12/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-c" data-language="c"><code class="language-c">hostname R1
 <span class="token operator">!</span>
 ip cef
@@ -1928,15 +1925,14 @@ Descriptor Blocks<span class="token operator">:</span>
   <entry>
     <title>MPLS 实验13：Hub-and-Spoke</title>
     <url>/2014/MPLS_Lab_13/</url>
-    <content><![CDATA[<span id="more"></span>
-
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_13/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="实验场景："><a href="#实验场景：" class="headerlink" title="实验场景："></a>实验场景：</h1><ol>
 <li>Spoke站点只能与Hub站点进行通信；</li>
 <li>Spoke站点到Spoke站点的流量必须首先发送到Hub站点；</li>
@@ -2709,15 +2705,14 @@ B     <span class="token number">192.168</span><span class="token number">.48</s
   <entry>
     <title>MPLS 实验2：MPLS LDP会话保护</title>
     <url>/2014/MPLS_Lab_2/</url>
-    <content><![CDATA[<span id="more"></span>
-
-
-<h1 id="理论：MPLS-LDP会话保护"><a href="#理论：MPLS-LDP会话保护" class="headerlink" title="理论：MPLS LDP会话保护"></a>理论：MPLS LDP会话保护</h1><p>在对两台直接连接LSR之间的LDP会话实施保护后，将会在这两台LSR之间建立基于目标的LDP会话。当这两台LSR之间的直连链路断开以后，只要这两台LSR之间存在可替代路径，基于目标的LDP会话将会得到维持。</p>
+    <content><![CDATA[<h1 id="理论：MPLS-LDP会话保护"><a href="#理论：MPLS-LDP会话保护" class="headerlink" title="理论：MPLS LDP会话保护"></a>理论：MPLS LDP会话保护</h1><p>在对两台直接连接LSR之间的LDP会话实施保护后，将会在这两台LSR之间建立基于目标的LDP会话。当这两台LSR之间的直连链路断开以后，只要这两台LSR之间存在可替代路径，基于目标的LDP会话将会得到维持。</p>
 <h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_2/topo.png" alt="topology"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
 ip cef
@@ -3480,15 +3475,14 @@ end</code></pre>
   <entry>
     <title>MPLS 实验3：MPLS LDP-IGP同步</title>
     <url>/2014/MPLS_Lab_3/</url>
-    <content><![CDATA[<span id="more"></span>
-
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_3/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
 ip cef
@@ -4296,15 +4290,15 @@ L        <span class="token number">192.168</span><span class="token number">.21
   <entry>
     <title>MPLS 实验4：MPLS vs BGP同步</title>
     <url>/2014/MPLS_Lab_4/</url>
-    <content><![CDATA[<span id="more"></span>
-
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <p>GNS3实验拓扑文件：<br><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_4/topo.png"></p>
+<span id="more"></span>
+
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
 ip cef
@@ -4811,14 +4805,14 @@ L        <span class="token number">192.168</span><span class="token number">.47
   <entry>
     <title>MPLS 实验5：MPLS VPN using Static Routing on the PE-CE link</title>
     <url>/2014/MPLS_Lab_5/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_5/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
 ip cef
@@ -5170,14 +5164,14 @@ Success rate is <span class="token number">100</span> <span class="token functio
   <entry>
     <title>MPLS 实验6：MPLS VPN running RIPv2 on the PE-CE link</title>
     <url>/2014/MPLS_Lab_6/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_6/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
 ip cef
@@ -5833,13 +5827,13 @@ R7#show ip cef <span class="token number">8.8</span><span class="token number">.
   <entry>
     <title>MPLS 实验7：MPLS VPN running EIGRP on the PE-CE link</title>
     <url>/2014/MPLS_Lab_7/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
 ip cef
@@ -6497,14 +6491,14 @@ Paths<span class="token operator">:</span> <span class="token punctuation">(</sp
   <entry>
     <title>MPLS 实验8：MPLS VPN running OSPF on the PE-CE link</title>
     <url>/2014/MPLS_Lab_8/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_8/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-c" data-language="c"><code class="language-c">hostname R1
 <span class="token operator">!</span>
 ip cef
@@ -7148,13 +7142,13 @@ O     <span class="token number">192.168</span><span class="token number">.78</s
   <entry>
     <title>MPLS 实验9：OSPF Sham Link and Backdoor Link in MPLS VPN</title>
     <url>/2014/MPLS_Lab_9/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
+    <content><![CDATA[<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_9/topo.png"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-c" data-language="c"><code class="language-c">hostname R1
 <span class="token operator">!</span>
 ip cef

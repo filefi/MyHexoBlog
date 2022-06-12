@@ -286,15 +286,14 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <span id="more"></span>
-
-
-<h1 id="理论：MPLS-LDP会话保护"><a href="#理论：MPLS-LDP会话保护" class="headerlink" title="理论：MPLS LDP会话保护"></a>理论：MPLS LDP会话保护</h1><p>在对两台直接连接LSR之间的LDP会话实施保护后，将会在这两台LSR之间建立基于目标的LDP会话。当这两台LSR之间的直连链路断开以后，只要这两台LSR之间存在可替代路径，基于目标的LDP会话将会得到维持。</p>
+        <h1 id="理论：MPLS-LDP会话保护"><a href="#理论：MPLS-LDP会话保护" class="headerlink" title="理论：MPLS LDP会话保护"></a>理论：MPLS LDP会话保护</h1><p>在对两台直接连接LSR之间的LDP会话实施保护后，将会在这两台LSR之间建立基于目标的LDP会话。当这两台LSR之间的直连链路断开以后，只要这两台LSR之间存在可替代路径，基于目标的LDP会话将会得到维持。</p>
 <h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
 <li>模拟器：GNS3 0.8.6</li>
 <li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
 </ul>
 <h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_2/topo.png" alt="topology"></p>
+<span id="more"></span>
+
 <h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
 !
 ip cef
