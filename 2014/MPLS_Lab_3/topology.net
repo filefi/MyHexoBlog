@@ -1,0 +1,84 @@
+autostart = False
+version = 0.8.6
+[127.0.0.1:7200]
+    workingdir = working
+    udp = 10001
+    [[7200]]
+        image = F:\IT\GNS3\IOS\c7200-15.0\c7200-adventerprisek9-mz.151-4.M2.image
+        idlepc = 0x60607e74
+        sparsemem = True
+        ghostios = True
+    [[ROUTER R1]]
+        console = 2106
+        aux = 2506
+        cnfg = configs\R1.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R2 f0/0
+        f0/1 = R2 f0/1
+        x = -276.0
+        y = -104.0
+        z = 1.0
+    [[ROUTER R2]]
+        console = 2107
+        aux = 2507
+        cnfg = configs\R2.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R1 f0/0
+        f0/1 = R1 f0/1
+        x = 1.0
+        y = -103.0
+        z = 1.0
+[GNS3-DATA]
+    configs = configs
+    workdir = working
+    [[NOTE 1]]
+        text = "OSPF 1 Area 0"
+        x = -157.0
+        y = -35.5
+    [[NOTE 2]]
+        text = "MPLS"
+        x = -125.0
+        y = -162.5
+    [[NOTE 3]]
+        text = "L0:2.2.2.2/32"
+        x = 70.0
+        y = -90.5
+    [[NOTE 4]]
+        text = "L0:1.1.1.1/32"
+        x = -393.0
+        y = -90.5
+    [[NOTE 5]]
+        text = "192.168.21.0/24"
+        x = -169.0
+        y = -111.5
+    [[NOTE 6]]
+        text = "192.168.12.0/24"
+        x = -166.0
+        y = -77.5
+    [[NOTE 7]]
+        text = "f0/1"
+        x = -37.131802528
+        y = -6.79979286995
+        interface = R2 f0/1
+    [[NOTE 8]]
+        text = "f0/0"
+        x = -38.9820569962
+        y = 19.1979642546
+        interface = R2 f0/0
+    [[NOTE 9]]
+        text = "f0/1"
+        x = 67.8323114643
+        y = -6.19572137909
+        interface = R1 f0/1
+    [[NOTE 10]]
+        text = "f0/0"
+        x = 65.9820569962
+        y = 22.8020357454
+        interface = R1 f0/0
+    [[SHAPE 1]]
+        type = ellipse
+        x = -400.0
+        y = -162.0
+        width = 584.0
+        height = 159.0
+        border_style = 2
