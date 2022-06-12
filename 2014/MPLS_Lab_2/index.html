@@ -20,24 +20,31 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"ifelif.cn","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/config.min.js"></script>
 
-    <meta property="og:type" content="website">
-<meta property="og:title" content="正经人谁写日记">
-<meta property="og:url" content="https://ifelif.cn/page/2/index.html">
+    <meta name="description" content="理论：MPLS LDP会话保护在对两台直接连接LSR之间的LDP会话实施保护后，将会在这两台LSR之间建立基于目标的LDP会话。当这两台LSR之间的直连链路断开以后，只要这两台LSR之间存在可替代路径，基于目标的LDP会话将会得到维持。 实验环境： 模拟器：GNS3 0.8.6 Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image  实验拓扑：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MPLS 实验2：MPLS LDP会话保护">
+<meta property="og:url" content="https://ifelif.cn/2014/MPLS_Lab_2/index.html">
 <meta property="og:site_name" content="正经人谁写日记">
+<meta property="og:description" content="理论：MPLS LDP会话保护在对两台直接连接LSR之间的LDP会话实施保护后，将会在这两台LSR之间建立基于目标的LDP会话。当这两台LSR之间的直连链路断开以后，只要这两台LSR之间存在可替代路径，基于目标的LDP会话将会得到维持。 实验环境： 模拟器：GNS3 0.8.6 Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image  实验拓扑：">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ifelif.cn/2014/MPLS_Lab_2/topo.png">
+<meta property="article:published_time" content="2014-03-14T14:23:41.000Z">
+<meta property="article:modified_time" content="2014-03-14T14:23:41.000Z">
 <meta property="article:author" content="filefi">
-<meta property="article:tag" content="blog,javascript,nodejs,vue,python,C&#x2F;C++,golang">
+<meta property="article:tag" content="MPLS">
+<meta property="article:tag" content="Network">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ifelif.cn/2014/MPLS_Lab_2/topo.png">
 
 
-<link rel="canonical" href="https://ifelif.cn/page/2/">
+<link rel="canonical" href="https://ifelif.cn/2014/MPLS_Lab_2/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"page/2/index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ifelif.cn/2014/MPLS_Lab_2/","path":"2014/MPLS_Lab_2/","title":"MPLS 实验2：MPLS LDP会话保护"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>正经人谁写日记</title>
+<title>MPLS 实验2：MPLS LDP会话保护 | 正经人谁写日记</title>
   
 
   <script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.11.1/source/js/third-party/analytics/baidu-analytics.min.js"></script>
@@ -70,7 +77,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">正经人谁写日记</h1>
+      <p class="site-title">正经人谁写日记</p>
       <i class="logo-line"></i>
     </a>
   </div>
@@ -129,7 +136,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -142,6 +149,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%90%86%E8%AE%BA%EF%BC%9AMPLS-LDP%E4%BC%9A%E8%AF%9D%E4%BF%9D%E6%8A%A4"><span class="nav-number">1.</span> <span class="nav-text">理论：MPLS LDP会话保护</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">实验环境：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%8B%93%E6%89%91%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">实验拓扑：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E9%A2%84%E9%85%8D%E7%BD%AE%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">基本预配置：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#R1%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">R1：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R2"><span class="nav-number">4.2.</span> <span class="nav-text">R2:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R3"><span class="nav-number">4.3.</span> <span class="nav-text">R3:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R4"><span class="nav-number">4.4.</span> <span class="nav-text">R4:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E4%B8%8E%E8%B0%83%E8%AF%95%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">实验与调试：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C1%EF%BC%9A%E4%B8%A4%E5%8F%B0LSR%E7%9B%B8%E4%BA%92%E5%B0%86%E5%AF%B9%E6%96%B9%E9%85%8D%E7%BD%AE%E4%B8%BA%E5%8F%97MPLS-LDP%E4%BC%9A%E8%AF%9D%E4%BF%9D%E6%8A%A4%E7%9A%84%E5%AF%B9%E7%AD%89%E4%BD%93%EF%BC%9B"><span class="nav-number">5.1.</span> <span class="nav-text">实验1：两台LSR相互将对方配置为受MPLS LDP会话保护的对等体；</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C2%EF%BC%9A%E4%B8%A4%E5%8F%B0LSR%E4%B8%AD%E5%8F%AA%E6%9C%89%E4%B8%80%E5%8F%B0%E6%94%AF%E6%8C%81LDP%E4%BC%9A%E8%AF%9D%E4%BF%9D%E6%8A%A4%E7%89%B9%E6%80%A7"><span class="nav-number">5.2.</span> <span class="nav-text">实验2：两台LSR中只有一台支持LDP会话保护特性</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -216,331 +224,17 @@
 </noscript>
 
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
 
-    
+
+  
 
 
 <div class="post-block">
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/cheat_engine_tutorial/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/cheat_engine_tutorial/" class="post-title-link" itemprop="url">CheatEngine Tutorial</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-02-16 21:41:21" itemprop="dateCreated datePublished" datetime="2022-02-16T21:41:21+08:00">2022-02-16</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-06-12 15:31:58" itemprop="dateModified" datetime="2022-06-12T15:31:58+08:00">2022-06-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/PWN/" itemprop="url" rel="index"><span itemprop="name">PWN</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="CheatEngine-Tutorial"><a href="#CheatEngine-Tutorial" class="headerlink" title="CheatEngine Tutorial"></a>CheatEngine Tutorial</h1><h2 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h2><p><img src="/2022/cheat_engine_tutorial/image-20220215145201605.png"></p>
-<h3 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h3><pre class="language-text" data-language="text"><code class="language-text">Welcome to the Cheat Engine Tutorial (v3.6)
-
-This tutorial will teach you the basics of cheating in video games. It will also show you foundational aspects of using Cheat Engine (or CE for short). Follow the steps below to get started.
-
-1: Open Cheat Engine if it currently isn't running.
-2: Click on the "Open Process" icon (it's the top-left icon with the computer on it, below "File".).
-3: With the Process List window now open, look for this tutorial's process in the list. It will look something like "00001F98-Tutorial-x86_64.exe" or "0000047C-Tutorial-i386.exe". (The first 8 numbers/letters will probably be different.)
-4: Once you've found the process, click on it to select it, then click the "Open" button. (Don't worry about all the other buttons right now. You can learn about them later if you're interested.)
-
-Congratulations! If you did everything correctly, the process window should be gone with Cheat Engine now attached to the tutorial (you will see the process name towards the top-center of CE).
-
-Click the "Next" button below to continue, or fill in the password and click the "OK" button to proceed to that step.)
-
-If you're having problems, simply head over to forum.cheatengine.org, then click on "Tutorials" to view beginner-friendly guides!</code></pre>
-
-<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><h4 id="步骤1：选择要附加的进程"><a href="#步骤1：选择要附加的进程" class="headerlink" title="步骤1：选择要附加的进程"></a>步骤1：选择要附加的进程</h4><p><img src="/2022/cheat_engine_tutorial/image-20220215145836858.png"></p>
-<p><img src="/2022/cheat_engine_tutorial/image-20220215150314077.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/cheat_engine_tutorial/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/" class="post-title-link" itemprop="url">BIG-IP Local Traffic Manager Concepts v11.5.0</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2017-11-30 11:30:15" itemprop="dateCreated datePublished" datetime="2017-11-30T11:30:15+08:00">2017-11-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-06-12 15:31:58" itemprop="dateModified" datetime="2022-06-12T15:31:58+08:00">2022-06-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/F5/" itemprop="url" rel="index"><span itemprop="name">F5</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>本文是 F5官方文档 <a target="_blank" rel="noopener" href="https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ltm-concepts-11-5-0.html">BIG-IP Local Traffic Manager Concepts v11.5.0</a> 的中文翻译版。初次于2017年11月30日发布在 <a target="_blank" rel="noopener" href="https://github.com/filefi/CN_BIG-IP_Local_Traffic_Manager_Concepts_v11.5.0">此repo</a>。</p>
-</blockquote>
-<h1 id="第1章-介绍本地流量管理器（Local-Traffic-Manager）"><a href="#第1章-介绍本地流量管理器（Local-Traffic-Manager）" class="headerlink" title="第1章 介绍本地流量管理器（Local Traffic Manager）"></a>第1章 介绍本地流量管理器（Local Traffic Manager）</h1><h2 id="1-1-什么是BIG-IP本地流量管理器？"><a href="#1-1-什么是BIG-IP本地流量管理器？" class="headerlink" title="1.1 什么是BIG-IP本地流量管理器？"></a>1.1 什么是BIG-IP本地流量管理器？</h2><p>BIG-IP本地流量管理（Local Traffic Manager）控制流入或流出局域网LAN（包括内联网intranet）的网络流量。</p>
-<p>出于智能地调整网络服务器上负载的目的，LTM的一个常用功能是它拦截和重定向入站网络流量的能力。但是，调整服务器负载并不是唯一的本地流量管理方式。</p>
-<p>LTM包含了各种功能，例如，执行检查和转换报头和内容数据，管理基于SSL证书的认证，以及压缩HTTP响应。这样做，BIG-IP系统不仅会定向流量到适合的服务器资源，而且还通过执行Web服务器通常执行的任务来增强了网络安全，并释放了服务器资源。</p>
-<blockquote>
-<p>注意： BIG-IP LTM是组成BIG-IP产品系列的几种产品之一。BIG-IP产品线中的所有产品都运行在强大的流量管理操作系统（Traffic Management Operating System）（通常称为TMOS）上。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/BIG-IP-Local-Traffic-Manager-Concepts-v11-5-0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2017/BIG-IP-System-iRules-Concepts-v11-6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2017/BIG-IP-System-iRules-Concepts-v11-6/" class="post-title-link" itemprop="url">BIG-IP System iRules Concepts v11.6</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2017-11-30 09:05:31" itemprop="dateCreated datePublished" datetime="2017-11-30T09:05:31+08:00">2017-11-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-06-12 15:31:58" itemprop="dateModified" datetime="2022-06-12T15:31:58+08:00">2022-06-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/F5/" itemprop="url" rel="index"><span itemprop="name">F5</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>本文是 F5官方文档 <a target="_blank" rel="noopener" href="https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-system-irules-concepts-11-6-0.html">BIG-IP System iRules Concepts v11.6</a> 的中文翻译版。初次于2017年11月30日发布在 <a target="_blank" rel="noopener" href="https://github.com/filefi/CN_BIG-IP_System_iRules_Concepts_v11.6">此repo</a>。</p>
-</blockquote>
-<h1 id="1-iRules介绍"><a href="#1-iRules介绍" class="headerlink" title="1 iRules介绍"></a>1 iRules介绍</h1><h2 id="什么是iRule"><a href="#什么是iRule" class="headerlink" title="什么是iRule"></a>什么是iRule</h2><p>iRule是BIG-IP本地流量管理器（LTM）中的一个强大而灵活的功能，你可以用它来管理你的网络流量。使用基于行业标准工具命令语言（Tcl）的语法，iRules功能不仅允许您根据报头数据（header data）选择Pools，还可以通过搜索您自定义的任何类型的内容数据来定向流量。因此，iRules功能显著地增强了您自定义内容交换（content switching）以适应您确切需求的能力。</p>
-<blockquote>
-<p>重要：有关iRules语法的完整和详细信息，请参阅F5 Networks DevCentral网站 <a target="_blank" rel="noopener" href="http://devcentral.f5.com.请注意,irules必须符合标准的tcl语法规则/">http://devcentral.f5.com。请注意，iRules必须符合标准的Tcl语法规则</a>; 因此，有关Tcl语法的更多信息，请参见 <a target="_blank" rel="noopener" href="http://tmml.sourceforge.net/doc/tcl/index.html%E3%80%82">http://tmml.sourceforge.net/doc/tcl/index.html。</a></p>
-</blockquote>
-<p>如果您想要单独的连接来命中（target）除为Virtual Server定义的默认Pool之外的Pool，则你就可以写这样一个iRule脚本。iRules允许您更直接地指定要将流量定向到你想要的目的地。使用iRules，您不仅可以将流量发送到Pool，还可以向单个Pool Member，端口或URI发送流量。您创建的iRules可以很简单，也可以很复杂，具体取决于您的内容交换（content-switching）需求。</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when CLIENT_ACCEPTED <span class="token punctuation">&#123;</span>
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>IP::addr <span class="token punctuation">[</span>IP::client_addr<span class="token punctuation">]</span> equals 10.10.10.10<span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        pool my_pool 
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>当客户端连接被接受时，这条iRule会被触发。这时，如果客户端的地址与 <code>10.10.10.10</code> 相匹配，将使得本地流量管理器（LTM）将数据包发送到my_pool池。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/BIG-IP-System-iRules-Concepts-v11-6/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2014/MPLS_Lab_2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -554,13 +248,13 @@ If you're having problems, simply head over to forum.cheatengine.org, then click
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
+      <meta itemprop="name" content="MPLS 实验2：MPLS LDP会话保护 | 正经人谁写日记">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2014/MPLS_Lab_2/" class="post-title-link" itemprop="url">MPLS 实验2：MPLS LDP会话保护</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          MPLS 实验2：MPLS LDP会话保护<a href="https://github.com/filefi/MyHexoBlog/tree/master/source/_posts/2014/MPLS_Lab_2.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -592,7 +286,7 @@ If you're having problems, simply head over to forum.cheatengine.org, then click
     
     
     <div class="post-body" itemprop="articleBody">
-          <span id="more"></span>
+        <span id="more"></span>
 
 
 <h1 id="理论：MPLS-LDP会话保护"><a href="#理论：MPLS-LDP会话保护" class="headerlink" title="理论：MPLS LDP会话保护"></a>理论：MPLS LDP会话保护</h1><p>在对两台直接连接LSR之间的LDP会话实施保护后，将会在这两台LSR之间建立基于目标的LDP会话。当这两台LSR之间的直连链路断开以后，只要这两台LSR之间存在可替代路径，基于目标的LDP会话将会得到维持。</p>
@@ -1352,7 +1046,6 @@ end</code></pre>
         out label<span class="token operator">:</span>    <span class="token number">19</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>      
 <span class="token comment">//注意到，虽然R4没有启用LDP会话保护机制，但是R4的LIB表中同样保留着R1通告来的标签；</span></code></pre>
 
-      
     </div>
 
     
@@ -1360,8 +1053,77 @@ end</code></pre>
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+          <div class="reward-container">
+  <div></div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="filefi 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="filefi 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>filefi
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://ifelif.cn/2014/MPLS_Lab_2/" title="MPLS 实验2：MPLS LDP会话保护">https://ifelif.cn/2014/MPLS_Lab_2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/atom.xml">
+          <span class="icon">
+            <i class="fa fa-rss"></i>
+          </span>
+
+          <span class="label">RSS</span>
+        </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MPLS/" rel="tag"># MPLS</a>
+              <a href="/tags/Network/" rel="tag"># Network</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2014/MPLS_Lab_1/" rel="prev" title="MPLS 实验1">
+                  <i class="fa fa-chevron-left"></i> MPLS 实验1
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/BIG-IP-System-iRules-Concepts-v11-6/" rel="next" title="BIG-IP System iRules Concepts v11.6">
+                  BIG-IP System iRules Concepts v11.6 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
     </footer>
   </article>
 </div>
@@ -1369,897 +1131,7 @@ end</code></pre>
 
 
 
-    
 
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2014/MPLS_Lab_1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2014/MPLS_Lab_1/" class="post-title-link" itemprop="url">MPLS 实验1</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2014-03-14 19:00:41" itemprop="dateCreated datePublished" datetime="2014-03-14T19:00:41+08:00">2014-03-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Network/" itemprop="url" rel="index"><span itemprop="name">Network</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <span id="more"></span>
-
-<h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
-<li>模拟器：GNS3 0.8.6</li>
-<li>路由器IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
-</ul>
-<h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
-<h1 id="实验拓扑："><a href="#实验拓扑：" class="headerlink" title="实验拓扑："></a>实验拓扑：</h1><p><img src="/2014/MPLS_Lab_1/topo.png"></p>
-<h1 id="基本预配置："><a href="#基本预配置：" class="headerlink" title="基本预配置："></a>基本预配置：</h1><h2 id="R1："><a href="#R1：" class="headerlink" title="R1："></a>R1：</h2><pre class="language-none"><code class="language-none">hostname R1
-!
-ip cef
-!
-interface Loopback0
-    ip address 1.1.1.1 255.255.255.255
-    ip ospf 1 area 0
-!
-interface FastEthernet0&#x2F;0
-    ip address 192.168.12.1 255.255.255.0
-    ip ospf 1 area 0
-    no shut
-!
-interface FastEthernet0&#x2F;1
-    ip address 192.168.15.1 255.255.255.0
-    no shut
-!
-router ospf 1
-    router-id 1.1.1.1
-!
-line con 0
-    exec-timeout 0 0
-    logging synchronous
-!
-end</code></pre>
-<h2 id="R2："><a href="#R2：" class="headerlink" title="R2："></a>R2：</h2><pre class="language-none"><code class="language-none">hostname R2
-!
-ip cef
-!
-interface Loopback0
-    ip address 2.2.2.2 255.255.255.255
-    ip ospf 1 area 0
-!
-interface FastEthernet0&#x2F;0
-    ip address 192.168.12.2 255.255.255.0
-    ip ospf 1 area 0
-    no shutdown
-!
-interface FastEthernet0&#x2F;1
-    ip address 192.168.23.2 255.255.255.0
-    ip ospf 1 area 0
-    no shutdown
-!
-router ospf 1
-    router-id 2.2.2.2
-!
-line con 0
-    exec-timeout 0 0
-    logging synchronous
-!
-end</code></pre>
-<h2 id="R3："><a href="#R3：" class="headerlink" title="R3："></a>R3：</h2><pre class="language-none"><code class="language-none">hostname R3
-!
-ip cef
-!
-interface Loopback0
-    ip address 3.3.3.3 255.255.255.255
-    ip ospf 1 area 0
-!
-interface FastEthernet0&#x2F;0
-    ip address 192.168.34.3 255.255.255.0
-    ip ospf 1 area 0
-    no shutdown
-!
-interface FastEthernet0&#x2F;1
-    ip address 192.168.23.3 255.255.255.0
-    ip ospf 1 area 0
-    no shutdown
-!
-router ospf 1
-    router-id 3.3.3.3
-!
-line con 0
-    exec-timeout 0 0
-    logging synchronous
-!
-end</code></pre>
-<h2 id="R4："><a href="#R4：" class="headerlink" title="R4："></a>R4：</h2><pre class="language-none"><code class="language-none">hostname R4
-!
-ip cef
-!
-interface Loopback0
-    ip address 4.4.4.4 255.255.255.255
-    ip ospf 1 area 0
-!
-interface FastEthernet0&#x2F;0
-    ip address 192.168.34.4 255.255.255.0
-    ip ospf 1 area 0
-    no shutdown
-!
-interface FastEthernet0&#x2F;1
-    ip address 192.168.47.4 255.255.255.0
-    no shutdown
-!
-router ospf 1
-    router-id 4.4.4.4
-!
-line con 0
-    exec-timeout 0 0
-    logging synchronous
-!
-end</code></pre>
-<h1 id="实验与调试（本实验仅涉及AS1中的4台路由器）："><a href="#实验与调试（本实验仅涉及AS1中的4台路由器）：" class="headerlink" title="实验与调试（本实验仅涉及AS1中的4台路由器）："></a>实验与调试（本实验仅涉及AS1中的4台路由器）：</h1><h2 id="实验1：MPLS基本配置与验证：AS1作为MPLS域，在AS1中的所有路由器上运行MPLS；"><a href="#实验1：MPLS基本配置与验证：AS1作为MPLS域，在AS1中的所有路由器上运行MPLS；" class="headerlink" title="实验1：MPLS基本配置与验证：AS1作为MPLS域，在AS1中的所有路由器上运行MPLS；"></a>实验1：MPLS基本配置与验证：AS1作为MPLS域，在AS1中的所有路由器上运行MPLS；</h2><p>可以使用命令<code>mpls label protocol &#123;ldp | tdp&#125;</code> ,来指定标签分发协议；<br>可以看到支持两种标签分发协议，LDP和TDP，默认使用LDP作为标签分发协议；</p>
-<pre class="language-none"><code class="language-none">R1(config)#mpls label protocol ?
- ldp  Use LDP (default)
- tdp  Use TDP
-
-R1(config)#mpls label protocol ldp</code></pre>
-<p>可以使用命令<code>mpls ldp router-id interface [force]</code>来强制改变LDP路由ID；<br>如果不指定LDP router-id则LDP router-id选举规则同 OSPF ；</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//手动指定R1将l0接口地址作为LDP router-id的一部分，force选项表示立即生效；</span>
-<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp router<span class="token operator">-</span>id l0 force</code></pre>
-
-<p>使用接口命令<code>mpls ip</code>，在R1所有已激活的接口上启用MPLS ：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#interface FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
-<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#mpls ip</code></pre>
-
-<p>可以看到在R1的loopback 0接口配置启用MPLS时，IOS日志提示回环接口不支持MPLS ：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#interface Loopback0
-<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#mpls ip
-<span class="token operator">%</span> MPLS not supported on interface Loopback0</code></pre>
-
-
-<p>在R2上，使用 LDP 作为 MPLS 标签分发协议，指定 loopback 0 作为 LDP 的 <code>router-id</code>，并使用接口命令 <code>mpls ip</code> ，在适当的的接口上启用 MPLS ；</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls label protocol ldp
-<span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp router<span class="token operator">-</span>id l0 force
-
-<span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#interface FastEthernet0<span class="token operator">/</span><span class="token number">0</span>
-<span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#mpls ip
-
-<span class="token operator">*</span>Mar  <span class="token number">1</span> <span class="token number">00</span><span class="token operator">:</span><span class="token number">09</span><span class="token operator">:</span><span class="token number">05.223</span><span class="token operator">:</span> <span class="token operator">%</span>LDP<span class="token operator">-</span><span class="token number">5</span><span class="token operator">-</span>NBRCHG<span class="token operator">:</span> LDP Neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> is UP
-
-<span class="token comment">// 可以看到LDP邻居变化日志提示，LDP邻居已经UP，邻居为1.1.1.1:0；</span>
-
-<span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#interface FastEthernet0<span class="token operator">/</span><span class="token number">1</span>
-<span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#mpls ip</code></pre>
-<p>在R3上，使用LDP作为MPLS标签分发协议，指定loopback 0作为LDP的<code>router-id</code>，并使用接口命令<code>mpls ip</code>，在适当的的接口上启用MPLS；</p>
-<pre class="language-none"><code class="language-none">R3(config)#mpls label protocol ldp
-R3(config)#mpls ldp router-id l0 force
-
-R3(config-if)#interface FastEthernet0&#x2F;0
-R3(config-if)#mpls ip
-R3(config-if)#interface FastEthernet0&#x2F;1
-R3(config-if)#mpls ip</code></pre>
-
-<p>在R4上，使用 LDP 作为 MPLS 标签分发协议，指定 loopback 0 作为 LDP 的<code>router-id</code>，并使用接口命令<code>mpls ip</code>，在适当的的接口上启用 MPLS ；</p>
-<pre class="language-none"><code class="language-none">R4(config)#mpls label protocol ldp
-R4(config)#mpls ldp router-id l0 force
-
-R4(config-if)#interface FastEthernet0&#x2F;0
-R4(config-if)#mpls ip</code></pre>
-
-<p><strong>抓包查看分析LDP包结构：</strong><br><img src="/2014/MPLS_Lab_1/pic1.png"><br><img src="/2014/MPLS_Lab_1/pic2.png"><br>可以看到LDP hello包使用UDP进行封装，而Keep Alive包使用TCP进行封装；</p>
-<p><strong>附件：</strong><a href="LDP.pcapng">Wireshark抓包文件</a></p>
-<p>在 R1 上查看启用 MPLS 的接口：</p>
-<pre class="language-none"><code class="language-none">R1(config)#do show mpls interface
-Interface              IP            Tunnel   BGP Static Operational
-FastEthernet0&#x2F;0        Yes (ldp)     No       No  No     Yes</code></pre>
-<p>R1上只用<code>f0/0</code>启用了 MPLS ，可以看到 MPLS 使用 LDP 作为标签分发协议；</p>
-<p>在R1上查看LDP邻居发现：</p>
-<pre class="language-none"><code class="language-none">R1#show mpls ldp discovery 
- Local LDP Identifier:
-  1.1.1.1:0
-  Discovery Sources:
-  Interfaces:
-    FastEthernet0&#x2F;0 (ldp): xmit&#x2F;recv
-      LDP Id: 2.2.2.2:0</code></pre>
-<ul>
-<li>可以看到R1本地的LDP标识符为<code>1.1.1.1:0</code>，其中LDP路由器标识符由两部分组成：<ul>
-<li>其中第一部分为接口IP地址；</li>
-<li>第二部分为LSR所使用的标签空间字节。如果为0则表示LSR是使用整个设备的标签空间，如果不为0则表示LSR是使用接口标签空间；</li>
-</ul>
-</li>
-<li>还可以看出，R1在启用LDP的接口f0&#x2F;0上发现了LDP邻居;</li>
-</ul>
-<p>在R1上查看LDP邻居发现详细信息：</p>
-<pre class="language-c" data-language="c"><code class="language-c">R1#show mpls ldp discovery detail 
-    Local LDP Identifier<span class="token operator">:</span>
-    <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>
-    Discovery Sources<span class="token operator">:</span>
-    Interfaces<span class="token operator">:</span>
-        FastEthernet0<span class="token operator">/</span><span class="token number">0</span> <span class="token punctuation">(</span>ldp<span class="token punctuation">)</span><span class="token operator">:</span> xmit<span class="token operator">/</span>recv
-            Enabled<span class="token operator">:</span> Interface config    
-            Hello interval<span class="token operator">:</span> <span class="token number">5000</span> ms<span class="token punctuation">;</span> Transport IP addr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span>   <span class="token comment">//Discovery hello时间间隔为5秒；</span>
-            LDP Id<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">:</span><span class="token number">0</span>
-                Src IP addr<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span><span class="token punctuation">;</span> Transport IP addr<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span>
-                Hold time<span class="token operator">:</span> <span class="token number">15</span> sec<span class="token punctuation">;</span> Proposed local<span class="token operator">/</span>peer<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">15</span> sec  <span class="token comment">//Discovery保持时间为15秒；</span>
-                Reachable via <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span></code></pre>
-<p>在R1上查看LDP邻居关系：</p>
-<pre class="language-c" data-language="c"><code class="language-c">R1#show mpls ldp neighbor 
-    Peer LDP Ident<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">;</span> Local LDP Ident <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>
-        TCP connection<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token number">.13634</span> <span class="token operator">-</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token number">.646</span>
-        State<span class="token operator">:</span> Oper<span class="token punctuation">;</span> Msgs sent<span class="token operator">/</span>rcvd<span class="token operator">:</span> <span class="token number">643</span><span class="token operator">/</span><span class="token number">640</span><span class="token punctuation">;</span> Downstream
-        Up time<span class="token operator">:</span> <span class="token number">09</span><span class="token operator">:</span><span class="token number">11</span><span class="token operator">:</span><span class="token number">15</span>
-        LDP discovery sources<span class="token operator">:</span>
-            FastEthernet0<span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">,</span> Src IP addr<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>
-        Addresses bound to peer LDP Ident<span class="token operator">:</span>
-            <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>    <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span>    <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span>   </code></pre>
-<ul>
-<li>可以看到R1有一个LDP邻居，并且邻居标识符为2.2.2.2:0；</li>
-<li>而R1本地的LDP标识符为1.1.1.1:0;TCP连接为2.2.2.2的13634端口到1.1.1.1的646端口；</li>
-<li>邻居已经建立了9个小时11分15秒；</li>
-<li>LDP发现源为f0&#x2F;0接口，地址为f0&#x2F;0的接口地址192.168.12.2；</li>
-</ul>
-<p>在R1上<code>traceroute 4.4.4.4</code>：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#<span class="token keyword">do</span> traceroute <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span>
-Type escape sequence to abort<span class="token punctuation">.</span>
-Tracing the route to <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span>
-VRF info<span class="token operator">:</span> <span class="token punctuation">(</span>vrf in name<span class="token operator">/</span>id<span class="token punctuation">,</span> vrf out name<span class="token operator">/</span>id<span class="token punctuation">)</span>
-    <span class="token number">1</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span> <span class="token punctuation">[</span>MPLS<span class="token operator">:</span> Label <span class="token number">18</span> Exp <span class="token number">0</span><span class="token punctuation">]</span> <span class="token number">76</span> msec <span class="token number">80</span> msec <span class="token number">76</span> msec
-    <span class="token number">2</span> <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.3</span> <span class="token punctuation">[</span>MPLS<span class="token operator">:</span> Label <span class="token number">18</span> Exp <span class="token number">0</span><span class="token punctuation">]</span> <span class="token number">96</span> msec <span class="token number">44</span> msec <span class="token number">68</span> msec
-    <span class="token number">3</span> <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.4</span> <span class="token number">120</span> msec <span class="token operator">*</span>  <span class="token number">116</span> msec</code></pre>
-<p>可以看到 MPLS 已经生效，<code>traceroute</code>的 ICMP 包当前正是使用 MPLS 进行转发；</p>
-<h2 id="实验2：MPLS-LDP自动配置；"><a href="#实验2：MPLS-LDP自动配置；" class="headerlink" title="实验2：MPLS LDP自动配置；"></a>实验2：MPLS LDP自动配置；</h2><p>在R4上查看启用MPLS的接口详细信息：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#<span class="token keyword">do</span> show mpls interface detail
-Interface FastEthernet0<span class="token operator">/</span><span class="token number">0</span><span class="token operator">:</span>
-  IP labeling <span class="token function">enabled</span> <span class="token punctuation">(</span>ldp<span class="token punctuation">)</span><span class="token operator">:</span> 
-   Interface config
-  LSP Tunnel labeling not enabled
-  BGP labeling not enabled
-  MPLS operational
-  MTU <span class="token operator">=</span> <span class="token number">1500</span>
-<span class="token comment">//可以看到接口F0/0已经启用了LDP，并且是在接口下通过手动配置启用的；</span>
-
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span><span class="token keyword">if</span><span class="token punctuation">)</span>#<span class="token keyword">do</span> sh mpls ldp discovery detail
- Local LDP Identifier<span class="token operator">:</span>
- <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">:</span><span class="token number">0</span>
- Discovery Sources<span class="token operator">:</span>
- Interfaces<span class="token operator">:</span>
-  FastEthernet0<span class="token operator">/</span><span class="token number">0</span> <span class="token punctuation">(</span>ldp<span class="token punctuation">)</span><span class="token operator">:</span> xmit<span class="token operator">/</span>recv
-   Enabled<span class="token operator">:</span> Interface config
-   Hello interval<span class="token operator">:</span> <span class="token number">5000</span> ms<span class="token punctuation">;</span> Transport IP addr<span class="token operator">:</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> 
-   LDP Id<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>
-    Src IP addr<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span><span class="token punctuation">;</span> Transport IP addr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span>
-    Hold time<span class="token operator">:</span> <span class="token number">15</span> sec<span class="token punctuation">;</span> Proposed local<span class="token operator">/</span>peer<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">15</span> sec
-    Reachable via <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span>
-    Password<span class="token operator">:</span> not required<span class="token punctuation">,</span> none<span class="token punctuation">,</span> in use
-   Clients<span class="token operator">:</span> IPv4
-<span class="token comment">//通过查看R4的LDP邻居发现详情也可以看到接口F0/0是通过在接口下手动配置启用的MPLS LDP；</span></code></pre>
-
-<p>禁用之前在接口下启用的MPLS：</p>
-<pre class="language-none"><code class="language-none">R4(config)#int f0&#x2F;0
-R4(config-if)#no mpls ip</code></pre>
-
-<p>在R4的OSPF路由器配置模式下启用MPLS LDP自动配置；</p>
-<pre class="language-none"><code class="language-none">R4(config)#router ospf 1
-R4(config-router)#mpls ldp autoconfig </code></pre>
-
-<p>在R4上验证：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#<span class="token keyword">do</span> sh mpls interface detail
-Interface FastEthernet0<span class="token operator">/</span><span class="token number">0</span><span class="token operator">:</span>
-  IP labeling <span class="token function">enabled</span> <span class="token punctuation">(</span>ldp<span class="token punctuation">)</span><span class="token operator">:</span>
-   IGP config
-  LSP Tunnel labeling not enabled
-  BGP labeling not enabled
-  MPLS operational
-  MTU <span class="token operator">=</span> <span class="token number">1500</span>
-<span class="token comment">//可以看到，接口F0/0现在已经启用了LDP，但现在是通过IGP自动配置的方式启用的；</span>
-
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#<span class="token keyword">do</span> show mpls ldp discovery detail
- Local LDP Identifier<span class="token operator">:</span>
- <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">:</span><span class="token number">0</span>
- Discovery Sources<span class="token operator">:</span>
- Interfaces<span class="token operator">:</span>
-  FastEthernet0<span class="token operator">/</span><span class="token number">0</span> <span class="token punctuation">(</span>ldp<span class="token punctuation">)</span><span class="token operator">:</span> xmit<span class="token operator">/</span>recv
-   Enabled<span class="token operator">:</span> IGP config<span class="token punctuation">;</span>
-   Hello interval<span class="token operator">:</span> <span class="token number">5000</span> ms<span class="token punctuation">;</span> Transport IP addr<span class="token operator">:</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> 
-   LDP Id<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>
-    Src IP addr<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span><span class="token punctuation">;</span> Transport IP addr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span>
-    Hold time<span class="token operator">:</span> <span class="token number">15</span> sec<span class="token punctuation">;</span> Proposed local<span class="token operator">/</span>peer<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">15</span> sec
-    Reachable via <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span>
-    Password<span class="token operator">:</span> not required<span class="token punctuation">,</span> none<span class="token punctuation">,</span> in use
-   Clients<span class="token operator">:</span> IPv4
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>router<span class="token punctuation">)</span>#<span class="token keyword">do</span> sh mpls interface detail
-Interface FastEthernet0<span class="token operator">/</span><span class="token number">0</span><span class="token operator">:</span>
-  IP labeling <span class="token function">enabled</span> <span class="token punctuation">(</span>ldp<span class="token punctuation">)</span><span class="token operator">:</span>
-   IGP config
-  LSP Tunnel labeling not enabled
-  BGP labeling not enabled
-  MPLS operational
-  MTU <span class="token operator">=</span> <span class="token number">1500</span>
-<span class="token comment">//可以看到，接口F0/0现在已经启用了LDP，但现在是通过IGP自动配置的方式启用的；</span></code></pre>
-<blockquote>
-<p>注意：MPLS LDP自动配置目前只支持OSPF；</p>
-</blockquote>
-<h2 id="实验3：修改MPLS-LDP-计时器；"><a href="#实验3：修改MPLS-LDP-计时器；" class="headerlink" title="实验3：修改MPLS LDP 计时器；"></a>实验3：修改MPLS LDP 计时器；</h2><p>可以使用命令<code>show mpls ldp parameters</code>查看 LDP 当前使用的计时器参数：</p>
-<pre class="language-c" data-language="c"><code class="language-c">R1#show mpls ldp parameters 
-Protocol version<span class="token operator">:</span> <span class="token number">1</span>
-Downstream label generic region<span class="token operator">:</span> min label<span class="token operator">:</span> <span class="token number">16</span><span class="token punctuation">;</span> max label<span class="token operator">:</span> <span class="token number">100000</span>
-Session hold time<span class="token operator">:</span> <span class="token number">180</span> sec<span class="token punctuation">;</span> keep alive interval<span class="token operator">:</span> <span class="token number">60</span> sec   <span class="token comment">//LDP TCP会话保持时间为180秒，LDP TCP会话Keep Alive消息发送间隔为60秒；</span>
-Discovery hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">15</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">5</span> sec  <span class="token comment">//LDP Discovery hello保持时间为15秒，hello消息发送时间间隔为5秒；</span>
-Discovery targeted hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">90</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">10</span> sec  <span class="token comment">//目标邻居Discovery hello保持时间为90秒，hello消息发送间隔为10秒；</span>
-Downstream on Demand max hop count<span class="token operator">:</span> <span class="token number">255</span>
-Downstream on Demand Path Vector Limit<span class="token operator">:</span> <span class="token number">255</span>
-LDP <span class="token keyword">for</span> targeted sessions
-LDP initial<span class="token operator">/</span>maximum backoff<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">120</span> sec
-LDP loop detection<span class="token operator">:</span> off</code></pre>
-
-<p>在R1上修改MPLS LDP邻居发现hello 发送间隔和保持时间：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//将R1的MPLS LDP邻居发现hello时间间隔设置为10秒；</span>
-<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp discovery hello interval <span class="token number">10</span>
-<span class="token comment">//将R1的MPLS LDP邻居发现保持时间设置为30秒；</span>
-<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp discovery hello holdtime <span class="token number">30</span></code></pre>
-
-<p>在R1上验证MPLS LDP参数信息：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> sh mpls ldp parameter
-LDP Feature Set Manager<span class="token operator">:</span> State Initialized
- LDP features<span class="token operator">:</span>
- Basic
- IP<span class="token operator">-</span>over<span class="token operator">-</span>MPLS
- TDP
- IGP<span class="token operator">-</span>Sync
- Auto<span class="token operator">-</span>Configuration
- TCP<span class="token operator">-</span>MD5<span class="token operator">-</span>Rollover
-Protocol version<span class="token operator">:</span> <span class="token number">1</span>
-Session hold time<span class="token operator">:</span> <span class="token number">180</span> sec<span class="token punctuation">;</span> keep alive interval<span class="token operator">:</span> <span class="token number">60</span> sec
-Discovery hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">30</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">10</span> sec
-Discovery targeted hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">90</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">10</span> sec
-Downstream on Demand max hop count<span class="token operator">:</span> <span class="token number">255</span>
-LDP <span class="token keyword">for</span> targeted sessions
-LDP initial<span class="token operator">/</span>maximum backoff<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">120</span> sec
-LDP loop detection<span class="token operator">:</span> off
-<span class="token comment">//可以看到R1的LDP Discovery计时器的hello interval被修改为30秒，holdtime被修改为10秒；</span></code></pre>
-
-<p>验证LDP Discovery 计时器：</p>
-<pre class="language-c" data-language="c"><code class="language-c">R1#show mpls ldp neighbor <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span> detail
- Peer LDP Ident<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">;</span> Local LDP Ident <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>
-  TCP connection<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token number">.42221</span> <span class="token operator">-</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token number">.646</span>
-  Password<span class="token operator">:</span> not required<span class="token punctuation">,</span> none<span class="token punctuation">,</span> in use
-  State<span class="token operator">:</span> Oper<span class="token punctuation">;</span> Msgs sent<span class="token operator">/</span>rcvd<span class="token operator">:</span> <span class="token number">82</span><span class="token operator">/</span><span class="token number">81</span><span class="token punctuation">;</span> Downstream<span class="token punctuation">;</span> Last TIB rev sent <span class="token number">16</span>
-  Up time<span class="token operator">:</span> <span class="token number">01</span><span class="token operator">:</span><span class="token number">02</span><span class="token operator">:</span><span class="token number">47</span><span class="token punctuation">;</span> UID<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">;</span> Peer Id <span class="token number">0</span><span class="token punctuation">;</span>
-  LDP discovery sources<span class="token operator">:</span>
-   FastEthernet0<span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">;</span> Src IP addr<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span> 
-   holdtime<span class="token operator">:</span> <span class="token number">15000</span> ms<span class="token punctuation">,</span> hello interval<span class="token operator">:</span> <span class="token number">5000</span> ms
-  Addresses bound to peer LDP Ident<span class="token operator">:</span>
-   <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>    <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span>    <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span>         
-  Peer holdtime<span class="token operator">:</span> <span class="token number">180000</span> ms<span class="token punctuation">;</span> KA interval<span class="token operator">:</span> <span class="token number">60000</span> ms<span class="token punctuation">;</span> Peer state<span class="token operator">:</span> estab
-  Capabilities Sent<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-  Capabilities Received<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-
-R1#show mpls ldp discovery detail
- Local LDP Identifier<span class="token operator">:</span>
- <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>
- Discovery Sources<span class="token operator">:</span>
- Interfaces<span class="token operator">:</span>
-  FastEthernet0<span class="token operator">/</span><span class="token number">0</span> <span class="token punctuation">(</span>ldp<span class="token punctuation">)</span><span class="token operator">:</span> xmit<span class="token operator">/</span>recv
-   Enabled<span class="token operator">:</span> Interface config
-   Hello interval<span class="token operator">:</span> <span class="token number">5000</span> ms<span class="token punctuation">;</span> Transport IP addr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> 
-   LDP Id<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">:</span><span class="token number">0</span>
-    Src IP addr<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span><span class="token punctuation">;</span> Transport IP addr<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span>
-    Hold time<span class="token operator">:</span> <span class="token number">15</span> sec<span class="token punctuation">;</span> Proposed local<span class="token operator">/</span>peer<span class="token operator">:</span> <span class="token number">30</span><span class="token operator">/</span><span class="token number">15</span> sec
-    Reachable via <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span>
-    Password<span class="token operator">:</span> not required<span class="token punctuation">,</span> none<span class="token punctuation">,</span> in use
-   Clients<span class="token operator">:</span> IPv4
-<span class="token comment">//可以看到邻居LSR的LDP Discovery hello interval为5秒,holdtime为15秒；</span>
-<span class="token comment">//本地的Holdtime为30秒；</span></code></pre>
-
-<p>在R1上修改LDP TCP会话保持时间设置为300秒：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp holdtime <span class="token number">300</span> 
-<span class="token operator">%</span>Previously established sessions may not use the new holdtime<span class="token punctuation">.</span>
-<span class="token comment">//要让新的保持时间立即生效，需要重置一下LDP邻居关系；</span>
-<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> clear mpls ldp neighbor <span class="token operator">*</span></code></pre>
-<blockquote>
-<p>注意：LDP TCP会话保持时间被修改后，LDP会话的Keep Alive计时器值自动被修改为保持时间的1&#x2F;3；</p>
-</blockquote>
-<p>验证R1的MPLS LDP TCP会话保持时间：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> sh mpls ldp parameters
-LDP Feature Set Manager<span class="token operator">:</span> State Initialized
- LDP features<span class="token operator">:</span>
- Basic
- IP<span class="token operator">-</span>over<span class="token operator">-</span>MPLS
- TDP
- IGP<span class="token operator">-</span>Sync
- Auto<span class="token operator">-</span>Configuration
- TCP<span class="token operator">-</span>MD5<span class="token operator">-</span>Rollover
-Protocol version<span class="token operator">:</span> <span class="token number">1</span>
-Session hold time<span class="token operator">:</span> <span class="token number">300</span> sec<span class="token punctuation">;</span> keep alive interval<span class="token operator">:</span> <span class="token number">100</span> sec
-Discovery hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">30</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">10</span> sec
-Discovery targeted hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">90</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">10</span> sec
-Downstream on Demand max hop count<span class="token operator">:</span> <span class="token number">255</span>
-LDP <span class="token keyword">for</span> targeted sessions
-LDP initial<span class="token operator">/</span>maximum backoff<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">120</span> sec
-LDP loop detection<span class="token operator">:</span> off
-<span class="token comment">//可以看到R1本地的LDP会话保持时间已经为300秒，其Keep Alive Interval自动被设置为100秒；</span></code></pre>
-
-<p>查看邻居LDP对等体的MPLS LDP TCP会话保持时间：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> sh mpls ldp neighbor <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span> detail                         
- Peer LDP Ident<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">;</span> Local LDP Ident <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>
-  TCP connection<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token number">.21743</span> <span class="token operator">-</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token number">.646</span>
-  Password<span class="token operator">:</span> not required<span class="token punctuation">,</span> none<span class="token punctuation">,</span> in use
-  State<span class="token operator">:</span> Oper<span class="token punctuation">;</span> Msgs sent<span class="token operator">/</span>rcvd<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">14</span><span class="token punctuation">;</span> Downstream<span class="token punctuation">;</span> Last TIB rev sent <span class="token number">16</span>
-  Up time<span class="token operator">:</span> <span class="token number">00</span><span class="token operator">:</span><span class="token number">04</span><span class="token operator">:</span><span class="token number">00</span><span class="token punctuation">;</span> UID<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">;</span> Peer Id <span class="token number">0</span><span class="token punctuation">;</span>
-  LDP discovery sources<span class="token operator">:</span>
-   FastEthernet0<span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">;</span> Src IP addr<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span> 
-   holdtime<span class="token operator">:</span> <span class="token number">15000</span> ms<span class="token punctuation">,</span> hello interval<span class="token operator">:</span> <span class="token number">5000</span> ms
-  Addresses bound to peer LDP Ident<span class="token operator">:</span>
-   <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>    <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span>    <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span>         
-  Peer holdtime<span class="token operator">:</span> <span class="token number">180000</span> ms<span class="token punctuation">;</span> KA interval<span class="token operator">:</span> <span class="token number">60000</span> ms<span class="token punctuation">;</span> Peer state<span class="token operator">:</span> estab
-  Capabilities Sent<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-  Capabilities Received<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span></code></pre>
-<ul>
-<li>注意到邻居对等体的保持时间仍然为180秒，Keep Alive Interval仍然是60秒；其原因在于，和LDP Discovery计时器取较小值相同，LDP TCP会话计时器也取较小值；</li>
-<li>由于刚刚修改LDP 会话保持时间为300秒，此值大于默认的180秒；</li>
-</ul>
-<p>修改R2的LDP TCP会话保持时间改为900秒：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp holdtime <span class="token number">900</span>
-<span class="token operator">%</span>Previously established sessions may not use the new holdtime<span class="token punctuation">.</span>
-
-<span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> clear mpls ldp neighbor <span class="token operator">*</span></code></pre>
-
-<p>可以看到R2本地的LDP TCP会话保持时间已经被设置为900秒，KA Interval自动被设置为300秒：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> show mpls ldp parameters
-LDP Feature Set Manager<span class="token operator">:</span> State Initialized
- LDP features<span class="token operator">:</span>
- Basic
- IP<span class="token operator">-</span>over<span class="token operator">-</span>MPLS
- TDP
- IGP<span class="token operator">-</span>Sync
- Auto<span class="token operator">-</span>Configuration
- TCP<span class="token operator">-</span>MD5<span class="token operator">-</span>Rollover
-Protocol version<span class="token operator">:</span> <span class="token number">1</span>
-Session hold time<span class="token operator">:</span> <span class="token number">900</span> sec<span class="token punctuation">;</span> keep alive interval<span class="token operator">:</span> <span class="token number">300</span> sec
-Discovery hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">15</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">5</span> sec
-Discovery targeted hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">90</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">10</span> sec
-Downstream on Demand max hop count<span class="token operator">:</span> <span class="token number">255</span>
-LDP <span class="token keyword">for</span> targeted sessions
-LDP initial<span class="token operator">/</span>maximum backoff<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">120</span> sec
-LDP loop detection<span class="token operator">:</span> off</code></pre>
-<p>回到R1上查看LDP 邻居对等体R2实际使用的LDP会话保持时间：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> sh mpls ldp neighbor <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span> detail
- Peer LDP Ident<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">;</span> Local LDP Ident <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>
-  TCP connection<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token number">.37641</span> <span class="token operator">-</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token number">.646</span>
-  Password<span class="token operator">:</span> not required<span class="token punctuation">,</span> none<span class="token punctuation">,</span> in use
-  State<span class="token operator">:</span> Oper<span class="token punctuation">;</span> Msgs sent<span class="token operator">/</span>rcvd<span class="token operator">:</span> <span class="token number">12</span><span class="token operator">/</span><span class="token number">12</span><span class="token punctuation">;</span> Downstream<span class="token punctuation">;</span> Last TIB rev sent <span class="token number">16</span>
-  Up time<span class="token operator">:</span> <span class="token number">00</span><span class="token operator">:</span><span class="token number">02</span><span class="token operator">:</span><span class="token number">58</span><span class="token punctuation">;</span> UID<span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">;</span> Peer Id <span class="token number">0</span><span class="token punctuation">;</span>
-  LDP discovery sources<span class="token operator">:</span>
-   FastEthernet0<span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">;</span> Src IP addr<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span> 
-   holdtime<span class="token operator">:</span> <span class="token number">15000</span> ms<span class="token punctuation">,</span> hello interval<span class="token operator">:</span> <span class="token number">5000</span> ms
-  Addresses bound to peer LDP Ident<span class="token operator">:</span>
-   <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.2</span>    <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.2</span>    <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span>         
-  Peer holdtime<span class="token operator">:</span> <span class="token number">300000</span> ms<span class="token punctuation">;</span> KA interval<span class="token operator">:</span> <span class="token number">100000</span> ms<span class="token punctuation">;</span> Peer state<span class="token operator">:</span> estab
-  Capabilities Sent<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-  Capabilities Received<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span></code></pre>
-<ul>
-<li>可以看到虽然R2本地的LDP 会话保持时间已经被设置为900秒，但是在与R1协商后，由于R1的LDP会话保持时间300秒小于R2的900秒，所以R2使用300秒作为LDP会话保持时间；<blockquote>
-<p><strong>注意，LDP邻居计时器可以不一致，当两台LDP邻居对等体在交换参数的时候，取较小的计时器值，Discovery计时器如此，LDP TCP会话保持时间亦如此，基于目标的LDP邻居会话同样如此；</strong></p>
-</blockquote>
-</li>
-</ul>
-<h2 id="实验4：LDP认证：在R1和R2之间配置LDP身份认证"><a href="#实验4：LDP认证：在R1和R2之间配置LDP身份认证" class="headerlink" title="实验4：LDP认证：在R1和R2之间配置LDP身份认证"></a>实验4：LDP认证：在R1和R2之间配置LDP身份认证</h2><p>为避免等待验证实验现象时间较长，修改LDP 会话保持时间为15秒：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp holdtime <span class="token number">15</span></code></pre>
-
-<p>在R1上针对邻居2.2.2.2启用LDP认证：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp neighbor <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span> password cisco</code></pre>
-
-<p><strong>注意：实验中，发现如果不重置LDP邻居对等体关系，LDP身份认证配置无法生效；</strong></p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> clear mpls ldp nei <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span>  
-<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#
-<span class="token operator">*</span>Mar <span class="token number">13</span> <span class="token number">21</span><span class="token operator">:</span><span class="token number">36</span><span class="token operator">:</span><span class="token number">40.426</span><span class="token operator">:</span> <span class="token operator">%</span>LDP<span class="token operator">-</span><span class="token number">5</span><span class="token operator">-</span>CLEAR_NBRS<span class="token operator">:</span> Clear LDP <span class="token function">neighbors</span> <span class="token punctuation">(</span><span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token punctuation">)</span> by console
-<span class="token operator">*</span>Mar <span class="token number">13</span> <span class="token number">21</span><span class="token operator">:</span><span class="token number">36</span><span class="token operator">:</span><span class="token number">40.466</span><span class="token operator">:</span> <span class="token operator">%</span>LDP<span class="token operator">-</span><span class="token number">5</span><span class="token operator">-</span>NBRCHG<span class="token operator">:</span> LDP Neighbor <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">:</span><span class="token number">0</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> is <span class="token function">DOWN</span> <span class="token punctuation">(</span>User cleared session manually<span class="token punctuation">)</span>
-<span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#
-<span class="token operator">*</span>Mar <span class="token number">13</span> <span class="token number">21</span><span class="token operator">:</span><span class="token number">36</span><span class="token operator">:</span><span class="token number">42.822</span><span class="token operator">:</span> <span class="token operator">%</span>TCP<span class="token operator">-</span><span class="token number">6</span><span class="token operator">-</span>BADAUTH<span class="token operator">:</span> No MD5 digest from <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token punctuation">(</span><span class="token number">11164</span><span class="token punctuation">)</span> to <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token punctuation">(</span><span class="token number">646</span><span class="token punctuation">)</span></code></pre>
-
-<p>由于R2还未配置LDP认证，重置LDP邻居关系后，出现TCP认证报错日志，没有MD5摘要来自2.2.2.2：</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//在R2上针对邻居1.1.1.1启用LDP认证；</span>
-<span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> password cisco    
-<span class="token comment">//注意：实验中，发现如果不重置LDP邻居对等体关系，LDP身份认证配置无法生效；</span>
-<span class="token function">R2</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> clear mpls ldp nei <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span></code></pre>
-
-<h2 id="实验5：基于目标的LDP会话"><a href="#实验5：基于目标的LDP会话" class="headerlink" title="实验5：基于目标的LDP会话"></a>实验5：基于目标的LDP会话</h2><p>配置R1与R4建立基于目标的远程LDP会话</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//在R1上指定远程LDP邻居；</span>
- <span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp neighbor <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> targeted
- <span class="token comment">//注意，如果一台LSR只配置命令mpls ldp neighbor ip-address targeted，则这台LSR为远程LDP会话的主动发起方；</span>
-
-<span class="token comment">//设置的基于目标的LDP邻居会话Discovery Hello Interval和Holdtime；</span>
- <span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp discovery targeted<span class="token operator">-</span>hello interval <span class="token number">10</span>
- <span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp discovery targeted<span class="token operator">-</span>hello holdtime <span class="token number">30</span>
-
-<span class="token comment">//配置R1只允许R4与自己建立远程LDP邻居，通过配置R1只接受R4发送给自己的Discovery Hello消息来实现；</span>
- <span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp discovery targeted<span class="token operator">-</span>hello accept from <span class="token number">1</span>
- <span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#access<span class="token operator">-</span>list <span class="token number">1</span> permit host <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span>
- <span class="token comment">//注意，如果一台LSR只配置命令mpls ldp discovery targeted-hello accept from，则这台LSR为远程LDP会话的被动接受方；</span>
- <span class="token comment">//注意：当一台LSR只配置此命令，并不是说这台LSR只能接收主动发起方通告来的标签绑定信息，</span>
- <span class="token comment">//即使，一台LSR只配置了此命令，当其与远程LDP会话主动发起方建立LDP远程会话之后，</span>
- <span class="token comment">//被动接受方LSR也会向主动发起方LSR通告自己的入标签；</span></code></pre>
-
-<p>在R4上指定远程LDP邻居；</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> targeted
-
-<span class="token comment">//配置R4只允许R1与自己建立远程LDP邻居，通过配置R4只接受R1发送给自己的Discovery Hello消息来实现；</span>
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp discovery targeted<span class="token operator">-</span>hello accept from <span class="token number">1</span>
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#access<span class="token operator">-</span>list <span class="token number">1</span> permit host <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span>
-
-<span class="token comment">//注意：如果一台LSR同时配置了命令mpls ldp discovery targeted-hello accept from和命令mpls ldp neighbor ip-address targeted，</span>
-<span class="token comment">//则这台路由器既是远程基于目标LDP会话的主动发起方，同时也是被动接受方；</span></code></pre>
-
-<p>验证R1基于目标LDP会话计时器配置</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> sh mpls ldp parameters               
-LDP Feature Set Manager<span class="token operator">:</span> State Initialized
- LDP features<span class="token operator">:</span>
- Basic
- IP<span class="token operator">-</span>over<span class="token operator">-</span>MPLS
- TDP
- IGP<span class="token operator">-</span>Sync
- Auto<span class="token operator">-</span>Configuration
- TCP<span class="token operator">-</span>MD5<span class="token operator">-</span>Rollover
-Protocol version<span class="token operator">:</span> <span class="token number">1</span>
-Session hold time<span class="token operator">:</span> <span class="token number">15</span> sec<span class="token punctuation">;</span> keep alive interval<span class="token operator">:</span> <span class="token number">5</span> sec
-Discovery hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">30</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">10</span> sec
-Discovery targeted hello<span class="token operator">:</span> holdtime<span class="token operator">:</span> <span class="token number">30</span> sec<span class="token punctuation">;</span> interval<span class="token operator">:</span> <span class="token number">10</span> sec
-Accepting targeted hellos<span class="token punctuation">;</span> peer acl<span class="token operator">:</span> <span class="token number">1</span>
-Downstream on Demand max hop count<span class="token operator">:</span> <span class="token number">255</span>
-LDP <span class="token keyword">for</span> targeted sessions
-LDP initial<span class="token operator">/</span>maximum backoff<span class="token operator">:</span> <span class="token number">15</span><span class="token operator">/</span><span class="token number">120</span> sec
-LDP loop detection<span class="token operator">:</span> off
-<span class="token comment">//可以看到R1本地基于目标的LDP会话Discovery Hello Interval为10秒，Holdtime为30秒；</span>
-<span class="token comment">//R1接受基于目标的Hello消息，并且基于ACL1来进行远程邻居对等体过滤；</span></code></pre>
-
-<p>在R1上查看MPLS LDP邻居R4的信息；</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R1</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> show mpls ldp neighbor <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> detail
- Peer LDP Ident<span class="token operator">:</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">;</span> Local LDP Ident <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>
-  TCP connection<span class="token operator">:</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token number">.61631</span> <span class="token operator">-</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token number">.646</span>
-  Password<span class="token operator">:</span> not required<span class="token punctuation">,</span> none<span class="token punctuation">,</span> in use
-  State<span class="token operator">:</span> Oper<span class="token punctuation">;</span> Msgs sent<span class="token operator">/</span>rcvd<span class="token operator">:</span> <span class="token number">75</span><span class="token operator">/</span><span class="token number">75</span><span class="token punctuation">;</span> Downstream<span class="token punctuation">;</span> Last TIB rev sent <span class="token number">17</span>
-  Up time<span class="token operator">:</span> <span class="token number">00</span><span class="token operator">:</span><span class="token number">04</span><span class="token operator">:</span><span class="token number">44</span><span class="token punctuation">;</span> UID<span class="token operator">:</span> <span class="token number">8</span><span class="token punctuation">;</span> Peer Id <span class="token number">2</span><span class="token punctuation">;</span>
-  LDP discovery sources<span class="token operator">:</span>
-   Targeted Hello <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> <span class="token operator">-></span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token punctuation">,</span> active<span class="token punctuation">,</span> passive<span class="token punctuation">;</span><span class="token comment">//R1与R4已建立远程LDP会话；关键字active和passive表示R1是远程会话的主动发起方和被动接受方；</span>
-   holdtime<span class="token operator">:</span> infinite<span class="token punctuation">,</span> hello interval<span class="token operator">:</span> <span class="token number">3333</span> ms
-  Addresses bound to peer LDP Ident<span class="token operator">:</span>
-   <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.4</span>    <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.4</span>    <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span>         
-  Peer holdtime<span class="token operator">:</span> <span class="token number">15000</span> ms<span class="token punctuation">;</span> KA interval<span class="token operator">:</span> <span class="token number">5000</span> ms<span class="token punctuation">;</span> Peer state<span class="token operator">:</span> estab
-  Clients<span class="token operator">:</span> Dir Adj Client
-  Capabilities Sent<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-  Capabilities Received<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span></code></pre>
-
-<p>在R4上查看MPLS LDP邻居R1的信息；</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> show mpls ldp neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> detail
- Peer LDP Ident<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">;</span> Local LDP Ident <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">:</span><span class="token number">0</span>
-  TCP connection<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token number">.646</span> <span class="token operator">-</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token number">.61631</span>
-  Password<span class="token operator">:</span> not required<span class="token punctuation">,</span> none<span class="token punctuation">,</span> in use
-  State<span class="token operator">:</span> Oper<span class="token punctuation">;</span> Msgs sent<span class="token operator">/</span>rcvd<span class="token operator">:</span> <span class="token number">86</span><span class="token operator">/</span><span class="token number">85</span><span class="token punctuation">;</span> Downstream<span class="token punctuation">;</span> Last TIB rev sent <span class="token number">17</span>
-  Up time<span class="token operator">:</span> <span class="token number">00</span><span class="token operator">:</span><span class="token number">05</span><span class="token operator">:</span><span class="token number">31</span><span class="token punctuation">;</span> UID<span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">;</span> Peer Id <span class="token number">2</span><span class="token punctuation">;</span>
-  LDP discovery sources<span class="token operator">:</span>
-   Targeted Hello <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> <span class="token operator">-></span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token punctuation">,</span> active<span class="token punctuation">,</span> passive<span class="token punctuation">;</span><span class="token comment">//R1与R4已建立远程LDP会话；关键字active和passive表示R1是远程会话的主动发起方和被动接受方；</span>
-   holdtime<span class="token operator">:</span> infinite<span class="token punctuation">,</span> hello interval<span class="token operator">:</span> <span class="token number">3333</span> ms
-  Addresses bound to peer LDP Ident<span class="token operator">:</span>
-   <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.1</span>    <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.1</span>    <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span>         
-  Peer holdtime<span class="token operator">:</span> <span class="token number">15000</span> ms<span class="token punctuation">;</span> KA interval<span class="token operator">:</span> <span class="token number">5000</span> ms<span class="token punctuation">;</span> Peer state<span class="token operator">:</span> estab
-  Clients<span class="token operator">:</span> Dir Adj Client
-  Capabilities Sent<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-  Capabilities Received<span class="token operator">:</span>
-   <span class="token punctuation">[</span><span class="token function">ICCP</span> <span class="token punctuation">(</span>type <span class="token number">0x0405</span><span class="token punctuation">)</span> MajVer <span class="token number">1</span> MinVer <span class="token number">0</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Dynamic <span class="token function">Announcement</span> <span class="token punctuation">(</span><span class="token number">0x0506</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-   <span class="token punctuation">[</span>Typed <span class="token function">Wildcard</span> <span class="token punctuation">(</span><span class="token number">0x050B</span><span class="token punctuation">)</span><span class="token punctuation">]</span></code></pre>
-
-
-<h2 id="实验6：控制LDP标签通告；"><a href="#实验6：控制LDP标签通告；" class="headerlink" title="实验6：控制LDP标签通告；"></a>实验6：控制LDP标签通告；</h2><p>配置MPLS LDP来向特定的LDP对等体通告或者不通告特定的标签；</p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//在R4上查看LIB;</span>
-R4#show mpls ldp bindings
- lib entry<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">14</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">19</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">18</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> imp<span class="token operator">-</span>null
- lib entry<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">12</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">18</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">17</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">16</span>
- lib entry<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">8</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">16</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> imp<span class="token operator">-</span>null
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">19</span>
- lib entry<span class="token operator">:</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">2</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> imp<span class="token operator">-</span>null
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">16</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">18</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">16</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">20</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">19</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> imp<span class="token operator">-</span>null
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">17</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> imp<span class="token operator">-</span>null
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">10</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">17</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> imp<span class="token operator">-</span>null
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">17</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">6</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> imp<span class="token operator">-</span>null
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> imp<span class="token operator">-</span>null
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">20</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">4</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> imp<span class="token operator">-</span>null
-
-R4#show mpls ip binding
- <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">19</span>        
-  out label<span class="token operator">:</span>    <span class="token number">18</span>        lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">18</span>        
-  out label<span class="token operator">:</span>    <span class="token number">17</span>        lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse
-  out label<span class="token operator">:</span>    <span class="token number">16</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">16</span>        
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse
-  out label<span class="token operator">:</span>    <span class="token number">19</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null  
-  out label<span class="token operator">:</span>    <span class="token number">16</span>        lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>       
-  out label<span class="token operator">:</span>    <span class="token number">18</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     <span class="token number">20</span>        
-  out label<span class="token operator">:</span>    <span class="token number">19</span>        lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     <span class="token number">17</span>        
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse
-  out label<span class="token operator">:</span>    <span class="token number">17</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null  
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>       
-  out label<span class="token operator">:</span>    <span class="token number">20</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null</code></pre>
-
-
-<p><strong>在R3上进行配置，让R3只将与环回口的前缀相绑定的标签通告给R4；</strong></p>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//配置ACL以确定准许通告的特定前缀；</span>
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#ip access<span class="token operator">-</span>list standard PERMIT_LOOPBACK 
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#permit
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#permit host <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span>
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#permit host <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span>
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#permit host <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span> 
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#exit
-
-<span class="token comment">//配置ACL以确定特定的LDP对等体可以接收标签绑定信息；</span>
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#ip access<span class="token operator">-</span>list standard PEER_R4
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#permit host <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span> 
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#exit
-
-<span class="token comment">//配置LDP不向外通告任何标签；</span>
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#no mpls ldp advertise<span class="token operator">-</span>labels
-
-<span class="token comment">//配置LDP向对等体PEER_R4通告前缀PERMIT_LOOPBACK的标签绑定信息；</span>
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp advertise<span class="token operator">-</span>labels <span class="token keyword">for</span> PERMIT_LOOPBACK to PEER_R4
-
-<span class="token comment">//查看R3的标签通告信息；</span>
-<span class="token function">R3</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> show mpls ldp bindings advertisement<span class="token operator">-</span>acls
-Advertisement spec<span class="token operator">:</span>
- Prefix acl <span class="token operator">=</span> PERMIT_LOOPBACK<span class="token punctuation">;</span> Peer acl <span class="token operator">=</span> PEER_R4
-
-lib entry<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">22</span>
- Advert <span class="token function">acl</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token operator">:</span> Prefix acl PERMIT_LOOPBACK<span class="token punctuation">;</span> Peer acl PEER_R4
-lib entry<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">23</span>
- Advert <span class="token function">acl</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token operator">:</span> Prefix acl PERMIT_LOOPBACK<span class="token punctuation">;</span> Peer acl PEER_R4
-lib entry<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">24</span>
- Advert <span class="token function">acl</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token operator">:</span> Prefix acl PERMIT_LOOPBACK<span class="token punctuation">;</span> Peer acl PEER_R4
-lib entry<span class="token operator">:</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">25</span>
-lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">26</span>
-lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">27</span>
-lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">28</span>
-lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">29</span>
-<span class="token comment">//可以看到R3基于ACL PERMIT_LOOPBACK来确定需要通告的与特定前缀相绑定的标签和可以接收标签绑定信息的LDP对等体PEER_R4；</span></code></pre>
-
-<p>在R4上查看来自LDP对等体的标签绑定信息；</p>
-<pre class="language-c" data-language="c"><code class="language-c">R4#show mpls ldp bindings neighbor <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span> detail
- lib entry<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">14</span><span class="token punctuation">,</span> chkpt<span class="token operator">:</span> none
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">18</span>
- lib entry<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">12</span><span class="token punctuation">,</span> chkpt<span class="token operator">:</span> none
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">17</span>
- lib entry<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">8</span><span class="token punctuation">,</span> chkpt<span class="token operator">:</span> none
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> imp<span class="token operator">-</span>null
- lib entry<span class="token operator">:</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">2</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">16</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">17</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">10</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">6</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">4</span>
-<span class="token comment">//可以看到R4确实只收到了与环回口前缀相绑定的标签；</span>
-
-<span class="token comment">//查看R4的LIB；</span>
-R4#show mpls ip binding
- <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">19</span>        
-  out label<span class="token operator">:</span>    <span class="token number">18</span>        lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse  <span class="token comment">//inuse表示该标签已被放入LFIB表，并用来转发流量；</span>
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">18</span>        
-  out label<span class="token operator">:</span>    <span class="token number">17</span>        lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse
-  out label<span class="token operator">:</span>    <span class="token number">16</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">16</span>        
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse
-  out label<span class="token operator">:</span>    <span class="token number">19</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null  
-  out label<span class="token operator">:</span>    <span class="token number">18</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     <span class="token number">20</span>        
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.15</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     <span class="token number">17</span>        
-  out label<span class="token operator">:</span>    <span class="token number">17</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null  
-  out label<span class="token operator">:</span>    <span class="token number">20</span>        lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null
-<span class="token comment">//可以看到虽然R3只向R4通告了环回口前缀的标签绑定信息，</span>
-<span class="token comment">//但是由于R4和R1有远程目标对等体关系，所R4还是从R1哪里收到其他前缀的标签；</span>
-
-<span class="token comment">//查看R4的LFIB；</span>
-R4#show mpls forwarding<span class="token operator">-</span>table
-Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop    
-Label      Label      or Tunnel Id     Switched      interface              
-<span class="token number">16</span>         Pop Label  <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
-<span class="token number">17</span>         No Label   <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span>  <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
-<span class="token number">18</span>         <span class="token number">17</span>         <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
-<span class="token number">19</span>         <span class="token number">18</span>         <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span>       <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span>
-<span class="token number">20</span>         No Label   <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span>  <span class="token number">0</span>             Fa0<span class="token operator">/</span><span class="token number">0</span>      <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.3</span></code></pre>
-<p><strong>配置MPLS LDP，使其有选择地过滤接收到的特定前缀标签绑定信息</strong></p>
-<ul>
-<li>配置R4仅仅接收R1环回口1.1.1.1&#x2F;32的标签绑定信息；</li>
-</ul>
-<pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//配置ACL以确定准许接受的特定前缀；</span>
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#ip access<span class="token operator">-</span>list standard PERMIT_R1_LOOPBACK
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#permit host <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span>
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token operator">-</span>std<span class="token operator">-</span>nacl<span class="token punctuation">)</span>#exit
- 
-<span class="token comment">//针对LDP邻居R1和R3应用ACL以过滤接收到的特定前缀的绑定信息；</span>
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp neighbor <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span> labels accept PERMIT_R1_LOOPBACK
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#mpls ldp neighbor <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span> labels accept PERMIT_R1_LOOPBACK
-  
-<span class="token comment">//查看R4的LIB表，以验证实验配置；</span>
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> show mpls ldp bindings
- lib entry<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">14</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">19</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> <span class="token number">18</span>
-  remote binding<span class="token operator">:</span> lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> label<span class="token operator">:</span> imp<span class="token operator">-</span>null
- lib entry<span class="token operator">:</span> <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">12</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">18</span>
- lib entry<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">8</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">16</span>
- lib entry<span class="token operator">:</span> <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span><span class="token punctuation">,</span> rev <span class="token number">2</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> imp<span class="token operator">-</span>null
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">16</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">20</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">10</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> <span class="token number">17</span>
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">6</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> imp<span class="token operator">-</span>null
- lib entry<span class="token operator">:</span> <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span><span class="token punctuation">,</span> rev <span class="token number">4</span>
-  local binding<span class="token operator">:</span>  label<span class="token operator">:</span> imp<span class="token operator">-</span>null
-
-<span class="token function">R4</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>#<span class="token keyword">do</span> show mpls ip binding
- <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">19</span>        
-  out label<span class="token operator">:</span>    <span class="token number">18</span>        lsr<span class="token operator">:</span> <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">:</span><span class="token number">0</span>        inuse
-  out label<span class="token operator">:</span>    imp<span class="token operator">-</span>null  lsr<span class="token operator">:</span> <span class="token number">1.1</span><span class="token number">.1</span><span class="token number">.1</span><span class="token operator">:</span><span class="token number">0</span>       
- <span class="token number">2.2</span><span class="token number">.2</span><span class="token number">.2</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">18</span>        
- <span class="token number">3.3</span><span class="token number">.3</span><span class="token number">.3</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     <span class="token number">16</span>        
- <span class="token number">4.4</span><span class="token number">.4</span><span class="token number">.4</span><span class="token operator">/</span><span class="token number">32</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null  
- <span class="token number">192.168</span><span class="token number">.12</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     <span class="token number">20</span>        
- <span class="token number">192.168</span><span class="token number">.23</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     <span class="token number">17</span>        
- <span class="token number">192.168</span><span class="token number">.34</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null  
- <span class="token number">192.168</span><span class="token number">.47</span><span class="token number">.0</span><span class="token operator">/</span><span class="token number">24</span> 
-  in label<span class="token operator">:</span>     imp<span class="token operator">-</span>null
-<span class="token comment">//可以看到R4的LIB表中确实只有R1前缀1.1.1.1/32的标签绑定信息；</span></code></pre>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
-  </nav>
 
 </div>
   </main>
