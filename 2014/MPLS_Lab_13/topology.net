@@ -1,0 +1,401 @@
+autostart = False
+version = 0.8.6
+[127.0.0.1:7202]
+    workingdir = working
+    udp = 10201
+    [[7200]]
+        image = F:\IT\GNS3\IOS\c7200-15.0\c7200-adventerprisek9-mz.151-4.M2.image
+        idlepc = 0x60607e74
+        sparsemem = True
+        ghostios = True
+    [[ROUTER R5]]
+        console = 2110
+        aux = 2510
+        cnfg = configs\R5.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R2 f0/0
+        f0/1 = R1 f0/1
+        x = -555.0
+        y = -199.0
+        z = 1.0
+    [[ROUTER R6]]
+        console = 2111
+        aux = 2511
+        cnfg = configs\R6.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R2 f1/0
+        x = -559.0
+        y = 25.0
+        z = 1.0
+[127.0.0.1:7203]
+    workingdir = working
+    udp = 10301
+    [[7200]]
+        image = F:\IT\GNS3\IOS\c7200-15.0\c7200-adventerprisek9-mz.151-4.M2.image
+        idlepc = 0x60607e74
+        sparsemem = True
+        ghostios = True
+    [[ROUTER R7]]
+        console = 2112
+        aux = 2512
+        cnfg = configs\R7.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R4 f0/0
+        x = 414.0
+        y = -199.0
+        z = 1.0
+    [[ROUTER R8]]
+        console = 2113
+        aux = 2513
+        cnfg = configs\R8.cfg
+        slot0 = C7200-IO-2FE
+        f0/1 = R4 f0/1
+        x = 416.0
+        y = 23.0
+        z = 1.0
+[127.0.0.1:7200]
+    workingdir = working
+    udp = 10001
+    [[7200]]
+        image = F:\IT\GNS3\IOS\c7200-15.0\c7200-adventerprisek9-mz.151-4.M2.image
+        idlepc = 0x60607e74
+        sparsemem = True
+        ghostios = True
+    [[ROUTER R1]]
+        console = 2106
+        aux = 2506
+        cnfg = configs\R1.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R3 f0/0
+        f0/1 = R5 f0/1
+        slot1 = PA-2FE-TX
+        x = -222.0
+        y = -199.0
+        z = 1.0
+    [[ROUTER R2]]
+        console = 2107
+        aux = 2507
+        cnfg = configs\R2.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R5 f0/0
+        f0/1 = R3 f0/1
+        slot1 = PA-2FE-TX
+        f1/0 = R6 f0/0
+        x = -234.0
+        y = 24.0
+        z = 1.0
+[127.0.0.1:7201]
+    workingdir = working
+    udp = 10101
+    [[7200]]
+        image = F:\IT\GNS3\IOS\c7200-15.0\c7200-adventerprisek9-mz.151-4.M2.image
+        idlepc = 0x60607e74
+        sparsemem = True
+        ghostios = True
+    [[ROUTER R4]]
+        console = 2109
+        aux = 2509
+        cnfg = configs\R4.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R7 f0/0
+        f0/1 = R8 f0/1
+        slot1 = PA-2FE-TX
+        f1/0 = R3 f1/0
+        x = 129.0
+        y = -89.0
+        z = 1.0
+    [[ROUTER R3]]
+        console = 2108
+        aux = 2508
+        cnfg = configs\R3.cfg
+        slot0 = C7200-IO-2FE
+        f0/0 = R1 f0/0
+        f0/1 = R2 f0/1
+        slot1 = PA-2FE-TX
+        f1/0 = R4 f1/0
+        x = -71.0
+        y = -89.0
+        z = 1.0
+[GNS3-DATA]
+    configs = configs
+    workdir = working
+    [[NOTE 1]]
+        text = "Spoke Site"
+        x = -567.0
+        y = 187.5
+    [[NOTE 2]]
+        text = "RD 1:1"
+        x = -311.0
+        y = -26.5
+    [[NOTE 3]]
+        text = "Spoke Site"
+        x = -563.0
+        y = -322.5
+    [[NOTE 4]]
+        text = "Hub Site"
+        x = 402.0
+        y = -310.5
+    [[NOTE 5]]
+        text = "Site 1"
+        x = -509.0
+        y = -243.5
+    [[NOTE 6]]
+        text = "VPN A"
+        x = 470.0
+        y = -65.5
+    [[NOTE 7]]
+        text = "VPN A"
+        x = -576.0
+        y = 120.5
+    [[NOTE 8]]
+        text = "Site 3"
+        x = 459.0
+        y = -51.5
+    [[NOTE 9]]
+        text = "Site 2"
+        x = -583.0
+        y = 106.5
+    [[NOTE 10]]
+        text = "VPN A"
+        x = -515.0
+        y = -257.5
+    [[NOTE 11]]
+        text = "RD1:2"
+        x = -310.0
+        y = 26.5
+    [[NOTE 12]]
+        text = "L0:x.x.x.x/32\nx为设备号；"
+        x = -395.0
+        y = 147.5
+    [[NOTE 13]]
+        text = "192.168.13.0/24"
+        x = -172.0
+        y = -129.5
+    [[NOTE 14]]
+        text = "AS 65002"
+        x = -560.0
+        y = 135.5
+    [[NOTE 15]]
+        text = "192.168.48.0/24"
+        x = 244.0
+        y = 33.5
+    [[NOTE 16]]
+        text = "RD1:3"
+        x = 211.0
+        y = -37.5
+    [[NOTE 17]]
+        text = "AS 65003"
+        x = 446.0
+        y = -83.5
+    [[NOTE 18]]
+        text = "192.168.15.0/24"
+        x = -424.0
+        y = -200.5
+    [[NOTE 19]]
+        text = "192.168.26.0/24"
+        x = -456.0
+        y = 25.5
+    [[NOTE 20]]
+        text = "192.168.47.0/24"
+        x = 246.0
+        y = -166.5
+    [[NOTE 21]]
+        text = "192.168.25.0/24"
+        x = -482.0
+        y = -116.5
+    [[NOTE 22]]
+        text = "PE1"
+        x = -202.0
+        y = -180.5
+    [[NOTE 23]]
+        text = "PE3"
+        x = 148.0
+        y = -68.5
+    [[NOTE 24]]
+        text = "CE2"
+        x = -539.0
+        y = 45.5
+    [[NOTE 25]]
+        text = "CE3"
+        x = 435.0
+        y = -179.5
+    [[NOTE 26]]
+        text = "CE4"
+        x = 439.0
+        y = 44.5
+    [[NOTE 27]]
+        text = "P"
+        x = -43.0
+        y = -69.5
+    [[NOTE 28]]
+        text = "CE1"
+        x = -536.0
+        y = -178.5
+    [[NOTE 29]]
+        text = "PE3：\n导出 RT1:2\n导入 RT1:1"
+        x = 131.0
+        y = -30.5
+    [[NOTE 30]]
+        text = "PE1：\n导出 RT1:1\n导入 RT1:2"
+        x = -158.0
+        y = -230.5
+    [[NOTE 31]]
+        text = "PE2：\n导出 RT1:1\n导入 RT1:2"
+        x = -169.0
+        y = 48.5
+    [[NOTE 32]]
+        text = ""
+        x = -215.0
+        y = -301.5
+    [[NOTE 33]]
+        text = "RD1:1"
+        x = -298.0
+        y = -179.5
+    [[NOTE 34]]
+        text = "RD1:3"
+        x = 199.0
+        y = -116.5
+    [[NOTE 35]]
+        text = "AS 65001"
+        x = -545.0
+        y = -273.5
+    [[NOTE 36]]
+        text = "PE2"
+        x = -217.0
+        y = 44.5
+    [[NOTE 37]]
+        text = ""
+        x = -332.0
+        y = -248.5
+    [[NOTE 38]]
+        text = ""
+        x = -310.0
+        y = -285.5
+    [[NOTE 39]]
+        text = "OSPF 1 Area 0"
+        x = 22.0
+        y = -200.5
+    [[NOTE 40]]
+        text = "192.168.34.0/24"
+        x = -3.0
+        y = -91.5
+    [[NOTE 41]]
+        text = "MPLS VPN"
+        x = 8.0
+        y = -220.5
+    [[NOTE 42]]
+        text = "AS1"
+        x = -11.0
+        y = -239.5
+    [[NOTE 43]]
+        text = "192.168.23.0/24"
+        x = -188.0
+        y = -18.5
+    [[NOTE 44]]
+        text = "f0/1"
+        x = -41.5995935045
+        y = 6.29591475483
+        interface = R8 f0/1
+    [[NOTE 45]]
+        text = "f0/1"
+        x = -5.99925295294
+        y = 43.4371381491
+        interface = R3 f0/1
+    [[NOTE 46]]
+        text = "f0/0"
+        x = -42.1123103705
+        y = -5.88899904708
+        interface = R3 f0/0
+    [[NOTE 47]]
+        text = "f1/0"
+        x = 72.9949618993
+        y = 22.3651593349
+        interface = R3 f1/0
+    [[NOTE 48]]
+        text = "f0/1"
+        x = 73.9992529529
+        y = -9.43713814908
+        interface = R2 f0/1
+    [[NOTE 49]]
+        text = "f1/0"
+        x = -35.9942557622
+        y = 19.6778687417
+        interface = R2 f1/0
+    [[NOTE 50]]
+        text = "f0/0"
+        x = -44.9700753266
+        y = -13.491405869
+        interface = R2 f0/0
+    [[NOTE 51]]
+        text = "f0/0"
+        x = 35.1123103705
+        y = 46.8889990471
+        interface = R1 f0/0
+    [[NOTE 52]]
+        text = "f0/1"
+        x = -34.994351878
+        y = 25.6721739811
+        interface = R1 f0/1
+    [[NOTE 53]]
+        text = "f0/0"
+        x = -19.0442573488
+        y = 38.2847096653
+        interface = R7 f0/0
+    [[NOTE 54]]
+        text = "f0/0"
+        x = 74.9942557622
+        y = 24.3221312583
+        interface = R6 f0/0
+    [[NOTE 55]]
+        text = "f0/1"
+        x = 76.994351878
+        y = 21.3278260189
+        interface = R5 f0/1
+    [[NOTE 56]]
+        text = "f0/0"
+        x = 36.9700753266
+        y = 55.491405869
+        interface = R5 f0/0
+    [[NOTE 57]]
+        text = "f1/0"
+        x = -41.9949618993
+        y = 23.6348406651
+        interface = R4 f1/0
+    [[NOTE 58]]
+        text = "f0/1"
+        x = 42.5995935045
+        y = 40.7040852452
+        interface = R4 f0/1
+    [[NOTE 59]]
+        text = "f0/0"
+        x = 76.0442573488
+        y = -3.28470966529
+        interface = R4 f0/0
+    [[SHAPE 1]]
+        type = ellipse
+        x = -600.0
+        y = -277.0
+        width = 167.0
+        height = 160.0
+        border_style = 2
+    [[SHAPE 2]]
+        type = ellipse
+        x = -366.0
+        y = -240.0
+        width = 658.0
+        height = 362.0
+        border_style = 2
+    [[SHAPE 3]]
+        type = ellipse
+        x = -602.0
+        y = 5.0
+        width = 160.0
+        height = 157.0
+        border_style = 2
+    [[SHAPE 4]]
+        type = ellipse
+        x = 361.0
+        y = -245.0
+        width = 159.0
+        height = 368.0
+        border_style = 2
