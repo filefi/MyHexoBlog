@@ -7,9 +7,6 @@ categories: Network
 ---
 
 
-<!-- more -->
-
-
 # 理论：MPLS LDP会话保护
 在对两台直接连接LSR之间的LDP会话实施保护后，将会在这两台LSR之间建立基于目标的LDP会话。当这两台LSR之间的直连链路断开以后，只要这两台LSR之间存在可替代路径，基于目标的LDP会话将会得到维持。
     
@@ -21,6 +18,7 @@ categories: Network
 # 实验拓扑：
 ![topology](topo.png)
 
+<!-- more -->
 
 # 基本预配置：
 ## R1：

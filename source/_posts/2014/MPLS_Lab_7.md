@@ -7,8 +7,6 @@ categories: Network
 ---
 
 
-<!-- more -->
-
 # 实验环境：
 - 模拟器：GNS3 0.8.6
 - Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image
@@ -16,6 +14,7 @@ categories: Network
 # GNS3实验拓扑文件：
 [拓扑文件](topology.net)
 
+<!-- more -->
 
 # 基本预配置：
 ## R1：
