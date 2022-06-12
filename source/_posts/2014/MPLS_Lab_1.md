@@ -1,5 +1,5 @@
 ---
-title: MPLS Lab 1
+title: MPLS 实验1
 date: 2014-03-14 19:00:41
 updated: 2014-03-14 19:00:41
 tags: [MPLS, Network]
