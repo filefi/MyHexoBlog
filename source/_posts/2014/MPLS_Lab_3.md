@@ -16,7 +16,7 @@ categories: Network
 
 
 # GNS3实验拓扑文件：
-[](topology.net)
+[拓扑文件](topology.net)
 
 
 # 实验拓扑：
