@@ -479,7 +479,7 @@ R4(config-router-af)#exit-address-family
 ```
                 
 
-# 验证与调试：
+### 验证与调试：
 以ping 8.8.8.8的ICMP包转发交换过程为例，验证并解释MPLS VPN中数据包交换过程；
 ```c
 //在VPN A站点1的C路由器R6上ping远程VPN A站点2的C路由器R8；
