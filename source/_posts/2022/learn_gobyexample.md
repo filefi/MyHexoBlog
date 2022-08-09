@@ -114,21 +114,29 @@ short
 
 
 
-# 变量
+# 常量
 
 ```go
 package main
 
-import "fmt"
-import "math"
+import (
+    "fmt"
+    "math"
+)
 
 // const 用于声明一个常量。
 const s string = "constant"
 
 func main() {
     fmt.Println(s)
-    
-	// const 语句可以出现在任何 var 语句可以出现的地方
+
+    // 重新赋值会报错
+    s = "yoyo" // cannot assign to s (constant "constant" of type string)
+
+    var s int = 100 // 重新定义局部变量则不会报错
+    fmt.Println(s)
+
+    // const 语句可以出现在任何 var 语句可以出现的地方
     const n = 500000000
 
     //常数表达式可以执行任意精度的运算
@@ -252,7 +260,8 @@ func main() {
         fmt.Println("three")
     }
 
-	// 在一个 case 语句中，你可以使用逗号来分隔多个表达式。在这个例子中，我们很好的使用了可选的default 分支。
+	// 在一个 case 语句中，你可以使用逗号来分隔多个表达式。
+  // 在这个例子中，我们很好的使用了可选的 default 分支。
     switch time.Now().Weekday() {
     case time.Saturday, time.Sunday:
         fmt.Println("it's the weekend")
@@ -300,9 +309,9 @@ func main() {
     fmt.Println("len:", len(a))
     
 	// 使用这个语法在一行内初始化一个数组
-    var b [5]int = [5]int {1, 2, 3, 4, 5}
-    // 上面语句可简写为 var b = [5]int {1, 2, 3, 4, 5}
-    // 进一步简写为 b := [5]int {1, 2, 3, 4, 5}
+    var b [5]int = [5]int{1, 2, 3, 4, 5}
+    // 上面语句可简写为 var b = [5]int{1, 2, 3, 4, 5}
+    // 进一步简写为 b := [5]int{1, 2, 3, 4, 5}
     
     fmt.Println("dcl:", b)
     
@@ -339,23 +348,23 @@ package main
 import "fmt"
 
 func main() {
-	// 不像数组，slice 的类型仅由它所包含的元素决定（不像数组中还需要元素的个数）。
-    // 要创建一个长度非零的空slice，需要使用内建的方法 make。
+    // 不像数组，slice 的类型仅由它所包含的元素决定（不像数组中还需要元素的个数）。
+    // 要创建一个长度非零的空slice，需要使用内建函数 make。
     // 这里我们创建了一个长度为3的 string 类型 slice（初始化为零值）。
     s := make([]string, 3)
     fmt.Println("emp:", s) // emp: [  ]
-	
+
     // 我们可以和数组一样设置和得到值
     s[0] = "a"
     s[1] = "b"
     s[2] = "c"
-    fmt.Println("set:", s) // set: [a b c]
+    fmt.Println("set:", s)    // set: [a b c]
     fmt.Println("get:", s[2]) // get: c
 
     // 如你所料，len 返回 slice 的长度
     fmt.Println("len:", len(s)) // len: 3
-    
-	// 作为基本操作的补充，slice 支持比数组更多的操作。其中一个是内建的 append，它返回一个包含了一个或者多个新值的 slice。注意我们接受返回由 append返回的新的 slice 值。
+
+    // 作为基本操作的补充，slice 支持比数组更多的操作。其中一个是内建的 append，它返回一个包含了一个或者多个新值的 slice。注意我们接受返回由 append返回的新的 slice 值。
     s = append(s, "d")
     s = append(s, "e", "f")
     fmt.Println("apd:", s) // apd: [a b c d e f]
@@ -364,7 +373,7 @@ func main() {
     c := make([]string, len(s))
     copy(c, s)
     fmt.Println("cpy:", c) // cpy: [a b c d e f]
-	
+
     // Slice 支持通过 slice[low:high] 语法进行“切片”操作。例如，这里得到一个包含元素 s[2], s[3],s[4] 的 slice。
     l := s[2:5]
     fmt.Println("sl1:", l) // sl1: [c d e]
@@ -378,9 +387,9 @@ func main() {
     fmt.Println("sl3:", l) // sl3: [c d e f]
 
     // 我们可以在一行代码中声明并初始化一个 slice 变量。
-    var t []string = []string {"g", "h", "i"}
-	// 上面语句可简写为 var t = []string {"g", "h", "i"}
-	// 进一步简写为 t := []string{"g", "h", "i"}
+    var t []string = []string{"g", "h", "i"}
+    // 上面语句可简写为 var t = []string {"g", "h", "i"}
+    // 进一步简写为 t := []string{"g", "h", "i"}
     fmt.Println("dcl:", t) // dcl: [g h i]
 
     // Slice 可以组成多维数据结构。内部的 slice 长度可以不同，这和多位数组不同。
@@ -413,6 +422,13 @@ dcl: [g h i]
 ```
 看看这个由 Go 团队撰写的一篇[很棒的博文](http://blog.golang.org/2011/01/go-slices-usage-and-internals.html)，获得更多关于 Go 中 slice 的设计和实现细节。
 
+```go
+// array 和 slice 的字面量声明的区别在于方括号[]中是否指定长度
+var a [3]string
+fmt.Println(a)
+append(a, "a", "b") // 此时会报错：first argument to append must be a slice; have a (variable of type [3]string)
+```
+
 # map
 
 现在，我们已经看过了数组和 slice，接下来我们将看看 Go 中的另一个关键的内建数据类型：map。
@@ -425,33 +441,38 @@ package main
 import "fmt"
 
 func main() {
-	// 要创建一个空 map，需要使用内建的 make:make(map[key-type]val-type).
+    // 要创建一个空 map，需要使用内建函数make
+    // 其形式为：make(map[key-type]val-type).
     m := make(map[string]int)
-    
-    // 使用典型的 make[key] = val 语法来设置键值对。
+
+    // 使用典型的 name[key] = val 语法来设置键值对。
     m["k1"] = 7
     m["k2"] = 13
-    
-	// 使用例如 Println 来打印一个 map 将会输出所有的键值对。
+
+    // 使用例如 Println 来打印一个 map 将会输出所有的键值对。
     fmt.Println("map:", m) // map: map[k1:7 k2:13]
     // 注意一个 map 在使用 fmt.Println 打印的时候，是以 map[k:v k:v]的格式输出的。
-    
-	// 使用 name[key] 来获取一个键的值
+
+    // 使用 name[key] 来获取一个键的值
     v1 := m["k1"]
     fmt.Println("v1: ", v1) // v1:  7
-    
-	// 当对一个 map 调用内建的 len 时，返回的是键值对数目
+
+    // 当对一个 map 调用内建的 len 时，返回的是键值对数目
     fmt.Println("len:", len(m)) // len: 2
-    
-	// 内建的 delete 可以从一个 map 中移除键值对
+
+    // 内建的 delete 可以从一个 map 中移除键值对
     delete(m, "k2")
     fmt.Println("map:", m) // map: map[k1:7]
-    
-	// 当从一个 map 中取值时，可选的第二返回值指示这个键是在这个 map 中。这可以用来消除键不存在和键有零值，像 0 或者 "" 而产生的歧义。
+
+    // 当从一个 map 中取值时，可选的第二返回值指示这个键是在这个 map 中。这可以用来消除键不存在和键有零值，像 0 或者 "" 而产生的歧义。
     // _, prs := m["k2"]
     k2, prs := m["k2"]
     fmt.Println("prs:", prs) // prs: false
-    fmt.Println("k2:", k2) // k2: 0
+    fmt.Println("k2:", k2)   // k2: 0
+
+    k1, prs := m["k1"]
+    fmt.Println("prs:", prs) // prs: true
+    fmt.Println("k1:", k1)   // k1: 7
 
     // 你也可以通过这个语法在同一行申明和初始化一个新的map。
     n := map[string]int{"foo": 1, "bar": 2}
@@ -466,7 +487,10 @@ v1:  7
 len: 2
 map: map[k1:7]
 prs: false
-map: map[foo:1 bar:2]
+k2: 0
+prs: true
+k1: 7
+map: map[bar:2 foo:1]
 ```
 
 # range遍历
@@ -480,34 +504,40 @@ import "fmt"
 
 func main() {
 	// 这里我们使用 range 来统计一个 slice 的元素个数。数组也可以采用这种方法。
-    nums := []int{2, 3, 4}
-    sum := 0
-    for _, num := range nums { // 这里我们不需要索引，所以使用 空值定义符_ 来忽略它。有时候我们实际上是需要这个索引的。
-        sum += num
-    }
-    fmt.Println("sum:", sum) // sum: 9
-    
+	nums := []int{2, 3, 4}
+	sum := 0
+	for _, num := range nums { // 这里我们不需要索引，所以使用 空值定义符_ 来忽略它。有时候我们实际上是需要这个索引的。
+		sum += num
+	}
+	fmt.Println("sum:", sum) // sum: 9
+
 	// range 在数组和 slice 中都同样提供每个项的索引和值。
-    for i, num := range nums {
-        if num == 3 {
-            fmt.Println("index:", i) // index: 1
-        }
-    }
-    
+	for i, num := range nums {
+		if num == 3 {
+			fmt.Println("index:", i) // index: 1
+		}
+	}
+
 	// range 在 map 中迭代键值对。
-    kvs := map[string]string{"a": "apple", "b": "banana"}
-    for k, v := range kvs {
-        fmt.Printf("%s -> %s\n", k, v) 
-        // a -> apple
-        // b -> banana
-    }
-    
-	// range 在字符串中迭代 unicode 编码。第一个返回值是rune 的起始字节位置，然后第二个是 rune 自己。
-    for i, c := range "go" {
-        fmt.Println(i, c)
-        // 0 103
-        // 1 111
-    }
+	kvs := map[string]string{"a": "apple", "b": "banana"}
+	for k, v := range kvs {
+		fmt.Printf("%s -> %s\n", k, v)
+		// a -> apple
+		// b -> banana
+	}
+
+	// The first value is the starting byte index of the rune and the second the rune itself.
+	for i, c := range "go" {
+		fmt.Println(i, c)
+		// 0 103
+		// 1 111
+	}
+
+	for i, r := range "啊哈" {
+		fmt.Println(i, r, string(r))
+		// 0 21834 啊
+		//3 21704 哈
+	}
 }
 ```
 
@@ -520,6 +550,8 @@ a -> apple
 b -> banana
 0 103
 1 111
+0 21834 啊
+3 21704 哈
 ```
 
 # 函数
@@ -529,7 +561,7 @@ package main
 
 import "fmt"
 
-// 这里是一个函数，接受两个 int 并且以 int 返回它们的和
+// 这里是一个函数，接受两个 int 并返回它们的和，返回值为int类型
 func plus(a int, b int) int {
 	// Go 需要明确的返回值，例如，它不会自动返回最后一个表达式的值
     return a + b
@@ -567,7 +599,7 @@ func main() {
     fmt.Println(a)
     fmt.Println(b)
 
-    // 如果你仅仅想返回值的一部分的话，你可以使用空白定义符 _。
+    // 如果你仅仅想返回值的一部分的话，你可以使用空白标识符 _。
     _, c := vals()
     fmt.Println(c)
 }
@@ -619,7 +651,7 @@ $ go run variadic-functions.go
 
 ## 闭包
 
-Go 支持通过 [*闭包*](http://zh.wikipedia.org/wiki/闭包_(计算机科学)) 来使用 [*匿名函数*](http://zh.wikipedia.org/wiki/匿名函数)。匿名函数在你想定义一个不需要命名的内联函数时是很实用的。
+Go 支持 [*匿名函数*](http://zh.wikipedia.org/wiki/匿名函数)，可以形成 [*闭包*](http://zh.wikipedia.org/wiki/闭包_(计算机科学)) 。当您想定义一个内联函数而不必命名时，匿名函数很有用。
 
 ```go
 package main
@@ -711,16 +743,16 @@ func zeroptr(iptr *int) {
 
 func main() {
     i := 1
-    fmt.Println("initial:", i)
+    fmt.Println("initial:", i) // 1
     zeroval(i)
-    fmt.Println("zeroval:", i)
+    fmt.Println("zeroval:", i) // 1
     
 	// 通过 &i 语法来取得 i 的内存地址，例如一个变量i 的指针。
     zeroptr(&i)
-    fmt.Println("zeroptr:", i)
+    fmt.Println("zeroptr:", i) // 0
 
     // 指针也是可以被打印的。
-    fmt.Println("pointer:", &i)
+    fmt.Println("pointer:", &i) // 0x42131100
 }
 // zeroval 在 main 函数中不能改变 i 的值，但是zeroptr 可以，因为它有一个这个变量的内存地址的引用。
 ```
@@ -735,6 +767,112 @@ pointer: 0x42131100
 
 
 
+# Strings and Runes
+
+A Go string is a read-only slice of bytes. The language and the standard library treat strings specially - as containers of text encoded in [UTF-8](https://en.wikipedia.org/wiki/UTF-8). In other languages, strings are made of “characters”. In Go, the concept of a character is called a `rune` - it’s an integer that represents a Unicode code point. [This Go blog post](https://go.dev/blog/strings) is a good introduction to the topic.
+
+```go
+package main
+
+import (
+    "fmt"
+    "unicode/utf8"
+)
+
+func main() {
+
+    // s is a string assigned a literal value representing the word “hello” in the Thai language. 
+    // Go string literals are UTF-8 encoded text.
+    const s = "สวัสดี"
+
+    // Since strings are equivalent to []byte, this will produce the length of the raw bytes stored within.
+    fmt.Println("Len:", len(s)) // Len: 18
+
+    // Indexing into a string produces the raw byte values at each index. 
+    // This loop generates the hex values of all the bytes that constitute the code points in s.
+    // 对字符串进行索引会在每个索引处生成原始字节值。
+    // 此循环生成构成 s 中代码点的所有字节的十六进制值。
+    for i := 0; i < len(s); i++ {
+        fmt.Printf("%x ", s[i]) // e0 b8 aa e0 b8 a7 e0 b8 b1 e0 b8 aa e0 b8 94 e0 b8 b5 
+    }
+    fmt.Println()
+
+    // To count how many runes are in a string, we can use the utf8 package. 
+    // Note that the run-time of RuneCountInString dependes on the size of the string, because it has to decode each UTF-8 rune sequentially. 
+    // Some Thai characters are represented by multiple UTF-8 code points, so the result of this count may be surprising.
+    fmt.Println("Rune count:", utf8.RuneCountInString(s)) // Rune count: 6
+
+    // A range loop handles strings specially and decodes each rune along with its offset in the string.
+    for idx, runeValue := range s {
+        fmt.Printf("%#U starts at %d\n", runeValue, idx)
+        // U+0E2A 'ส' starts at 0
+	   // U+0E27 'ว' starts at 3
+	   // U+0E31 'ั' starts at 6
+       // U+0E2A 'ส' starts at 9
+       // U+0E14 'ด' starts at 12
+       // U+0E35 'ี' starts at 15
+    }
+
+    // We can achieve the same iteration by using the utf8.DecodeRuneInString function explicitly.
+    fmt.Println("\nUsing DecodeRuneInString")
+    for i, w := 0, 0; i < len(s); i += w {
+        runeValue, width := utf8.DecodeRuneInString(s[i:])
+        fmt.Printf("%#U starts at %d\n", runeValue, i)
+        w = width
+
+        // This demonstrates passing a rune value to a function.
+        examineRune(runeValue)
+    }
+    // Using DecodeRuneInString
+    // U+0E2A 'ส' starts at 0
+    // found so sua
+    // U+0E27 'ว' starts at 3
+    // U+0E31 'ั' starts at 6
+    // U+0E2A 'ส' starts at 9
+    // found so sua
+    // U+0E14 'ด' starts at 12
+    // U+0E35 'ี' starts at 15
+}
+
+func examineRune(r rune) {
+
+    // Values enclosed in single quotes are rune literals. 
+    // We can compare a rune value to a rune literal directly.
+    if r == 't' {
+        fmt.Println("found tee")
+    } else if r == 'ส' {
+        fmt.Println("found so sua")
+    }
+}
+```
+
+
+
+```bash
+$ go run strings-and-runes.go
+Len: 18
+e0 b8 aa e0 b8 a7 e0 b8 b1 e0 b8 aa e0 b8 94 e0 b8 b5 
+Rune count: 6
+U+0E2A 'ส' starts at 0
+U+0E27 'ว' starts at 3
+U+0E31 'ั' starts at 6
+U+0E2A 'ส' starts at 9
+U+0E14 'ด' starts at 12
+U+0E35 'ี' starts at 15
+
+Using DecodeRuneInString
+U+0E2A 'ส' starts at 0
+found so sua
+U+0E27 'ว' starts at 3
+U+0E31 'ั' starts at 6
+U+0E2A 'ส' starts at 9
+found so sua
+U+0E14 'ด' starts at 12
+U+0E35 'ี' starts at 15
+```
+
+
+
 # 结构体
 
 Go 的*结构体(struct)* 是带类型的字段(fields)集合。 这在组织数据时非常有用。
@@ -744,34 +882,47 @@ package main
 
 import "fmt"
 
-// 这里的 person 结构体包含了 name 和 age 两个字段。
+// This person struct type has name and age fields.
 type person struct {
     name string
     age  int
 }
 
+// newPerson constructs a new person struct with the given name.
+func newPerson(name string) *person {
+
+    // You can safely return a pointer to local variable as a local variable will survive the scope of the function.
+    p := person{name: name}
+    p.age = 42
+    return &p
+}
+
 func main() {
-	// 使用这个语法创建新的结构体元素。
+
+    // This syntax creates a new struct.
     fmt.Println(person{"Bob", 20}) // {Bob 20}
 
-    // 你可以在初始化一个结构体元素时指定字段名字。
+    // You can name the fields when initializing a struct.
     fmt.Println(person{name: "Alice", age: 30}) // {Alice 30}
 
-    // 省略的字段将被初始化为零值。
+    // Omitted fields will be zero-valued.
     fmt.Println(person{name: "Fred"}) // {Fred 0}
 
-    // & 前缀生成一个结构体指针。
+    // An & prefix yields a pointer to the struct.
     fmt.Println(&person{name: "Ann", age: 40}) // &{Ann 40}
 
-    // 使用.来访问结构体字段。
+    // It’s idiomatic to encapsulate new struct creation in constructor functions
+    fmt.Println(newPerson("Jon")) // &{Jon 42}
+
     s := person{name: "Sean", age: 50}
+    // Access struct fields with a dot.
     fmt.Println(s.name) // Sean
-    
-	// 也可以对结构体指针使用. - 指针会被自动解引用。
+
+    // You can also use dots with struct pointers - the pointers are automatically dereferenced.
     sp := &s
     fmt.Println(sp.age) // 50
-	
-    // 结构体是可变(mutable)的。
+
+    // Structs are mutable.
     sp.age = 51
     fmt.Println(sp.age) // 51
 }
@@ -784,9 +935,51 @@ $ go run structs.go
 {Alice 30}
 {Fred 0}
 &{Ann 40}
+&{Jon 42}
 Sean
 50
 51
+```
+
+结构体中可以包含函数类型的字段：
+
+```go
+package main
+
+import "fmt"
+
+type person struct {
+	name string
+	age  int
+	say  func() // 结构体中可以包含函数类型的字段
+}
+
+func newPerson(name string) *person {
+
+	p := person{name: name}
+	p.age = 42
+	p.say = func() { fmt.Println("yoyo") }
+	return &p
+}
+
+func main() {
+	p := person{name: "Peter", age: 12, say: func() { fmt.Println("haha") }}
+	fmt.Println(p) // {Peter 12 0xede5c0}
+	p.say()        // haha
+
+	p1 := newPerson("Neo")
+	fmt.Println(p1) // &{Neo 42 0xaae480}
+	p1.say()        // yoyo
+
+}
+```
+
+```bash
+$ go run demo.go
+{Peter 12 0xede5c0}
+haha
+&{Neo 42 0xaae480}
+yoyo
 ```
 
 
@@ -805,6 +998,7 @@ type rect struct {
 }
 
 // area 是一个方法，该方法拥有一个 *rect 类型（rect类型的指针）的接收器(receiver)。
+// You may want to use a pointer receiver type to avoid copying on method calls or to allow the method to mutate the receiving struct.
 func (r *rect) area() int {
     return r.width * r.height
 }
@@ -822,8 +1016,7 @@ func main() {
     fmt.Println("area: ", r.area()) // area:  50
     fmt.Println("perim:", r.perim()) // perim: 30
 
-    // 调用方法时，Go 会自动处理值和指针之间的转换。 
-    // 想要避免在调用方法时产生一个拷贝，或者想让方法可以修改接收的结构体， 你都可以使用指针来调用方法。
+    // Go automatically handles conversion between values and pointers for method calls.
     rp := &r
     fmt.Println("area: ", rp.area()) // area:  50
     fmt.Println("perim:", rp.perim()) // perim: 30
@@ -843,6 +1036,70 @@ perim: 30
 (&r).area():  50
 (&r).perim(): 30
 ```
+
+使用接收器类型为指针的方法，既可以避免方法调用时的值拷贝，也允许方法修改接收到的结构体中的字段。
+
+```go
+package main
+
+import "fmt"
+
+type person struct {
+	name string
+	age  int
+}
+
+func (p person) SayHello() {
+	fmt.Println("my name is", p.name)
+}
+
+func (p person) ChangeName(new string) {
+	p.name = new
+}
+
+func (p *person) ChangeNameInPlace(new string) {
+	p.name = new
+}
+
+func main() {
+	p := person{name: "Peter", age: 12}
+	pp := &p
+
+	fmt.Println(p)  // {Peter 12}
+	fmt.Println(pp) // &{Peter 12}
+
+	// 在调用方法时，Go会自动处理值和指针的转换；
+	// 你可以直接使用结构体的值来调用方法，也可以使用结构体的指针来调用方法；
+	p.SayHello()  // my name is Peter
+	pp.SayHello() // my name is Peter
+
+	// 不管是使用值调用方法还是使用结构体指针调用方法，都无法直接修改结构体中的字段；
+	p.ChangeName("Guy")
+	fmt.Println(p.name) // Peter
+	pp.ChangeName("Goodman")
+	fmt.Println(p.name) // Peter
+
+	// 只有在方法的接收器类型是指针时，方法才能修改接收到的结构体的字段。
+	p.ChangeNameInPlace("Guy")
+	fmt.Println(p.name) // Guy
+	pp.ChangeNameInPlace("Goodman")
+	fmt.Println(p.name) // Goodman
+}
+```
+
+```bash
+$ go run .\demo1.go
+{Peter 12}
+&{Peter 12}
+my name is Peter
+my name is Peter
+Peter
+Peter
+Guy
+Goodman
+```
+
+
 
 # 接口 (Interfaces)
 
@@ -918,11 +1175,72 @@ g.area() : 78.53981633974483
 g.perim() : 31.41592653589793
 ```
 
-# 嵌入 (Embedding)
+```go
+package main
 
-Go support *embedding* of structs and interfaces to express a more seamless *composition* of types.
+import "fmt"
 
-Go 支持结构和接口的嵌入，以表达更无缝的类型组合。
+type person struct {
+	name string
+	age  int
+}
+
+type dog struct {
+	name string
+	age  int
+}
+
+// 定义animal接口
+type animal interface {
+	eat()
+	speak()
+}
+
+// person类型实现animal接口
+func (p person) eat() {
+	fmt.Printf("%s eat KFC.\n", p.name)
+}
+
+func (p person) speak() {
+	fmt.Printf("my name is %s.\n", p.name)
+}
+
+// dog类型实现animal接口
+func (d dog) eat() {
+	fmt.Println("dog eat meat.")
+}
+
+func (d dog) speak() {
+	fmt.Println("Woof woof~")
+}
+
+// call函数接受一个animal接口
+func call(a animal) {
+	a.eat()
+	a.speak()
+}
+
+func main() {
+	p := person{name: "Peter", age: 12}
+	d := dog{name: "Dog", age: 1}
+
+	call(p)
+	call(d)
+}
+```
+
+```bash
+Peter eat KFC.
+my name is Peter.
+dog eat meat.
+Woof woof~
+```
+
+
+
+# Struct Embedding
+
+Go supports *embedding* of structs and interfaces to express a more seamless *composition* of types. This is not to be confused with `//go:embed` which is a go directive introduced in Go version 1.16+ to embed files and folders into the application binary.
 
 ```go
 package main
@@ -984,6 +1302,78 @@ co.base.num:  1
 co.describe():  base with num=1
 co.base.describe():  base with num=1
 d.describe():  base with num=1
+```
+
+# Generics
+
+Starting with version 1.18, Go has added support for *generics*, also known as *type parameters*.
+
+As an example of a generic function, `MapKeys` takes a map of any type and returns a slice of its keys. This function has two type parameters - `K` and `V`; `K` has the `comparable` *constraint*, meaning that we can compare values of this type with the `==` and `!=` operators. This is required for map keys in Go. `V` has the `any` constraint, meaning that it’s not restricted in any way (`any` is an alias for `interface{}`).
+
+```go
+package main
+
+import "fmt"
+
+func MapKeys[K comparable, V any](m map[K]V) []K {
+    r := make([]K, 0, len(m))
+    for k := range m {
+        r = append(r, k)
+    }
+    return r
+}
+
+// As an example of a generic type, List is a singly-linked list with values of any type.
+type List[T any] struct {
+    head, tail *element[T]
+}
+
+type element[T any] struct {
+    next *element[T]
+    val  T
+}
+
+// We can define methods on generic types just like we do on regular types, but we have to keep the type parameters in place. 
+// The type is List[T], not List.
+func (lst *List[T]) Push(v T) {
+    if lst.tail == nil {
+        lst.head = &element[T]{val: v}
+        lst.tail = lst.head
+    } else {
+        lst.tail.next = &element[T]{val: v}
+        lst.tail = lst.tail.next
+    }
+}
+
+func (lst *List[T]) GetAll() []T {
+    var elems []T
+    for e := lst.head; e != nil; e = e.next {
+        elems = append(elems, e.val)
+    }
+    return elems
+}
+
+func main() {
+    var m = map[int]string{1: "2", 2: "4", 4: "8"}
+
+    // When invoking generic functions, we can often rely on type inference. 
+    // Note that we don’t have to specify the types for K and V when calling MapKeys - the compiler infers them automatically.
+    fmt.Println("keys m:", MapKeys(m))
+
+    // though we could also specify them explicitly.
+    _ = MapKeys[int, string](m)
+
+    lst := List[int]{}
+    lst.Push(10)
+    lst.Push(13)
+    lst.Push(23)
+    fmt.Println("list:", lst.GetAll())
+}
+```
+
+```bash
+keys: [4 1 2]
+list: [10 13 23]
 ```
 
 # 错误
