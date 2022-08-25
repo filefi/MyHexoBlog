@@ -7992,6 +7992,32 @@ L        <span class="token number">192.168</span><span class="token number">.34
       </tags>
   </entry>
   <entry>
+    <title>This beta version of Typora is expired</title>
+    <url>/2022/This-beta-version-of-Typora-is-expired/</url>
+    <content><![CDATA[<span id="more"></span>
+
+<p><img src="/2022/This-beta-version-of-Typora-is-expired/dealwith0.webp"></p>
+<p>通过修改注册表，可以解决这个问题：</p>
+<ol>
+<li>win+r 打开运行窗口</li>
+<li>在搜索栏输入<code>regedit</code>，回车后打开注册表</li>
+<li>在注册表中找到：<code>计算机\HKEY_CURRENT_USER\Software\Typora</code></li>
+<li>鼠标右键Typora，选择权限</li>
+<li>选择<code>Administraors</code>，将下面的权限选择为拒绝</li>
+</ol>
+<p><img src="/2022/This-beta-version-of-Typora-is-expired/dealwith.webp"></p>
+<ol start="6">
+<li>重新打开Typora，发现可以正常运行了</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Miscellaneous</category>
+      </categories>
+      <tags>
+        <tag>Editor</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ansible 用户指南</title>
     <url>/2022/ansible_user_guide/</url>
     <content><![CDATA[<h1 id="安装指南"><a href="#安装指南" class="headerlink" title="安装指南"></a>安装指南</h1><h2 id="安装-Ansible"><a href="#安装-Ansible" class="headerlink" title="安装 Ansible"></a>安装 Ansible</h2><h3 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h3><h4 id="控制节点要求-（Control-node-requirements）"><a href="#控制节点要求-（Control-node-requirements）" class="headerlink" title="控制节点要求 （Control node requirements）"></a>控制节点要求 （<a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8">Control node requirements</a>）</h4><p>除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。</p>
