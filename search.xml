@@ -7952,6 +7952,46 @@ L        <span class="token number">192.168</span><span class="token number">.34
       </tags>
   </entry>
   <entry>
+    <title>配置和管理逻辑卷管理器 (Logical Volume Manager)</title>
+    <url>/2022/Logical_Volume_Manager_Administration/</url>
+    <content><![CDATA[<h1 id="1-逻辑卷管理概述"><a href="#1-逻辑卷管理概述" class="headerlink" title="1. 逻辑卷管理概述"></a>1. 逻辑卷管理概述</h1><p>逻辑卷管理 (LVM) 在物理存储上创建抽象层，帮助您创建逻辑存储卷。这比直接使用物理存储的方式具有更大的灵活性。</p>
+<p>此外，硬件存储配置在软件中隐藏，因此可以调整大小并移动，无需停止应用或卸载文件系统。这可降低操作成本。</p>
+<span id="more"></span>
+
+<h2 id="1-1-LVM-组件"><a href="#1-1-LVM-组件" class="headerlink" title="1.1 LVM 组件"></a>1.1 LVM 组件</h2><p> LVM 具有以下基本组件：</p>
+<ul>
+<li><strong>物理卷 (Physical Volume, PV)</strong> ：物理卷 (PV) 是指定为 LVM 使用的物理硬盘分区或整个硬盘。如需更多信息，请参阅<a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_logical_volumes/managing-lvm-physical-volumes_configuring-and-managing-logical-volumes">管理 LVM 物理卷</a>。</li>
+<li><strong>卷组 (Volume Group, VG)</strong> ：卷组 (VG) 是物理卷 (PV) 的集合，它会创建一个磁盘空间资源池，可以从中分配逻辑卷 (LV)。如需更多信息，请参阅<a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_logical_volumes/managing-lvm-volume-groups_configuring-and-managing-logical-volumes">管理 LVM 卷组</a>。</li>
+<li><strong>逻辑卷 (Logical Volume, LV)</strong> ：逻辑卷 (LV) 代表可挂载的存储设备，用于创建文件系统。如需更多信息，请参阅<a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_logical_volumes/managing-lvm-logical-volumes_configuring-and-managing-logical-volumes">管理 LVM 逻辑卷</a>。</li>
+</ul>
+<p><img src="/2022/Logical_Volume_Manager_Administration/basic-lvm-volume-components.png" alt="LVM 逻辑卷组件"></p>
+<ul>
+<li><strong>物理扩展 (Physical Extend, PE)</strong> ：物理扩展 (PE) 是增大或者减小逻辑卷容量的最小值。当使用物理卷创建卷组时，默认情况下每个物理扩展 (PE) 的大小为 4MB。如果默认物理扩展 (PE) 大小不合适，可以使用 <code>-s</code> 选项为 <code>vgcreate</code> 命令指定范围大小。</li>
+</ul>
+<p><img src="/2022/Logical_Volume_Manager_Administration/pe_vg.gif" alt="VG和PE关系图"></p>
+<p>如上图所示，VG 中的 PE 分配给虚线部分的 LV。如果未来要扩充 VG ，为这个 VG 添加其他的 PV 即可。如果要扩充 LV，也是通过分配 VG 中未使用的 PE 给 LV 实现的。</p>
+<h2 id="1-2-LVM-的优点"><a href="#1-2-LVM-的优点" class="headerlink" title="1.2 LVM 的优点"></a>1.2 LVM 的优点</h2><p>与直接使用物理存储相比，逻辑卷具有以下优势：</p>
+<ul>
+<li><strong>灵活的容量</strong> ：使用逻辑卷时，您可以将设备和分区聚合到一个逻辑卷中。借助此功能，文件系统可以扩展到多个设备中，就像它们是一个单一的大型设备一样。</li>
+<li><strong>存储卷大小</strong> ：您可以使用简单的软件命令扩展逻辑卷或减小逻辑卷大小，而无需重新格式化和重新分区基础设备。</li>
+<li><strong>在线数据重新定位</strong> ：部署更新、更快或者更弹性的存储子系统，可以在系统活跃时移动数据。在磁盘处于使用状态时可以重新分配磁盘。例如，您可以在删除热插拔磁盘前将其清空。</li>
+<li><strong>方便的设备命名</strong> ：逻辑卷可以使用用户定义的名称和自定义名称进行管理。</li>
+<li><strong>条带化卷</strong> ：您可以创建一个在两个或者多个设备间条带化分布数据的逻辑卷。这可显著提高吞吐量。</li>
+<li><strong>RAID 卷</strong> ：逻辑卷为您对数据配置 RAID 提供了一种便捷的方式。这可防止设备故障并提高性能。</li>
+<li><strong>卷快照</strong> ：您可以对数据进行快照（逻辑卷在一个特点时间点上的副本）用于一致性备份或测试更改的影响，而不影响实际数据。</li>
+<li><strong>精简卷</strong> ：逻辑卷可以使用精简模式置备。这可让您创建大于可用物理空间的逻辑卷。</li>
+<li><strong>缓存卷</strong> ：缓存逻辑卷使用快速块设备，如 SSD 驱动器，以提高更大、较慢的块设备的性能。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>LVM</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ansible 用户指南</title>
     <url>/2022/ansible_user_guide/</url>
     <content><![CDATA[<h1 id="安装指南"><a href="#安装指南" class="headerlink" title="安装指南"></a>安装指南</h1><h2 id="安装-Ansible"><a href="#安装-Ansible" class="headerlink" title="安装 Ansible"></a>安装 Ansible</h2><h3 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h3><h4 id="控制节点要求-（Control-node-requirements）"><a href="#控制节点要求-（Control-node-requirements）" class="headerlink" title="控制节点要求 （Control node requirements）"></a>控制节点要求 （<a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8">Control node requirements</a>）</h4><p>除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。</p>
