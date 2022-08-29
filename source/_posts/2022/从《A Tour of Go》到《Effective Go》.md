@@ -729,3 +729,214 @@ fmt.Println(x)
 
 如果没有 `...`，它就会由于类型错误而无法编译，因为 `y` 不是 `int` 类型的。
 
+# 初始化
+
+尽管从表面上看，Go 的初始化过程与 C 或 C++ 并没有太大不同，但它确实更为强大。 在初始化过程中，不仅可以构建复杂的结构，还能正确处理不同包对象间的初始化顺序。
+
+## 常量
+
+Go 中的常量就是不变量。它们在编译时创建，即便它们可能是函数中定义的局部变量。 常量只能是数字、字符（符文）、字符串或布尔值。由于编译时的限制， 定义它们的表达式必须也是可被编译器求值的常量表达式。例如 `1<<3` 就是一个常量表达式，而 `math.Sin(math.Pi/4)` 则不是，因为对 `math.Sin` 的函数调用在运行时才会发生。
+
+在 Go 中，枚举常量使用枚举器 `iota` 创建。由于 `iota` 可为表达式的一部分，而表达式可以被隐式地重复，这样也就更容易构建复杂的值的集合了。
+
+```go
+type ByteSize float64
+
+const (
+    // 通过赋予空白标识符来忽略第一个值
+    _           = iota // ignore first value by assigning to blank identifier
+    KB ByteSize = 1 << (10 * iota)
+    MB
+    GB
+    TB
+    PB
+    EB
+    ZB
+    YB
+)
+```
+
+由于可将 `String` 之类的方法附加在用户定义的类型上， 因此它就为打印时自动格式化任意值提供了可能性，即便是作为一个通用类型的一部分。 尽管你常常会看到这种技术应用于结构体，但它对于像 `ByteSize` 之类的浮点数标量等类型也是有用的。
+
+```go
+func (b ByteSize) String() string {
+    switch {
+    case b >= YB:
+        return fmt.Sprintf("%.2fYB", b/YB)
+    case b >= ZB:
+        return fmt.Sprintf("%.2fZB", b/ZB)
+    case b >= EB:
+        return fmt.Sprintf("%.2fEB", b/EB)
+    case b >= PB:
+        return fmt.Sprintf("%.2fPB", b/PB)
+    case b >= TB:
+        return fmt.Sprintf("%.2fTB", b/TB)
+    case b >= GB:
+        return fmt.Sprintf("%.2fGB", b/GB)
+    case b >= MB:
+        return fmt.Sprintf("%.2fMB", b/MB)
+    case b >= KB:
+        return fmt.Sprintf("%.2fKB", b/KB)
+    }
+    return fmt.Sprintf("%.2fB", b)
+}
+```
+
+表达式 `YB` 会打印出 `1.00YB`，而 `ByteSize(1e13)` 则会打印出 `9.09`。
+
+在这里用 `Sprintf` 实现 `ByteSize` 的 `String` 方法很安全（不会无限递归），这倒不是因为类型转换，而是它以 `%f` 调用了 `Sprintf`，它并不是一种字符串格式：`Sprintf` 只会在它需要字符串时才调用 `String` 方法，而 `%f` 需要一个浮点数值。
+
+## 变量
+
+变量的初始化与常量类似，但其初始值也可以是在运行时才被计算的一般表达式。
+
+```go
+var (
+	home   = os.Getenv("HOME")
+	user   = os.Getenv("USER")
+	gopath = os.Getenv("GOPATH")
+)
+```
+
+## `init` 函数
+
+最后，每个源文件都可以通过定义自己的无参数 `init` 函数来设置一些必要的状态。 （其实每个文件都可以拥有多个 `init` 函数。）而它的结束就意味着初始化结束： 只有该包中的所有变量声明都通过它们的初始化器求值后 `init` 才会被调用， 而那些 `init` 只有在所有已导入的包都被初始化后才会被求值。
+
+除了那些不能被表示成声明的初始化外，`init` 函数还常被用在程序真正开始执行前，检验或校正程序的状态。
+
+```go
+func init() {
+	if user == "" {
+		log.Fatal("$USER not set")
+	}
+	if home == "" {
+		home = "/home/" + user
+	}
+	if gopath == "" {
+		gopath = home + "/go"
+	}
+	// gopath 可通过命令行中的 --gopath 标记覆盖掉。
+	flag.StringVar(&gopath, "gopath", gopath, "override default GOPATH")
+}
+```
+
+### [详解 Go 语言中的 init () 函数](https://learnku.com/go/t/47178)
+
+> 原文作者：Summer
+> 转自链接：https://learnku.com/go/t/47178
+> 原文地址：[https://developpaper.com/detailed-explan...](https://developpaper.com/detailed-explanation-of-init-function-in-go-language/)
+> 译文地址：https://learnku.com/go/t/47178
+> 版权声明：著作权归作者所有。商业转载请联系作者获得授权，非商业转载请保留以上作者信息和原文链接。
+
+初始化每个包后，会自动执行 init（）函数，并且执行优先级高于主函数的执行优先级。init 函数通常用于：
+
+- 变量初始化
+- 检查 / 修复状态
+- 注册器
+- 运行计算
+
+**包初始化**
+
+为了使用导入的程序包，必须首先对其进行初始化。初始化始终在单个线程中执行，并且以程序包依赖关系的顺序执行。这由 Golang 的运行时系统控制，如下图所示：
+
+- 初始化导入的包（递归导入）
+- 计算并为块中声明的变量分配初始值
+- 在包中执行初始化函数
+
+![](ejLR69f443.png)
+
+```go
+package main
+import "fmt"
+var _ int64=s()
+func init(){
+  fmt.Println("init function --->")
+}
+func s() int64{
+  fmt.Println("function s() --->")
+  return 1
+}
+func main(){
+  fmt.Println("main --->")
+}
+```
+
+执行结果为：
+
+```go
+function s() —>
+init function —>
+main —>
+```
+
+即使程序包被多次导入，初始化也只需要一次。
+
+**特性**
+
+`init` 函数不需要传入参数，也不需要返回任何值。与 `main` 相比，`init` 没有声明，因此无法引用。
+
+```go
+package main
+import "fmt"
+func init(){
+  fmt.Println("init")
+}
+func main(){
+  init()
+}
+```
+编译上述函数 `undefined：init` 时发生错误。
+
+每个源文件可以包含一个以上的 `init` 函数，请记住，写在每个源文件中的 “行进方式” 只能包含一个 `init` 函数，这有点不同，因此进行下一个验证。
+
+```go
+package main
+import "fmt"
+func init(){
+  fmt.Println("init 1")
+}
+func init(){
+  fmt.Println("init2")
+}
+func main(){
+  fmt.Println("main")
+}
+
+/* 执行结果:
+init1
+init2
+main 
+*/
+```
+从上面的示例中，您可以看到每个源文件可以包含多个 `init` 函数。
+
+初始化函数的一个常见示例是设置初始表达式的值。
+
+```go
+var precomputed=[20]float64{}
+func init(){
+  var current float64=1
+  precomputed[0]=current
+  for i:=1;i<len(precomputed);i++{
+    precomputed[i]=precomputed[i-1]*1.2
+  }
+}
+```
+
+因为不可能在上面的代码 (这是一条语句) 中将 for 循环用作预先计算的值，所以可以使用 `init` 函数来解决此问题。
+
+**Go 套件汇入规则的副作用**
+
+Go 非常严格，不允许引用未使用的软件包。但是有时您引用包只是为了调用 `init` 函数进行一些初始化。空标识符 (即下划线) 的目的是解决此问题。
+
+```go
+import _ "image/png"
+```
+
+
+
+
+
+
+
+
