@@ -27,12 +27,14 @@
 <meta property="og:site_name" content="正经人谁写日记">
 <meta property="og:description" content="本文是Golang的学习笔记，内容涵盖 A Tour of Go 官方文档 Effective Go 以及 官方翻译">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ifelif.cn/2022/%E4%BB%8E%E3%80%8AA%20Tour%20of%20Go%E3%80%8B%E5%88%B0%E3%80%8AEffective%20Go%E3%80%8B/ejLR69f443.png">
 <meta property="article:published_time" content="2022-08-26T01:36:11.000Z">
 <meta property="article:modified_time" content="2022-08-26T01:36:11.000Z">
 <meta property="article:author" content="filefi">
 <meta property="article:tag" content="Golang">
 <meta property="article:tag" content="Programming">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ifelif.cn/2022/%E4%BB%8E%E3%80%8AA%20Tour%20of%20Go%E3%80%8B%E5%88%B0%E3%80%8AEffective%20Go%E3%80%8B/ejLR69f443.png">
 
 
 <link rel="canonical" href="https://ifelif.cn/2022/%E4%BB%8E%E3%80%8AA%20Tour%20of%20Go%E3%80%8B%E5%88%B0%E3%80%8AEffective%20Go%E3%80%8B/">
@@ -147,7 +149,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">格式化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E9%87%8A"><span class="nav-number">3.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%91%BD%E5%90%8D"><span class="nav-number">4.</span> <span class="nav-text">命名</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E5%90%8D"><span class="nav-number">4.1.</span> <span class="nav-text">包名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%99%A8"><span class="nav-number">4.2.</span> <span class="nav-text">获取器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%90%8D"><span class="nav-number">4.3.</span> <span class="nav-text">接口名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%BC%E5%B3%B0%E8%AE%B0%E6%B3%95"><span class="nav-number">4.4.</span> <span class="nav-text">驼峰记法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%8F%B7"><span class="nav-number">5.</span> <span class="nav-text">分号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E7%BB%93%E6%9E%84"><span class="nav-number">6.</span> <span class="nav-text">控制结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#if-%E6%9D%A1%E4%BB%B6%E8%AF%AD%E5%8F%A5"><span class="nav-number">6.1.</span> <span class="nav-text">if 条件语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E7%94%9F%E5%91%BD%E4%B8%8E%E5%86%8D%E6%AC%A1%E8%B5%8B%E5%80%BC"><span class="nav-number">6.2.</span> <span class="nav-text">重新生命与再次赋值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#for-%E5%BE%AA%E7%8E%AF"><span class="nav-number">6.3.</span> <span class="nav-text">for 循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#switch"><span class="nav-number">6.4.</span> <span class="nav-text">switch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="nav-number">6.5.</span> <span class="nav-text">类型选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%87%BD%E6%95%B0"><span class="nav-number">7.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%BF%94%E5%9B%9E%E5%80%BC-Multiple-return-values"><span class="nav-number">7.1.</span> <span class="nav-text">多返回值 (Multiple return values)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E5%91%BD%E5%90%8D%E7%BB%93%E6%9E%9C%E5%BD%A2%E5%8F%82-Named-result-parameters"><span class="nav-number">7.2.</span> <span class="nav-text">可命名结果形参 (Named result parameters)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Defer"><span class="nav-number">7.3.</span> <span class="nav-text">Defer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE"><span class="nav-number">8.</span> <span class="nav-text">数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%B6%E5%80%BC-The-zero-value"><span class="nav-number">8.0.1.</span> <span class="nav-text">零值 (The zero value)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-%E5%88%86%E9%85%8D"><span class="nav-number">8.1.</span> <span class="nav-text">new 分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E5%A4%8D%E5%90%88%E5%AD%97%E9%9D%A2%E9%87%8F-Constructors-and-composite-literals"><span class="nav-number">8.2.</span> <span class="nav-text">构造函数与复合字面量 (Constructors and composite literals)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#make-%E5%88%86%E9%85%8D"><span class="nav-number">8.3.</span> <span class="nav-text">make 分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new%E5%92%8Cmake%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">8.4.</span> <span class="nav-text">new和make的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E7%BB%84"><span class="nav-number">8.5.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E7%89%87"><span class="nav-number">8.6.</span> <span class="nav-text">切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E9%9B%B6%E5%80%BC"><span class="nav-number">8.6.1.</span> <span class="nav-text">切片的零值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E5%AD%97%E9%9D%A2%E9%87%8F-Slice-Literals"><span class="nav-number">8.6.2.</span> <span class="nav-text">切片字面量 (Slice Literals)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8-make-%E5%88%9B%E5%BB%BA%E5%88%87%E7%89%87"><span class="nav-number">8.6.3.</span> <span class="nav-text">用 make 创建切片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E9%BB%98%E8%AE%A4%E4%B8%8A%E4%B8%8B%E7%95%8C"><span class="nav-number">8.6.4.</span> <span class="nav-text">切片的默认上下界</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E4%BD%9C%E4%B8%BA%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="nav-number">8.6.5.</span> <span class="nav-text">切片作为函数参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E9%95%BF%E5%BA%A6%E4%B8%8E%E5%AE%B9%E9%87%8F"><span class="nav-number">8.6.6.</span> <span class="nav-text">切片的长度与容量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BB%B4%E5%88%87%E7%89%87"><span class="nav-number">8.7.</span> <span class="nav-text">二维切片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%A0%E5%B0%84"><span class="nav-number">8.8.</span> <span class="nav-text">映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%93%E5%8D%B0"><span class="nav-number">8.9.</span> <span class="nav-text">打印</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%BD%E5%8A%A0"><span class="nav-number">8.10.</span> <span class="nav-text">追加</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">格式化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E9%87%8A"><span class="nav-number">3.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%91%BD%E5%90%8D"><span class="nav-number">4.</span> <span class="nav-text">命名</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E5%90%8D"><span class="nav-number">4.1.</span> <span class="nav-text">包名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%99%A8"><span class="nav-number">4.2.</span> <span class="nav-text">获取器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%90%8D"><span class="nav-number">4.3.</span> <span class="nav-text">接口名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%BC%E5%B3%B0%E8%AE%B0%E6%B3%95"><span class="nav-number">4.4.</span> <span class="nav-text">驼峰记法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%8F%B7"><span class="nav-number">5.</span> <span class="nav-text">分号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E7%BB%93%E6%9E%84"><span class="nav-number">6.</span> <span class="nav-text">控制结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#if-%E6%9D%A1%E4%BB%B6%E8%AF%AD%E5%8F%A5"><span class="nav-number">6.1.</span> <span class="nav-text">if 条件语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E7%94%9F%E5%91%BD%E4%B8%8E%E5%86%8D%E6%AC%A1%E8%B5%8B%E5%80%BC"><span class="nav-number">6.2.</span> <span class="nav-text">重新生命与再次赋值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#for-%E5%BE%AA%E7%8E%AF"><span class="nav-number">6.3.</span> <span class="nav-text">for 循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#switch"><span class="nav-number">6.4.</span> <span class="nav-text">switch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="nav-number">6.5.</span> <span class="nav-text">类型选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%87%BD%E6%95%B0"><span class="nav-number">7.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%BF%94%E5%9B%9E%E5%80%BC-Multiple-return-values"><span class="nav-number">7.1.</span> <span class="nav-text">多返回值 (Multiple return values)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E5%91%BD%E5%90%8D%E7%BB%93%E6%9E%9C%E5%BD%A2%E5%8F%82-Named-result-parameters"><span class="nav-number">7.2.</span> <span class="nav-text">可命名结果形参 (Named result parameters)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Defer"><span class="nav-number">7.3.</span> <span class="nav-text">Defer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE"><span class="nav-number">8.</span> <span class="nav-text">数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%B6%E5%80%BC-The-zero-value"><span class="nav-number">8.0.1.</span> <span class="nav-text">零值 (The zero value)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-%E5%88%86%E9%85%8D"><span class="nav-number">8.1.</span> <span class="nav-text">new 分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E5%A4%8D%E5%90%88%E5%AD%97%E9%9D%A2%E9%87%8F-Constructors-and-composite-literals"><span class="nav-number">8.2.</span> <span class="nav-text">构造函数与复合字面量 (Constructors and composite literals)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#make-%E5%88%86%E9%85%8D"><span class="nav-number">8.3.</span> <span class="nav-text">make 分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new%E5%92%8Cmake%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">8.4.</span> <span class="nav-text">new和make的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E7%BB%84"><span class="nav-number">8.5.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E7%89%87"><span class="nav-number">8.6.</span> <span class="nav-text">切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E9%9B%B6%E5%80%BC"><span class="nav-number">8.6.1.</span> <span class="nav-text">切片的零值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E5%AD%97%E9%9D%A2%E9%87%8F-Slice-Literals"><span class="nav-number">8.6.2.</span> <span class="nav-text">切片字面量 (Slice Literals)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8-make-%E5%88%9B%E5%BB%BA%E5%88%87%E7%89%87"><span class="nav-number">8.6.3.</span> <span class="nav-text">用 make 创建切片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E9%BB%98%E8%AE%A4%E4%B8%8A%E4%B8%8B%E7%95%8C"><span class="nav-number">8.6.4.</span> <span class="nav-text">切片的默认上下界</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E4%BD%9C%E4%B8%BA%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="nav-number">8.6.5.</span> <span class="nav-text">切片作为函数参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E7%9A%84%E9%95%BF%E5%BA%A6%E4%B8%8E%E5%AE%B9%E9%87%8F"><span class="nav-number">8.6.6.</span> <span class="nav-text">切片的长度与容量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BB%B4%E5%88%87%E7%89%87"><span class="nav-number">8.7.</span> <span class="nav-text">二维切片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%A0%E5%B0%84"><span class="nav-number">8.8.</span> <span class="nav-text">映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%93%E5%8D%B0"><span class="nav-number">8.9.</span> <span class="nav-text">打印</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%BD%E5%8A%A0"><span class="nav-number">8.10.</span> <span class="nav-text">追加</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">9.</span> <span class="nav-text">初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E9%87%8F"><span class="nav-number">9.1.</span> <span class="nav-text">常量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F"><span class="nav-number">9.2.</span> <span class="nav-text">变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#init-%E5%87%BD%E6%95%B0"><span class="nav-number">9.3.</span> <span class="nav-text">init 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%A6%E8%A7%A3-Go-%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84-init-%E5%87%BD%E6%95%B0"><span class="nav-number">9.3.1.</span> <span class="nav-text">详解 Go 语言中的 init () 函数</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -712,6 +714,162 @@ x <span class="token operator">=</span> <span class="token function">append</spa
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span></code></pre>
 
 <p>如果没有 <code>...</code>，它就会由于类型错误而无法编译，因为 <code>y</code> 不是 <code>int</code> 类型的。</p>
+<h1 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h1><p>尽管从表面上看，Go 的初始化过程与 C 或 C++ 并没有太大不同，但它确实更为强大。 在初始化过程中，不仅可以构建复杂的结构，还能正确处理不同包对象间的初始化顺序。</p>
+<h2 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h2><p>Go 中的常量就是不变量。它们在编译时创建，即便它们可能是函数中定义的局部变量。 常量只能是数字、字符（符文）、字符串或布尔值。由于编译时的限制， 定义它们的表达式必须也是可被编译器求值的常量表达式。例如 <code>1&lt;&lt;3</code> 就是一个常量表达式，而 <code>math.Sin(math.Pi/4)</code> 则不是，因为对 <code>math.Sin</code> 的函数调用在运行时才会发生。</p>
+<p>在 Go 中，枚举常量使用枚举器 <code>iota</code> 创建。由于 <code>iota</code> 可为表达式的一部分，而表达式可以被隐式地重复，这样也就更容易构建复杂的值的集合了。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> ByteSize <span class="token builtin">float64</span>
+
+<span class="token keyword">const</span> <span class="token punctuation">(</span>
+    <span class="token comment">// 通过赋予空白标识符来忽略第一个值</span>
+    <span class="token boolean">_</span>           <span class="token operator">=</span> <span class="token boolean">iota</span> <span class="token comment">// ignore first value by assigning to blank identifier</span>
+    KB ByteSize <span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span><span class="token number">10</span> <span class="token operator">*</span> <span class="token boolean">iota</span><span class="token punctuation">)</span>
+    MB
+    GB
+    TB
+    PB
+    EB
+    ZB
+    YB
+<span class="token punctuation">)</span></code></pre>
+
+<p>由于可将 <code>String</code> 之类的方法附加在用户定义的类型上， 因此它就为打印时自动格式化任意值提供了可能性，即便是作为一个通用类型的一部分。 尽管你常常会看到这种技术应用于结构体，但它对于像 <code>ByteSize</code> 之类的浮点数标量等类型也是有用的。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b ByteSize<span class="token punctuation">)</span> <span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">switch</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">case</span> b <span class="token operator">>=</span> YB<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fYB"</span><span class="token punctuation">,</span> b<span class="token operator">/</span>YB<span class="token punctuation">)</span>
+    <span class="token keyword">case</span> b <span class="token operator">>=</span> ZB<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fZB"</span><span class="token punctuation">,</span> b<span class="token operator">/</span>ZB<span class="token punctuation">)</span>
+    <span class="token keyword">case</span> b <span class="token operator">>=</span> EB<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fEB"</span><span class="token punctuation">,</span> b<span class="token operator">/</span>EB<span class="token punctuation">)</span>
+    <span class="token keyword">case</span> b <span class="token operator">>=</span> PB<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fPB"</span><span class="token punctuation">,</span> b<span class="token operator">/</span>PB<span class="token punctuation">)</span>
+    <span class="token keyword">case</span> b <span class="token operator">>=</span> TB<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fTB"</span><span class="token punctuation">,</span> b<span class="token operator">/</span>TB<span class="token punctuation">)</span>
+    <span class="token keyword">case</span> b <span class="token operator">>=</span> GB<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fGB"</span><span class="token punctuation">,</span> b<span class="token operator">/</span>GB<span class="token punctuation">)</span>
+    <span class="token keyword">case</span> b <span class="token operator">>=</span> MB<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fMB"</span><span class="token punctuation">,</span> b<span class="token operator">/</span>MB<span class="token punctuation">)</span>
+    <span class="token keyword">case</span> b <span class="token operator">>=</span> KB<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fKB"</span><span class="token punctuation">,</span> b<span class="token operator">/</span>KB<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%.2fB"</span><span class="token punctuation">,</span> b<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>表达式 <code>YB</code> 会打印出 <code>1.00YB</code>，而 <code>ByteSize(1e13)</code> 则会打印出 <code>9.09</code>。</p>
+<p>在这里用 <code>Sprintf</code> 实现 <code>ByteSize</code> 的 <code>String</code> 方法很安全（不会无限递归），这倒不是因为类型转换，而是它以 <code>%f</code> 调用了 <code>Sprintf</code>，它并不是一种字符串格式：<code>Sprintf</code> 只会在它需要字符串时才调用 <code>String</code> 方法，而 <code>%f</code> 需要一个浮点数值。</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>变量的初始化与常量类似，但其初始值也可以是在运行时才被计算的一般表达式。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> <span class="token punctuation">(</span>
+	home   <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getenv</span><span class="token punctuation">(</span><span class="token string">"HOME"</span><span class="token punctuation">)</span>
+	user   <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getenv</span><span class="token punctuation">(</span><span class="token string">"USER"</span><span class="token punctuation">)</span>
+	gopath <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getenv</span><span class="token punctuation">(</span><span class="token string">"GOPATH"</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span></code></pre>
+
+<h2 id="init-函数"><a href="#init-函数" class="headerlink" title="init 函数"></a><code>init</code> 函数</h2><p>最后，每个源文件都可以通过定义自己的无参数 <code>init</code> 函数来设置一些必要的状态。 （其实每个文件都可以拥有多个 <code>init</code> 函数。）而它的结束就意味着初始化结束： 只有该包中的所有变量声明都通过它们的初始化器求值后 <code>init</code> 才会被调用， 而那些 <code>init</code> 只有在所有已导入的包都被初始化后才会被求值。</p>
+<p>除了那些不能被表示成声明的初始化外，<code>init</code> 函数还常被用在程序真正开始执行前，检验或校正程序的状态。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> user <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token string">"$USER not set"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> home <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+		home <span class="token operator">=</span> <span class="token string">"/home/"</span> <span class="token operator">+</span> user
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> gopath <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+		gopath <span class="token operator">=</span> home <span class="token operator">+</span> <span class="token string">"/go"</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">// gopath 可通过命令行中的 --gopath 标记覆盖掉。</span>
+	flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>gopath<span class="token punctuation">,</span> <span class="token string">"gopath"</span><span class="token punctuation">,</span> gopath<span class="token punctuation">,</span> <span class="token string">"override default GOPATH"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="详解-Go-语言中的-init-函数"><a href="#详解-Go-语言中的-init-函数" class="headerlink" title="详解 Go 语言中的 init () 函数"></a><a target="_blank" rel="noopener" href="https://learnku.com/go/t/47178">详解 Go 语言中的 init () 函数</a></h3><blockquote>
+<p>原文作者：Summer<br>转自链接：<a target="_blank" rel="noopener" href="https://learnku.com/go/t/47178">https://learnku.com/go/t/47178</a><br>原文地址：<a target="_blank" rel="noopener" href="https://developpaper.com/detailed-explanation-of-init-function-in-go-language/">https://developpaper.com/detailed-explan...</a><br>译文地址：<a target="_blank" rel="noopener" href="https://learnku.com/go/t/47178">https://learnku.com/go/t/47178</a><br>版权声明：著作权归作者所有。商业转载请联系作者获得授权，非商业转载请保留以上作者信息和原文链接。</p>
+</blockquote>
+<p>初始化每个包后，会自动执行 init（）函数，并且执行优先级高于主函数的执行优先级。init 函数通常用于：</p>
+<ul>
+<li>变量初始化</li>
+<li>检查 &#x2F; 修复状态</li>
+<li>注册器</li>
+<li>运行计算</li>
+</ul>
+<p><strong>包初始化</strong></p>
+<p>为了使用导入的程序包，必须首先对其进行初始化。初始化始终在单个线程中执行，并且以程序包依赖关系的顺序执行。这由 Golang 的运行时系统控制，如下图所示：</p>
+<ul>
+<li>初始化导入的包（递归导入）</li>
+<li>计算并为块中声明的变量分配初始值</li>
+<li>在包中执行初始化函数</li>
+</ul>
+<p><img src="/2022/%E4%BB%8E%E3%80%8AA%20Tour%20of%20Go%E3%80%8B%E5%88%B0%E3%80%8AEffective%20Go%E3%80%8B/ejLR69f443.png"></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+<span class="token keyword">import</span> <span class="token string">"fmt"</span>
+<span class="token keyword">var</span> <span class="token boolean">_</span> <span class="token builtin">int64</span><span class="token operator">=</span><span class="token function">s</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"init function --->"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">s</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int64</span><span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"function s() --->"</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token number">1</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"main --->"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>执行结果为：</p>
+<pre class="language-go" data-language="go"><code class="language-go">function <span class="token function">s</span><span class="token punctuation">(</span><span class="token punctuation">)</span> —<span class="token operator">></span>
+init function —<span class="token operator">></span>
+main —<span class="token operator">></span></code></pre>
+
+<p>即使程序包被多次导入，初始化也只需要一次。</p>
+<p><strong>特性</strong></p>
+<p><code>init</code> 函数不需要传入参数，也不需要返回任何值。与 <code>main</code> 相比，<code>init</code> 没有声明，因此无法引用。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+<span class="token keyword">import</span> <span class="token string">"fmt"</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"init"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p>编译上述函数 <code>undefined：init</code> 时发生错误。</p>
+<p>每个源文件可以包含一个以上的 <code>init</code> 函数，请记住，写在每个源文件中的 “行进方式” 只能包含一个 <code>init</code> 函数，这有点不同，因此进行下一个验证。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+<span class="token keyword">import</span> <span class="token string">"fmt"</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"init 1"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"init2"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"main"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/* 执行结果:
+init1
+init2
+main 
+*/</span></code></pre>
+<p>从上面的示例中，您可以看到每个源文件可以包含多个 <code>init</code> 函数。</p>
+<p>初始化函数的一个常见示例是设置初始表达式的值。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> precomputed<span class="token operator">=</span><span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token builtin">float64</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> current <span class="token builtin">float64</span><span class="token operator">=</span><span class="token number">1</span>
+  precomputed<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">=</span>current
+  <span class="token keyword">for</span> i<span class="token operator">:=</span><span class="token number">1</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token function">len</span><span class="token punctuation">(</span>precomputed<span class="token punctuation">)</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">&#123;</span>
+    precomputed<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>precomputed<span class="token punctuation">[</span>i<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">*</span><span class="token number">1.2</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>因为不可能在上面的代码 (这是一条语句) 中将 for 循环用作预先计算的值，所以可以使用 <code>init</code> 函数来解决此问题。</p>
+<p><strong>Go 套件汇入规则的副作用</strong></p>
+<p>Go 非常严格，不允许引用未使用的软件包。但是有时您引用包只是为了调用 <code>init</code> 函数进行一些初始化。空标识符 (即下划线) 的目的是解决此问题。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">import</span> <span class="token boolean">_</span> <span class="token string">"image/png"</span></code></pre>
+
+
+
+
+
+
+
+
 
     </div>
 
