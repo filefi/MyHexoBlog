@@ -50,7 +50,7 @@ categories: Golang
 
 # 数据
 
-### 零值 ([The zero value](https://go.dev/ref/spec#The_zero_value))
+## 零值 ([The zero value](https://go.dev/ref/spec#The_zero_value))
 
 When storage is allocated for a [variable](https://go.dev/ref/spec#Variables), either through a declaration or a call of `new`, or when a new value is created, either through a composite literal or a call of `make`, and no explicit initialization is provided, the variable or value is given a default value. Each element of such a variable or value is set to the *zero value* for its type: `false` for booleans, `0` for numeric types, `""` for strings, and `nil` for pointers, functions, interfaces, slices, channels, and maps. This initialization is done recursively, so for instance each element of an array of structs will have its fields zeroed if no value is specified.
 
@@ -191,6 +191,36 @@ v := make([]int, 100)
 请记住，`make` 只适用于映射、切片和信道且不返回指针。若要获得明确的指针， 请使用 `new` 分配内存。
 
 ## new和make的区别
+
+`new` 的特点：
+
+- 分配内存空间
+- 对变量和值置零值
+- 返回指针
+- `new(Type)` 等价于 `&File{Type}`
+
+`make` 的特点：
+
+- 只用于创建切片、映射和信道 (Channel)
+- 对变量和值初始化
+- 返回值
+
+```go
+var a []int
+fmt.Println(a)        // []
+fmt.Println(a == nil) // true
+
+b := new([]int)
+fmt.Println(b)         // &[]
+fmt.Println(b == nil)  // false
+fmt.Println(*b == nil) // true
+
+c := make([]int, 3)
+fmt.Println(c)        // [0 0 0]
+fmt.Println(c == nil) // false
+
+fmt.Printf("%T %T %T", a, b, c) // []int *[]int []int
+```
 
 
 
@@ -729,6 +759,7 @@ fmt.Println(x)
 
 如果没有 `...`，它就会由于类型错误而无法编译，因为 `y` 不是 `int` 类型的。
 
+
 # 初始化
 
 尽管从表面上看，Go 的初始化过程与 C 或 C++ 并没有太大不同，但它确实更为强大。 在初始化过程中，不仅可以构建复杂的结构，还能正确处理不同包对象间的初始化顺序。
@@ -935,8 +966,687 @@ import _ "image/png"
 
 
 
+# 方法
 
+Go 没有类。不过你可以为结构体类型定义方法。
 
+方法就是一类带特殊的 **接收者** 参数的函数。
+
+方法接收者在它自己的参数列表内，位于 `func` 关键字和方法名之间。
+
+在此例中，`Abs` 方法拥有一个名为 `v`，类型为 `Vertex` 的接收者。
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+	v := Vertex{3, 4}
+	fmt.Println(v.Abs())
+}
+```
+
+ **方法即函数**
+
+记住：方法只是个带接收者参数的函数。
+
+现在这个 `Abs` 的写法就是个正常的函数，功能并没有什么变化。
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func Abs(v Vertex) float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+	v := Vertex{3, 4}
+	fmt.Println(Abs(v))
+}
+```
+
+你也可以为非结构体类型声明方法。
+
+在此例中，我们看到了一个带 `Abs` 方法的数值类型 `MyFloat`。
+
+你只能为在同一包内定义的类型的接收者声明方法，而不能为其它包内定义的类型（包括 `int` 之类的内建类型）的接收者声明方法。
+
+（译注：就是接收者的类型定义和方法声明必须在同一包内；不能为内建类型声明方法。）
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type MyFloat float64
+
+func (f MyFloat) Abs() float64 {
+	if f < 0 {
+		return float64(-f)
+	}
+	return float64(f)
+}
+
+func main() {
+	f := MyFloat(-math.Sqrt2)
+	fmt.Println(f.Abs())
+}
+```
+
+## 指针接收者
+
+你可以为指针接收者声明 **方法** 。
+
+这意味着对于某类型 `T`，接收者的类型可以用 `*T` 的文法。（此外，`T` 不能是像 `*int` 这样的指针。）
+
+例如，这里为 `*Vertex` 定义了 `Scale` 方法。
+
+**指针接收者的方法可以修改接收者指向的值（就像 `Scale` 在这做的）。由于方法经常需要修改它的接收者，指针接收者比值接收者更常用。**
+
+若使用值接收者，那么 `Scale` 方法会对原始 `Vertex` 值的副本进行操作。（对于函数的其它参数也是如此。）`Scale` 方法必须用指针接受者来更改 `main` 函数中声明的 `Vertex` 的值。
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func (v *Vertex) Scale(f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func main() {
+	v := Vertex{3, 4}
+	v.Scale(10)
+	fmt.Println(v.Abs())
+}
+```
+
+现在我们要把 `Abs` 和 `Scale` 方法重写为函数。
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func Abs(v Vertex) float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func Scale(v Vertex, f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func main() {
+	v := Vertex{3, 4}
+	Scale(v, 10)
+	fmt.Println(Abs(v))
+}
+
+```
+
+## 方法与指针重定向
+
+比较前两个程序，你大概会注意到带指针参数的函数必须接受一个指针：
+
+```go
+var v Vertex
+ScaleFunc(v, 5)  // 编译错误！
+ScaleFunc(&v, 5) // OK
+```
+
+而以指针为接收者的方法被调用时，接收者既能为值又能为指针：
+
+```go
+var v Vertex
+v.Scale(5)  // OK
+p := &v
+p.Scale(10) // OK
+```
+
+对于语句 `v.Scale(5)`，即便 `v` 是个值而非指针，带指针接收者的方法也能被直接调用。 **也就是说，由于 `Scale` 方法有一个指针接收者，为方便起见，Go 会将语句 `v.Scale(5)` 解释为 `(&v).Scale(5)`。**
+
+同样的事情也发生在相反的方向。
+
+接受一个值作为参数的函数必须接受一个指定类型的值：
+
+```go
+var v Vertex
+fmt.Println(AbsFunc(v))  // OK
+fmt.Println(AbsFunc(&v)) // 编译错误！
+```
+
+而以值为接收者的方法被调用时，接收者既能为值又能为指针：
+
+```go
+var v Vertex
+fmt.Println(v.Abs()) // OK
+p := &v
+fmt.Println(p.Abs()) // OK
+```
+
+**这种情况下，方法调用 `p.Abs()` 会被解释为 `(*p).Abs()`。**
+
+## 选择值或指针作为接收者
+
+使用指针接收者的原因有二：
+
+- 方法能够修改其接收者指向的值。
+- 这样可以避免在每次调用方法时复制该值。若值的类型为大型结构体时，这样做会更加高效。
+
+在本例中，`Scale` 和 `Abs` 接收者的类型为 `*Vertex`，即便 `Abs` 并不需要修改其接收者。
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v *Vertex) Scale(f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func (v *Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+	v := &Vertex{3, 4}
+	fmt.Printf("Before scaling: %+v, Abs: %v\n", v, v.Abs())
+	v.Scale(5)
+	fmt.Printf("After scaling: %+v, Abs: %v\n", v, v.Abs())
+}
+```
+
+通常来说，所有给定类型的方法都应该有值或指针接收者，但并不应该二者混用。
+
+## 指针 vs. 值
+
+正如 `ByteSize` 那样，我们可以为任何已命名的类型（除了指针或接口）定义方法； 接收者可不必为结构体。
+
+在之前讨论切片时，我们编写了一个 `Append` 函数。 我们也可将其定义为切片的方法。为此，我们首先要声明一个已命名的类型来绑定该方法， 然后使该方法的接收者成为该类型的值。
+
+```go
+type ByteSlice []byte
+
+func (slice ByteSlice) Append(data []byte) []byte {
+	// 主体和前面相同。
+}
+```
+
+我们仍然需要该方法返回更新后的切片。为了消除这种不便，我们可通过重新定义该方法， 将一个指向 `ByteSlice` 的**指针**作为该方法的接收者， 这样该方法就能重写调用者提供的切片了。
+
+```go
+func (p *ByteSlice) Append(data []byte) {
+	slice := *p
+	// 主体和前面相同，但没有 return。
+	*p = slice
+}
+```
+
+若我们将函数修改为与标准 `Write` 类似的方法，就像这样，
+
+```go
+func (p *ByteSlice) Write(data []byte) (n int, err error) {
+	slice := *p
+	// 依旧和前面相同。
+	*p = slice
+	return len(data), nil
+}
+```
+
+那么类型 `*ByteSlice` 就满足了标准的 `io.Writer` 接口，这将非常实用。 例如，我们可以通过打印将内容写入。
+
+```go
+	var b ByteSlice
+	fmt.Fprintf(&b, "This hour has %d days\n", 7)
+```
+
+我们将 `ByteSlice` 的地址传入，因为只有 `*ByteSlice` 才满足 `io.Writer`。以指针或值为接收者的区别在于：值方法可通过指针和值调用， 而指针方法只能通过指针来调用。
+
+之所以会有这条规则是因为指针方法可以修改接收者；通过值调用它们会导致方法接收到该值的副本， 因此任何修改都将被丢弃，因此该语言不允许这种错误。不过有个方便的例外：**若该值是可寻址的， 那么该语言就会自动插入取址操作符来对付一般的通过值调用的指针方法。在我们的例子中，变量 `b` 是可寻址的，因此我们只需通过 `b.Write` 来调用它的 `Write` 方法，编译器会将它重写为 `(&b).Write`。**
+
+顺便一提，在字节切片上使用 `Write` 的想法已被 `bytes.Buffer` 所实现。
+
+# 接口与其它类型
+
+## 接口
+
+Go中的接口为指定对象的行为提供了一种方法：如果某样东西可以完成**这个**， 那么它就可以用在**这里**。我们已经见过许多简单的示例了；通过实现 `String` 方法，我们可以自定义打印函数，而通过 `Write` 方法，`Fprintf` 则能对任何对象产生输出。在Go代码中， 仅包含一两种方法的接口很常见，且其名称通常来自于实现它的方法， 如 `io.Writer` 就是实现了 `Write` 的一类对象。
+
+每种类型都能实现多个接口。例如一个实现了 `sort.Interface` 接口的集合就可通过 `sort` 包中的例程进行排序。该接口包括 `Len()`、`Less(i, j int) bool` 以及 `Swap(i, j int)`，另外，该集合仍然可以有一个自定义的格式化器。 以下特意构建的例子 `Sequence` 就同时满足这两种情况。
+
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type Sequence []int
+
+// Methods required by sort.Interface.
+// sort.Interface 所需的方法。
+func (s Sequence) Len() int {
+    return len(s)
+}
+func (s Sequence) Less(i, j int) bool {
+    return s[i] < s[j]
+}
+func (s Sequence) Swap(i, j int) {
+    s[i], s[j] = s[j], s[i]
+}
+
+// Method for printing - sorts the elements before printing.
+// 用于打印的方法 - 在打印前对元素进行排序。
+func (s Sequence) String() string {
+    sort.Sort(s)
+    str := "["
+    for i, elem := range s {
+        if i > 0 {
+            str += " "
+        }
+        str += fmt.Sprint(elem)
+    }
+    return str + "]"
+}
+
+func main() {
+	seq := Sequence{7, 8, 2, 1, 3, 10, 9, 4}
+	fmt.Println(seq) // [1 2 3 4 7 8 9 10]
+    
+    seq = []int{7, 8, 2, 1, 3, 10, 9, 4}
+	fmt.Println(seq) // [7 8 2 1 3 10 9 4]
+}
+```
+
+## 类型转换
+
+`Sequence` 的 `String` 方法重新实现了 `Sprint` 为切片实现的功能。若我们在调用 `Sprint` 之前将 `Sequence` 转换为纯粹的 `[]int`，就能共享 `[]int` 已实现的功能。
+
+```go
+func (s Sequence) String() string {
+	sort.Sort(s)
+	return fmt.Sprint([]int(s))
+}
+
+func main() {
+	seq := Sequence{7, 8, 2, 1, 3, 10, 9, 4}
+	fmt.Println(seq) // [1 2 3 4 7 8 9 10]
+}
+```
+
+该方法是通过类型转换技术，在 `String` 方法中安全调用 `Sprintf` 的另个一例子。若我们忽略类型名的话，这两种类型（`Sequence`和 `[]int`）其实是相同的，因此在二者之间进行转换是合法的。 转换过程并不会创建新值，它只是值暂让现有的时看起来有个新类型而已。 （还有些合法转换则会创建新值，如从整数转换为浮点数等。）
+
+在Go程序中，为访问不同的方法集而进行类型转换的情况非常常见。 例如，我们可使用现有的 `sort.IntSlice` 类型来简化整个示例：
+
+```go
+type Sequence []int
+
+// 用于打印的方法 - 在打印前对元素进行排序。
+func (s Sequence) String() string {
+	sort.IntSlice(s).Sort() // 将 s 的类型转换为 sort.IntSlice 类型，然后调用 sort.IntSlice 的 Sort 方法 
+	return fmt.Sprint([]int(s))
+}
+```
+
+现在，不必让 `Sequence` 实现多个接口（排序和打印）， 我们可通过将数据条目转换为多种类型（`Sequence`、`sort.IntSlice` 和 `[]int`）来使用相应的功能，每次转换都完成一部分工作。 这在实践中虽然有些不同寻常，但往往却很有效。
+
+## 接口转换与类型断言
+
+[类型选择](https://go-zh.org/doc/effective_go.html#类型选择) 是类型转换的一种形式：它接受一个接口，在 switch 语句中根据其判断选择对应的 case 语句， 并在某种意义上将其转换为该种类型。以下代码为 `fmt.Printf` 通过类型选择将值转换为字符串的简化版。若它已经为字符串，我们需要该接口中实际的字符串值； 若它有 `String` 方法，我们则需要调用该方法所得的结果。
+
+```go
+type Stringer interface {
+	String() string
+}
+
+var value interface{} // 调用者提供的值。
+switch str := value.(type) {
+case string:
+	return str
+case Stringer:
+	return str.String()
+}
+```
+
+第一种情况获取具体的值，第二种将该接口转换为另一个接口。这种方式对于混合类型来说非常完美。
+
+若我们只关心一种类型呢？若我们知道该值拥有一个 `string` 而想要提取它呢？ 只需一种情况的类型选择就行，但它需要**类型断言**。类型断言接受一个接口值， 并从中提取指定的明确类型的值。其语法借鉴自类型选择开头的子句，但它需要一个明确的类型， 而非 `type` 关键字：
+
+```go
+value.(typeName)
+```
+
+而其结果则是拥有静态类型 `typeName` 的新值。该类型必须为该接口所拥有的具体类型， 或者该值可转换成的第二种接口类型。要提取我们知道在该值中的字符串，可以这样：
+
+```go
+str := value.(string)
+```
+
+但若它所转换的值中不包含字符串，该程序就会以运行时错误崩溃。为避免这种情况， 需使用`逗号, ok`惯用测试它能安全地判断该值是否为字符串：
+
+```go
+str, ok := value.(string)
+if ok {
+	fmt.Printf("字符串值为 %q\n", str)
+} else {
+	fmt.Printf("该值非字符串\n")
+}
+```
+
+若类型断言失败，`str` 将继续存在且为字符串类型，但它将拥有零值，即空字符串。
+
+作为对能力 (capability) 的说明，这里有个 `if-else` 语句，它等价于本节开头的类型选择 switch 。
+
+```go
+if str, ok := value.(string); ok {
+	return str
+} else if str, ok := value.(Stringer); ok {
+	return str.String()
+}
+```
+
+## 通用性
+
+若某种现有的类型仅实现了一个接口，且除此之外并无可导出的方法，则该类型本身就无需导出。 仅导出该接口能让我们更专注于其行为而非实现，其它属性不同的实现则能镜像该原始类型的行为。 这也能够避免为每个通用接口的实例重复编写文档。
+
+在这种情况下，构造函数应当返回一个接口值而非实现的类型。例如在 `hash` 库中，`crc32.NewIEEE` 和 `adler32.New` 都返回接口类型 `hash.Hash32`。要在Go程序中用 Adler-32 算法替代 CRC-32， 只需修改构造函数调用即可，其余代码则不受算法改变的影响。
+
+同样的方式能将 `crypto` 包中多种联系在一起的流密码算法与块密码算法分开。 `crypto/cipher` 包中的 `Block` 接口指定了块密码算法的行为， 它为单独的数据块提供加密。接着，和 `bufio` 包类似，任何实现了该接口的密码包都能被用于构造以 `Stream` 为接口表示的流密码，而无需知道块加密的细节。
+
+`crypto/cipher` 接口看其来就像这样：
+
+```go
+type Block interface {
+	BlockSize() int
+	Encrypt(src, dst []byte)
+	Decrypt(src, dst []byte)
+}
+
+type Stream interface {
+	XORKeyStream(dst, src []byte)
+}
+```
+
+这是计数器模式 CTR 流的定义，它将块加密改为流加密，注意块加密的细节已被抽象化了。
+
+```go
+// NewCTR 返回一个 Stream，其加密/解密使用计数器模式中给定的 Block 进行。
+// iv 的长度必须与 Block 的块大小相同。
+func NewCTR(block Block, iv []byte) Stream
+```
+
+`NewCTR` 的应用并不仅限于特定的加密算法和数据源，它适用于任何对 `Block` 接口和 `Stream` 的实现。因为它们返回接口值， 所以用其它加密模式来代替CTR只需做局部的更改。构造函数的调用过程必须被修改， 但由于其周围的代码只能将它看做 `Stream`，因此它们不会注意到其中的区别。
+
+## 接口和方法
+
+由于几乎任何类型都能添加方法，因此几乎任何类型都能满足一个接口。一个很直观的例子就是 `http` 包中定义的 `Handler` 接口。任何实现了 `Handler` 的对象都能够处理HTTP请求。
+
+```go
+type Handler interface {
+	ServeHTTP(ResponseWriter, *Request)
+}
+```
+
+`ResponseWriter` 接口提供了对方法的访问，这些方法需要响应客户端的请求。 由于这些方法包含了标准的 `Write` 方法，因此 `http.ResponseWriter` 可用于任何 `io.Writer` 适用的场景。`Request` 结构体包含已解析的客户端请求。
+
+为简单起见，我们假设所有的HTTP请求都是GET方法，而忽略POST方法， 这种简化不会影响处理程序的建立方式。这里有个短小却完整的处理程序实现， 它用于记录某个页面被访问的次数。
+
+```go
+// 简单的计数器服务。
+type Counter struct {
+	n int
+}
+
+func (ctr *Counter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	ctr.n++
+	fmt.Fprintf(w, "counter = %d\n", ctr.n)
+}
+```
+
+（紧跟我们的主题，注意 `Fprintf` 如何能输出到 `http.ResponseWriter`。） 作为参考，这里演示了如何将这样一个服务器添加到URL树的一个节点上。
+
+```go
+import "net/http"
+...
+ctr := new(Counter)
+http.Handle("/counter", ctr)
+```
+
+但 `Counter` 不必是结构体，一个整数就够了。 An integer is all that's needed. （接收者必须为指针，增量操作对于调用者才可见。）
+
+```go
+// 简单的计数器服务。
+type Counter int
+
+func (ctr *Counter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	*ctr++
+	fmt.Fprintf(w, "counter = %d\n", *ctr)
+}
+```
+
+当页面被访问时，怎样通知你的程序去更新一些内部状态呢？为Web页面绑定个信道吧。
+
+```go
+// 每次浏览该信道都会发送一个提醒。
+// （可能需要带缓冲的信道。）
+type Chan chan *http.Request
+
+func (ch Chan) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	ch <- req
+	fmt.Fprint(w, "notification sent")
+}
+```
+
+最后，假设我们需要输出调用服务器二进制程序时使用的实参 `/args`。 很简单，写个打印实参的函数就行了。
+
+```go
+func ArgServer() {
+	fmt.Println(os.Args)
+}
+```
+
+我们如何将它转换为HTTP服务器呢？我们可以将 `ArgServer` 实现为某种可忽略值的方法，不过还有种更简单的方法。 既然我们可以为除指针和接口以外的任何类型定义方法，同样也能为一个函数写一个方法。 `http` 包包含以下代码：
+
+```go
+// HandlerFunc 类型是一个适配器，它允许将普通函数用做HTTP处理程序。
+// 若 f 是个具有适当签名的函数，HandlerFunc(f) 就是个调用 f 的处理程序对象。
+type HandlerFunc func(ResponseWriter, *Request)
+
+// ServeHTTP calls f(c, req).
+func (f HandlerFunc) ServeHTTP(w ResponseWriter, req *Request) {
+	f(w, req)
+}
+```
+
+`HandlerFunc` 是个具有 `ServeHTTP` 方法的类型， 因此该类型的值就能处理HTTP请求。我们来看看该方法的实现：接收者是一个函数 `f`，而该方法调用 `f`。这看起来很奇怪，但不必大惊小怪， 区别在于接收者变成了一个信道，而方法通过该信道发送消息。
+
+为了将 `ArgServer` 实现成HTTP服务器，首先我们得让它拥有合适的签名。
+
+```go
+// 实参服务器。
+func ArgServer(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprintln(w, os.Args)
+}
+```
+
+`ArgServer` 和 `HandlerFunc` 现在拥有了相同的签名， 因此我们可将其转换为这种类型以访问它的方法，就像我们将 `Sequence` 转换为 `IntSlice` 以访问 `IntSlice.Sort` 那样。 建立代码非常简单：
+
+```go
+http.Handle("/args", http.HandlerFunc(ArgServer))
+```
+
+当有人访问 `/args` 页面时，安装到该页面的处理程序就有了值 `ArgServer` 和类型 `HandlerFunc`。 HTTP服务器会以 `ArgServer` 为接收者，调用该类型的 `ServeHTTP` 方法，它会反过来调用 `ArgServer`（通过 `f(c, req)`），接着实参就会被显示出来。
+
+在本节中，我们通过一个结构体，一个整数，一个信道和一个函数，建立了一个HTTP服务器， 这一切都是因为接口只是方法的集和，而几乎任何类型都能定义方法。
+
+# 空白标识符
+
+我们在 [`for-range` 循环](https://go-zh.org/doc/effective_go.html#for)和[映射](https://go-zh.org/doc/effective_go.html#映射)中提过几次空白标识符。 空白标识符可被赋予或声明为任何类型的任何值，而其值会被无害地丢弃。它有点像Unix中的 `/dev/null` 文件：它表示只写的值，在需要变量但不需要实际值的地方用作占位符。 我们在前面已经见过它的用法了。
+
+## 多重赋值中的空白标识符
+
+`for range` 循环中对空表标识符的用法是一种具体情况，更一般的情况即为多重赋值。
+
+若某次赋值需要匹配多个左值，但其中某个变量不会被程序使用， 那么用空白标识符来代替该变量可避免创建无用的变量，并能清楚地表明该值将被丢弃。 例如，当调用某个函数时，它会返回一个值和一个错误，但只有错误很重要， 那么可使用空白标识符来丢弃无关的值。
+
+```go
+if _, err := os.Stat(path); os.IsNotExist(err) {
+	fmt.Printf("%s does not exist\n", path)
+}
+```
+
+你偶尔会看见为忽略错误而丢弃错误值的代码，这是种糟糕的实践。请务必检查错误返回， 它们会提供错误的理由。
+
+```go
+// 烂代码！若路径不存在，它就会崩溃。
+fi, _ := os.Stat(path)
+if fi.IsDir() {
+	fmt.Printf("%s is a directory\n", path)
+}
+```
+
+## 未使用的导入和变量
+
+若导入某个包或声明某个变量而不使用它就会产生错误。未使用的包会让程序膨胀并拖慢编译速度， 而已初始化但未使用的变量不仅会浪费计算能力，还有可能暗藏着更大的Bug。 然而在程序开发过程中，经常会产生未使用的导入和变量。虽然以后会用到它们， 但为了完成编译又不得不删除它们才行，这很让人烦恼。空白标识符就能提供一个工作空间。
+
+这个写了一半的程序有两个未使用的导入（`fmt` 和 `io`）以及一个未使用的变量（`fd`），因此它不能编译， 但若到目前为止代码还是正确的，我们还是很乐意看到它们的。
+
+```go
+package main
+
+import (
+    "fmt"
+    "io"
+    "log"
+    "os"
+)
+
+func main() {
+    fd, err := os.Open("test.go")
+    if err != nil {
+        log.Fatal(err)
+    }
+    // TODO: use fd.
+}
+```
+
+要让编译器停止关于未使用导入的抱怨，需要空白标识符来引用已导入包中的符号。 同样，将未使用的变量 `fd` 赋予空白标识符也能关闭未使用变量错误。 该程序的以下版本可以编译。
+
+```go
+package main
+
+import (
+    "fmt"
+    "io"
+    "log"
+    "os"
+)
+
+var _ = fmt.Printf // For debugging; delete when done. // 用于调试，结束时删除。
+var _ io.Reader    // For debugging; delete when done. // 用于调试，结束时删除。
+
+func main() {
+    fd, err := os.Open("test.go")
+    if err != nil {
+        log.Fatal(err)
+    }
+    // TODO: use fd.
+    _ = fd
+}
+```
+
+按照惯例，我们应在导入并加以注释后，再使全局声明导入错误静默，这样可以让它们更易找到， 并作为以后清理它的提醒。
+
+## 为副作用而导入
+
+像前例中 `fmt` 或 `io` 这种未使用的导入总应在最后被使用或移除： 空白赋值会将代码标识为工作正在进行中。但有时导入某个包只是为了其副作用， 而没有任何明确的使用。例如，在 `net/http/pprof` 包的 `init` 函数中记录了HTTP处理程序的调试信息。它有个可导出的API， 但大部分客户端只需要该处理程序的记录和通过Web叶访问数据。只为了其副作用来哦导入该包， 只需将包重命名为空白标识符：
+
+```go
+import _ "net/http/pprof"
+```
+
+这种导入格式能明确表示该包是为其副作用而导入的，因为没有其它使用该包的可能： 在此文件中，它没有名字。（若它有名字而我们没有使用，编译器就会拒绝该程序。）
+
+## 接口检查
+
+就像我们在前面[接口](https://go-zh.org/doc/effective_go.html#接口与类型)中讨论的那样， 一个类型无需显式地声明它实现了某个接口。取而代之，该类型只要实现了某个接口的方法， 其实就实现了该接口。在实践中，大部分接口转换都是静态的，因此会在编译时检测。 例如，将一个 `*os.File` 传入一个预期的 `io.Reader` 函数将不会被编译， 除非 `*os.File` 实现了 `io.Reader` 接口。
+
+尽管有些接口检查会在运行时进行。`encoding/json` 包中就有个实例它定义了一个 `Marshaler` 接口。当JSON编码器接收到一个实现了该接口的值，那么该编码器就会调用该值的编组方法， 将其转换为JSON，而非进行标准的类型转换。 编码器在运行时通过[类型断言](https://go-zh.org/doc/effective_go.html#接口转换)检查其属性，就像这样：
+
+```go
+m, ok := val.(json.Marshaler)
+```
+
+若只需要判断某个类型是否是实现了某个接口，而不需要实际使用接口本身 （可能是错误检查部分），就使用空白标识符来忽略类型断言的值：
+
+```go
+if _, ok := val.(json.Marshaler); ok {
+	fmt.Printf("value %v of type %T implements json.Marshaler\n", val, val)
+}
+```
+
+当需要确保某个包中实现的类型一定满足该接口时，就会遇到这种情况。 若某个类型（例如 `json.RawMessage`） 需要一种定制的JSON表现时，它应当实现 `json.Marshaler`， 不过现在没有静态转换可以让编译器去自动验证它。若该类型通过忽略转换失败来满足该接口， 那么JSON编码器仍可工作，但它却不会使用定制的实现。为确保其实现正确， 可在该包中用空白标识符声明一个全局变量：
+
+```go
+var _ json.Marshaler = (*RawMessage)(nil)
+```
+
+在此声明中，我们调用了一个 `*RawMessage` 转换并将其赋予了 `Marshaler`，以此来要求 `*RawMessage` 实现 `Marshaler`，这时其属性就会在编译时被检测。 若 `json.Marshaler` 接口被更改，此包将无法通过编译， 而我们则会注意到它需要更新。
+
+在这种结构中出现空白标识符，即表示该声明的存在只是为了类型检查。 不过请不要为满足接口就将它用于任何类型。作为约定， 仅当代码中不存在静态类型转换时才能这种声明，毕竟这是种罕见的情况。
 
 
 
