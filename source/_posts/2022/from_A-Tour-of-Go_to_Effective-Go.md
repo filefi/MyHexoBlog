@@ -1612,7 +1612,7 @@ func main() {
 
 ## 为副作用而导入
 
-像前例中 `fmt` 或 `io` 这种未使用的导入总应在最后被使用或移除： 空白赋值会将代码标识为工作正在进行中。但有时导入某个包只是为了其副作用， 而没有任何明确的使用。例如，在 `net/http/pprof` 包的 `init` 函数中记录了HTTP处理程序的调试信息。它有个可导出的API， 但大部分客户端只需要该处理程序的记录和通过Web叶访问数据。只为了其副作用来哦导入该包， 只需将包重命名为空白标识符：
+像前例中 `fmt` 或 `io` 这种未使用的导入总应在最后被使用或移除： 空白赋值会将代码标识为工作正在进行中。但有时导入某个包只是为了其副作用， 而没有任何明确的使用。例如，在 `net/http/pprof` 包的 `init` 函数中记录了HTTP处理程序的调试信息。它有个可导出的API， 但大部分客户端只需要该处理程序的记录和通过网页访问数据。只为了其副作用来导入该包， 只需将包重命名为空白标识符：
 
 ```go
 import _ "net/http/pprof"
@@ -1649,4 +1649,618 @@ var _ json.Marshaler = (*RawMessage)(nil)
 在这种结构中出现空白标识符，即表示该声明的存在只是为了类型检查。 不过请不要为满足接口就将它用于任何类型。作为约定， 仅当代码中不存在静态类型转换时才能这种声明，毕竟这是种罕见的情况。
 
 
+
+# 内嵌
+
+Go并不提供典型的、类型驱动的子类化概念，但通过将类型**内嵌**到结构体或接口中， 它就能“借鉴”部分实现。
+
+接口内嵌非常简单。我们之前提到过 `io.Reader` 和 `io.Writer` 接口，这里是它们的定义。
+
+```go
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}
+
+type Writer interface {
+	Write(p []byte) (n int, err error)
+}
+```
+
+`io` 包也导出了一些其它接口，以此来阐明对象所需实现的方法。 例如 `io.ReadWriter` 就是个包含 `Read` 和 `Write` 的接口。我们可以通过显示地列出这两个方法来指明 `io.ReadWriter`， 但通过将这两个接口内嵌到新的接口中显然更容易且更具启发性，就像这样：
+
+```go
+// ReadWriter 接口结合了 Reader 和 Writer 接口。
+type ReadWriter interface {
+	Reader
+	Writer
+}
+```
+
+正如它看起来那样：`ReadWriter` 能够做任何 `Reader` **和** `Writer` 可以做到的事情，它是内嵌接口的联合体 （它们必须是不相交的方法集）。只有接口能被嵌入到接口中。
+
+同样的基本想法可以应用在结构体中，但其意义更加深远。`bufio` 包中有 `bufio.Reader` 和 `bufio.Writer` 这两个结构体类型， 它们每一个都实现了与 `io` 包中相同意义的接口。此外，`bufio` 还通过结合 `reader/writer` 并将其内嵌到结构体中，实现了带缓冲的 `reader/writer`：它列出了结构体中的类型，但并未给予它们字段名。
+
+```
+// ReadWriter 存储了指向 Reader 和 Writer 的指针。
+// 它实现了 io.ReadWriter。
+type ReadWriter struct {
+	*Reader  // *bufio.Reader
+	*Writer  // *bufio.Writer
+}
+```
+
+内嵌的元素为指向结构体的指针，当然它们在使用前必须被初始化为指向有效结构体的指针。 `ReadWriter` 结构体和通过如下方式定义：
+
+```
+type ReadWriter struct {
+	reader *Reader
+	writer *Writer
+}
+```
+
+但为了提升该字段的方法并满足 `io` 接口，我们同样需要提供转发的方法， 就像这样：
+
+```
+func (rw *ReadWriter) Read(p []byte) (n int, err error) {
+	return rw.reader.Read(p)
+}
+```
+
+而通过直接内嵌结构体，我们就能避免如此繁琐。 内嵌类型的方法可以直接引用，这意味着 `bufio.ReadWriter` 不仅包括 `bufio.Reader` 和 `bufio.Writer` 的方法，它还同时满足下列三个接口： `io.Reader`、`io.Writer` 以及 `io.ReadWriter`。
+
+还有种区分内嵌与子类的重要手段。当内嵌一个类型时，该类型的方法会成为外部类型的方法， 但当它们被调用时，该方法的接收者是内部类型，而非外部的。在我们的例子中，当 `bufio.ReadWriter` 的 `Read` 方法被调用时， 它与之前写的转发方法具有同样的效果；接收者是 `ReadWriter` 的 `reader` 字段，而非 `ReadWriter` 本身。
+
+内嵌同样可以提供便利。这个例子展示了一个内嵌字段和一个常规的命名字段。
+
+```
+type Job struct {
+	Command string
+	*log.Logger
+}
+```
+
+`Job` 类型现在有了 `Log`、`Logf` 和 `*log.Logger` 的其它方法。我们当然可以为 `Logger` 提供一个字段名，但完全不必这么做。现在，一旦初始化后，我们就能记录 `Job` 了：
+
+```
+job.Log("starting now...")
+```
+
+`Logger` 是 `Job` 结构体的常规字段， 因此我们可在 `Job` 的构造函数中，通过一般的方式来初始化它，就像这样：
+
+```
+func NewJob(command string, logger *log.Logger) *Job {
+	return &Job{command, logger}
+}
+```
+
+或通过复合字面：
+
+```
+job := &Job{command, log.New(os.Stderr, "Job: ", log.Ldate)}
+```
+
+若我们需要直接引用内嵌字段，可以忽略包限定名，直接将该字段的类型名作为字段名， 就像我们在 `ReaderWriter` 结构体的 `Read` 方法中做的那样。 若我们需要访问 `Job` 类型的变量 `job` 的 `*log.Logger`， 可以直接写作 `job.Logger`。若我们想精炼 `Logger` 的方法时， 这会非常有用。
+
+```
+func (job *Job) Logf(format string, args ...interface{}) {
+	job.Logger.Logf("%q: %s", job.Command, fmt.Sprintf(format, args...))
+}
+```
+
+内嵌类型会引入命名冲突的问题，但解决规则却很简单。首先，字段或方法 `X` 会隐藏该类型中更深层嵌套的其它项 `X`。若 `log.Logger` 包含一个名为 `Command` 的字段或方法，`Job` 的 `Command` 字段会覆盖它。
+
+其次，若相同的嵌套层级上出现同名冲突，通常会产生一个错误。若 `Job` 结构体中包含名为 `Logger` 的字段或方法，再将 `log.Logger` 内嵌到其中的话就会产生错误。然而，若重名永远不会在该类型定义之外的程序中使用，那就不会出错。 这种限定能够在外部嵌套类型发生修改时提供某种保护。 因此，就算添加的字段与另一个子类型中的字段相冲突，只要这两个相同的字段永远不会被使用就没问题。
+
+# 并发
+
+## 通过通信共享内存
+
+并发编程是个很大的论题。但限于篇幅，这里仅讨论一些Go特有的东西。
+
+在并发编程中，为实现对共享变量的正确访问需要精确的控制，这在多数环境下都很困难。 Go语言另辟蹊径，它将共享的值通过信道传递，实际上，多个独立执行的线程从不会主动共享。 在任意给定的时间点，只有一个Go程能够访问该值。数据竞争从设计上就被杜绝了。 为了提倡这种思考方式，我们将它简化为一句口号：
+
+> 不要通过共享内存来通信，而应通过通信来共享内存。
+
+这种方法意义深远。例如，引用计数通过为整数变量添加互斥锁来很好地实现。 但作为一种高级方法，通过信道来控制访问能够让你写出更简洁，正确的程序。
+
+我们可以从典型的单线程运行在单CPU之上的情形来审视这种模型。它无需提供同步原语。 现在考虑另一种情况，它也无需同步。现在让它们俩进行通信。若将通信过程看做同步着， 那就完全不需要其它同步了。例如，Unix管道就与这种模型完美契合。 尽管Go的并发处理方式来源于Hoare的通信顺序处理（CSP）， 它依然可以看做是类型安全的Unix管道的实现。
+
+## Go程
+
+我们称之为**Go程**是因为现有的术语—线程、协程、进程等等—无法准确传达它的含义。 Go程具有简单的模型：它是与其它Go程并发运行在同一地址空间的函数。它是轻量级的， 所有小号几乎就只有栈空间的分配。而且栈最开始是非常小的，所以它们很廉价， 仅在需要时才会随着堆空间的分配（和释放）而变化。
+
+Go程在多线程操作系统上可实现多路复用，因此若一个线程阻塞，比如说等待I/O， 那么其它的线程就会运行。Go程的设计隐藏了线程创建和管理的诸多复杂性。
+
+在函数或方法前添加 `go` 关键字能够在新的Go程中调用它。当调用完成后， 该Go程也会安静地退出。（效果有点像Unix Shell中的 `&` 符号，它能让命令在后台运行。）
+
+```
+go list.Sort()  // 并发运行 list.Sort，无需等它结束。
+```
+
+函数字面在Go程调用中非常有用。
+
+```
+func Announce(message string, delay time.Duration) {
+	go func() {
+		time.Sleep(delay)
+		fmt.Println(message)
+	}()  // 注意括号 - 必须调用该函数。
+}
+```
+
+在Go中，函数字面都是闭包：其实现在保证了函数内引用变量的生命周期与函数的活动时间相同。
+
+这些函数没什么实用性，因为它们没有实现完成时的信号处理。因此，我们需要信道。
+
+## 信道
+
+信道与映射一样，也需要通过 `make` 来分配内存。其结果值充当了对底层数据结构的引用。 若提供了一个可选的整数形参，它就会为该信道设置缓冲区大小。默认值是零，表示不带缓冲的或同步的信道。
+
+```
+ci := make(chan int)            // 整数类型的无缓冲信道
+cj := make(chan int, 0)         // 整数类型的无缓冲信道
+cs := make(chan *os.File, 100)  // 指向文件指针的带缓冲信道
+```
+
+无缓冲信道在通信时会同步交换数据，它能确保（两个Go程的）计算处于确定状态。
+
+信道有很多惯用法，我们从这里开始了解。在上一节中，我们在后台启动了排序操作。 信道使得启动的Go程等待排序完成。
+
+```
+c := make(chan int)  // 分配一个信道
+// 在Go程中启动排序。当它完成后，在信道上发送信号。
+go func() {
+	list.Sort()
+	c <- 1  // 发送信号，什么值无所谓。
+}()
+doSomethingForAWhile()
+<-c   // 等待排序结束，丢弃发来的值。
+```
+
+接收者在收到数据前会一直阻塞。若信道是不带缓冲的，那么在接收者收到值前， 发送者会一直阻塞；若信道是带缓冲的，则发送者仅在值被复制到缓冲区前阻塞； 若缓冲区已满，发送者会一直等待直到某个接收者取出一个值为止。
+
+带缓冲的信道可被用作信号量，例如限制吞吐量。在此例中，进入的请求会被传递给 `handle`，它从信道中接收值，处理请求后将值发回该信道中，以便让该 “信号量”准备迎接下一次请求。信道缓冲区的容量决定了同时调用 `process` 的数量上限，因此我们在初始化时首先要填充至它的容量上限。
+
+```
+var sem = make(chan int, MaxOutstanding)
+
+func handle(r *Request) {
+	sem <- 1 // 等待活动队列清空。
+	process(r)  // 可能需要很长时间。
+	<-sem    // 完成；使下一个请求可以运行。
+}
+
+func Serve(queue chan *Request) {
+	for {
+		req := <-queue
+		go handle(req)  // 无需等待 handle 结束。
+	}
+}
+```
+
+由于数据同步发生在信道的接收端（也就是说发送**发生在**>接受**之前**，参见 [Go内存模型](https://go-zh.org/ref/mem)），因此信号必须在信道的接收端获取，而非发送端。
+
+然而，它却有个设计问题：尽管只有 `MaxOutstanding` 个Go程能同时运行，但 `Serve` 还是为每个进入的请求都创建了新的Go程。其结果就是，若请求来得很快， 该程序就会无限地消耗资源。为了弥补这种不足，我们可以通过修改 `Serve` 来限制创建Go程，这是个明显的解决方案，但要当心我们修复后出现的Bug。
+
+```
+func Serve(queue chan *Request) {
+	for req := range queue {
+		sem <- 1
+		go func() {
+			process(req) // 这儿有Bug，解释见下。
+			<-sem
+		}()
+	}
+}
+```
+
+Bug出现在Go的 `for` 循环中，该循环变量在每次迭代时会被重用，因此 `req` 变量会在所有的Go程间共享，这不是我们想要的。我们需要确保 `req` 对于每个Go程来说都是唯一的。有一种方法能够做到，就是将 `req` 的值作为实参传入到该Go程的闭包中：
+
+```
+func Serve(queue chan *Request) {
+	for req := range queue {
+		sem <- 1
+		go func(req *Request) {
+			process(req)
+			<-sem
+		}(req)
+	}
+}
+```
+
+比较前后两个版本，观察该闭包声明和运行中的差别。 另一种解决方案就是以相同的名字创建新的变量，如例中所示：
+
+```
+func Serve(queue chan *Request) {
+	for req := range queue {
+		req := req // 为该Go程创建 req 的新实例。
+		sem <- 1
+		go func() {
+			process(req)
+			<-sem
+		}()
+	}
+}
+```
+
+它的写法看起来有点奇怪
+
+```
+req := req
+```
+
+但在Go中这样做是合法且惯用的。你用相同的名字获得了该变量的一个新的版本， 以此来局部地刻意屏蔽循环变量，使它对每个Go程保持唯一。
+
+回到编写服务器的一般问题上来。另一种管理资源的好方法就是启动固定数量的 `handle` Go程，一起从请求信道中读取数据。Go程的数量限制了同时调用 `process` 的数量。`Serve` 同样会接收一个通知退出的信道， 在启动所有Go程后，它将阻塞并暂停从信道中接收消息。
+
+```
+func handle(queue chan *Request) {
+	for r := range queue {
+		process(r)
+	}
+}
+
+func Serve(clientRequests chan *Request, quit chan bool) {
+	// 启动处理程序
+	for i := 0; i < MaxOutstanding; i++ {
+		go handle(clientRequests)
+	}
+	<-quit  // 等待通知退出。
+}
+```
+
+## 信道中的信道
+
+Go最重要的特性就是信道是一等值，它可以被分配并像其它值到处传递。 这种特性通常被用来实现安全、并行的多路分解。
+
+在上一节的例子中，`handle` 是个非常理想化的请求处理程序， 但我们并未定义它所处理的请求类型。若该类型包含一个可用于回复的信道， 那么每一个客户端都能为其回应提供自己的路径。以下为 `Request` 类型的大概定义。
+
+```
+type Request struct {
+	args        []int
+	f           func([]int) int
+	resultChan  chan int
+}
+```
+
+客户端提供了一个函数及其实参，此外在请求对象中还有个接收应答的信道。
+
+```
+func sum(a []int) (s int) {
+	for _, v := range a {
+		s += v
+	}
+	return
+}
+
+request := &Request{[]int{3, 4, 5}, sum, make(chan int)}
+// 发送请求
+clientRequests <- request
+// 等待回应
+fmt.Printf("answer: %d\n", <-request.resultChan)
+```
+
+On the server side, the handler function is the only thing that changes.
+
+```
+func handle(queue chan *Request) {
+	for req := range queue {
+		req.resultChan <- req.f(req.args)
+	}
+}
+```
+
+要使其实际可用还有很多工作要做，这些代码仅能实现一个速率有限、并行、非阻塞RPC系统的 框架，而且它并不包含互斥锁。
+
+## 并行化
+
+这些设计的另一个应用是在多CPU核心上实现并行计算。如果计算过程能够被分为几块 可独立执行的过程，它就可以在每块计算结束时向信道发送信号，从而实现并行处理。
+
+让我们看看这个理想化的例子。我们在对一系列向量项进行极耗资源的操作， 而每个项的值计算是完全独立的。
+
+```
+type Vector []float64
+
+// 将此操应用至 v[i], v[i+1] ... 直到 v[n-1]
+func (v Vector) DoSome(i, n int, u Vector, c chan int) {
+	for ; i < n; i++ {
+		v[i] += u.Op(v[i])
+	}
+	c <- 1    // 发信号表示这一块计算完成。
+}
+```
+
+我们在循环中启动了独立的处理块，每个CPU将执行一个处理。 它们有可能以乱序的形式完成并结束，但这没有关系； 我们只需在所有Go程开始后接收，并统计信道中的完成信号即可。
+
+```
+const NCPU = 4  // CPU核心数
+
+func (v Vector) DoAll(u Vector) {
+	c := make(chan int, NCPU)  // 缓冲区是可选的，但明显用上更好
+	for i := 0; i < NCPU; i++ {
+		go v.DoSome(i*len(v)/NCPU, (i+1)*len(v)/NCPU, u, c)
+	}
+	// 排空信道。
+	for i := 0; i < NCPU; i++ {
+		<-c    // 等待任务完成
+	}
+	// 一切完成。
+}
+```
+
+目前Go运行时的实现默认并不会并行执行代码，它只为用户层代码提供单一的处理核心。 任意数量的Go程都可能在系统调用中被阻塞，而在任意时刻默认只有一个会执行用户层代码。 它应当变得更智能，而且它将来肯定会变得更智能。但现在，若你希望CPU并行执行， 就必须告诉运行时你希望同时有多少Go程能执行代码。有两种途径可意识形态，要么 在运行你的工作时将 `GOMAXPROCS` 环境变量设为你要使用的核心数， 要么导入 `runtime` 包并调用 `runtime.GOMAXPROCS(NCPU)`。 `runtime.NumCPU()` 的值可能很有用，它会返回当前机器的逻辑CPU核心数。 当然，随着调度算法和运行时的改进，将来会不再需要这种方法。
+
+注意不要混淆并发和并行的概念：并发是用可独立执行的组件构造程序的方法， 而并行则是为了效率在多CPU上平行地进行计算。尽管Go的并发特性能够让某些问题更易构造成并行计算， 但Go仍然是种并发而非并行的语言，且Go的模型并不适合所有的并行问题。 关于其中区别的讨论，见 [此博文](http://blog.golang.org/2013/01/concurrency-is-not-parallelism.html)。
+
+## 可能泄露的缓冲区
+
+并发编程的工具甚至能很容易地表达非并发的思想。这里有个提取自RPC包的例子。 客户端Go程从某些来源，可能是网络中循环接收数据。为避免分配和释放缓冲区， 它保存了一个空闲链表，使用一个带缓冲信道表示。若信道为空，就会分配新的缓冲区。 一旦消息缓冲区就绪，它将通过 `serverChan` 被发送到服务器。 `serverChan`.
+
+```
+var freeList = make(chan *Buffer, 100)
+var serverChan = make(chan *Buffer)
+
+func client() {
+	for {
+		var b *Buffer
+		// 若缓冲区可用就用它，不可用就分配个新的。
+		select {
+		case b = <-freeList:
+			// 获取一个，不做别的。
+		default:
+			// 非空闲，因此分配一个新的。
+			b = new(Buffer)
+		}
+		load(b)              // 从网络中读取下一条消息。
+		serverChan <- b   // 发送至服务器。
+	}
+}
+```
+
+服务器从客户端循环接收每个消息，处理它们，并将缓冲区返回给空闲列表。
+
+```
+func server() {
+	for {
+		b := <-serverChan    // 等待工作。
+		process(b)
+		// 若缓冲区有空间就重用它。
+		select {
+		case freeList <- b:
+			// 将缓冲区放大空闲列表中，不做别的。
+		default:
+			// 空闲列表已满，保持就好。
+		}
+	}
+}
+```
+
+客户端试图从 `freeList` 中获取缓冲区；若没有缓冲区可用， 它就将分配一个新的。服务器将 `b` 放回空闲列表 `freeList` 中直到列表已满，此时缓冲区将被丢弃，并被垃圾回收器回收。（`select` 语句中的 `default` 子句在没有条件符合时执行，这也就意味着 `selects` 永远不会被阻塞。）依靠带缓冲的信道和垃圾回收器的记录， 我们仅用短短几行代码就构建了一个可能导致缓冲区槽位泄露的空闲列表。
+
+# 错误
+
+库例程通常需要向调用者返回某种类型的错误提示。之前提到过，Go语言的多值返回特性， 使得它在返回常规的值时，还能轻松地返回详细的错误描述。按照约定，错误的类型通常为 `error`，这是一个内建的简单接口。
+
+```
+type error interface {
+	Error() string
+}
+```
+
+库的编写者通过更丰富的底层模型可以轻松实现这个接口，这样不仅能看见错误， 还能提供一些上下文。例如，`os.Open` 可返回一个 `os.PathError`。
+
+```
+// PathError 记录一个错误以及产生该错误的路径和操作。
+type PathError struct {
+	Op string    // "open"、"unlink" 等等。
+	Path string  // 相关联的文件。
+	Err error    // 由系统调用返回。
+}
+
+func (e *PathError) Error() string {
+	return e.Op + " " + e.Path + ": " + e.Err.Error()
+}
+```
+
+`PathError`的 `Error` 会生成如下错误信息：
+
+```
+open /etc/passwx: no such file or directory
+```
+
+这种错误包含了出错的文件名、操作和触发的操作系统错误，即便在产生该错误的调用 和输出的错误信息相距甚远时，它也会非常有用，这比苍白的“不存在该文件或目录”更具说明性。
+
+错误字符串应尽可能地指明它们的来源，例如产生该错误的包名前缀。例如在 `image` 包中，由于未知格式导致解码错误的字符串为“image: unknown format”。
+
+若调用者关心错误的完整细节，可使用类型选择或者类型断言来查看特定错误，并抽取其细节。 对于 `PathErrors`，它应该还包含检查内部的 `Err` 字段以进行可能的错误恢复。
+
+```
+for try := 0; try < 2; try++ {
+	file, err = os.Create(filename)
+	if err == nil {
+		return
+	}
+	if e, ok := err.(*os.PathError); ok && e.Err == syscall.ENOSPC {
+		deleteTempFiles()  // 恢复一些空间。
+		continue
+	}
+	return
+}
+```
+
+这里的第二条 `if` 是另一种[类型断言](https://go-zh.org/doc/effective_go.html#接口转换)。若它失败， `ok` 将为 `false`，而 `e` 则为`nil`. 若它成功，`ok` 将为 `true`，这意味着该错误属于 `*os.PathError` 类型，而 `e` 能够检测关于该错误的更多信息。
+
+## Panic
+
+向调用者报告错误的一般方式就是将 `error` 作为额外的值返回。 标准的 `Read` 方法就是个众所周知的实例，它返回一个字节计数和一个 `error`。但如果错误时不可恢复的呢？有时程序就是不能继续运行。
+
+为此，我们提供了内建的 `panic` 函数，它会产生一个运行时错误并终止程序 （但请继续看下一节）。该函数接受一个任意类型的实参（一般为字符串），并在程序终止时打印。 它还能表明发生了意料之外的事情，比如从无限循环中退出了。
+
+```
+// 用牛顿法计算立方根的一个玩具实现。
+func CubeRoot(x float64) float64 {
+	z := x/3   // 任意初始值
+	for i := 0; i < 1e6; i++ {
+		prevz := z
+		z -= (z*z*z-x) / (3*z*z)
+		if veryClose(z, prevz) {
+			return z
+		}
+	}
+	// 一百万次迭代并未收敛，事情出错了。
+	panic(fmt.Sprintf("CubeRoot(%g) did not converge", x))
+}
+```
+
+这仅仅是个示例，实际的库函数应避免 `panic`。若问题可以被屏蔽或解决， 最好就是让程序继续运行而不是终止整个程序。一个可能的反例就是初始化： 若某个库真的不能让自己工作，且有足够理由产生Panic，那就由它去吧。
+
+```
+var user = os.Getenv("USER")
+
+func init() {
+	if user == "" {
+		panic("no value for $USER")
+	}
+}
+```
+
+## 恢复
+
+当 `panic` 被调用后（包括不明确的运行时错误，例如切片检索越界或类型断言失败）， 程序将立刻终止当前函数的执行，并开始回溯Go程的栈，运行任何被推迟的函数。 若回溯到达Go程栈的顶端，程序就会终止。不过我们可以用内建的 `recover` 函数来重新或来取回Go程的控制权限并使其恢复正常执行。
+
+调用 `recover` 将停止回溯过程，并返回传入 `panic` 的实参。 由于在回溯时只有被推迟函数中的代码在运行，因此 `recover` 只能在被推迟的函数中才有效。
+
+`recover` 的一个应用就是在服务器中终止失败的Go程而无需杀死其它正在执行的Go程。
+
+```
+func server(workChan <-chan *Work) {
+	for work := range workChan {
+		go safelyDo(work)
+	}
+}
+
+func safelyDo(work *Work) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println("work failed:", err)
+		}
+	}()
+	do(work)
+}
+```
+
+在此例中，若 `do(work)` 触发了Panic，其结果就会被记录， 而该Go程会被干净利落地结束，不会干扰到其它Go程。我们无需在推迟的闭包中做任何事情， `recover` 会处理好这一切。
+
+由于直接从被推迟函数中调用 `recover` 时不会返回 `nil`， 因此被推迟的代码能够调用本身使用了 `panic` 和 `recover` 的库函数而不会失败。例如在 `safelyDo` 中，被推迟的函数可能在调用 `recover` 前先调用记录函数，而该记录函数应当不受Panic状态的代码的影响。
+
+通过恰当地使用恢复模式，`do` 函数（及其调用的任何代码）可通过调用 `panic` 来避免更坏的结果。我们可以利用这种思想来简化复杂软件中的错误处理。 让我们看看 `regexp` 包的理想化版本，它会以局部的错误类型调用 `panic` 来报告解析错误。以下是一个 `error` 类型的 `Error` 方法和一个 `Compile` 函数的定义：
+
+```
+// Error 是解析错误的类型，它满足 error 接口。
+type Error string
+func (e Error) Error() string {
+	return string(e)
+}
+
+// error 是 *Regexp 的方法，它通过用一个 Error 触发Panic来报告解析错误。
+func (regexp *Regexp) error(err string) {
+	panic(Error(err))
+}
+
+// Compile 返回该正则表达式解析后的表示。
+func Compile(str string) (regexp *Regexp, err error) {
+	regexp = new(Regexp)
+	// doParse will panic if there is a parse error.
+	defer func() {
+		if e := recover(); e != nil {
+			regexp = nil    // 清理返回值。
+			err = e.(Error) // 若它不是解析错误，将重新触发Panic。
+		}
+	}()
+	return regexp.doParse(str), nil
+}
+```
+
+若 `doParse` 触发了Panic，恢复块会将返回值设为 `nil` —被推迟的函数能够修改已命名的返回值。在 `err` 的赋值过程中， 我们将通过断言它是否拥有局部类型 `Error` 来检查它。若它没有， 类型断言将会失败，此时会产生运行时错误，并继续栈的回溯，仿佛一切从未中断过一样。 该检查意味着若发生了一些像索引越界之类的意外，那么即便我们使用了 `panic` 和 `recover` 来处理解析错误，代码仍然会失败。
+
+通过适当的错误处理，`error` 方法（由于它是个绑定到具体类型的方法， 因此即便它与内建的 `error` 类型名字相同也没有关系） 能让报告解析错误变得更容易，而无需手动处理回溯的解析栈：
+
+```
+if pos == 0 {
+	re.error("'*' illegal at start of expression")
+}
+```
+
+尽管这种模式很有用，但它应当仅在包内使用。`Parse` 会将其内部的 `panic` 调用转为 `error` 值，它并不会向调用者暴露出 `panic`。这是个值得遵守的良好规则。
+
+顺便一提，这种重新触发Panic的惯用法会在产生实际错误时改变Panic的值。 然而，不管是原始的还是新的错误都会在崩溃报告中显示，因此问题的根源仍然是可见的。 这种简单的重新触发Panic的模型已经够用了，毕竟他只是一次崩溃。 但若你只想显示原始的值，也可以多写一点代码来过滤掉不需要的问题，然后用原始值再次触发Panic。 这里就将这个练习留给读者了。
+
+# 一个Web服务器
+
+让我们以一个完整的Go程序作为结束吧，一个Web服务器。该程序其实只是个Web服务器的重用。 Google在[http://chart.apis.google.com](http://chart.apis.google.com/) 上提供了一个将表单数据自动转换为图表的服务。不过，该服务很难交互， 因为你需要将数据作为查询放到URL中。此程序为一种数据格式提供了更好的的接口： 给定一小段文本，它将调用图表服务器来生成二维码（QR码），这是一种编码文本的点格矩阵。 该图像可被你的手机摄像头捕获，并解释为一个字符串，比如URL， 这样就免去了你在狭小的手机键盘上键入URL的麻烦。
+
+以下为完整的程序，随后有一段解释。
+
+```go
+package main
+
+import (
+    "flag"
+    "html/template"
+    "log"
+    "net/http"
+)
+
+var addr = flag.String("addr", ":1718", "http service address") // Q=17, R=18
+
+var templ = template.Must(template.New("qr").Parse(templateStr))
+
+func main() {
+    flag.Parse()
+    http.Handle("/", http.HandlerFunc(QR))
+    err := http.ListenAndServe(*addr, nil)
+    if err != nil {
+        log.Fatal("ListenAndServe:", err)
+    }
+}
+
+func QR(w http.ResponseWriter, req *http.Request) {
+    templ.Execute(w, req.FormValue("s"))
+}
+
+const templateStr = `
+<html>
+<head>
+<title>QR Link Generator</title>
+</head>
+<body>
+{{if .}}
+<img src="http://chart.apis.google.com/chart?chs=300x300&cht=qr&choe=UTF-8&chl={{.}}" />
+<br>
+{{.}}
+<br>
+<br>
+{{end}}
+<form action="/" name=f method="GET"><input maxLength=1024 size=70
+name=s value="" title="Text to QR Encode"><input type=submit
+value="Show QR" name=qr>
+</form>
+</body>
+</html>
+`
+```
+
+`main` 之前的代码应该比较容易理解。我们通过一个标志为服务器设置了默认端口。 模板变量 `templ` 正式有趣的地方。它构建的HTML模版将会被服务器执行并显示在页面中。 稍后我们将详细讨论。
+
+`main` 函数解析了参数标志并使用我们讨论过的机制将 `QR` 函数绑定到服务器的根路径。然后调用 `http.ListenAndServe` 启动服务器；它将在服务器运行时处于阻塞状态。
+
+`QR` 仅接受包含表单数据的请求，并为表单值 `s` 中的数据执行模板。
+
+模板包 `html/template` 非常强大；该程序只是浅尝辄止。 本质上，它通过在运行时将数据项中提取的元素（在这里是表单值）传给 `templ.Execute` 执行因而重写了HTML文本。 在模板文本（`templateStr`）中，双大括号界定的文本表示模板的动作。 从 `{{if .}}` 到 `{{end}}` 的代码段仅在当前数据项（这里是点 `.`）的值非空时才会执行。 也就是说，当字符串为空时，此部分模板段会被忽略。
+
+其中两段 `{{.}}` 表示要将数据显示在模板中 （即将查询字符串显示在Web页面上）。HTML模板包将自动对文本进行转义， 因此文本的显示是安全的。
+
+余下的模板字符串只是页面加载时将要显示的HTML。如果这段解释你无法理解，请参考 [文档](https://go-zh.org/pkg/html/template/) 获得更多有关模板包的解释。
+
+你终于如愿以偿了：以几行代码实现的，包含一些数据驱动的HTML文本的Web服务器。 Go语言强大到能让很多事情以短小精悍的方式解决。
 
