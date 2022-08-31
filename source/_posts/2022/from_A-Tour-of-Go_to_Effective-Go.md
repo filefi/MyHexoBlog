@@ -1666,7 +1666,7 @@ type Writer interface {
 }
 ```
 
-`io` 包也导出了一些其它接口，以此来阐明对象所需实现的方法。 例如 `io.ReadWriter` 就是个包含 `Read` 和 `Write` 的接口。我们可以通过显示地列出这两个方法来指明 `io.ReadWriter`， 但通过将这两个接口内嵌到新的接口中显然更容易且更具启发性，就像这样：
+`io` 包也导出了一些其它接口，以此来阐明对象所需实现的方法。 例如 `io.ReadWriter` 就是个包含 `Read` 和 `Write` 的接口。我们可以通过显式地列出这两个方法来指明 `io.ReadWriter`， 但通过将这两个接口内嵌到新的接口中显然更容易且更具启发性，就像这样：
 
 ```go
 // ReadWriter 接口结合了 Reader 和 Writer 接口。
@@ -1676,11 +1676,11 @@ type ReadWriter interface {
 }
 ```
 
-正如它看起来那样：`ReadWriter` 能够做任何 `Reader` **和** `Writer` 可以做到的事情，它是内嵌接口的联合体 （它们必须是不相交的方法集）。只有接口能被嵌入到接口中。
+正如它看起来那样：`ReadWriter` 能够做任何 `Reader` **和** `Writer` 可以做到的事情，它是内嵌接口的联合体 （它们必须是不相交的方法集）。**只有接口能被嵌入到接口中。**
 
 同样的基本想法可以应用在结构体中，但其意义更加深远。`bufio` 包中有 `bufio.Reader` 和 `bufio.Writer` 这两个结构体类型， 它们每一个都实现了与 `io` 包中相同意义的接口。此外，`bufio` 还通过结合 `reader/writer` 并将其内嵌到结构体中，实现了带缓冲的 `reader/writer`：它列出了结构体中的类型，但并未给予它们字段名。
 
-```
+```go
 // ReadWriter 存储了指向 Reader 和 Writer 的指针。
 // 它实现了 io.ReadWriter。
 type ReadWriter struct {
@@ -1689,9 +1689,9 @@ type ReadWriter struct {
 }
 ```
 
-内嵌的元素为指向结构体的指针，当然它们在使用前必须被初始化为指向有效结构体的指针。 `ReadWriter` 结构体和通过如下方式定义：
+内嵌的元素为指向结构体的指针，当然它们在使用前必须被初始化为指向有效结构体的指针。 `ReadWriter` 结构体可通过如下方式定义：
 
-```
+```go
 type ReadWriter struct {
 	reader *Reader
 	writer *Writer
@@ -1700,19 +1700,19 @@ type ReadWriter struct {
 
 但为了提升该字段的方法并满足 `io` 接口，我们同样需要提供转发的方法， 就像这样：
 
-```
+```go
 func (rw *ReadWriter) Read(p []byte) (n int, err error) {
 	return rw.reader.Read(p)
 }
 ```
 
-而通过直接内嵌结构体，我们就能避免如此繁琐。 内嵌类型的方法可以直接引用，这意味着 `bufio.ReadWriter` 不仅包括 `bufio.Reader` 和 `bufio.Writer` 的方法，它还同时满足下列三个接口： `io.Reader`、`io.Writer` 以及 `io.ReadWriter`。
+而**通过直接内嵌结构体，我们就能避免如此繁琐。 内嵌类型的方法可以直接引用，这意味着 `bufio.ReadWriter` 不仅包括 `bufio.Reader` 和 `bufio.Writer` 的方法，它还同时满足下列三个接口： `io.Reader`、`io.Writer` 以及 `io.ReadWriter`。**
 
 还有种区分内嵌与子类的重要手段。当内嵌一个类型时，该类型的方法会成为外部类型的方法， 但当它们被调用时，该方法的接收者是内部类型，而非外部的。在我们的例子中，当 `bufio.ReadWriter` 的 `Read` 方法被调用时， 它与之前写的转发方法具有同样的效果；接收者是 `ReadWriter` 的 `reader` 字段，而非 `ReadWriter` 本身。
 
 内嵌同样可以提供便利。这个例子展示了一个内嵌字段和一个常规的命名字段。
 
-```
+```go
 type Job struct {
 	Command string
 	*log.Logger
@@ -1721,13 +1721,13 @@ type Job struct {
 
 `Job` 类型现在有了 `Log`、`Logf` 和 `*log.Logger` 的其它方法。我们当然可以为 `Logger` 提供一个字段名，但完全不必这么做。现在，一旦初始化后，我们就能记录 `Job` 了：
 
-```
+```go
 job.Log("starting now...")
 ```
 
 `Logger` 是 `Job` 结构体的常规字段， 因此我们可在 `Job` 的构造函数中，通过一般的方式来初始化它，就像这样：
 
-```
+```go
 func NewJob(command string, logger *log.Logger) *Job {
 	return &Job{command, logger}
 }
@@ -1735,13 +1735,13 @@ func NewJob(command string, logger *log.Logger) *Job {
 
 或通过复合字面：
 
-```
+```go
 job := &Job{command, log.New(os.Stderr, "Job: ", log.Ldate)}
 ```
 
 若我们需要直接引用内嵌字段，可以忽略包限定名，直接将该字段的类型名作为字段名， 就像我们在 `ReaderWriter` 结构体的 `Read` 方法中做的那样。 若我们需要访问 `Job` 类型的变量 `job` 的 `*log.Logger`， 可以直接写作 `job.Logger`。若我们想精炼 `Logger` 的方法时， 这会非常有用。
 
-```
+```go
 func (job *Job) Logf(format string, args ...interface{}) {
 	job.Logger.Logf("%q: %s", job.Command, fmt.Sprintf(format, args...))
 }
@@ -1773,13 +1773,13 @@ Go程在多线程操作系统上可实现多路复用，因此若一个线程阻
 
 在函数或方法前添加 `go` 关键字能够在新的Go程中调用它。当调用完成后， 该Go程也会安静地退出。（效果有点像Unix Shell中的 `&` 符号，它能让命令在后台运行。）
 
-```
+```go
 go list.Sort()  // 并发运行 list.Sort，无需等它结束。
 ```
 
 函数字面在Go程调用中非常有用。
 
-```
+```go
 func Announce(message string, delay time.Duration) {
 	go func() {
 		time.Sleep(delay)
@@ -1796,7 +1796,7 @@ func Announce(message string, delay time.Duration) {
 
 信道与映射一样，也需要通过 `make` 来分配内存。其结果值充当了对底层数据结构的引用。 若提供了一个可选的整数形参，它就会为该信道设置缓冲区大小。默认值是零，表示不带缓冲的或同步的信道。
 
-```
+```go
 ci := make(chan int)            // 整数类型的无缓冲信道
 cj := make(chan int, 0)         // 整数类型的无缓冲信道
 cs := make(chan *os.File, 100)  // 指向文件指针的带缓冲信道
@@ -1806,7 +1806,7 @@ cs := make(chan *os.File, 100)  // 指向文件指针的带缓冲信道
 
 信道有很多惯用法，我们从这里开始了解。在上一节中，我们在后台启动了排序操作。 信道使得启动的Go程等待排序完成。
 
-```
+```go
 c := make(chan int)  // 分配一个信道
 // 在Go程中启动排序。当它完成后，在信道上发送信号。
 go func() {
@@ -1821,7 +1821,7 @@ doSomethingForAWhile()
 
 带缓冲的信道可被用作信号量，例如限制吞吐量。在此例中，进入的请求会被传递给 `handle`，它从信道中接收值，处理请求后将值发回该信道中，以便让该 “信号量”准备迎接下一次请求。信道缓冲区的容量决定了同时调用 `process` 的数量上限，因此我们在初始化时首先要填充至它的容量上限。
 
-```
+```go
 var sem = make(chan int, MaxOutstanding)
 
 func handle(r *Request) {
@@ -1842,7 +1842,7 @@ func Serve(queue chan *Request) {
 
 然而，它却有个设计问题：尽管只有 `MaxOutstanding` 个Go程能同时运行，但 `Serve` 还是为每个进入的请求都创建了新的Go程。其结果就是，若请求来得很快， 该程序就会无限地消耗资源。为了弥补这种不足，我们可以通过修改 `Serve` 来限制创建Go程，这是个明显的解决方案，但要当心我们修复后出现的Bug。
 
-```
+```go
 func Serve(queue chan *Request) {
 	for req := range queue {
 		sem <- 1
@@ -1856,7 +1856,7 @@ func Serve(queue chan *Request) {
 
 Bug出现在Go的 `for` 循环中，该循环变量在每次迭代时会被重用，因此 `req` 变量会在所有的Go程间共享，这不是我们想要的。我们需要确保 `req` 对于每个Go程来说都是唯一的。有一种方法能够做到，就是将 `req` 的值作为实参传入到该Go程的闭包中：
 
-```
+```go
 func Serve(queue chan *Request) {
 	for req := range queue {
 		sem <- 1
@@ -1870,7 +1870,7 @@ func Serve(queue chan *Request) {
 
 比较前后两个版本，观察该闭包声明和运行中的差别。 另一种解决方案就是以相同的名字创建新的变量，如例中所示：
 
-```
+```go
 func Serve(queue chan *Request) {
 	for req := range queue {
 		req := req // 为该Go程创建 req 的新实例。
@@ -1885,7 +1885,7 @@ func Serve(queue chan *Request) {
 
 它的写法看起来有点奇怪
 
-```
+```go
 req := req
 ```
 
@@ -1893,7 +1893,7 @@ req := req
 
 回到编写服务器的一般问题上来。另一种管理资源的好方法就是启动固定数量的 `handle` Go程，一起从请求信道中读取数据。Go程的数量限制了同时调用 `process` 的数量。`Serve` 同样会接收一个通知退出的信道， 在启动所有Go程后，它将阻塞并暂停从信道中接收消息。
 
-```
+```go
 func handle(queue chan *Request) {
 	for r := range queue {
 		process(r)
@@ -1915,7 +1915,7 @@ Go最重要的特性就是信道是一等值，它可以被分配并像其它值
 
 在上一节的例子中，`handle` 是个非常理想化的请求处理程序， 但我们并未定义它所处理的请求类型。若该类型包含一个可用于回复的信道， 那么每一个客户端都能为其回应提供自己的路径。以下为 `Request` 类型的大概定义。
 
-```
+```go
 type Request struct {
 	args        []int
 	f           func([]int) int
@@ -1925,7 +1925,7 @@ type Request struct {
 
 客户端提供了一个函数及其实参，此外在请求对象中还有个接收应答的信道。
 
-```
+```go
 func sum(a []int) (s int) {
 	for _, v := range a {
 		s += v
@@ -1942,7 +1942,7 @@ fmt.Printf("answer: %d\n", <-request.resultChan)
 
 On the server side, the handler function is the only thing that changes.
 
-```
+```go
 func handle(queue chan *Request) {
 	for req := range queue {
 		req.resultChan <- req.f(req.args)
@@ -1958,7 +1958,7 @@ func handle(queue chan *Request) {
 
 让我们看看这个理想化的例子。我们在对一系列向量项进行极耗资源的操作， 而每个项的值计算是完全独立的。
 
-```
+```go
 type Vector []float64
 
 // 将此操应用至 v[i], v[i+1] ... 直到 v[n-1]
@@ -1972,7 +1972,7 @@ func (v Vector) DoSome(i, n int, u Vector, c chan int) {
 
 我们在循环中启动了独立的处理块，每个CPU将执行一个处理。 它们有可能以乱序的形式完成并结束，但这没有关系； 我们只需在所有Go程开始后接收，并统计信道中的完成信号即可。
 
-```
+```go
 const NCPU = 4  // CPU核心数
 
 func (v Vector) DoAll(u Vector) {
@@ -1996,7 +1996,7 @@ func (v Vector) DoAll(u Vector) {
 
 并发编程的工具甚至能很容易地表达非并发的思想。这里有个提取自RPC包的例子。 客户端Go程从某些来源，可能是网络中循环接收数据。为避免分配和释放缓冲区， 它保存了一个空闲链表，使用一个带缓冲信道表示。若信道为空，就会分配新的缓冲区。 一旦消息缓冲区就绪，它将通过 `serverChan` 被发送到服务器。 `serverChan`.
 
-```
+```go
 var freeList = make(chan *Buffer, 100)
 var serverChan = make(chan *Buffer)
 
@@ -2019,7 +2019,7 @@ func client() {
 
 服务器从客户端循环接收每个消息，处理它们，并将缓冲区返回给空闲列表。
 
-```
+```go
 func server() {
 	for {
 		b := <-serverChan    // 等待工作。
@@ -2041,7 +2041,7 @@ func server() {
 
 库例程通常需要向调用者返回某种类型的错误提示。之前提到过，Go语言的多值返回特性， 使得它在返回常规的值时，还能轻松地返回详细的错误描述。按照约定，错误的类型通常为 `error`，这是一个内建的简单接口。
 
-```
+```go
 type error interface {
 	Error() string
 }
@@ -2049,7 +2049,7 @@ type error interface {
 
 库的编写者通过更丰富的底层模型可以轻松实现这个接口，这样不仅能看见错误， 还能提供一些上下文。例如，`os.Open` 可返回一个 `os.PathError`。
 
-```
+```go
 // PathError 记录一个错误以及产生该错误的路径和操作。
 type PathError struct {
 	Op string    // "open"、"unlink" 等等。
@@ -2064,7 +2064,7 @@ func (e *PathError) Error() string {
 
 `PathError`的 `Error` 会生成如下错误信息：
 
-```
+```go
 open /etc/passwx: no such file or directory
 ```
 
@@ -2074,7 +2074,7 @@ open /etc/passwx: no such file or directory
 
 若调用者关心错误的完整细节，可使用类型选择或者类型断言来查看特定错误，并抽取其细节。 对于 `PathErrors`，它应该还包含检查内部的 `Err` 字段以进行可能的错误恢复。
 
-```
+```go
 for try := 0; try < 2; try++ {
 	file, err = os.Create(filename)
 	if err == nil {
@@ -2096,7 +2096,7 @@ for try := 0; try < 2; try++ {
 
 为此，我们提供了内建的 `panic` 函数，它会产生一个运行时错误并终止程序 （但请继续看下一节）。该函数接受一个任意类型的实参（一般为字符串），并在程序终止时打印。 它还能表明发生了意料之外的事情，比如从无限循环中退出了。
 
-```
+```go
 // 用牛顿法计算立方根的一个玩具实现。
 func CubeRoot(x float64) float64 {
 	z := x/3   // 任意初始值
@@ -2114,7 +2114,7 @@ func CubeRoot(x float64) float64 {
 
 这仅仅是个示例，实际的库函数应避免 `panic`。若问题可以被屏蔽或解决， 最好就是让程序继续运行而不是终止整个程序。一个可能的反例就是初始化： 若某个库真的不能让自己工作，且有足够理由产生Panic，那就由它去吧。
 
-```
+```go
 var user = os.Getenv("USER")
 
 func init() {
@@ -2124,7 +2124,7 @@ func init() {
 }
 ```
 
-## 恢复
+## Recover
 
 当 `panic` 被调用后（包括不明确的运行时错误，例如切片检索越界或类型断言失败）， 程序将立刻终止当前函数的执行，并开始回溯Go程的栈，运行任何被推迟的函数。 若回溯到达Go程栈的顶端，程序就会终止。不过我们可以用内建的 `recover` 函数来重新或来取回Go程的控制权限并使其恢复正常执行。
 
@@ -2132,7 +2132,7 @@ func init() {
 
 `recover` 的一个应用就是在服务器中终止失败的Go程而无需杀死其它正在执行的Go程。
 
-```
+```go
 func server(workChan <-chan *Work) {
 	for work := range workChan {
 		go safelyDo(work)
@@ -2155,7 +2155,7 @@ func safelyDo(work *Work) {
 
 通过恰当地使用恢复模式，`do` 函数（及其调用的任何代码）可通过调用 `panic` 来避免更坏的结果。我们可以利用这种思想来简化复杂软件中的错误处理。 让我们看看 `regexp` 包的理想化版本，它会以局部的错误类型调用 `panic` 来报告解析错误。以下是一个 `error` 类型的 `Error` 方法和一个 `Compile` 函数的定义：
 
-```
+```go
 // Error 是解析错误的类型，它满足 error 接口。
 type Error string
 func (e Error) Error() string {
@@ -2185,7 +2185,7 @@ func Compile(str string) (regexp *Regexp, err error) {
 
 通过适当的错误处理，`error` 方法（由于它是个绑定到具体类型的方法， 因此即便它与内建的 `error` 类型名字相同也没有关系） 能让报告解析错误变得更容易，而无需手动处理回溯的解析栈：
 
-```
+```go
 if pos == 0 {
 	re.error("'*' illegal at start of expression")
 }
