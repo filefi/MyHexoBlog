@@ -13664,16 +13664,24 @@ fi<span class="token punctuation">,</span> <span class="token boolean">_</span> 
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>而<strong>通过直接内嵌结构体，我们就能避免如此繁琐。 内嵌类型的方法可以直接引用，这意味着 <code>bufio.ReadWriter</code> 不仅包括 <code>bufio.Reader</code> 和 <code>bufio.Writer</code> 的方法，它还同时满足下列三个接口： <code>io.Reader</code>、<code>io.Writer</code> 以及 <code>io.ReadWriter</code>。</strong></p>
-<p>还有种区分内嵌与子类的重要手段。当内嵌一个类型时，该类型的方法会成为外部类型的方法， 但当它们被调用时，该方法的接收者是内部类型，而非外部的。在我们的例子中，当 <code>bufio.ReadWriter</code> 的 <code>Read</code> 方法被调用时， 它与之前写的转发方法具有同样的效果；接收者是 <code>ReadWriter</code> 的 <code>reader</code> 字段，而非 <code>ReadWriter</code> 本身。</p>
-<p>内嵌同样可以提供便利。这个例子展示了一个内嵌字段和一个常规的命名字段。</p>
+<p>还有种区分内嵌与子类的重要手段。<strong>当内嵌一个类型时，该类型的方法会成为外部类型的方法， 但当它们被调用时，该方法的接收者是内部类型，而非外部的。</strong>在我们的例子中，当 <code>bufio.ReadWriter</code> 的 <code>Read</code> 方法被调用时， 它与之前写的转发方法具有同样的效果；接收者是 <code>ReadWriter</code> 的 <code>reader</code> 字段，而非 <code>ReadWriter</code> 本身。</p>
+<p><strong>内嵌同样可以提供便利。这个例子展示了一个内嵌字段和一个常规的命名字段。</strong></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Job <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
 	Command <span class="token builtin">string</span>
 	<span class="token operator">*</span>log<span class="token punctuation">.</span>Logger
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p><code>Job</code> 类型现在有了 <code>Log</code>、<code>Logf</code> 和 <code>*log.Logger</code> 的其它方法。我们当然可以为 <code>Logger</code> 提供一个字段名，但完全不必这么做。现在，一旦初始化后，我们就能记录 <code>Job</code> 了：</p>
+<p><strong><code>Job</code> 类型现在有了 <code>Log</code>、<code>Logf</code> 和 <code>*log.Logger</code> 的其它方法。我们当然可以为 <code>Logger</code> 提供一个字段名，但完全不必这么做。现在，一旦初始化后，我们就能记录 <code>Job</code> 了：</strong></p>
 <pre class="language-go" data-language="go"><code class="language-go">job<span class="token punctuation">.</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"starting now..."</span><span class="token punctuation">)</span></code></pre>
 
+<blockquote>
+<p>go 1.19.1 没有 <code>Log</code>、<code>Logf</code>方法，但 <code>job</code> 依然有了 <code>log.Logger</code>的其他方法，如：<code>Println</code>、<code>Print</code>、<code>Fatal</code>。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// 以下结果运行于 go 1.19.1</span>
+
+job <span class="token operator">:=</span> <span class="token operator">&amp;</span>Job<span class="token punctuation">&#123;</span><span class="token string">"cmd"</span><span class="token punctuation">,</span> log<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stderr<span class="token punctuation">,</span> <span class="token string">"Job: "</span><span class="token punctuation">,</span> log<span class="token punctuation">.</span>Ldate<span class="token punctuation">)</span><span class="token punctuation">&#125;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>job<span class="token punctuation">.</span>Command<span class="token punctuation">)</span> <span class="token comment">// cmd</span>
+job<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"starting now..."</span><span class="token punctuation">)</span> <span class="token comment">// Job: 2022/09/14 starting now...</span></code></pre>
+</blockquote>
 <p><code>Logger</code> 是 <code>Job</code> 结构体的常规字段， 因此我们可在 <code>Job</code> 的构造函数中，通过一般的方式来初始化它，就像这样：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">NewJob</span><span class="token punctuation">(</span>command <span class="token builtin">string</span><span class="token punctuation">,</span> logger <span class="token operator">*</span>log<span class="token punctuation">.</span>Logger<span class="token punctuation">)</span> <span class="token operator">*</span>Job <span class="token punctuation">&#123;</span>
 	<span class="token keyword">return</span> <span class="token operator">&amp;</span>Job<span class="token punctuation">&#123;</span>command<span class="token punctuation">,</span> logger<span class="token punctuation">&#125;</span>
@@ -13687,8 +13695,8 @@ fi<span class="token punctuation">,</span> <span class="token boolean">_</span> 
 	job<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Logf</span><span class="token punctuation">(</span><span class="token string">"%q: %s"</span><span class="token punctuation">,</span> job<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span>format<span class="token punctuation">,</span> args<span class="token operator">...</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>内嵌类型会引入命名冲突的问题，但解决规则却很简单。首先，字段或方法 <code>X</code> 会隐藏该类型中更深层嵌套的其它项 <code>X</code>。若 <code>log.Logger</code> 包含一个名为 <code>Command</code> 的字段或方法，<code>Job</code> 的 <code>Command</code> 字段会覆盖它。</p>
-<p>其次，若相同的嵌套层级上出现同名冲突，通常会产生一个错误。若 <code>Job</code> 结构体中包含名为 <code>Logger</code> 的字段或方法，再将 <code>log.Logger</code> 内嵌到其中的话就会产生错误。然而，若重名永远不会在该类型定义之外的程序中使用，那就不会出错。 这种限定能够在外部嵌套类型发生修改时提供某种保护。 因此，就算添加的字段与另一个子类型中的字段相冲突，只要这两个相同的字段永远不会被使用就没问题。</p>
+<p><strong>内嵌类型会引入命名冲突的问题，但解决规则却很简单。首先，字段或方法 <code>X</code> 会隐藏该类型中更深层嵌套的其它项 <code>X</code>。若 <code>log.Logger</code> 包含一个名为 <code>Command</code> 的字段或方法，<code>Job</code> 的 <code>Command</code> 字段会覆盖它。</strong></p>
+<p><strong>其次，若相同的嵌套层级上出现同名冲突，通常会产生一个错误。若 <code>Job</code> 结构体中包含名为 <code>Logger</code> 的字段或方法，再将 <code>log.Logger</code> 内嵌到其中的话就会产生错误。然而，若重名永远不会在该类型定义之外的程序中使用，那就不会出错。 这种限定能够在外部嵌套类型发生修改时提供某种保护。 因此，就算添加的字段与另一个子类型中的字段相冲突，只要这两个相同的字段永远不会被使用就没问题。</strong></p>
 <h1 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h1><h2 id="通过通信共享内存"><a href="#通过通信共享内存" class="headerlink" title="通过通信共享内存"></a>通过通信共享内存</h2><p>并发编程是个很大的论题。但限于篇幅，这里仅讨论一些Go特有的东西。</p>
 <p>在并发编程中，为实现对共享变量的正确访问需要精确的控制，这在多数环境下都很困难。 Go语言另辟蹊径，它将共享的值通过信道传递，实际上，多个独立执行的线程从不会主动共享。 在任意给定的时间点，只有一个Go程能够访问该值。数据竞争从设计上就被杜绝了。 为了提倡这种思考方式，我们将它简化为一句口号：</p>
 <blockquote>
