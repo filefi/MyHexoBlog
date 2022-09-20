@@ -1775,13 +1775,13 @@ func (job *Job) Logf(format string, args ...interface{}) {
 
 我们可以从典型的单线程运行在单CPU之上的情形来审视这种模型。它无需提供同步原语。 现在考虑另一种情况，它也无需同步。现在让它们俩进行通信。若将通信过程看做同步着， 那就完全不需要其它同步了。例如，Unix管道就与这种模型完美契合。 尽管Go的并发处理方式来源于Hoare的通信顺序处理（CSP）， 它依然可以看做是类型安全的Unix管道的实现。
 
-## Go程
+## Goroutines
 
-我们称之为**Go程**是因为现有的术语—线程、协程、进程等等—无法准确传达它的含义。 Go程具有简单的模型：它是与其它Go程并发运行在同一地址空间的函数。它是轻量级的， 所有小号几乎就只有栈空间的分配。而且栈最开始是非常小的，所以它们很廉价， 仅在需要时才会随着堆空间的分配（和释放）而变化。
+我们称之为**Go程（Goroutines）**是因为现有的术语—线程、协程、进程等等—无法准确传达它的含义。 **Go程**具有简单的模型：它是与其它Go程并发运行在同一地址空间的函数。它是轻量级的， 所有消耗几乎就只有栈空间的分配。而且栈最开始是非常小的，所以它们很廉价， 仅在需要时才会随着堆空间的分配（和释放）而变化。
 
 Go程在多线程操作系统上可实现多路复用，因此若一个线程阻塞，比如说等待I/O， 那么其它的线程就会运行。Go程的设计隐藏了线程创建和管理的诸多复杂性。
 
-在函数或方法前添加 `go` 关键字能够在新的Go程中调用它。当调用完成后， 该Go程也会安静地退出。（效果有点像Unix Shell中的 `&` 符号，它能让命令在后台运行。）
+**在函数或方法前添加 `go` 关键字能够在新的Go程中调用它。当调用完成后， 该Go程也会安静地退出。（效果有点像Unix Shell中的 `&` 符号，它能让命令在后台运行。）**
 
 ```go
 go list.Sort()  // 并发运行 list.Sort，无需等它结束。
@@ -1829,6 +1829,8 @@ doSomethingForAWhile()
 
 接收者在收到数据前会一直阻塞。若信道是不带缓冲的，那么在接收者收到值前， 发送者会一直阻塞；若信道是带缓冲的，则发送者仅在值被复制到缓冲区前阻塞； 若缓冲区已满，发送者会一直等待直到某个接收者取出一个值为止。
 
+A buffered channel can be used like a semaphore, for instance to limit throughput. In this example, incoming requests are passed to `handle`, which sends a value into the channel, processes the request, and then receives a value from the channel to ready the “semaphore” for the next consumer. The capacity of the channel buffer limits the number of simultaneous calls to `process`.
+
 带缓冲的信道可被用作信号量，例如限制吞吐量。在此例中，进入的请求会被传递给 `handle`，它从信道中接收值，处理请求后将值发回该信道中，以便让该 “信号量”准备迎接下一次请求。信道缓冲区的容量决定了同时调用 `process` 的数量上限，因此我们在初始化时首先要填充至它的容量上限。
 
 ```go
@@ -1848,6 +1850,10 @@ func Serve(queue chan *Request) {
 }
 ```
 
+Once `MaxOutstanding` handlers are executing `process`, any more will block trying to send into the filled channel buffer, until one of the existing handlers finishes and receives from the buffer.
+
+一旦有 `MaxOutstanding` 个处理程序正在执行 `process`，任何试图向缓冲区已满的信道发送更多消息的操作都将被阻塞，直到有一个处理程序（handler）完成并从缓冲区接收。
+
 由于数据同步发生在信道的接收端（也就是说发送**发生在**>接受**之前**，参见 [Go内存模型](https://go-zh.org/ref/mem)），因此信号必须在信道的接收端获取，而非发送端。
 
 然而，它却有个设计问题：尽管只有 `MaxOutstanding` 个Go程能同时运行，但 `Serve` 还是为每个进入的请求都创建了新的Go程。其结果就是，若请求来得很快， 该程序就会无限地消耗资源。为了弥补这种不足，我们可以通过修改 `Serve` 来限制创建Go程，这是个明显的解决方案，但要当心我们修复后出现的Bug。
@@ -1857,14 +1863,16 @@ func Serve(queue chan *Request) {
 	for req := range queue {
 		sem <- 1
 		go func() {
-			process(req) // 这儿有Bug，解释见下。
+			process(req) // 这儿有Bug，见下方解释。
 			<-sem
 		}()
 	}
 }
 ```
 
-Bug出现在Go的 `for` 循环中，该循环变量在每次迭代时会被重用，因此 `req` 变量会在所有的Go程间共享，这不是我们想要的。我们需要确保 `req` 对于每个Go程来说都是唯一的。有一种方法能够做到，就是将 `req` 的值作为实参传入到该Go程的闭包中：
+Bug出现在Go的 `for` 循环中，该循环变量在每次迭代时会被重用，因此 `req` 变量会在所有的Go程间共享，这不是我们想要的。我们需要确保 `req` 对于每个Go程来说都是唯一的。
+
+有一种方法能够做到，就是将 `req` 的值作为实参传入到该Go程的闭包中：
 
 ```go
 func Serve(queue chan *Request) {
@@ -1878,7 +1886,9 @@ func Serve(queue chan *Request) {
 }
 ```
 
-比较前后两个版本，观察该闭包声明和运行中的差别。 另一种解决方案就是以相同的名字创建新的变量，如例中所示：
+比较前后两个版本，观察该闭包声明和运行中的差别。 
+
+另一种解决方案就是以相同的名字创建新的变量，如例中所示：
 
 ```go
 func Serve(queue chan *Request) {
@@ -1919,9 +1929,130 @@ func Serve(clientRequests chan *Request, quit chan bool) {
 }
 ```
 
+## 信道的 range 和 close
+
+发送者可通过 `close` 关闭一个信道来表示没有需要发送的值了。接收者可以通过为接收表达式分配第二个参数来测试信道是否被关闭：若没有值可以接收且信道已被关闭，那么在执行完
+
+```
+v, ok := <-ch
+```
+
+之后 `ok` 会被设置为 `false`。
+
+循环 `for i := range c` 会不断从信道接收值，直到它被关闭。
+
+*注意：* 只有发送者才能关闭信道，而接收者不能。向一个已经关闭的信道发送数据会引发程序恐慌（panic）。
+
+*还要注意：* 信道与文件不同，通常情况下无需关闭它们。只有在必须告诉接收者不再有需要发送的值时才有必要关闭，例如终止一个 `range` 循环。
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func fibonacci(n int, c chan int) {
+	x, y := 0, 1
+	for i := 0; i < n; i++ {
+		c <- x
+		x, y = y, x+y
+	}
+	close(c)
+}
+
+func main() {
+	c := make(chan int, 10)
+	go fibonacci(cap(c), c)
+	for i := range c {
+		fmt.Println(i)
+	}
+}
+```
+
+## select 语句
+
+`select` 语句使一个 Go 程可以等待多个通信操作。
+
+`select` 会阻塞到某个分支可以继续执行为止，这时就会执行该分支。当多个分支都准备好时会随机选择一个执行。
+
+```go
+package main
+
+import "fmt"
+
+func fibonacci(c, quit chan int) {
+	x, y := 0, 1
+	for {
+		select {
+		case c <- x:
+			x, y = y, x+y
+		case <-quit:
+			fmt.Println("quit")
+			return
+		}
+	}
+}
+
+func main() {
+	c := make(chan int)
+	quit := make(chan int)
+	go func() {
+		for i := 0; i < 10; i++ {
+			fmt.Println(<-c)
+		}
+		quit <- 0
+	}()
+	fibonacci(c, quit)
+}
+```
+
+### 默认选择
+
+当 `select` 中的其它分支都没有准备好时，`default` 分支就会执行。
+
+为了在尝试发送或者接收时不发生阻塞，可使用 `default` 分支：
+
+```go
+select {
+case i := <-c:
+    // 使用 i
+default:
+    // 从 c 中接收会阻塞时执行
+}
+```
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	tick := time.Tick(100 * time.Millisecond)
+	boom := time.After(500 * time.Millisecond)
+	for {
+		select {
+		case <-tick:
+			fmt.Println("tick.")
+		case <-boom:
+			fmt.Println("BOOM!")
+			return
+		default:
+			fmt.Println("    .")
+			time.Sleep(50 * time.Millisecond)
+		}
+	}
+}
+```
+
+
+
 ## 信道中的信道
 
-Go最重要的特性就是信道是一等值，它可以被分配并像其它值到处传递。 这种特性通常被用来实现安全、并行的多路分解。
+Go最重要的特性就是信道是一等值 （ first-class value），它可以被分配并像其它值到处传递。 这种特性通常被用来实现安全、并行的多路分解。
 
 在上一节的例子中，`handle` 是个非常理想化的请求处理程序， 但我们并未定义它所处理的请求类型。若该类型包含一个可用于回复的信道， 那么每一个客户端都能为其回应提供自己的路径。以下为 `Request` 类型的大概定义。
 
@@ -1950,7 +2081,7 @@ clientRequests <- request
 fmt.Printf("answer: %d\n", <-request.resultChan)
 ```
 
-On the server side, the handler function is the only thing that changes.
+在服务器端, 只需要修改处理函数。
 
 ```go
 func handle(queue chan *Request) {
@@ -1998,13 +2129,27 @@ func (v Vector) DoAll(u Vector) {
 }
 ```
 
-目前Go运行时的实现默认并不会并行执行代码，它只为用户层代码提供单一的处理核心。 任意数量的Go程都可能在系统调用中被阻塞，而在任意时刻默认只有一个会执行用户层代码。 它应当变得更智能，而且它将来肯定会变得更智能。但现在，若你希望CPU并行执行， 就必须告诉运行时你希望同时有多少Go程能执行代码。有两种途径可意识形态，要么 在运行你的工作时将 `GOMAXPROCS` 环境变量设为你要使用的核心数， 要么导入 `runtime` 包并调用 `runtime.GOMAXPROCS(NCPU)`。 `runtime.NumCPU()` 的值可能很有用，它会返回当前机器的逻辑CPU核心数。 当然，随着调度算法和运行时的改进，将来会不再需要这种方法。
+Rather than create a constant value for numCPU, we can ask the runtime what value is appropriate. The function `runtime.NumCPU` returns the number of hardware CPU cores in the machine, so we could write
+
+我们可以询问 runtime 什么值是合适的，而不是创建一个常量值 `numCPU` 。 `runtime.NumCPU` 函数返回机器中硬件 CPU 内核的数量，所以我们可以这样写：
+
+```go
+var numCPU = runtime.NumCPU()
+```
+
+There is also a function `runtime.GOMAXPROCS`, which reports (or sets) the user-specified number of cores that a Go program can have running simultaneously. It defaults to the value of `runtime.NumCPU` but can be overridden by setting the similarly named shell environment variable or by calling the function with a positive number. Calling it with zero just queries the value. Therefore if we want to honor the user's resource request, we should write
+
+函数 [`runtime.GOMAXPROCS`](https://go.dev/pkg/runtime#GOMAXPROCS) 可以报告（或设置）Go程序可以同时运行的、用户指定的核心数。其值默认为 `runtime.NumCPU` 的值，但可以被重新覆盖；如，通过设置类似的命名Shell环境变量，或者调用 `runtime.GOMAXPROCS` 函数并传递一个正数作为参数。以 `0` 作为参数调用 `runtime.GOMAXPROCS` 仅仅是查询该值。因此，如果我们想尊重用户的资源请求，我们应该这样写：
+
+```go
+var numCPU = runtime.GOMAXPROCS(0)
+```
 
 注意不要混淆并发和并行的概念：并发是用可独立执行的组件构造程序的方法， 而并行则是为了效率在多CPU上平行地进行计算。尽管Go的并发特性能够让某些问题更易构造成并行计算， 但Go仍然是种并发而非并行的语言，且Go的模型并不适合所有的并行问题。 关于其中区别的讨论，见 [此博文](http://blog.golang.org/2013/01/concurrency-is-not-parallelism.html)。
 
-## 可能泄露的缓冲区
+## Leaky Buffer
 
-并发编程的工具甚至能很容易地表达非并发的思想。这里有个提取自RPC包的例子。 客户端Go程从某些来源，可能是网络中循环接收数据。为避免分配和释放缓冲区， 它保存了一个空闲链表，使用一个带缓冲信道表示。若信道为空，就会分配新的缓冲区。 一旦消息缓冲区就绪，它将通过 `serverChan` 被发送到服务器。 `serverChan`.
+并发编程的工具甚至能很容易地表达非并发的思想。这里有个提取自RPC包的例子。 客户端Go程从某些来源，可能是网络中循环接收数据。为避免分配和释放缓冲区， 它保存了一个空闲链表，使用一个带缓冲信道表示。若信道为空，就会分配新的缓冲区。 一旦消息缓冲区就绪，它将通过 `serverChan` 被发送到服务器。
 
 ```go
 var freeList = make(chan *Buffer, 100)
@@ -2037,7 +2182,7 @@ func server() {
 		// 若缓冲区有空间就重用它。
 		select {
 		case freeList <- b:
-			// 将缓冲区放大空闲列表中，不做别的。
+			// 将缓冲区b放到freeList中，不做别的。
 		default:
 			// 空闲列表已满，保持就好。
 		}
@@ -2045,11 +2190,120 @@ func server() {
 }
 ```
 
-客户端试图从 `freeList` 中获取缓冲区；若没有缓冲区可用， 它就将分配一个新的。服务器将 `b` 放回空闲列表 `freeList` 中直到列表已满，此时缓冲区将被丢弃，并被垃圾回收器回收。（`select` 语句中的 `default` 子句在没有条件符合时执行，这也就意味着 `selects` 永远不会被阻塞。）依靠带缓冲的信道和垃圾回收器的记录， 我们仅用短短几行代码就构建了一个可能导致缓冲区槽位泄露的空闲列表。
+The client attempts to retrieve a buffer from `freeList`; if none is available, it allocates a fresh one. The server's send to `freeList` puts `b` back on the free list unless the list is full, in which case the buffer is dropped on the floor to be reclaimed by the garbage collector. (The `default` clauses in the `select` statements execute when no other case is ready, meaning that the `selects` never block.) This implementation builds a leaky bucket free list in just a few lines, relying on the buffered channel and the garbage collector for bookkeeping.
+
+客户端试图从 `freeList` 中获取缓冲区；若没有缓冲区可用， 它就将分配一个新的。服务器将 `b` 放回空闲列表 `freeList` 中直到列表已满，此时缓冲区将被丢弃，并被垃圾回收器回收。（`select` 语句中的 `default` 子句在没有条件符合时执行，这也就意味着 `selects` 永远不会被阻塞。）依靠带缓冲的信道和垃圾回收器的记录， 我们仅用短短几行代码就构建了一个漏桶 （leaky bucket）空闲列表。
+
+## sync.Mutex
+
+我们已经看到信道非常适合在各个 Go 程间进行通信。
+
+但是如果我们并不需要通信呢？比如说，若我们只是想保证每次只有一个 Go 程能够访问一个共享的变量，从而避免冲突？
+
+这里涉及的概念叫做 *互斥（mutual exclusion）* ，我们通常使用 *互斥锁（Mutex）* 这一数据结构来提供这种机制。
+
+Go 标准库中提供了 [`sync.Mutex`](https://go-zh.org/pkg/sync/#Mutex) 互斥锁类型及其两个方法：
+
+- `Lock`
+- `Unlock`
+
+我们可以通过在代码前调用 `Lock` 方法，在代码后调用 `Unlock` 方法来保证一段代码的互斥执行。参见 `Inc` 方法。
+
+我们也可以用 `defer` 语句来保证互斥锁一定会被解锁。参见 `Value` 方法。
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// SafeCounter 的并发使用是安全的。
+type SafeCounter struct {
+	v   map[string]int
+	mux sync.Mutex
+}
+
+// Inc 增加给定 key 的计数器的值。
+func (c *SafeCounter) Inc(key string) {
+	c.mux.Lock()
+	// Lock 之后同一时刻只有一个 goroutine 能访问 c.v
+	c.v[key]++
+	c.mux.Unlock()
+}
+
+// Value 返回给定 key 的计数器的当前值。
+func (c *SafeCounter) Value(key string) int {
+	c.mux.Lock()
+	// Lock 之后同一时刻只有一个 goroutine 能访问 c.v
+	defer c.mux.Unlock()
+	return c.v[key]
+}
+
+func main() {
+	c := SafeCounter{v: make(map[string]int)}
+	for i := 0; i < 1000; i++ {
+		go c.Inc("somekey")
+	}
+
+	time.Sleep(time.Second)
+	fmt.Println(c.Value("somekey"))
+}
+```
+
+## sync.WaitGroup
+
+A WaitGroup waits for a collection of goroutines to finish. The main goroutine calls Add to set the number of goroutines to wait for. Then each of the goroutines runs and calls Done when finished. At the same time, Wait can be used to block until all goroutines have finished.
+
+A WaitGroup must not be copied after first use.
+
+In the terminology of the Go memory model, a call to Done “synchronizes before” the return of any Wait call that it unblocks.
+
+在 Go 内存模型的术语中，对 Done 的调用在它解除阻塞的任何 Wait 调用返回之前是同步的。
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	var wg sync.WaitGroup
+	c := make(chan int, 10)
+	c <- 0
+	list := []int{1, 2, 3, 4, 5}
+	for _, i := range list {
+		wg.Add(1)
+		go func(n int) {
+			defer wg.Done()
+			tmp := <-c
+			fmt.Printf("%v + %v = %v\n", tmp, n, tmp+n)
+			c <- tmp + n
+		}(i)
+	}
+	wg.Wait()
+	fmt.Println(<-c)
+}
+```
+
+多次运行，可以发现执行过程并不是同步的：
+
+```go
+0 + 1 = 1
+1 + 2 = 3
+3 + 4 = 7
+7 + 5 = 12
+12 + 3 = 15
+15
+```
 
 # 错误
 
-库例程通常需要向调用者返回某种类型的错误提示。之前提到过，Go语言的多值返回特性， 使得它在返回常规的值时，还能轻松地返回详细的错误描述。按照约定，错误的类型通常为 `error`，这是一个内建的简单接口。
+库例程 （Library routines）通常需要向调用者返回某种类型的错误提示。之前提到过，Go语言的多值返回特性， 使得它在返回常规的值时，还能轻松地返回详细的错误描述。按照约定，错误的类型通常为 `error`，这是一个内建的简单接口。
 
 ```go
 type error interface {
