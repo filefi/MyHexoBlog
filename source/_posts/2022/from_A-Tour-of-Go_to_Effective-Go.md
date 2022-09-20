@@ -6,47 +6,992 @@ tags: [Golang, Programming]
 categories: Golang
 ---
 
-> 本文是Golang的学习笔记，内容涵盖 [A Tour of Go](https://go.dev/tour/) 官方文档 [Effective Go](https://go.dev/doc/effective_go) 以及 [官方翻译](https://go-zh.org/doc/effective_go.html)
-
-<!-- more -->
+> 本文是Golang的学习笔记，内容涵盖 [A Tour of Go](https://go.dev/tour/) 官方文档 [Effective Go](https://go.dev/doc/effective_go) 以及 [翻译](https://go-zh.org/doc/effective_go.html)
 
 # 引言
 
-# 格式化
+Go 是一门全新的语言。尽管它从既有的语言中借鉴了许多理念，但其与众不同的特性， 使得使用Go编程在本质上就不同于其它语言。将现有的C++或Java程序直译为Go 程序并不能令人满意——毕竟Java程序是用Java编写的，而不是Go。 另一方面，若从Go的角度去分析问题，你就能编写出同样可行但大不相同的程序。 换句话说，要想将Go程序写得好，就必须理解其特性和风格。了解命名、格式化、 程序结构等既定规则也同样重要，这样你编写的程序才能更容易被其他程序员所理解。
 
-# 注释
 
-# 命名
+
+<!-- more -->
+
+
+
+# 代码的组织
+
+## 工作空间
+
+`go` 工具为公共代码仓库中维护的开源代码而设计。 无论你会不会公布代码，该模型设置工作环境的方法都是相同的。
+
+Go代码必须放在**工作空间**内。它其实就是一个目录，其中包含三个子目录：
+
+- `src` 目录包含Go的源文件，它们被组织成包（每个目录都对应一个包），
+- `pkg` 目录包含包对象，
+- `bin` 目录包含可执行命令。
+
+`go` 工具用于构建源码包，并将其生成的二进制文件安装到 `pkg` 和 `bin` 目录中。
+
+`src` 子目录通常包会含多种版本控制的代码仓库（例如Git或Mercurial）， 以此来跟踪一个或多个源码包的开发。
+
+以下例子展现了实践中工作空间的概念：
+
+```bash
+bin/
+	streak                         # 可执行命令
+	todo                           # 可执行命令
+pkg/
+	linux_amd64/
+		code.google.com/p/goauth2/
+			oauth.a                # 包对象
+		github.com/nf/todo/
+			task.a                 # 包对象
+src/
+	code.google.com/p/goauth2/
+		.hg/                       # mercurial 代码库元数据
+		oauth/
+			oauth.go               # 包源码
+			oauth_test.go          # 测试源码
+	github.com/nf/
+		streak/
+		.git/                      # git 代码库元数据
+			oauth.go               # 命令源码
+			streak.go              # 命令源码
+		todo/
+		.git/                      # git 代码库元数据
+			task/
+				task.go            # 包源码
+			todo.go                # 命令源码
+```
+
+此工作空间包含三个代码库（`goauth2`、`streak` 和 `todo`），两个命令（`streak` 和 `todo`） 以及两个库（`oauth` 和 `task`）。
+
+命令和库从不同的源码包编译而来。[稍后](https://go-zh.org/doc/code.html#包名)我们会对讨论它的特性。
+
+## `GOPATH` 环境变量
+
+`GOPATH` 环境变量指定了你的工作空间位置。它或许是你在开发Go代码时， 唯一需要设置的环境变量。
+
+首先创建一个工作空间目录，并设置相应的 `GOPATH`。你的工作空间可以放在任何地方， 在此文档中我们使用 `$HOME/work`。注意，它**绝对不能**和你的Go安装目录相同。 （另一种常见的设置是 `GOPATH=$HOME`。）
+
+```bash
+$ mkdir $HOME/work
+$ export GOPATH=$HOME/work
+```
+
+作为约定，请将此工作空间的 `bin` 子目录添加到你的 `PATH` 中：
+
+```bash
+$ export PATH=$PATH:$GOPATH/bin
+```
+
+To learn more about setting up the `GOPATH` environment variable, please see [`go help gopath`](https://go-zh.org/cmd/go/#hdr-GOPATH_environment_variable)
+
+## 包路径
+
+标准库中的包有给定的短路径，比如 `"fmt"` 和 `"net/http"`。 对于你自己的包，你必须选择一个基本路径，来保证它不会与将来添加到标准库， 或其它扩展库中的包相冲突。
+
+如果你将你的代码放到了某处的源码库，那就应当使用该源码库的根目录作为你的基本路径。 例如，若你在 [GitHub](https://github.com/) 上有账户 `github.com/user` 那么它就应该是你的基本路径。
+
+注意，在你能构建这些代码之前，无需将其公布到远程代码库上。只是若你某天会发布它， 这会是个好习惯。在实践中，你可以选择任何路径名，只要它对于标准库和更大的Go生态系统来说， 是唯一的就行。
+
+我们将使用 `github.com/user` 作为基本路径。在你的工作空间里创建一个目录， 我们将源码存放到其中：
+
+```bash
+$ mkdir -p $GOPATH/src/github.com/user
+```
+
+## 你的第一个程序
+
+要编译并运行简单的程序，首先要选择包路径（我们在这里使用 `github.com/user/hello`），并在你的工作空间内创建相应的包目录：
+
+```bash
+$ mkdir $GOPATH/src/github.com/user/hello
+```
+
+接着，在该目录中创建名为 `hello.go` 的文件，其内容为以下Go代码：
+
+```bash
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Printf("Hello, world.\n")
+}
+```
+
+现在你可以用 `go` 工具构建并安装此程序了：
+
+```bash
+$ go install github.com/user/hello
+```
+
+注意，你可以在系统的任何地方运行此命令。`go` 工具会根据 `GOPATH` 指定的工作空间，在 `github.com/user/hello` 包内查找源码。
+
+若在从包目录中运行 `go install`，也可以省略包路径：
+
+```bash
+$ cd $GOPATH/src/github.com/user/hello
+$ go install
+```
+
+此命令会构建 `hello` 命令，产生一个可执行的二进制文件。 接着它会将该二进制文件作为 `hello`（在 Windows 下则为 `hello.exe`）安装到工作空间的 `bin` 目录中。 在我们的例子中为 `$GOPATH/bin/hello`，具体一点就是 `$HOME/go/bin/hello`。
+
+`go` 工具只有在发生错误时才会打印输出，因此若这些命令没有产生输出， 就表明执行成功了。
+
+现在，你可以在命令行下输入它的完整路径来运行它了：
+
+```bash
+$ $GOPATH/bin/hello
+Hello, world.
+```
+
+若你已经将 `$GOPATH/bin` 添加到 `PATH` 中了，只需输入该二进制文件名即可：
+
+```bash
+$ hello
+Hello, world.
+```
+
+若你使用源码控制系统，那现在就该初始化仓库，添加文件并提交你的第一次更改了。 再次强调，这一步是可选的：你无需使用源码控制来编写Go代码。
+
+```bash
+$ cd $GOPATH/src/github.com/user/hello
+$ git init
+Initialized empty Git repository in /home/user/work/src/github.com/user/hello/.git/
+$ git add hello.go
+$ git commit -m "initial commit"
+[master (root-commit) 0b4507d] initial commit
+ 1 file changed, 1 insertion(+)
+  create mode 100644 hello.go
+```
+
+将代码推送到远程仓库就留作读者的练习了。
+
+## 你的第一个库
+
+让我们编写一个库，并让 `hello` 程序来使用它。
+
+同样，第一步还是选择包路径（我们将使用 `github.com/user/stringutil`） 并创建包目录：
+
+```bash
+$ mkdir $GOPATH/src/github.com/user/stringutil
+```
+
+接着，在该目录中创建名为 `reverse.go` 的文件，内容如下：
+
+```go
+// stringutil 包含有用于处理字符串的工具函数。
+package stringutil
+
+// Reverse 将其实参字符串以符文为单位左右反转。
+func Reverse(s string) string {
+	r := []rune(s)
+	for i, j := 0, len(r)-1; i < len(r)/2; i, j = i+1, j-1 {
+		r[i], r[j] = r[j], r[i]
+	}
+	return string(r)
+}
+```
+
+现在用 `go build` 命令来测试该包的编译：
+
+```bash
+$ go build github.com/user/stringutil
+```
+
+当然，若你在该包的源码目录中，只需执行：
+
+```bash
+$ go build
+```
+
+即可。这不会产生输出文件。想要输出的话，必须使用 `go install` 命令，它会将包的对象放到工作空间的 `pkg` 目录中。
+
+确认 `stringutil` 包构建完毕后，修改原来的 `hello.go` 文件（它位于 `$GOPATH/src/github.com/user/hello`）去使用它：
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/user/stringutil"
+)
+
+func main() {
+	fmt.Printf(stringutil.Reverse("!oG ,olleH"))
+}
+```
+
+无论是安装包还是二进制文件，`go` 工具都会安装它所依赖的任何东西。 因此当我们通过
+
+```bash
+$ go install github.com/user/hello
+```
+
+来安装 `hello` 程序时，`stringutil` 包也会被自动安装。
+
+运行此程序的新版本，你应该能看到一条新的，反向的信息：
+
+```bash
+$ hello
+Hello, Go!
+```
+
+做完上面这些步骤后，你的工作空间应该是这样的：
+
+```bash
+bin/
+	hello                 # 可执行命令
+pkg/
+	linux_amd64/          # 这里会反映出你的操作系统和架构
+		github.com/user/
+			stringutil.a  # 包对象
+src/
+	github.com/user/
+		hello/
+			hello.go      # 命令源码
+		stringutil/
+			reverse.go       # 包源码
+```
+
+注意 `go install` 会将 `stringutil.a` 对象放到 `pkg/linux_amd64` 目录中，它会反映出其源码目录。 这就是在此之后调用 `go` 工具，能找到包对象并避免不必要的重新编译的原因。 `linux_amd64` 这部分能帮助跨平台编译，并反映出你的操作系统和架构。
+
+Go的可执行命令是静态链接的；在运行Go程序时，包对象无需存在。
 
 ## 包名
 
+Go源文件中的第一个语句必须是
+
+```go
+package 名称
+```
+
+这里的 **`名称`** 即为导入该包时使用的默认名称。 （一个包中的所有文件都必须使用相同的 **`名称`**。）
+
+Go的约定是包名为导入路径的最后一个元素：作为 `crypto/rot13` 导入的包应命名为 `rot13`。
+
+可执行命令必须使用 `package main`。
+
+链接成单个二进制文件的所有包，其包名无需是唯一的，只有导入路径（它们的完整文件名） 才是唯一的。
+
+# 测试
+
+Go拥有一个轻量级的测试框架，它由 `go test` 命令和 `testing` 包构成。
+
+你可以通过创建一个名字以 `_test.go` 结尾的，包含名为 `TestXXX` 且签名为 `func (t *testing.T)` 函数的文件来编写测试。 测试框架会运行每一个这样的函数；若该函数调用了像 `t.Error` 或 `t.Fail` 这样表示失败的函数，此测试即表示失败。
+
+我们可通过创建文件 `$GOPATH/src/github.com/user/stringutil/reverse_test.go` 来为 `stringutil` 添加测试，其内容如下：
+
+```
+package stringutil
+
+import "testing"
+
+func TestReverse(t *testing.T) {
+	cases := []struct {
+		in, want string
+	}{
+		{"Hello, world", "dlrow ,olleH"},
+		{"Hello, 世界", "界世 ,olleH"},
+		{"", ""},
+	}
+	for _, c := range cases {
+		got := Reverse(c.in)
+		if got != c.want {
+			t.Errorf("Reverse(%q) == %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+```
+
+接着使用 `go test` 运行该测试：
+
+```
+$ go test github.com/user/stringutil
+ok  	github.com/user/stringutil 0.165s
+```
+
+同样，若你在包目录下运行 `go` 工具，也可以忽略包路径
+
+```
+$ go test
+ok  	github.com/user/stringutil 0.165s
+```
+
+更多详情可运行 `go help test` 或从 [testing 包文档](https://go-zh.org/pkg/testing/) 中查看。
+
+# 远程包
+
+像Git或Mercurial这样的版本控制系统，可根据导入路径的描述来获取包源代码。`go` 工具可通过此特性来从远程代码库自动获取包。例如，本文档中描述的例子也可存放到Google Code上的Mercurial仓库 `code.google.com/p/go.example` 中，若你在包的导入路径中包含了代码仓库的URL，`go get` 就会自动地获取、 构建并安装它：
+
+```
+$ go get github.com/golang/example/hello
+$ $GOPATH/bin/hello
+Hello, Go examples!
+```
+
+若指定的包不在工作空间中，`go get` 就会将会将它放到 `GOPATH` 指定的第一个工作空间内。（若该包已存在，`go get` 就会跳过远程获取， 其行为与 `go install` 相同）
+
+在执行完上面的`go get` 命令后，工作空间的目录树看起来应该是这样的：
+
+```
+bin/
+	hello                 # 可执行命令
+pkg/
+	linux_amd64/
+		code.google.com/p/go.example/
+			stringutil.a     # 包对象
+		github.com/user/
+			stringutil.a     # 包对象
+src/
+	code.google.com/p/go.example/
+		hello/
+			hello.go      # 命令源码
+		stringutil/
+			reverse.go       # 包源码
+			reverse_test.go  # 测试源码
+	github.com/user/
+		hello/
+			hello.go      # 命令源码
+		stringutil/
+			reverse.go       # 包源码
+			reverse_test.go  # 测试源码
+```
+
+`hello` 命令及其依赖的 `stringutil` 包都托管在Google Code上的同一代码库中。`hello.go` 文件使用了同样的导入路径约定， 因此 `go get` 命令也能够定位并安装其依赖包。
+
+```
+import "github.com/golang/example/stringutil"
+```
+
+遵循此约定可让他人以最简单的方式使用你的Go包。 [Go维基](http://code.google.com/p/go-wiki/wiki/Projects) 与 [godoc.org](http://godoc.org/) 提供了外部Go项目的列表。
+
+通过 `go` 工具使用远程代码库的更多详情，见 `go help remote`。
+
+# 格式化
+
+格式化问题总是充满了争议，但却始终没有形成统一的定论。虽说人们可以适应不同的编码风格， 但抛弃这种适应过程岂不更好？若所有人都遵循相同的编码风格，在这类问题上浪费的时间将会更少。 问题就在于如何实现这种设想，而无需冗长的语言风格规范。
+
+在Go中我们另辟蹊径，让机器来处理大部分的格式化问题。`gofmt` 程序（也可用 `go fmt`，它以包为处理对象而非源文件）将Go程序按照标准风格缩进、 对齐，保留注释并在需要时重新格式化。若你想知道如何处理一些新的代码布局，请尝试运行 `gofmt`；若结果仍不尽人意，请重新组织你的程序（或提交有关 `gofmt` 的Bug），而不必为此纠结。
+
+举例来说，你无需花时间将结构体中的字段注释对齐，`gofmt` 将为你代劳。 假如有以下声明：
+
+```go
+type T struct {
+	name string // 对象名
+	value int // 对象值
+}
+```
+
+`gofmt` 会将它按列对齐为：
+
+```go
+type T struct {
+	name    string // 对象名
+	value   int    // 对象值
+}
+```
+
+标准包中所有的Go代码都已经用 `gofmt` 格式化过了。
+
+还有一些关于格式化的细节，它们非常简短：
+
+- 缩进
+
+  我们使用制表符（tab）缩进，`gofmt` 默认也使用它。在你认为确实有必要时再使用空格。
+
+- 行的长度
+
+  Go对行的长度没有限制，别担心打孔纸不够长。如果一行实在太长，也可进行折行并插入适当的tab缩进。
+
+- 括号
+
+  比起C和Java，Go所需的括号更少：控制结构（`if`、`for` 和 `switch`）在语法上并不需要圆括号。此外，操作符优先级处理变得更加简洁，因此`x<<8 + y<<16 `正表述了空格符所传达的含义。
+
+# 注释
+
+Go语言支持C风格的块注释 `/* */` 和C++风格的行注释 `//`。 行注释更为常用，而块注释则主要用作包的注释，当然也可在禁用一大段代码时使用。
+
+`godoc` 既是一个程序，又是一个Web服务器，它对Go的源码进行处理，并提取包中的文档内容。 出现在顶级声明之前，且与该声明之间没有空行的注释，将与该声明一起被提取出来，作为该条目的说明文档。 这些注释的类型和风格决定了 `godoc` 生成的文档质量。
+
+每个包都应包含一段**包注释**，即放置在包子句前的一个块注释。对于包含多个文件的包， 包注释只需出现在其中的任一文件中即可。包注释应在整体上对该包进行介绍，并提供包的相关信息。 它将出现在 `godoc` 页面中的最上面，并为紧随其后的内容建立详细的文档。
+
+```go
+/*
+	regexp 包为正则表达式实现了一个简单的库。
+
+	该库接受的正则表达式语法为：
+
+	正则表达式:
+		串联 { '|' 串联 }
+	串联:
+		{ 闭包 }
+	闭包:
+		条目 [ '*' | '+' | '?' ]
+	条目:
+		'^'
+		'$'
+		'.'
+		字符
+		'[' [ '^' ] 字符遍历 ']'
+		'(' 正则表达式 ')'
+*/
+package regexp
+```
+
+若某个包比较简单，包注释同样可以简洁些。
+
+```go
+// path 包实现了一些常用的工具，以便于操作用反斜杠分隔的路径.
+```
+
+注释无需进行额外的格式化，如用星号来突出等。生成的输出甚至可能无法以等宽字体显示， 因此不要依赖于空格对齐，`godoc` 会像 `gofmt` 那样处理好这一切。 注释是不会被解析的纯文本，因此像HTML或其它类似于 `_这样_` 的东西将按照 **原样** 输出，因此不应使用它们。`godoc` 所做的调整， 就是将已缩进的文本以等宽字体显示，来适应对应的程序片段。 [`fmt` 包](http://golang.org/pkg/fmt/)的注释就用了这种不错的效果。
+
+`godoc` 是否会重新格式化注释取决于上下文，因此必须确保它们看起来清晰易辨： 使用正确的拼写、标点和语句结构以及折叠长行等。
+
+在包中，任何顶级声明前面的注释都将作为该声明的**文档注释**。 在程序中，每个可导出（首字母大写）的名称都应该有文档注释。
+
+文档注释最好是完整的句子，这样它才能适应各种自动化的展示。 第一句应当以被声明的东西开头，并且是单句的摘要。
+
+```go
+// Compile 用于解析正则表达式并返回，如果成功，则 Regexp 对象就可用于匹配所针对的文本。
+func Compile(str string) (regexp *Regexp, err error) {
+```
+
+若注释总是以名称开头，`godoc` 的输出就能通过 `grep` 变得更加有用。假如你记不住“Compile”这个名称，而又在找正则表达式的解析函数， 那就可以运行
+
+```go
+$ godoc regexp | grep parse
+```
+
+若包中的所有文档注释都以“此函数…”开头，`grep` 就无法帮你记住此名称。 但由于每个包的文档注释都以其名称开头，你就能看到这样的内容，它能显示你正在寻找的词语。
+
+```go
+$ godoc regexp | grep parse
+	Compile parses a regular expression and returns, if successful, a Regexp
+	parsed. It simplifies safe initialization of global variables holding
+	cannot be parsed. It simplifies safe initialization of global variables
+$
+```
+
+Go的声明语法允许成组声明。单个文档注释应介绍一组相关的常量或变量。 由于是整体声明，这种注释往往较为笼统。
+
+```go
+// 表达式解析失败后返回错误代码。
+var (
+	ErrInternal      = errors.New("regexp: internal error")
+	ErrUnmatchedLpar = errors.New("regexp: unmatched '('")
+	ErrUnmatchedRpar = errors.New("regexp: unmatched ')'")
+	...
+)
+```
+
+即便是对于私有名称，也可通过成组声明来表明各项间的关系，例如某一组由互斥体保护的变量。
+
+```go
+var (
+	countLock   sync.Mutex
+	inputCount  uint32
+	outputCount uint32
+	errorCount  uint32
+)
+```
+
+# 命名
+
+正如命名在其它语言中的地位，它在 Go 中同样重要。有时它们甚至会影响语义： 例如，某个名称在包外是否可见，就取决于其首个字符是否为大写字母。 因此有必要花点时间来讨论Go程序中的命名约定。
+
+## 包名
+
+当一个包被导入后，包名就会成了内容的访问器。在
+
+```go
+import "bytes"
+```
+
+之后，被导入的包就能通过 `bytes.Buffer` 来引用了。 若所有人都以相同的名称来引用其内容将大有裨益， 这也就意味着包应当有个恰当的名称：其名称应该简洁明了而易于理解。按照惯例， 包应当以小写的单个单词来命名，且不应使用下划线或驼峰记法。`err` 的命名就是出于简短考虑的，因为任何使用该包的人都会键入该名称。 不必担心**引用次序**的冲突。包名就是导入时所需的唯一默认名称， 它并不需要在所有源码中保持唯一，即便在少数发生冲突的情况下， 也可为导入的包选择一个别名来局部使用。 无论如何，通过文件名来判定使用的包，都是不会产生混淆的。
+
+另一个约定就是包名应为其源码目录的基本名称。在 `src/pkg/encoding/base64` 中的包应作为 `"encoding/base64"` 导入，其包名应为 `base64`， 而非 `encoding_base64` 或 `encodingBase64`。
+
+包的导入者可通过包名来引用其内容，因此包中的可导出名称可以此来避免冲突。 （请勿使用 `import .` 记法，它可以简化必须在被测试包外运行的测试， 除此之外应尽量避免使用。）例如，`bufio` 包中的缓存读取器类型叫做 `Reader` 而非 `BufReader`，因为用户将它看做 `bufio.Reader`，这是个清楚而简洁的名称。 此外，由于被导入的项总是通过它们的包名来确定，因此 `bufio.Reader` 不会与 `io.Reader` 发生冲突。同样，用于创建 `ring.Ring` 的新实例的函数（这就是Go中的**构造函数**）一般会称之为 `NewRing`，但由于 `Ring` 是该包所导出的唯一类型，且该包也叫 `ring`，因此它可以只叫做 `New`，它跟在包的后面，就像 `ring.New`。使用包结构可以帮助你选择好的名称。
+
+另一个简短的例子是 `once.Do`，`once.Do(setup)` 表述足够清晰， 使用 `once.DoOrWaitUntilDone(setup)` 完全就是画蛇添足。 长命名并不会使其更具可读性。一份有用的说明文档通常比额外的长名更有价值。
+
 ## 获取器
+
+Go并不对获取器（getter）和设置器（setter）提供自动支持。 你应当自己提供获取器和设置器，通常很值得这样做，但若要将 `Get` 放到获取器的名字中，既不符合习惯，也没有必要。若你有个名为 `owner` （小写，未导出）的字段，其获取器应当名为 `Owner`（大写，可导出）而非 `GetOwner`。大写字母即为可导出的这种规定为区分方法和字段提供了便利。 若要提供设置器方法，`SetOwner` 是个不错的选择。两个命名看起来都很合理：
+
+```go
+owner := obj.Owner()
+if owner != user {
+	obj.SetOwner(user)
+}
+```
 
 ## 接口名
 
+按照约定，只包含一个方法的接口应当以该方法的名称加上-er后缀来命名，如 `Reader`、`Writer`、 `Formatter`、`CloseNotifier` 等。
+
+诸如此类的命名有很多，遵循它们及其代表的函数名会让事情变得简单。 `Read`、`Write`、`Close`、`Flush`、 `String` 等都具有典型的签名和意义。为避免冲突，请不要用这些名称为你的方法命名， 除非你明确知道它们的签名和意义相同。反之，若你的类型实现了的方法， 与一个众所周知的类型的方法拥有相同的含义，那就使用相同的命名。 请将字符串转换方法命名为 `String` 而非 `ToString`。
+
 ## 驼峰记法
+
+最后，Go中约定使用驼峰记法 `MixedCaps` 或 `mixedCaps`。
 
 # 分号
 
+和C一样，Go的正式语法使用分号来结束语句；和C不同的是，这些分号并不在源码中出现。 取而代之，词法分析器会使用一条简单的规则来自动插入分号，因此因此源码中基本就不用分号了。
+
+规则是这样的：若在新行前的最后一个标记为标识符（包括 `int` 和 `float64` 这类的单词）、数值或字符串常量之类的基本字面或以下标记之一
+
+```go
+break continue fallthrough return ++ -- ) }
+```
+
+则词法分析将始终在该标记后面插入分号。这点可以概括为： “如果新行前的标记为语句的末尾，则插入分号”。
+
+分号也可在闭括号之前直接省略，因此像
+
+```go
+	go func() { for { dst <- <-src } }()
+```
+
+这样的语句无需分号。通常Go程序只在诸如 `for` 循环子句这样的地方使用分号， 以此来将初始化器、条件及增量元素分开。如果你在一行中写多个语句，也需要用分号隔开。
+
+警告：无论如何，你都不应将一个控制结构（`if`、`for`、`switch` 或 `select`）的左大括号放在下一行。如果这样做，就会在大括号前面插入一个分号，这可能引起不需要的效果。 你应该这样写
+
+```go
+if i < f() {
+	g()
+}
+```
+
+而不是这样
+
+```go
+if i < f()  // 错！
+{           // 错！
+	g()
+}
+```
+
 # 控制结构
 
-## if 条件语句
+Go中的结构控制与C有许多相似之处，但其不同之处才是独到之处。 Go不再使用 `do` 或 `while` 循环，只有一个更通用的 `for`；`switch` 要更灵活一点；`if` 和 `switch` 像 `for`一样可接受可选的初始化语句； 此外，还有一个包含类型选择和多路通信复用器的新控制结构：`select`。 其语法也有些许不同：没有圆括号，而其主体必须始终使用大括号括住。
 
-## 重新生命与再次赋值
+## if 语句
+
+在Go中，一个简单的 `if` 语句看起来像这样：
+
+```go
+if x > 0 {
+	return y
+}
+```
+
+强制的大括号促使你将简单的 `if` 语句分成多行。特别是在主体中包含 `return` 或 `break` 等控制语句时，这种编码风格的好处一比便知。
+
+由于 `if` 和 `switch` 可接受初始化语句， 因此用它们来设置局部变量十分常见。
+
+```go
+if err := file.Chmod(0664); err != nil {
+	log.Print(err)
+	return err
+}
+```
+
+在Go的库中，你会发现若 `if` 语句不会执行到下一条语句时，亦即其执行体 以 `break`、`continue`、`goto` 或 `return` 结束时，不必要的 `else` 会被省略。
+
+```go
+f, err := os.Open(name)
+if err != nil {
+	return err
+}
+codeUsing(f)
+```
+
+下例是一种常见的情况，代码必须防范一系列的错误条件。若控制流成功继续， 则说明程序已排除错误。由于出错时将以`return` 结束， 之后的代码也就无需 `else` 了。
+
+```go
+f, err := os.Open(name)
+if err != nil {
+	return err
+}
+d, err := f.Stat()
+if err != nil {
+	f.Close()
+	return err
+}
+codeUsing(f, d)
+```
+
+## 重新声明与再次赋值
+
+题外话：上一节中最后一个示例展示了短声明 `:=` 如何使用。 调用了 `os.Open` 的声明为
+
+```go
+f, err := os.Open(name)
+```
+
+该语句声明了两个变量 `f` 和 `err`。在几行之后，又通过
+
+```go
+d, err := f.Stat()
+```
+
+调用了 `f.Stat`。它看起来似乎是声明了 `d` 和 `err`。 注意，尽管两个语句中都出现了 `err`，但这种重复仍然是合法的：`err` 在第一条语句中被声明，但在第二条语句中只是被**再次赋值**罢了。也就是说，调用 `f.Stat` 使用的是前面已经声明的 `err`，它只是被重新赋值了而已。
+
+在满足下列条件时，已被声明的变量 `v` 可出现在`:=` 声明中：
+
+- 本次声明与已声明的 `v` 处于同一作用域中（若 `v` 已在外层作用域中声明过，则此次声明会创建一个新的变量§），
+- 在初始化中与其类型相应的值才能赋予 `v`，且
+- 在此次声明中至少另有一个变量是新声明的。
+
+这个特性简直就是纯粹的实用主义体现，它使得我们可以很方面地只使用一个 `err` 值，例如，在一个相当长的 `if-else` 语句链中， 你会发现它用得很频繁。
+
+§值得一提的是，即便Go中的函数形参和返回值在词法上处于大括号之外， 但它们的作用域和该函数体仍然相同。
 
 ## for 循环
 
-## switch
+Go的 `for` 循环类似于C，但却不尽相同。它统一了 `for` 和 `while`，不再有 `do-while` 了。它有三种形式，但只有一种需要分号。
+
+```go
+// 如同C的for循环
+for init; condition; post { }
+
+// 如同C的while循环
+for condition { }
+
+// 如同C的for(;;)循环
+for { }
+```
+
+简短声明能让我们更容易在循环中声明下标变量：
+
+```go
+sum := 0
+for i := 0; i < 10; i++ {
+	sum += i
+}
+```
+
+若你想遍历数组、切片、字符串或者映射，或从信道中读取消息， `range` 子句能够帮你轻松实现循环。
+
+```go
+for key, value := range oldMap {
+	newMap[key] = value
+}
+```
+
+若你只需要该遍历中的第一个项（键或下标），去掉第二个就行了：
+
+```go
+for key := range m {
+	if key.expired() {
+		delete(m, key)
+	}
+}
+```
+
+若你只需要该遍历中的第二个项（值），请使用**空白标识符**，即下划线来丢弃第一个值：
+
+```go
+sum := 0
+for _, value := range array {
+	sum += value
+}
+```
+
+空白标识符还有多种用法，它会在[后面的小节](https://go-zh.org/doc/effective_go.html#空白)中描述。
+
+对于字符串，`range` 能够提供更多便利。它能通过解析UTF-8， 将每个独立的Unicode码点分离出来。错误的编码将占用一个字节，并以符文U+FFFD来代替。 （名称“符文”和内建类型 `rune` 是Go对单个Unicode码点的成称谓。 详情见[语言规范](http://golang.org/ref/spec#符文字面)）。循环
+
+```go
+for pos, char := range "日本\x80語" { // \x80 是个非法的UTF-8编码
+	fmt.Printf("字符 %#U 始于字节位置 %d\n", char, pos)
+}
+```
+
+将打印
+
+```go
+字符 U+65E5 '日' 始于字节位置 0
+字符 U+672C '本' 始于字节位置 3
+字符 U+FFFD '�' 始于字节位置 6
+字符 U+8A9E '語' 始于字节位置 7
+```
+
+最后，Go没有逗号操作符，而 `++` 和 `--` 为语句而非表达式。 因此，若你想要在 `for` 中使用多个变量，应采用平行赋值的方式 （因为它会拒绝 `++` 和 `--`）.
+
+```go
+// 反转 a
+for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
+	a[i], a[j] = a[j], a[i]
+}
+```
+
+## Switch
+
+Go的 `switch` 比C的更通用。其表达式无需为常量或整数，`case` 语句会自上而下逐一进行求值直到匹配为止。若 `switch` 后面没有表达式，它将匹配 `true`，因此，我们可以将 `if-else-if-else` 链写成一个 `switch`，这也更符合Go的风格。
+
+```go
+func unhex(c byte) byte {
+	switch {
+	case '0' <= c && c <= '9':
+		return c - '0'
+	case 'a' <= c && c <= 'f':
+		return c - 'a' + 10
+	case 'A' <= c && c <= 'F':
+		return c - 'A' + 10
+	}
+	return 0
+}
+```
+
+`switch` 并不会自动下溯，但 `case` 可通过逗号分隔来列举相同的处理条件。
+
+```go
+func shouldEscape(c byte) bool {
+	switch c {
+	case ' ', '?', '&', '=', '#', '+', '%':
+		return true
+	}
+	return false
+}
+```
+
+尽管它们在Go中的用法和其它类C语言差不多，但 `break` 语句可以使 `switch` 提前终止。不仅是 `switch`， 有时候也必须打破层层的循环。在Go中，我们只需将标签放置到循环外，然后 “蹦”到那里即可。下面的例子展示了二者的用法。
+
+```go
+Loop:
+	for n := 0; n < len(src); n += size {
+		switch {
+		case src[n] < sizeOne:
+			if validateOnly {
+				break
+			}
+			size = 1
+			update(src[n])
+
+		case src[n] < sizeTwo:
+			if n+1 >= len(src) {
+				err = errShortInput
+				break Loop
+			}
+			if validateOnly {
+				break
+			}
+			size = 2
+			update(src[n] + src[n+1]<<shift)
+		}
+	}
+```
+
+当然，`continue` 语句也能接受一个可选的标签，不过它只能在循环中使用。
+
+作为这一节的结束，此程序通过使用两个 `switch` 语句对字节数组进行比较：
+
+```go
+// Compare 按字典顺序比较两个字节切片并返回一个整数。
+// 若 a == b，则结果为零；若 a < b；则结果为 -1；若 a > b，则结果为 +1。
+func Compare(a, b []byte) int {
+	for i := 0; i < len(a) && i < len(b); i++ {
+		switch {
+		case a[i] > b[i]:
+			return 1
+		case a[i] < b[i]:
+			return -1
+		}
+	}
+	switch {
+	case len(a) > len(b):
+		return 1
+	case len(a) < len(b):
+		return -1
+	}
+	return 0
+}
+```
 
 ## 类型选择
+
+`switch` 也可用于判断接口变量的动态类型。如 **类型选择** 通过圆括号中的关键字 `type` 使用类型断言语法。若 `switch` 在表达式中声明了一个变量，那么该变量的每个子句中都将有该变量对应的类型。
+
+```go
+var t interface{}
+t = functionOfSomeType()
+switch t := t.(type) {
+default:
+	fmt.Printf("unexpected type %T", t)       // %T 输出 t 是什么类型
+case bool:
+	fmt.Printf("boolean %t\n", t)             // t 是 bool 类型
+case int:
+	fmt.Printf("integer %d\n", t)             // t 是 int 类型
+case *bool:
+	fmt.Printf("pointer to boolean %t\n", *t) // t 是 *bool 类型
+case *int:
+	fmt.Printf("pointer to integer %d\n", *t) // t 是 *int 类型
+}
+```
 
 # 函数
 
 ## 多返回值 ([Multiple return values](https://go.dev/doc/effective_go#multiple-returns))
 
+Go与众不同的特性之一就是函数和方法可返回多个值。这种形式可以改善C中一些笨拙的习惯： 将错误值返回（例如用 `-1` 表示 `EOF`）和修改通过地址传入的实参。
+
+在C中，写入操作发生的错误会用一个负数标记，而错误码会隐藏在某个不确定的位置。 而在Go中，`Write` 会返回写入的字节数**以及**一个错误： “是的，您写入了一些字节，但并未全部写入，因为设备已满”。 在 `os` 包中，`File.Write` 的签名为：
+
+```go
+func (file *File) Write(b []byte) (n int, err error)
+```
+
+正如文档所述，它返回写入的字节数，并在`n != len(b)` 时返回一个非 `nil` 的 `error` 错误值。 这是一种常见的编码风格，更多示例见错误处理一节。
+
+我们可以采用一种简单的方法。来避免为模拟引用参数而传入指针。 以下简单的函数可从字节数组中的特定位置获取其值，并返回该数值和下一个位置。
+
+```go
+func nextInt(b []byte, i int) (int, int) {
+	for ; i < len(b) && !isDigit(b[i]); i++ {
+	}
+	x := 0
+	for ; i < len(b) && isDigit(b[i]); i++ {
+		x = x*10 + int(b[i]) - '0'
+	}
+	return x, i
+}
+```
+
+你可以像下面这样，通过它扫描输入的切片 `b` 来获取数字。
+
+```go
+	for i := 0; i < len(b); {
+		x, i = nextInt(b, i)
+		fmt.Println(x)
+	}
+```
+
 ## 可命名结果形参 ([Named result parameters](https://go.dev/doc/effective_go#named-results))
 
+Go函数的返回值或结果“形参”可被命名，并作为常规变量使用，就像传入的形参一样。 命名后，一旦该函数开始执行，它们就会被初始化为与其类型相应的零值； 若该函数执行了一条不带实参的 `return` 语句，则结果形参的当前值将被返回。
+
+此名称不是强制性的，但它们能使代码更加简短清晰：它们就是文档。若我们命名了 `nextInt` 的结果，那么它返回的 `int` 就值如其意了。
+
+```go
+func nextInt(b []byte, pos int) (value, nextPos int) {
+```
+
+由于被命名的结果已经初始化，且已经关联至无参数的返回，它们就能让代码简单而清晰。 下面的 `io.ReadFull` 就是个很好的例子：
+
+```go
+func ReadFull(r Reader, buf []byte) (n int, err error) {
+	for len(buf) > 0 && err == nil {
+		var nr int
+		nr, err = r.Read(buf)
+		n += nr
+		buf = buf[nr:]
+	}
+	return
+}
+```
+
 ## [Defer](https://go.dev/doc/effective_go#defer)
+
+Go的 `defer` 语句用于预设一个函数调用（即**推迟执行**函数）， 该函数会在执行 `defer` 的函数返回之前立即执行。它显得非比寻常， 但却是处理一些事情的有效方式，例如无论以何种路径返回，都必须释放资源的函数。 典型的例子就是解锁互斥和关闭文件。
+
+```go
+// Contents 将文件的内容作为字符串返回。
+func Contents(filename string) (string, error) {
+	f, err := os.Open(filename)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()  // f.Close 会在我们结束后运行。
+
+	var result []byte
+	buf := make([]byte, 100)
+	for {
+		n, err := f.Read(buf[0:])
+		result = append(result, buf[0:n]...) // append 将在后面讨论。
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return "", err  // 我们在这里返回后，f 就会被关闭。
+		}
+	}
+	return string(result), nil // 我们在这里返回后，f 就会被关闭。
+}
+```
+
+推迟诸如 `Close` 之类的函数调用有两点好处：第一， 它能确保你不会忘记关闭文件。如果你以后又为该函数添加了新的返回路径时， 这种情况往往就会发生。第二，它意味着“关闭”离“打开”很近， 这总比将它放在函数结尾处要清晰明了。
+
+被推迟函数的实参（如果该函数为方法则还包括接收者）在**推迟**执行时就会求值， 而不是在**调用**执行时才求值。这样不仅无需担心变量值在函数执行时被改变， 同时还意味着单个已推迟的调用可推迟多个函数的执行。下面是个简单的例子。
+
+```go
+for i := 0; i < 5; i++ {
+	defer fmt.Printf("%d ", i)
+}
+```
+
+被推迟的函数按照后进先出（LIFO）的顺序执行，因此以上代码在函数返回时会打印 `4 3 2 1 0`。一个更具实际意义的例子是通过一种简单的方法， 用程序来跟踪函数的执行。我们可以编写一对简单的跟踪例程：
+
+```go
+func trace(s string)   { fmt.Println("entering:", s) }
+func untrace(s string) { fmt.Println("leaving:", s) }
+
+// 像这样使用它们：
+func a() {
+	trace("a")
+	defer untrace("a")
+	// 做一些事情....
+}
+```
+
+我们可以充分利用这个特点，即被推迟函数的实参在 `defer` 执行时才会被求值。 跟踪例程可针对反跟踪例程设置实参。以下例子：
+
+```go
+func trace(s string) string {
+	fmt.Println("entering:", s)
+	return s
+}
+
+func un(s string) {
+	fmt.Println("leaving:", s)
+}
+
+func a() {
+	defer un(trace("a"))
+	fmt.Println("in a")
+}
+
+func b() {
+	defer un(trace("b"))
+	fmt.Println("in b")
+	a()
+}
+
+func main() {
+	b()
+}
+```
+
+会打印
+
+```go
+entering: b
+in b
+entering: a
+in a
+leaving: a
+leaving: b
+```
+
+对于习惯其它语言中块级资源管理的程序员，`defer` 似乎有点怪异， 但它最有趣而强大的应用恰恰来自于其基于函数而非块的特点。在 `panic` 和 `recover` 这两节中，我们将看到关于它可能性的其它例子。
+
 
 # 数据
 
@@ -2356,7 +3301,7 @@ for try := 0; try < 2; try++ {
 
 ## Panic
 
-向调用者报告错误的一般方式就是将 `error` 作为额外的值返回。 标准的 `Read` 方法就是个众所周知的实例，它返回一个字节计数和一个 `error`。但如果错误时不可恢复的呢？有时程序就是不能继续运行。
+向调用者报告错误的一般方式就是将 `error` 作为额外的值返回。 标准的 `Read` 方法就是个众所周知的实例，它返回一个字节计数和一个 `error`。但如果错误是不可恢复的呢？有时程序就是不能继续运行。
 
 为此，我们提供了内建的 `panic` 函数，它会产生一个运行时错误并终止程序 （但请继续看下一节）。该函数接受一个任意类型的实参（一般为字符串），并在程序终止时打印。 它还能表明发生了意料之外的事情，比如从无限循环中退出了。
 
@@ -2390,7 +3335,7 @@ func init() {
 
 ## Recover
 
-当 `panic` 被调用后（包括不明确的运行时错误，例如切片检索越界或类型断言失败）， 程序将立刻终止当前函数的执行，并开始回溯Go程的栈，运行任何被推迟的函数。 若回溯到达Go程栈的顶端，程序就会终止。不过我们可以用内建的 `recover` 函数来重新或来取回Go程的控制权限并使其恢复正常执行。
+当 `panic` 被调用后（包括不明确的运行时错误，例如切片检索越界或类型断言失败）， 程序将立刻终止当前函数的执行，并开始回溯Go程的栈，运行任何被推迟的函数。 若回溯到达Go程栈的顶端，程序就会终止。不过我们可以用内建的 `recover` 函数来重新取回Go程的控制权限并使其恢复正常执行。
 
 调用 `recover` 将停止回溯过程，并返回传入 `panic` 的实参。 由于在回溯时只有被推迟函数中的代码在运行，因此 `recover` 只能在被推迟的函数中才有效。
 
@@ -2514,7 +3459,7 @@ value="Show QR" name=qr>
 `
 ```
 
-`main` 之前的代码应该比较容易理解。我们通过一个标志为服务器设置了默认端口。 模板变量 `templ` 正式有趣的地方。它构建的HTML模版将会被服务器执行并显示在页面中。 稍后我们将详细讨论。
+`main` 之前的代码应该比较容易理解。我们通过一个标志为服务器设置了默认端口。 模板变量 `templ` 正是有趣的地方。它构建的HTML模版将会被服务器执行并显示在页面中。 稍后我们将详细讨论。
 
 `main` 函数解析了参数标志并使用我们讨论过的机制将 `QR` 函数绑定到服务器的根路径。然后调用 `http.ListenAndServe` 启动服务器；它将在服务器运行时处于阻塞状态。
 
