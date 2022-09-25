@@ -12540,9 +12540,9 @@ $ <span class="token function">sudo</span> <span class="token function">dmesg</s
 
 
 <h1 id="代码的组织"><a href="#代码的组织" class="headerlink" title="代码的组织"></a>代码的组织</h1><h2 id="工作空间"><a href="#工作空间" class="headerlink" title="工作空间"></a>工作空间</h2><p><code>go</code> 工具为公共代码仓库中维护的开源代码而设计。 无论你会不会公布代码，该模型设置工作环境的方法都是相同的。</p>
-<p>Go代码必须放在<strong>工作空间</strong>内。它其实就是一个目录，其中包含三个子目录：</p>
+<p>Go 代码必须放在<strong>工作空间</strong>内。它其实就是一个目录，其中包含3个子目录：</p>
 <ul>
-<li><code>src</code> 目录包含Go的源文件，它们被组织成包（每个目录都对应一个包），</li>
+<li><code>src</code> 目录包含 Go 的源文件，它们被组织成包（每个目录都对应一个包），</li>
 <li><code>pkg</code> 目录包含包对象，</li>
 <li><code>bin</code> 目录包含可执行命令。</li>
 </ul>
@@ -12704,66 +12704,66 @@ src/
 <h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>Go拥有一个轻量级的测试框架，它由 <code>go test</code> 命令和 <code>testing</code> 包构成。</p>
 <p>你可以通过创建一个名字以 <code>_test.go</code> 结尾的，包含名为 <code>TestXXX</code> 且签名为 <code>func (t *testing.T)</code> 函数的文件来编写测试。 测试框架会运行每一个这样的函数；若该函数调用了像 <code>t.Error</code> 或 <code>t.Fail</code> 这样表示失败的函数，此测试即表示失败。</p>
 <p>我们可通过创建文件 <code>$GOPATH/src/github.com/user/stringutil/reverse_test.go</code> 来为 <code>stringutil</code> 添加测试，其内容如下：</p>
-<pre class="language-none"><code class="language-none">package stringutil
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> stringutil
 
-import &quot;testing&quot;
+<span class="token keyword">import</span> <span class="token string">"testing"</span>
 
-func TestReverse(t *testing.T) &#123;
-	cases :&#x3D; []struct &#123;
-		in, want string
-	&#125;&#123;
-		&#123;&quot;Hello, world&quot;, &quot;dlrow ,olleH&quot;&#125;,
-		&#123;&quot;Hello, 世界&quot;, &quot;界世 ,olleH&quot;&#125;,
-		&#123;&quot;&quot;, &quot;&quot;&#125;,
-	&#125;
-	for _, c :&#x3D; range cases &#123;
-		got :&#x3D; Reverse(c.in)
-		if got !&#x3D; c.want &#123;
-			t.Errorf(&quot;Reverse(%q) &#x3D;&#x3D; %q, want %q&quot;, c.in, got, c.want)
-		&#125;
-	&#125;
-&#125;</code></pre>
+<span class="token keyword">func</span> <span class="token function">TestReverse</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	cases <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+		in<span class="token punctuation">,</span> want <span class="token builtin">string</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span>
+		<span class="token punctuation">&#123;</span><span class="token string">"Hello, world"</span><span class="token punctuation">,</span> <span class="token string">"dlrow ,olleH"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+		<span class="token punctuation">&#123;</span><span class="token string">"Hello, 世界"</span><span class="token punctuation">,</span> <span class="token string">"界世 ,olleH"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+		<span class="token punctuation">&#123;</span><span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> c <span class="token operator">:=</span> <span class="token keyword">range</span> cases <span class="token punctuation">&#123;</span>
+		got <span class="token operator">:=</span> <span class="token function">Reverse</span><span class="token punctuation">(</span>c<span class="token punctuation">.</span>in<span class="token punctuation">)</span>
+		<span class="token keyword">if</span> got <span class="token operator">!=</span> c<span class="token punctuation">.</span>want <span class="token punctuation">&#123;</span>
+			t<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"Reverse(%q) == %q, want %q"</span><span class="token punctuation">,</span> c<span class="token punctuation">.</span>in<span class="token punctuation">,</span> got<span class="token punctuation">,</span> c<span class="token punctuation">.</span>want<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
 <p>接着使用 <code>go test</code> 运行该测试：</p>
-<pre class="language-none"><code class="language-none">$ go test github.com&#x2F;user&#x2F;stringutil
-ok  	github.com&#x2F;user&#x2F;stringutil 0.165s</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ go <span class="token builtin class-name">test</span> github.com/user/stringutil
+ok  	github.com/user/stringutil <span class="token number">0</span>.165s</code></pre>
 
 <p>同样，若你在包目录下运行 <code>go</code> 工具，也可以忽略包路径</p>
-<pre class="language-none"><code class="language-none">$ go test
-ok  	github.com&#x2F;user&#x2F;stringutil 0.165s</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ go <span class="token builtin class-name">test</span>
+ok  	github.com/user/stringutil <span class="token number">0</span>.165s</code></pre>
 
 <p>更多详情可运行 <code>go help test</code> 或从 <a href="https://go-zh.org/pkg/testing/">testing 包文档</a> 中查看。</p>
 <h1 id="远程包"><a href="#远程包" class="headerlink" title="远程包"></a>远程包</h1><p>像Git或Mercurial这样的版本控制系统，可根据导入路径的描述来获取包源代码。<code>go</code> 工具可通过此特性来从远程代码库自动获取包。例如，本文档中描述的例子也可存放到Google Code上的Mercurial仓库 <code>code.google.com/p/go.example</code> 中，若你在包的导入路径中包含了代码仓库的URL，<code>go get</code> 就会自动地获取、 构建并安装它：</p>
-<pre class="language-none"><code class="language-none">$ go get github.com&#x2F;golang&#x2F;example&#x2F;hello
-$ $GOPATH&#x2F;bin&#x2F;hello
-Hello, Go examples!</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ go get github.com/golang/example/hello
+$ <span class="token variable">$GOPATH</span>/bin/hello
+Hello, Go examples<span class="token operator">!</span></code></pre>
 
 <p>若指定的包不在工作空间中，<code>go get</code> 就会将会将它放到 <code>GOPATH</code> 指定的第一个工作空间内。（若该包已存在，<code>go get</code> 就会跳过远程获取， 其行为与 <code>go install</code> 相同）</p>
 <p>在执行完上面的<code>go get</code> 命令后，工作空间的目录树看起来应该是这样的：</p>
-<pre class="language-none"><code class="language-none">bin&#x2F;
-	hello                 # 可执行命令
-pkg&#x2F;
-	linux_amd64&#x2F;
-		code.google.com&#x2F;p&#x2F;go.example&#x2F;
-			stringutil.a     # 包对象
-		github.com&#x2F;user&#x2F;
-			stringutil.a     # 包对象
-src&#x2F;
-	code.google.com&#x2F;p&#x2F;go.example&#x2F;
-		hello&#x2F;
-			hello.go      # 命令源码
-		stringutil&#x2F;
-			reverse.go       # 包源码
-			reverse_test.go  # 测试源码
-	github.com&#x2F;user&#x2F;
-		hello&#x2F;
-			hello.go      # 命令源码
-		stringutil&#x2F;
-			reverse.go       # 包源码
-			reverse_test.go  # 测试源码</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">bin/
+	hello                 <span class="token comment"># 可执行命令</span>
+pkg/
+	linux_amd64/
+		code.google.com/p/go.example/
+			stringutil.a     <span class="token comment"># 包对象</span>
+		github.com/user/
+			stringutil.a     <span class="token comment"># 包对象</span>
+src/
+	code.google.com/p/go.example/
+		hello/
+			hello.go      <span class="token comment"># 命令源码</span>
+		stringutil/
+			reverse.go       <span class="token comment"># 包源码</span>
+			reverse_test.go  <span class="token comment"># 测试源码</span>
+	github.com/user/
+		hello/
+			hello.go      <span class="token comment"># 命令源码</span>
+		stringutil/
+			reverse.go       <span class="token comment"># 包源码</span>
+			reverse_test.go  <span class="token comment"># 测试源码</span></code></pre>
 
 <p><code>hello</code> 命令及其依赖的 <code>stringutil</code> 包都托管在Google Code上的同一代码库中。<code>hello.go</code> 文件使用了同样的导入路径约定， 因此 <code>go get</code> 命令也能够定位并安装其依赖包。</p>
-<pre class="language-none"><code class="language-none">import &quot;github.com&#x2F;golang&#x2F;example&#x2F;stringutil&quot;</code></pre>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">import</span> <span class="token string">"github.com/golang/example/stringutil"</span></code></pre>
 
 <p>遵循此约定可让他人以最简单的方式使用你的Go包。 <a href="http://code.google.com/p/go-wiki/wiki/Projects">Go维基</a> 与 <a href="http://godoc.org/">godoc.org</a> 提供了外部Go项目的列表。</p>
 <p>通过 <code>go</code> 工具使用远程代码库的更多详情，见 <code>go help remote</code>。</p>
