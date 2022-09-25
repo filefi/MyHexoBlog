@@ -24,9 +24,9 @@ Go 是一门全新的语言。尽管它从既有的语言中借鉴了许多理�
 
 `go` 工具为公共代码仓库中维护的开源代码而设计。 无论你会不会公布代码，该模型设置工作环境的方法都是相同的。
 
-Go代码必须放在**工作空间**内。它其实就是一个目录，其中包含三个子目录：
+Go 代码必须放在**工作空间**内。它其实就是一个目录，其中包含3个子目录：
 
-- `src` 目录包含Go的源文件，它们被组织成包（每个目录都对应一个包），
+- `src` 目录包含 Go 的源文件，它们被组织成包（每个目录都对应一个包），
 - `pkg` 目录包含包对象，
 - `bin` 目录包含可执行命令。
 
@@ -285,7 +285,7 @@ Go拥有一个轻量级的测试框架，它由 `go test` 命令和 `testing` �
 
 我们可通过创建文件 `$GOPATH/src/github.com/user/stringutil/reverse_test.go` 来为 `stringutil` 添加测试，其内容如下：
 
-```
+```go
 package stringutil
 
 import "testing"
@@ -309,14 +309,14 @@ func TestReverse(t *testing.T) {
 
 接着使用 `go test` 运行该测试：
 
-```
+```bash
 $ go test github.com/user/stringutil
 ok  	github.com/user/stringutil 0.165s
 ```
 
 同样，若你在包目录下运行 `go` 工具，也可以忽略包路径
 
-```
+```bash
 $ go test
 ok  	github.com/user/stringutil 0.165s
 ```
@@ -327,7 +327,7 @@ ok  	github.com/user/stringutil 0.165s
 
 像Git或Mercurial这样的版本控制系统，可根据导入路径的描述来获取包源代码。`go` 工具可通过此特性来从远程代码库自动获取包。例如，本文档中描述的例子也可存放到Google Code上的Mercurial仓库 `code.google.com/p/go.example` 中，若你在包的导入路径中包含了代码仓库的URL，`go get` 就会自动地获取、 构建并安装它：
 
-```
+```bash
 $ go get github.com/golang/example/hello
 $ $GOPATH/bin/hello
 Hello, Go examples!
@@ -337,7 +337,7 @@ Hello, Go examples!
 
 在执行完上面的`go get` 命令后，工作空间的目录树看起来应该是这样的：
 
-```
+```bash
 bin/
 	hello                 # 可执行命令
 pkg/
@@ -363,7 +363,7 @@ src/
 
 `hello` 命令及其依赖的 `stringutil` 包都托管在Google Code上的同一代码库中。`hello.go` 文件使用了同样的导入路径约定， 因此 `go get` 命令也能够定位并安装其依赖包。
 
-```
+```go
 import "github.com/golang/example/stringutil"
 ```
 
