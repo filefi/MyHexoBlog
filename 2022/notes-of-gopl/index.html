@@ -20,30 +20,30 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"ifelif.cn","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.13.0/source/js/config.min.js"></script>
 
-    <meta name="description" content="通常，企业内部使用的 Web 应用，其服务器通常无法直接与外网通信，导致没法直接在服务器上使用 npm 或 yarn 等工具安装第三方外部依赖。而开发使用的电脑通常是可以访问互联网的，那么，就可以在开发电脑上使用 goproxy 创建一个 http 代理，通过这个 http 代理临时为服务器提供外网访问，以便可以使用 npm 或 yarn 安装第三方外部依赖。 环境  开发计算机： Windows">
+    <meta name="description" content="前言Go语言起源下图展示了有哪些早期的编程语言对Go语言的设计产生了重要影响。  Go语言项目Go项目包括编程语言本身，附带了相关的工具和标准库，最后但并非代表不重要的是，关于简洁编程哲学的宣言。 Go语言的这些地方都做的还不错：  拥有自动垃圾回收  一个包系统  函数作为一等公民  词法作用域  系统调用接口  只读的UTF8字符串等   但是Go语言本身只有很少的特性：  没有隐式的数值转换">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用 goproxy 为处于内网环境的开发服务器提供 npm 代理">
-<meta property="og:url" content="https://ifelif.cn/2022/using_goproxy_as_npm_proxy/index.html">
+<meta property="og:title" content="《The Go Programming Language》学习笔记">
+<meta property="og:url" content="https://ifelif.cn/2022/notes-of-gopl/index.html">
 <meta property="og:site_name" content="正经人谁写日记">
-<meta property="og:description" content="通常，企业内部使用的 Web 应用，其服务器通常无法直接与外网通信，导致没法直接在服务器上使用 npm 或 yarn 等工具安装第三方外部依赖。而开发使用的电脑通常是可以访问互联网的，那么，就可以在开发电脑上使用 goproxy 创建一个 http 代理，通过这个 http 代理临时为服务器提供外网访问，以便可以使用 npm 或 yarn 安装第三方外部依赖。 环境  开发计算机： Windows">
+<meta property="og:description" content="前言Go语言起源下图展示了有哪些早期的编程语言对Go语言的设计产生了重要影响。  Go语言项目Go项目包括编程语言本身，附带了相关的工具和标准库，最后但并非代表不重要的是，关于简洁编程哲学的宣言。 Go语言的这些地方都做的还不错：  拥有自动垃圾回收  一个包系统  函数作为一等公民  词法作用域  系统调用接口  只读的UTF8字符串等   但是Go语言本身只有很少的特性：  没有隐式的数值转换">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-06-09T12:40:55.000Z">
-<meta property="article:modified_time" content="2022-06-09T12:40:55.000Z">
+<meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch0-01.png">
+<meta property="article:published_time" content="2022-09-30T06:24:21.000Z">
+<meta property="article:modified_time" content="2022-09-30T06:24:21.000Z">
 <meta property="article:author" content="filefi">
-<meta property="article:tag" content="Proxy">
-<meta property="article:tag" content="Node.js">
-<meta property="article:tag" content="NPM">
+<meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ifelif.cn/2022/notes-of-gopl/ch0-01.png">
 
 
-<link rel="canonical" href="https://ifelif.cn/2022/using_goproxy_as_npm_proxy/">
+<link rel="canonical" href="https://ifelif.cn/2022/notes-of-gopl/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ifelif.cn/2022/using_goproxy_as_npm_proxy/","path":"2022/using_goproxy_as_npm_proxy/","title":"使用 goproxy 为处于内网环境的开发服务器提供 npm 代理"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ifelif.cn/2022/notes-of-gopl/","path":"2022/notes-of-gopl/","title":"《The Go Programming Language》学习笔记"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>使用 goproxy 为处于内网环境的开发服务器提供 npm 代理 | 正经人谁写日记</title>
+<title>《The Go Programming Language》学习笔记 | 正经人谁写日记</title>
   
 
   <script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.13.0/source/js/third-party/analytics/baidu-analytics.min.js"></script>
@@ -136,7 +136,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -149,6 +149,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E8%AF%AD%E8%A8%80%E8%B5%B7%E6%BA%90"><span class="nav-number">1.1.</span> <span class="nav-text">Go语言起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E8%AF%AD%E8%A8%80%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.2.</span> <span class="nav-text">Go语言项目</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A5%E9%97%A8"><span class="nav-number">2.</span> <span class="nav-text">入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hello-World"><span class="nav-number">2.1.</span> <span class="nav-text">Hello, World</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -234,7 +235,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/using_goproxy_as_npm_proxy/">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/notes-of-gopl/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -247,12 +248,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="使用 goproxy 为处于内网环境的开发服务器提供 npm 代理 | 正经人谁写日记">
+      <meta itemprop="name" content="《The Go Programming Language》学习笔记 | 正经人谁写日记">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          使用 goproxy 为处于内网环境的开发服务器提供 npm 代理<a href="https://github.com/filefi/MyHexoBlog/tree/master/source/_posts/2022/using_goproxy_as_npm_proxy.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+          《The Go Programming Language》学习笔记<a href="https://github.com/filefi/MyHexoBlog/tree/master/source/_posts/2022/notes-of-gopl.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
         </h1>
 
         <div class="post-meta-container">
@@ -263,7 +264,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-06-09 20:40:55" itemprop="dateCreated datePublished" datetime="2022-06-09T20:40:55+08:00">2022-06-09</time>
+      <time title="创建时间：2022-09-30 14:24:21" itemprop="dateCreated datePublished" datetime="2022-09-30T14:24:21+08:00">2022-09-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -271,7 +272,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Node-js/" itemprop="url" rel="index"><span itemprop="name">Node.js</span></a>
+          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
         </span>
     </span>
 
@@ -285,73 +286,69 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>通常，企业内部使用的 Web 应用，其服务器通常无法直接与外网通信，导致没法直接在服务器上使用 npm 或 yarn 等工具安装第三方外部依赖。而开发使用的电脑通常是可以访问互联网的，那么，就可以在开发电脑上使用 goproxy 创建一个 http 代理，通过这个 http 代理临时为服务器提供外网访问，以便可以使用 npm 或 yarn 安装第三方外部依赖。</p>
-<p><strong>环境</strong></p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><h2 id="Go语言起源"><a href="#Go语言起源" class="headerlink" title="Go语言起源"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/preface.html#go%E8%AF%AD%E8%A8%80%E8%B5%B7%E6%BA%90">Go语言起源</a></h2><p>下图展示了有哪些早期的编程语言对Go语言的设计产生了重要影响。</p>
+<p><img src="/2022/notes-of-gopl/ch0-01.png" alt="img"></p>
+<h2 id="Go语言项目"><a href="#Go语言项目" class="headerlink" title="Go语言项目"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/preface.html#go%E8%AF%AD%E8%A8%80%E9%A1%B9%E7%9B%AE">Go语言项目</a></h2><p>Go项目包括编程语言本身，附带了相关的工具和标准库，最后但并非代表不重要的是，关于简洁编程哲学的宣言。</p>
+<p>Go语言的这些地方都做的还不错：</p>
 <ul>
-<li>开发计算机：<ul>
-<li>Windows 10</li>
-<li>可以访问服务器，也可访问互联网</li>
-<li>IP: 192.168.200.1</li>
-</ul>
+<li><p>拥有自动垃圾回收</p>
 </li>
-<li>服务器：<ul>
-<li>CentOS 8 </li>
-<li>仅可访问开发主机，无法直接访问互联网</li>
-<li>IP: 192.168.200.129</li>
-</ul>
+<li><p>一个包系统</p>
+</li>
+<li><p>函数作为一等公民</p>
+</li>
+<li><p>词法作用域</p>
+</li>
+<li><p>系统调用接口</p>
+</li>
+<li><p>只读的UTF8字符串等</p>
 </li>
 </ul>
+<p>但是Go语言本身只有很少的特性：</p>
+<ul>
+<li>没有隐式的数值转换</li>
+<li>没有构造函数和析构函数</li>
+<li>没有运算符重载</li>
+<li>没有默认参数</li>
+<li>没有继承</li>
+<li>没有泛型</li>
+<li><del>没有异常</del></li>
+<li>没有宏</li>
+<li>没有函数修饰</li>
+<li>没有线程局部存储</li>
+</ul>
+<p>在实践中，Go语言简洁的类型系统给程序员带来了更多的安全性和更好的运行时性能。</p>
+<p>Go语言提供了基于<code>CSP</code>的并发特性支持。Go语言的动态栈使得轻量级线程<code>goroutine</code>的初始栈可以很小，因此，创建一个<code>goroutine</code>的代价很小，创建百万级的<code>goroutine</code>完全是可行的。</p>
+<p>Go语言的标准库（通常被称为语言自带的电池），提供了清晰的构建模块和公共接口，包含I&#x2F;O操作、文本处理、图像、密码学、网络和分布式应用程序等，并支持许多标准化的文件格式和编解码协议。</p>
 <span id="more"></span>
 
-<p><strong>具体操作</strong></p>
-<p>第1步：在开发计算机上使用 <a target="_blank" rel="noopener" href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 http 代理。</p>
-<blockquote>
-<p><code>--max-conns-rate</code> 参数控制每秒客户端的最大连接数, 默认20, 0为不限制。有时候 npm 包依赖太多，并发会超过默认的20；超过限制后，goproxy 会杀掉超过的会话，导致 npm 包安装失败。</p>
-</blockquote>
-<pre class="language-cmd" data-language="cmd"><code class="language-cmd">.\proxy.exe http -t tcp -p &quot;:33080&quot; --max-conns-rate 0 --forever</code></pre>
+<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello, World"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch1/ch1-01.html#11-hello-world">Hello, World</a></h2><pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
 
-<p>第2步：在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
-<blockquote>
-<p>注意：这里 <code>http_proxy</code> 和 <code>https_proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
-</blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">http_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080
-<span class="token builtin class-name">export</span> <span class="token assign-left variable">https_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080</code></pre>
+<span class="token keyword">import</span> <span class="token string">"fmt"</span>
 
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Hello, 世界"</span><span class="token punctuation">)</span> <span class="token comment">// Println 函数可以打印以空格间隔的一个或多个值，并在最后添加一个换行符</span>
+<span class="token punctuation">&#125;</span>
+</code></pre>
 
+<p>Go 是一门编译型语言，Go 语言的工具链将源代码及其依赖转换成计算机的机器指令（译注：静态编译）。</p>
+<p>Go 语言提供的工具都通过一个单独的命令 <code>go</code> 调用，<code>go</code> 命令有一系列子命令。</p>
+<p><code>run</code> 子命令编译一个或多个以<code>.go</code> 结尾的源文件，链接库文件，并运行最终生成的可执行文件。</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ go run helloworld.go
+Hello, 世界</code></pre>
 
-<p>第3步：配置 NPM 代理，将 <code>proxy</code> 和 <code>https-proxy</code> 同时指向 <code>http://192.168.200.1:33080</code>。</p>
-<blockquote>
-<p>注意：这里 <code>proxy</code> 和 <code>https-proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
-</blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> proxy http://192.168.200.1:33080
-<span class="token function">npm</span> config <span class="token builtin class-name">set</span> https-proxy http://192.168.200.1:33080</code></pre>
+<p> <code>build</code> 子命令能够编译这个程序，保存编译后的可执行文件：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ go build helloworld.go</code></pre>
 
-<p>第4步：修改 NPM 源（非必需）。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> registry https://registry.npmmirror.com</code></pre>
+<p>这个命令生成一个与源代码同名的可执行二进制文件，之后你可以随时运行它。</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ ./helloworld
+Hello, 世界</code></pre>
 
-<p><strong>测试</strong></p>
-<p>使用 npm 安装 <code>nrm</code> ，测试 http 代理是否可用。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm -g
-<span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
-<span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
-<span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+<p>Go 语言的代码通过<strong>包</strong>（package）组织，包类似于其它语言里的库（libraries）或者模块（modules）。一个包由位于单个目录下的一个或多个 <code>.go</code> 源代码文件组成，目录定义包的作用。每个源文件都以一条 <code>package</code> 声明语句开始，这个例子里就是 <code>package main</code>，表示该文件属于哪个包，紧跟着一系列导入（import）的包，之后是存储在这个文件里的程序语句。</p>
+<p>Go 的标准库提供了 100 多个包，以支持常见功能，如输入、输出、排序以及文本处理。比如 <code>fmt</code> 包，就含有格式化输出、接收输入的函数。<code>Println</code> 是其中一个基础函数，可以打印以空格间隔的一个或多个值，并在最后添加一个换行符。</p>
+<p><code>main</code> 包比较特殊。它定义了一个独立可执行的程序，而不是一个库。在 <code>main</code> 里的 <code>main</code> <em>函数</em> 也很特殊，它是整个程序执行时的入口。<code>main</code> 函数一般调用其它包里的函数完成很多工作（如：<code>fmt.Println</code>）。</p>
+<p><code>import</code> 声明必须跟在文件的 <code>package</code> 声明之后，它告诉编译器源文件需要导入哪些包。<code>hello world</code> 例子只用到了一个包，大多数程序需要导入多个包。缺少了必要的包或者导入了不需要的包，程序都无法编译通过。</p>
 
-added <span class="token number">58</span> packages <span class="token keyword">in</span> 4s
-
-<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
-<p>可以看到处于内网的服务器已经成功安装了 <code>nrm</code> 包。同时，开发计算机的控制台也输出了来自服务器的相关 log ： </p>
-<pre class="language-cmd" data-language="cmd"><code class="language-cmd"> E:\proxy-windows-amd64&gt;.\proxy.exe http -t tcp -p &quot;:33080&quot; --max-conns-rate 0 --forever
-2022&#x2F;06&#x2F;09 22:49:12.715429 INFO worker E:\Downloads\Chrome\proxy-windows-amd64\proxy.exe [PID] 88516 running...
-2022&#x2F;06&#x2F;09 22:49:12.821243 INFO tcp http(s) proxy on [::]:33080
-2022&#x2F;06&#x2F;09 22:49:19.266803 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 22:49:19.266803 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 22:49:19.291648 INFO conn 192.168.200.129:55892 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 22:49:19.576069 INFO conn 192.168.200.129:55892 - 39.130.171.71:443 released [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 22:49:19.641743 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 22:49:19.641743 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 22:49:19.664109 INFO conn 192.168.200.129:55894 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 22:49:19.939819 INFO conn 192.168.200.129:55894 - 39.130.171.71:443 released [registry.npmmirror.com:443]</code></pre>
     </div>
 
     
@@ -386,7 +383,7 @@ added <span class="token number">58</span> packages <span class="token keyword">
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://ifelif.cn/2022/using_goproxy_as_npm_proxy/" title="使用 goproxy 为处于内网环境的开发服务器提供 npm 代理">https://ifelif.cn/2022/using_goproxy_as_npm_proxy/</a>
+      <a href="https://ifelif.cn/2022/notes-of-gopl/" title="《The Go Programming Language》学习笔记">https://ifelif.cn/2022/notes-of-gopl/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -412,23 +409,18 @@ added <span class="token number">58</span> packages <span class="token keyword">
 </div>
 
           <div class="post-tags">
-              <a href="/tags/Proxy/" rel="tag"># Proxy</a>
-              <a href="/tags/Node-js/" rel="tag"># Node.js</a>
-              <a href="/tags/NPM/" rel="tag"># NPM</a>
+              <a href="/tags/Golang/" rel="tag"># Golang</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2022/batch_modify_bilibili_follow_group/" rel="prev" title="批量将某li某li特定关注组中的UP修改为悄悄关注">
-                  <i class="fa fa-chevron-left"></i> 批量将某li某li特定关注组中的UP修改为悄悄关注
+                <a href="/2022/from_A-Tour-of-Go_to_Effective-Go/" rel="prev" title="从《A Tour of Go》到《Effective Go》">
+                  <i class="fa fa-chevron-left"></i> 从《A Tour of Go》到《Effective Go》
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2022/using-http-proxy-middleware-as-npm-proxy/" rel="next" title="使用 http-proxy-middleware 创建 npm 代理">
-                  使用 http-proxy-middleware 创建 npm 代理 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
