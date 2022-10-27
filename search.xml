@@ -17349,7 +17349,7 @@ $ ./fetch http://localhost:8000/help
 URL.Path <span class="token operator">=</span> <span class="token string">"/help"</span></code></pre>
 
 <p>还可以直接在浏览器里访问这个URL，然后得到返回结果，如图1.2：</p>
-<p><img src="/notes-of-gopl/ch1-02.png" alt="img"></p>
+<p><img src="/2022/notes-of-gopl/ch1-02.png"></p>
 <p>在这个服务的基础上叠加特性是很容易的。一种比较实用的修改是为访问的url添加某种状态。比如，下面这个版本输出了同样的内容，但是会对请求的次数进行计算，访问<code>/count</code>这个URL返回访问的次数。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// Server2 is a minimal "echo" and counter server.</span>
 <span class="token keyword">package</span> main
@@ -17437,7 +17437,7 @@ http.HandleFunc(&quot;&#x2F;&quot;, handler)</code></pre>
 
 <p><code>HandleFunc</code> 函数的第二个参数是一个函数的字面值，也就是一个在使用时定义的匿名函数。</p>
 <p>做完这些修改之后，在浏览器里访问 <a href="http://localhost:8000/">http://localhost:8000</a> 。每次你载入这个页面都可以看到一个像图1.3那样的动画。</p>
-<p><img src="/notes-of-gopl/ch1-03.png" alt="img"></p>
+<p><img src="/2022/notes-of-gopl/ch1-03.png" alt="img"></p>
 <h2 id="本章要点"><a href="#本章要点" class="headerlink" title="本章要点"></a>本章要点</h2><p><strong>控制流：</strong> 这里是一个简单的switch的例子：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">switch</span> <span class="token function">coinflip</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 <span class="token keyword">case</span> <span class="token string">"heads"</span><span class="token punctuation">:</span>
@@ -17479,7 +17479,7 @@ func ListenAndServe(addr string, handler Handler) error
     calls Serve with handler to handle requests on incoming connections.
 ...</code></pre>
 
-<p><strong>注释：</strong> 我们之前已经提到过了在源文件的开头写的注释是这个源文件的文档。在每一个函数之前写一个说明函数行为的注释也是一个好习惯。这些惯例很重要，因为这些内容会被像godoc这样的工具检测到，并且在执行命令时显示这些注释。</p>
+<p><strong>注释：</strong> 我们之前已经提到过了在源文件的开头写的注释是这个源文件的文档。在每一个函数之前写一个说明函数行为的注释也是一个好习惯。这些惯例很重要，因为这些内容会被像<code>godoc</code>这样的工具检测到，并且在执行命令时显示这些注释。</p>
 <p>多行注释可以用 <code>/* ... */</code> 来包裹，和其它大多数语言一样。在文件一开头的注释一般都是这种形式，或者一大段的解释性的注释文字也会被这符号包住，来避免每一行都需要加<code>//</code>。在注释中<code>//</code>和<code>/*</code>是没什么意义的，所以不要在注释中再嵌入注释。</p>
 <h1 id="程序结构"><a href="#程序结构" class="headerlink" title="程序结构"></a>程序结构</h1>]]></content>
       <categories>
@@ -18076,6 +18076,184 @@ networks:
       </tags>
   </entry>
   <entry>
+    <title>tkinter 一例</title>
+    <url>/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/</url>
+    <content><![CDATA[<p>entry输入命令，text实时获得命令输出：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> tkinter <span class="token keyword">as</span> tk
+<span class="token keyword">import</span> tkinter<span class="token punctuation">.</span>ttk <span class="token keyword">as</span> ttk
+<span class="token keyword">import</span> subprocess
+<span class="token keyword">import</span> shlex
+<span class="token keyword">import</span> sys
+
+
+<span class="token keyword">class</span> <span class="token class-name">App</span><span class="token punctuation">(</span>tk<span class="token punctuation">.</span>Frame<span class="token punctuation">)</span><span class="token punctuation">:</span>
+	<span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>master<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+		<span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>master<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>fill<span class="token operator">=</span>tk<span class="token punctuation">.</span>BOTH<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>create_widgets<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	
+	<span class="token keyword">def</span> <span class="token function">test</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		content <span class="token operator">=</span> self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> content<span class="token punctuation">:</span>
+			cmd <span class="token operator">=</span> shlex<span class="token punctuation">.</span>split<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+			result <span class="token operator">=</span> subprocess<span class="token punctuation">.</span>Popen<span class="token punctuation">(</span>cmd<span class="token punctuation">,</span> shell<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> stdout<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> stderr<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> encoding<span class="token operator">=</span><span class="token string">"gbk"</span><span class="token punctuation">)</span>
+			<span class="token comment"># 实时获取子进程输出的每一行内容</span>
+			<span class="token keyword">for</span> line <span class="token keyword">in</span> <span class="token builtin">iter</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>readline<span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+				<span class="token comment"># 将子进程输出的每一行写入text文本框</span>
+				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>tk<span class="token punctuation">.</span>END<span class="token punctuation">,</span> line<span class="token punctuation">)</span>
+				<span class="token comment"># 立即重绘Text内容</span>
+				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">)</span>
+			
+	
+	<span class="token keyword">def</span> <span class="token function">create_widgets</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		self<span class="token punctuation">.</span>entry <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		
+		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>button <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"确定"</span><span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>test<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>button<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>scrollbar <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Scrollbar<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>text <span class="token operator">=</span> tk<span class="token punctuation">.</span>Text<span class="token punctuation">(</span>self<span class="token punctuation">,</span> yscrollcommand<span class="token operator">=</span>self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span><span class="token builtin">set</span><span class="token punctuation">)</span>
+		<span class="token comment"># 渲染以上2个组件</span>
+		self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token operator">+</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>config<span class="token punctuation">(</span>command<span class="token operator">=</span>self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>yview<span class="token punctuation">)</span>
+		
+		
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+	root <span class="token operator">=</span> tk<span class="token punctuation">.</span>Tk<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	root<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">"Test"</span>
+	
+	app <span class="token operator">=</span> App<span class="token punctuation">(</span>master<span class="token operator">=</span>root<span class="token punctuation">)</span>
+	app<span class="token punctuation">.</span>mainloop<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+	main<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+
+
+
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>tkinter</tag>
+        <tag>GUI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用 http-proxy-middleware 创建 npm 代理</title>
+    <url>/2022/using-http-proxy-middleware-as-npm-proxy/</url>
+    <content><![CDATA[<p>在上一篇中，我们使用 <a href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 <code>http-proxy-middleware</code> 包，我们也可以使用 Node.js 来创建 HTTP 代理。</p>
+<p><strong>环境</strong></p>
+<ul>
+<li>开发计算机：<ul>
+<li>Windows 10</li>
+<li>可以访问服务器，也可访问互联网</li>
+<li>IP: 192.168.200.1</li>
+</ul>
+</li>
+<li>服务器：<ul>
+<li>CentOS 8 </li>
+<li>仅可访问开发主机，无法直接访问互联网</li>
+<li>IP: 192.168.200.129</li>
+</ul>
+</li>
+</ul>
+<span id="more"></span>
+
+
+<p><strong>安装依赖</strong></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i express http-proxy-middleware</code></pre>
+
+<p><strong>代码实现</strong></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// proxy.js</span>
+
+<span class="token comment">// include dependencies</span>
+<span class="token keyword">const</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> createProxyMiddleware <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http-proxy-middleware'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// proxy middleware options</span>
+<span class="token comment">/** @type &#123;import('http-proxy-middleware/dist/types').Options&#125; */</span>
+<span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'https://registry.npmmirror.com'</span><span class="token punctuation">,</span> <span class="token comment">// target host with the same base path</span>
+<span class="token comment">//   changeOrigin: true, // needed for virtual hosted sites</span>
+  <span class="token literal-property property">logger</span><span class="token operator">:</span> console<span class="token punctuation">,</span>
+  <span class="token literal-property property">secure</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">// don't verify the SSL certs</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token comment">// create the proxy</span>
+<span class="token keyword">const</span> proxy <span class="token operator">=</span> <span class="token function">createProxyMiddleware</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// mount `exampleProxy` in web server</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>proxy<span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">33080</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p><strong>服务器配置</strong></p>
+<p>在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
+<blockquote>
+<p>注意：这里 <code>http_proxy</code> 和 <code>https_proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
+</blockquote>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">http_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">https_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080</code></pre>
+
+<p>配置 NPM 代理，将 <code>proxy</code> 和 <code>https-proxy</code> 同时指向 <code>http://192.168.200.1:33080</code>。</p>
+<blockquote>
+<p>注意：这里 <code>proxy</code> 和 <code>https-proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
+</blockquote>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> proxy http://192.168.200.1:33080
+<span class="token function">npm</span> config <span class="token builtin class-name">set</span> https-proxy http://192.168.200.1:33080</code></pre>
+
+<p><strong>修改 npm registry</strong></p>
+<p><strong>注意，由于我们的实现没有使用HTTPS，需要修改 npm registry 为<code>http://</code>。</strong></p>
+<pre class="language-none"><code class="language-none">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</code></pre>
+
+<p><strong>测试</strong></p>
+<p>在开发用的电脑上运行我们实现的代码：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">node</span> proxy.js</code></pre>
+
+<p>在服务器上使用 npm 安装外部依赖包：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i <span class="token function">npm</span> -g
+
+changed <span class="token number">14</span> packages <span class="token keyword">in</span> 3s
+
+<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
+  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
+
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm -g
+<span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
+<span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
+<span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+
+changed <span class="token number">73</span> packages <span class="token keyword">in</span> 6s
+
+<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
+  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
+
+<p>可以看到，内网服务器同样可以通过我们实现的 HTTP 代理使用 npm 安装第三方外部依赖了。</p>
+]]></content>
+      <categories>
+        <category>Node.js</category>
+      </categories>
+      <tags>
+        <tag>Proxy</tag>
+        <tag>Node.js</tag>
+        <tag>NPM</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python tkinter 布局管理</title>
     <url>/2022/tkinter_geometry_manager/</url>
     <content><![CDATA[<p>本文讲述如何使用 tkinter 的布局管理 (被称作 layout managers 或 geometry managers)。tkinter 有三种布局管理方式：</p>
@@ -18407,184 +18585,6 @@ mainloop<span class="token punctuation">(</span><span class="token punctuation">
         <tag>Python</tag>
         <tag>tkinter</tag>
         <tag>GUI</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>tkinter 一例</title>
-    <url>/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/</url>
-    <content><![CDATA[<p>entry输入命令，text实时获得命令输出：</p>
-<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> tkinter <span class="token keyword">as</span> tk
-<span class="token keyword">import</span> tkinter<span class="token punctuation">.</span>ttk <span class="token keyword">as</span> ttk
-<span class="token keyword">import</span> subprocess
-<span class="token keyword">import</span> shlex
-<span class="token keyword">import</span> sys
-
-
-<span class="token keyword">class</span> <span class="token class-name">App</span><span class="token punctuation">(</span>tk<span class="token punctuation">.</span>Frame<span class="token punctuation">)</span><span class="token punctuation">:</span>
-	<span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>master<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-		<span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>master<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>fill<span class="token operator">=</span>tk<span class="token punctuation">.</span>BOTH<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>create_widgets<span class="token punctuation">(</span><span class="token punctuation">)</span>
-	
-	<span class="token keyword">def</span> <span class="token function">test</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-		content <span class="token operator">=</span> self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span>
-		<span class="token keyword">if</span> content<span class="token punctuation">:</span>
-			cmd <span class="token operator">=</span> shlex<span class="token punctuation">.</span>split<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
-			result <span class="token operator">=</span> subprocess<span class="token punctuation">.</span>Popen<span class="token punctuation">(</span>cmd<span class="token punctuation">,</span> shell<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> stdout<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> stderr<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> encoding<span class="token operator">=</span><span class="token string">"gbk"</span><span class="token punctuation">)</span>
-			<span class="token comment"># 实时获取子进程输出的每一行内容</span>
-			<span class="token keyword">for</span> line <span class="token keyword">in</span> <span class="token builtin">iter</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>readline<span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-				<span class="token comment"># 将子进程输出的每一行写入text文本框</span>
-				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>tk<span class="token punctuation">.</span>END<span class="token punctuation">,</span> line<span class="token punctuation">)</span>
-				<span class="token comment"># 立即重绘Text内容</span>
-				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">)</span>
-			
-	
-	<span class="token keyword">def</span> <span class="token function">create_widgets</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-		self<span class="token punctuation">.</span>entry <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		
-		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>button <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"确定"</span><span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>test<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>button<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>scrollbar <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Scrollbar<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>text <span class="token operator">=</span> tk<span class="token punctuation">.</span>Text<span class="token punctuation">(</span>self<span class="token punctuation">,</span> yscrollcommand<span class="token operator">=</span>self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span><span class="token builtin">set</span><span class="token punctuation">)</span>
-		<span class="token comment"># 渲染以上2个组件</span>
-		self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token operator">+</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>config<span class="token punctuation">(</span>command<span class="token operator">=</span>self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>yview<span class="token punctuation">)</span>
-		
-		
-<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-	root <span class="token operator">=</span> tk<span class="token punctuation">.</span>Tk<span class="token punctuation">(</span><span class="token punctuation">)</span>
-	root<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">"Test"</span>
-	
-	app <span class="token operator">=</span> App<span class="token punctuation">(</span>master<span class="token operator">=</span>root<span class="token punctuation">)</span>
-	app<span class="token punctuation">.</span>mainloop<span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-
-<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
-	main<span class="token punctuation">(</span><span class="token punctuation">)</span>
-</code></pre>
-
-
-
-]]></content>
-      <categories>
-        <category>Python</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>tkinter</tag>
-        <tag>GUI</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用 http-proxy-middleware 创建 npm 代理</title>
-    <url>/2022/using-http-proxy-middleware-as-npm-proxy/</url>
-    <content><![CDATA[<p>在上一篇中，我们使用 <a href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 <code>http-proxy-middleware</code> 包，我们也可以使用 Node.js 来创建 HTTP 代理。</p>
-<p><strong>环境</strong></p>
-<ul>
-<li>开发计算机：<ul>
-<li>Windows 10</li>
-<li>可以访问服务器，也可访问互联网</li>
-<li>IP: 192.168.200.1</li>
-</ul>
-</li>
-<li>服务器：<ul>
-<li>CentOS 8 </li>
-<li>仅可访问开发主机，无法直接访问互联网</li>
-<li>IP: 192.168.200.129</li>
-</ul>
-</li>
-</ul>
-<span id="more"></span>
-
-
-<p><strong>安装依赖</strong></p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i express http-proxy-middleware</code></pre>
-
-<p><strong>代码实现</strong></p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// proxy.js</span>
-
-<span class="token comment">// include dependencies</span>
-<span class="token keyword">const</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> createProxyMiddleware <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http-proxy-middleware'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token comment">// proxy middleware options</span>
-<span class="token comment">/** @type &#123;import('http-proxy-middleware/dist/types').Options&#125; */</span>
-<span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
-  <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'https://registry.npmmirror.com'</span><span class="token punctuation">,</span> <span class="token comment">// target host with the same base path</span>
-<span class="token comment">//   changeOrigin: true, // needed for virtual hosted sites</span>
-  <span class="token literal-property property">logger</span><span class="token operator">:</span> console<span class="token punctuation">,</span>
-  <span class="token literal-property property">secure</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">// don't verify the SSL certs</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-<span class="token comment">// create the proxy</span>
-<span class="token keyword">const</span> proxy <span class="token operator">=</span> <span class="token function">createProxyMiddleware</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token comment">// mount `exampleProxy` in web server</span>
-app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>proxy<span class="token punctuation">)</span><span class="token punctuation">;</span>
-app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">33080</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p><strong>服务器配置</strong></p>
-<p>在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
-<blockquote>
-<p>注意：这里 <code>http_proxy</code> 和 <code>https_proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
-</blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">http_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080
-<span class="token builtin class-name">export</span> <span class="token assign-left variable">https_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080</code></pre>
-
-<p>配置 NPM 代理，将 <code>proxy</code> 和 <code>https-proxy</code> 同时指向 <code>http://192.168.200.1:33080</code>。</p>
-<blockquote>
-<p>注意：这里 <code>proxy</code> 和 <code>https-proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
-</blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> proxy http://192.168.200.1:33080
-<span class="token function">npm</span> config <span class="token builtin class-name">set</span> https-proxy http://192.168.200.1:33080</code></pre>
-
-<p><strong>修改 npm registry</strong></p>
-<p><strong>注意，由于我们的实现没有使用HTTPS，需要修改 npm registry 为<code>http://</code>。</strong></p>
-<pre class="language-none"><code class="language-none">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</code></pre>
-
-<p><strong>测试</strong></p>
-<p>在开发用的电脑上运行我们实现的代码：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">node</span> proxy.js</code></pre>
-
-<p>在服务器上使用 npm 安装外部依赖包：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i <span class="token function">npm</span> -g
-
-changed <span class="token number">14</span> packages <span class="token keyword">in</span> 3s
-
-<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
-
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm -g
-<span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
-<span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
-<span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
-
-changed <span class="token number">73</span> packages <span class="token keyword">in</span> 6s
-
-<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
-
-<p>可以看到，内网服务器同样可以通过我们实现的 HTTP 代理使用 npm 安装第三方外部依赖了。</p>
-]]></content>
-      <categories>
-        <category>Node.js</category>
-      </categories>
-      <tags>
-        <tag>Proxy</tag>
-        <tag>Node.js</tag>
-        <tag>NPM</tag>
       </tags>
   </entry>
   <entry>
