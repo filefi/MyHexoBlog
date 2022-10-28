@@ -40,7 +40,7 @@
 <meta property="og:image" content="https://ifelif.cn/2022/docker_practice/wordpress.png">
 <meta property="og:image" content="https://ifelif.cn/2022/docker_practice/cmd_logic.png">
 <meta property="article:published_time" content="2022-04-28T15:56:21.000Z">
-<meta property="article:modified_time" content="2022-10-28T07:08:29.878Z">
+<meta property="article:modified_time" content="2022-10-28T07:20:26.434Z">
 <meta property="article:author" content="filefi">
 <meta property="article:tag" content="CNCF">
 <meta property="article:tag" content="Docker">
@@ -283,7 +283,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-10-28 15:08:29" itemprop="dateModified" datetime="2022-10-28T15:08:29+08:00">2022-10-28</time>
+      <time title="修改时间：2022-10-28 15:20:26" itemprop="dateModified" datetime="2022-10-28T15:20:26+08:00">2022-10-28</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -339,7 +339,7 @@
 <h2 id="建立-docker-用户组"><a href="#建立-docker-用户组" class="headerlink" title="建立 docker 用户组"></a>建立 docker 用户组</h2><p>默认情况下，docker 命令会使用 Unix socket 与 Docker 引擎通讯。而只有 root 用户和 docker 组的用户才可以访问 Docker 引擎的 Unix socket。出于安全考虑，一般 Linux 系统上不会直接使用 root 用户。因此，更好地做法是将需要使用 docker 的用户加入 docker 用户组。<br>建立 docker 组：</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">groupadd</span> <span class="token function">docker</span></code></pre>
 <p>将当前用户加入 docker 组：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">usermod</span> -aG <span class="token function">docker</span> <span class="token environment constant">$USER</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">usermod</span> <span class="token parameter variable">-aG</span> <span class="token function">docker</span> <span class="token environment constant">$USER</span></code></pre>
 <p>退出当前终端并重新登录，进行如下测试。</p>
 <h2 id="镜像加速器"><a href="#镜像加速器" class="headerlink" title="镜像加速器"></a>镜像加速器</h2><p>在 <code>/etc/docker/daemon.json</code> 中写入如下内容（如果文件不存在请新建该文件）：</p>
 <pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
@@ -378,7 +378,7 @@ docker.io/library/ubuntu:18.04</code></pre>
 
 
 
-<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -it --rm ubuntu:18.04 <span class="token function">bash</span>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> <span class="token parameter variable">--rm</span> ubuntu:18.04 <span class="token function">bash</span>
 
 root@e7009c6ce357:/<span class="token comment"># cat /etc/os-release</span>
 <span class="token assign-left variable">NAME</span><span class="token operator">=</span><span class="token string">"Ubuntu"</span>
@@ -407,7 +407,7 @@ root@e7009c6ce357:/<span class="token comment"># cat /etc/os-release</span>
 <li><code>docker image ls</code></li>
 </ul>
 <p>使用<code>docker image ls --help</code>查看命令帮助：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> --help
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">--help</span>
 
 Usage:  <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> <span class="token punctuation">[</span>REPOSITORY<span class="token punctuation">[</span>:TAG<span class="token punctuation">]</span><span class="token punctuation">]</span>
 
@@ -417,12 +417,12 @@ Aliases:
   ls, list
 
 Options:
-  -a, --all             Show all images <span class="token punctuation">(</span>default hides intermediate images<span class="token punctuation">)</span>
-      --digests         Show digests
-  -f, --filter filter   Filter output based on conditions provided
-      --format string   Pretty-print images using a Go template
+  -a, <span class="token parameter variable">--all</span>             Show all images <span class="token punctuation">(</span>default hides intermediate images<span class="token punctuation">)</span>
+      <span class="token parameter variable">--digests</span>         Show digests
+  -f, <span class="token parameter variable">--filter</span> filter   Filter output based on conditions provided
+      <span class="token parameter variable">--format</span> string   Pretty-print images using a Go template
       --no-trunc        Don't truncate output
-  -q, --quiet           Only show image IDs</code></pre>
+  -q, <span class="token parameter variable">--quiet</span>           Only show image IDs</code></pre>
 
 <p><code>docker image ls</code>默认列出所有顶层镜像，列表包含了 <code>仓库名</code>、<code>标签</code>、<code>镜像 ID</code>、<code>创建时间</code> 以及 <code>所占用的空间</code>：</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span>
@@ -451,7 +451,7 @@ Build Cache                                                 0B                  
 
 <p>这个镜像原本是有镜像名和标签的，原来为 <code>mongo:3.2</code>，随着官方镜像维护，发布了新版本后，重新 <code>docker pull mongo:3.2</code> 时，<code>mongo:3.2</code> 这个镜像名被转移到了新下载的镜像身上，而旧的镜像上的这个名称则被取消，从而成为了 <code>&lt;none&gt;</code>。</p>
 <p>这类无标签镜像也被称为 <strong>虚悬镜像(dangling image)</strong> ，可以用下面的命令专门显示这类镜像：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> -f <span class="token assign-left variable">dangling</span><span class="token operator">=</span>true
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">-f</span> <span class="token assign-left variable">dangling</span><span class="token operator">=</span>true
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 <span class="token operator">&lt;</span>none<span class="token operator">></span>              <span class="token operator">&lt;</span>none<span class="token operator">></span>              00285df0df87        <span class="token number">5</span> days ago          <span class="token number">342</span> MB</code></pre>
@@ -461,7 +461,7 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 
 <h3 id="中间层镜像"><a href="#中间层镜像" class="headerlink" title="中间层镜像"></a>中间层镜像</h3><p>为了加速镜像构建、重复利用资源，Docker 会利用 <strong>中间层镜像</strong>。所以在使用一段时间后，可能会看到一些依赖的中间层镜像。</p>
 <p>默认的 <code>docker image ls</code> 列表中只会显示顶层镜像，如果希望显示包括中间层镜像在内的所有镜像的话，需要加 <code>-a</code> 参数。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> -a</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">-a</span></code></pre>
 
 <p>这样会看到很多无标签的镜像，与之前的虚悬镜像不同，这些无标签的镜像很多都是中间层镜像，是其它镜像所依赖的镜像。这些无标签镜像不应该删除，否则会导致上层镜像因为依赖丢失而出错。实际上，这些镜像也没必要删除，因为之前说过，相同的层只会存一遍，而这些镜像是别的镜像的依赖，因此并不会因为它们被列出来而多存了一份，无论如何你也会需要它们。只要删除那些依赖它们的镜像后，这些依赖的中间层镜像也会被连带删除。</p>
 <h3 id="列出部分镜像"><a href="#列出部分镜像" class="headerlink" title="列出部分镜像"></a>列出部分镜像</h3><p>不加任何参数的情况下，<code>docker image ls</code> 会列出所有顶层镜像，但是有时候我们只希望列出部分镜像。</p>
@@ -477,17 +477,17 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 ubuntu              <span class="token number">18.04</span>               329ed837d508        <span class="token number">3</span> days ago          <span class="token number">63</span>.3MB</code></pre>
 
 <p>除此以外，<code>docker image ls</code> 还支持强大的过滤器参数 <code>--filter</code>，或者简写 <code>-f</code>。之前我们已经看到了使用过滤器来列出虚悬镜像的用法，它还有更多的用法。比如，我们希望看到在 <code>mongo:3.2</code> 之后建立的镜像，可以用下面的命令：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> -f <span class="token assign-left variable">since</span><span class="token operator">=</span>mongo:3.2
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">-f</span> <span class="token assign-left variable">since</span><span class="token operator">=</span>mongo:3.2
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 redis               latest              5f515359c7f8        <span class="token number">5</span> days ago          <span class="token number">183</span> MB
 nginx               latest              05a60462f8ba        <span class="token number">5</span> days ago          <span class="token number">181</span> MB</code></pre>
 
 <p>想查看某个位置之前的镜像也可以，只需要把 <code>since</code> 换成 <code>before</code> 即可。</p>
 <p>此外，如果镜像构建时，定义了 <code>LABEL</code>，还可以通过 <code>LABEL</code> 来过滤。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> -f <span class="token assign-left variable">label</span><span class="token operator">=</span>com.example.version<span class="token operator">=</span><span class="token number">0.1</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">-f</span> <span class="token assign-left variable">label</span><span class="token operator">=</span>com.example.version<span class="token operator">=</span><span class="token number">0.1</span></code></pre>
 
 <h3 id="只显示镜像ID"><a href="#只显示镜像ID" class="headerlink" title="只显示镜像ID"></a>只显示镜像ID</h3><p>使用 <code>-q</code> 参数只显示镜像ID：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> -q
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">-q</span>
 5f515359c7f8
 05a60462f8ba
 fe9198c04d62
@@ -498,7 +498,7 @@ fe9198c04d62
 <p><code>--filter</code> 配合 <code>-q</code> 产生出指定范围的 ID 列表，然后送给另一个 <code>docker</code> 命令作为参数，从而针对这组实体成批的进行某种操作的做法在 Docker 命令行使用过程中非常常见，不仅仅是镜像，将来我们会在各个命令中看到这类搭配以完成很强大的功能。因此每次在文档看到过滤器后，可以多注意一下它们的用法。</p>
 <h3 id="以特定格式显示"><a href="#以特定格式显示" class="headerlink" title="以特定格式显示"></a>以特定格式显示</h3><p>另外一些时候，我们可能只是对表格的结构不满意，希望自己组织列；或者不希望有标题，这样方便其它程序解析结果等，这就用到了 <a target="_blank" rel="noopener" href="https://gohugo.io/templates/introduction/">Go 的模板语法</a>。</p>
 <p>比如，下面的命令会直接列出镜像结果，并且只包含镜像ID和仓库名：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> --format <span class="token string">"&#123;&#123;.ID&#125;&#125;: &#123;&#123;.Repository&#125;&#125;"</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">--format</span> <span class="token string">"&#123;&#123;.ID&#125;&#125;: &#123;&#123;.Repository&#125;&#125;"</span>
 5f515359c7f8: redis
 05a60462f8ba: nginx
 fe9198c04d62: mongo
@@ -507,7 +507,7 @@ fe9198c04d62: mongo
 329ed837d508: ubuntu</code></pre>
 
 <p>或者打算以表格等距显示，并且有标题行，和默认一样，不过自己定义列：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> --format <span class="token string">"table &#123;&#123;.ID&#125;&#125;<span class="token entity" title="\t">\t</span>&#123;&#123;.Repository&#125;&#125;<span class="token entity" title="\t">\t</span>&#123;&#123;.Tag&#125;&#125;"</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">--format</span> <span class="token string">"table &#123;&#123;.ID&#125;&#125;<span class="token entity" title="\t">\t</span>&#123;&#123;.Repository&#125;&#125;<span class="token entity" title="\t">\t</span>&#123;&#123;.Tag&#125;&#125;"</span>
 IMAGE ID            REPOSITORY          TAG
 5f515359c7f8        redis               latest
 05a60462f8ba        nginx               latest
@@ -561,7 +561,7 @@ Deleted: sha256:0584b3d2cf6d235ee310cf14b54667d889887b838d3f3d3033acd70fc3c48b8a
 Deleted: sha256:97ca462ad9eeae25941546209454496e1d66749d53dfa2ee32bf1faabd239d38</code></pre>
 
 <p>当然，更精确的是使用 <code>镜像摘要</code> 删除镜像。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> --digests
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">--digests</span>
 REPOSITORY                  TAG                 DIGEST                                                                    IMAGE ID            CREATED             SIZE
 <span class="token function">node</span>                        slim                sha256:b4f0e0bdeb578043c1ea6862f0d40cc4afe32a4a582f3be235a3b164422be228   6e0c4c8e3913        <span class="token number">3</span> weeks ago         <span class="token number">214</span> MB
 
@@ -569,10 +569,10 @@ $ <span class="token function">docker</span> image <span class="token function">
 Untagged: node@sha256:b4f0e0bdeb578043c1ea6862f0d40cc4afe32a4a582f3be235a3b164422be228</code></pre>
 
 <p>可以使用 <code>docker image ls -q</code> 来配合使用 <code>docker image rm</code>，这样可以成批的删除希望删除的镜像。比如，我们需要删除所有仓库名为 <code>redis</code> 的镜像：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> image <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">docker</span> image <span class="token function">ls</span> -q redis<span class="token variable">)</span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> image <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">-q</span> redis<span class="token variable">)</span></span></code></pre>
 
 <p>或者删除所有在 <code>mongo:3.2</code> 之前的镜像</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">docker</span> image <span class="token function">ls</span> -q -f <span class="token assign-left variable">before</span><span class="token operator">=</span>mongo:3.2<span class="token variable">)</span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> image <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">docker</span> image <span class="token function">ls</span> <span class="token parameter variable">-q</span> <span class="token parameter variable">-f</span> <span class="token assign-left variable">before</span><span class="token operator">=</span>mongo:3.2<span class="token variable">)</span></span></code></pre>
 
 <h3 id="镜像的Untagged-和-Deleted"><a href="#镜像的Untagged-和-Deleted" class="headerlink" title="镜像的Untagged 和 Deleted"></a>镜像的Untagged 和 Deleted</h3><p><img src="/2022/docker_practice/image-20220412153434717.png"></p>
 <ul>
@@ -617,12 +617,12 @@ A /f1.txt</code></pre>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@localhost docker<span class="token punctuation">]</span><span class="token comment"># docker image history from-ub:latest</span>
 IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
 ccc63c912efa   <span class="token number">35</span> seconds ago   <span class="token function">bash</span>                                            73B       create <span class="token function">file</span> f1.txt
-825d55fb6340   <span class="token number">5</span> days ago       /bin/sh -c <span class="token comment">#(nop)  CMD ["bash"]                 0B        </span>
-<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">5</span> days ago       /bin/sh -c <span class="token comment">#(nop) ADD file:b83df51ab7caf8a4d…   72.8MB    </span>
+825d55fb6340   <span class="token number">5</span> days ago       /bin/sh <span class="token parameter variable">-c</span> <span class="token comment">#(nop)  CMD ["bash"]                 0B        </span>
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">5</span> days ago       /bin/sh <span class="token parameter variable">-c</span> <span class="token comment">#(nop) ADD file:b83df51ab7caf8a4d…   72.8MB    </span>
 <span class="token punctuation">[</span>root@localhost docker<span class="token punctuation">]</span><span class="token comment"># docker image history ubuntu:latest </span>
 IMAGE          CREATED      CREATED BY                                      SIZE      COMMENT
-825d55fb6340   <span class="token number">5</span> days ago   /bin/sh -c <span class="token comment">#(nop)  CMD ["bash"]                 0B        </span>
-<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">5</span> days ago   /bin/sh -c <span class="token comment">#(nop) ADD file:b83df51ab7caf8a4d…   72.8MB</span></code></pre>
+825d55fb6340   <span class="token number">5</span> days ago   /bin/sh <span class="token parameter variable">-c</span> <span class="token comment">#(nop)  CMD ["bash"]                 0B        </span>
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">5</span> days ago   /bin/sh <span class="token parameter variable">-c</span> <span class="token comment">#(nop) ADD file:b83df51ab7caf8a4d…   72.8MB</span></code></pre>
 
 <h3 id="慎用-docker-commit"><a href="#慎用-docker-commit" class="headerlink" title="慎用 docker commit"></a>慎用 <code>docker commit</code></h3><p>由于容器是动态的，在容器运行过程中，容器文件系统中的很多文件都可能被修改过。所以由<code>docker commit</code>生成镜像，可能会有大量的无关内容被添加进来，将会导致镜像极为臃肿。而且对于这些修改，我们是无法确切知道到底是做了哪些修改的。</p>
 <h2 id="使用-Dockerfile-定制镜像"><a href="#使用-Dockerfile-定制镜像" class="headerlink" title="使用 Dockerfile 定制镜像"></a>使用 Dockerfile 定制镜像</h2><p>使用Dockerfile允许我们以一个镜像作为基础，在其上进行定制。Dockerfile 是一个文本文件，其内包含了一条条的 <em><em>指令(Instruction)<strong>，</strong></em>每一条指令构建一层</em>**，因此每一条指令的内容，就是描述该层应当如何构建。</p>
@@ -637,7 +637,7 @@ $ <span class="token function">touch</span> Dockerfile</code></pre>
 <span class="token instruction"><span class="token keyword">RUN</span> echo <span class="token string">'&lt;h1>Hello, Docker!&lt;/h1>'</span> > /usr/share/nginx/html/index.html</span></code></pre>
 
 <h3 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h3><p>在<code>Dockerfile</code>所在目录中执行<code>docker build</code>命令构建镜像：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build -t nginx:v3 <span class="token builtin class-name">.</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> nginx:v3 <span class="token builtin class-name">.</span>
 Sending build context to Docker daemon <span class="token number">2.048</span> kB
 Step <span class="token number">1</span> <span class="token builtin class-name">:</span> FROM nginx
  ---<span class="token operator">></span> e43d811ce2f4
@@ -652,7 +652,7 @@ Successfully built 44aa4490ce2c</code></pre>
 <p>刚才的命令 <code>docker build -t nginx:v3 .</code> 中的这个 <code>.</code>，实际上是在指定 <em><strong>上下文的目录</strong></em>，<code>docker build</code> 命令会将该目录下的内容打包交给 Docker 引擎以帮助构建镜像。</p>
 <p>因此，类似<code>COPY</code> 这类指令中的 <em><strong>源文件的路径</strong></em> 都是<em><strong>相对路径</strong></em>，引用的是打包上传后的上下文目录。 所以<code>COPY ../package.json /app</code> 或者 <code>COPY /opt/xxxx /app</code> 是无法使用的，因为这些路径已经超出了上下文的范围，Docker 引擎无法获得这些位置的文件。</p>
 <p>如果观察 <code>docker build</code> 输出，我们其实已经看到了这个发送上下文的过程：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build -t nginx:v3 <span class="token builtin class-name">.</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> nginx:v3 <span class="token builtin class-name">.</span>
 Sending build context to Docker daemon <span class="token number">2.048</span> kB</code></pre>
 
 <p>一般来说，应该会将 <code>Dockerfile</code> 置于一个空目录下，或者项目根目录下。如果该目录下没有所需文件，那么应该把所需文件复制一份过来。如果目录下有些东西确实不希望构建时传给 Docker 引擎，那么可以用 <code>.gitignore</code> 一样的语法写一个 <code>.dockerignore</code>，该文件是用于剔除不需要作为上下文传递给 Docker 引擎的。</p>
@@ -661,7 +661,7 @@ Sending build context to Docker daemon <span class="token number">2.048</span> k
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># $env:DOCKER_BUILDKIT=0</span>
 <span class="token comment"># export DOCKER_BUILDKIT=0</span>
 
-$ <span class="token function">docker</span> build -t hello-world https://github.com/docker-library/hello-world.git<span class="token comment">#master:amd64/hello-world</span>
+$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> hello-world https://github.com/docker-library/hello-world.git<span class="token comment">#master:amd64/hello-world</span>
 
 Step <span class="token number">1</span>/3 <span class="token builtin class-name">:</span> FROM scratch
  ---<span class="token operator">></span>
@@ -744,10 +744,10 @@ COPY hom?.txt /mydir/</code></pre>
 <p><code>&lt;目标路径&gt;</code> 可以是容器内的绝对路径，也可以是相对于工作目录的相对路径（工作目录可以用 <code>WORKDIR</code> 指令来指定）。目标路径不需要事先创建，如果目录不存在会在复制文件前先行创建缺失目录。</p>
 <p><strong>使用 <code>COPY</code> 指令，源文件的各种元数据都会保留。</strong>比如读、写、执行权限、文件变更时间等。这个特性对于镜像定制很有用。特别是构建相关文件都在使用 Git 进行管理的时候。</p>
 <p>在使用该指令的时候还可以加上 <code>--chown=&lt;user&gt;:&lt;group&gt;</code> 选项来改变文件的所属用户及所属组。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">COPY --chown<span class="token operator">=</span><span class="token number">55</span>:mygroup files* /mydir/
-COPY --chown<span class="token operator">=</span>bin files* /mydir/
-COPY --chown<span class="token operator">=</span><span class="token number">1</span> files* /mydir/
-COPY --chown<span class="token operator">=</span><span class="token number">10</span>:11 files* /mydir/</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">COPY <span class="token parameter variable">--chown</span><span class="token operator">=</span><span class="token number">55</span>:mygroup files* /mydir/
+COPY <span class="token parameter variable">--chown</span><span class="token operator">=</span>bin files* /mydir/
+COPY <span class="token parameter variable">--chown</span><span class="token operator">=</span><span class="token number">1</span> files* /mydir/
+COPY <span class="token parameter variable">--chown</span><span class="token operator">=</span><span class="token number">10</span>:11 files* /mydir/</code></pre>
 
 <p>如果源路径为文件夹，复制的时候不是直接复制该文件夹，而是将文件夹中的内容复制到目标路径。</p>
 <h3 id="ADD-更高级的复制文件"><a href="#ADD-更高级的复制文件" class="headerlink" title="ADD 更高级的复制文件"></a><code>ADD</code> 更高级的复制文件</h3><p><code>ADD</code> 指令和 <code>COPY</code> 的格式和性质基本一致。但是在 <code>COPY</code> 基础上增加了一些功能。</p>
@@ -755,10 +755,10 @@ COPY --chown<span class="token operator">=</span><span class="token number">10</
 <p>如果 <code>&lt;源路径&gt;</code> 为一个 <code>tar</code> 压缩文件的话，压缩格式为 <code>gzip</code>, <code>bzip2</code> 以及 <code>xz</code> 的情况下，<code>ADD</code> 指令将会自动解压缩这个压缩文件到 <code>&lt;目标路径&gt;</code> 去。</p>
 <p>在 <code>COPY</code> 和 <code>ADD</code> 指令中选择的时候，应遵循 Docker 官方的 <a href="">Dockerfile 最佳实践文档</a> 中提出的原则，所有的文件复制均使用 <code>COPY</code> 指令，仅在需要自动解压缩的场合使用 <code>ADD</code>。</p>
 <p>在使用该指令的时候还可以加上 <code>--chown=&lt;user&gt;:&lt;group&gt;</code> 选项来改变文件的所属用户及所属组。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">ADD --chown<span class="token operator">=</span><span class="token number">55</span>:mygroup files* /mydir/
-ADD --chown<span class="token operator">=</span>bin files* /mydir/
-ADD --chown<span class="token operator">=</span><span class="token number">1</span> files* /mydir/
-ADD --chown<span class="token operator">=</span><span class="token number">10</span>:11 files* /mydir/</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">ADD <span class="token parameter variable">--chown</span><span class="token operator">=</span><span class="token number">55</span>:mygroup files* /mydir/
+ADD <span class="token parameter variable">--chown</span><span class="token operator">=</span>bin files* /mydir/
+ADD <span class="token parameter variable">--chown</span><span class="token operator">=</span><span class="token number">1</span> files* /mydir/
+ADD <span class="token parameter variable">--chown</span><span class="token operator">=</span><span class="token number">10</span>:11 files* /mydir/</code></pre>
 
 <h3 id="CMD-容器启动命令"><a href="#CMD-容器启动命令" class="headerlink" title="CMD 容器启动命令"></a><code>CMD</code> 容器启动命令</h3><p><code>CMD</code> 指令就是用于指定默认的容器主进程的启动命令的。Docker 不是虚拟机，容器就是进程。既然是进程，那么在启动容器的时候，需要指定所运行的程序及参数。</p>
 <p><code>CMD</code> 指令的格式：</p>
@@ -793,12 +793,12 @@ ADD --chown<span class="token operator">=</span><span class="token number">10</s
 当前 IP：61.148.226.66 来自：北京市 联通</code></pre>
 
 <p>假如我们修改镜像执行curl的参数：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run myip -i
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run myip <span class="token parameter variable">-i</span>
 docker: Error response from daemon: invalid header field value <span class="token string">"oci runtime error: container_linux.go:247: starting container process caused <span class="token entity" title="\&quot;">\"</span>exec: <span class="token entity" title="\\">\\</span><span class="token entity" title="\&quot;">\"</span>-i<span class="token entity" title="\\">\\</span><span class="token entity" title="\&quot;">\"</span>: executable file not found in <span class="token environment constant">$PATH</span><span class="token entity" title="\&quot;">\"</span><span class="token entity" title="\n">\n</span>"</span><span class="token builtin class-name">.</span></code></pre>
 
 <p>跟在镜像名后面的是 <code>command</code>，运行时会替换 Dockerfile中<code>CMD</code> 的默认值。因此这里的 <code>-i</code> 替换了一个新的 <code>CMD</code>指令。自然是找不到<code>-i</code>这个命令的。</p>
 <p>如果我们希望加入 <code>-i</code> 这参数，我们就必须重新完整的输入这个命令：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run myip <span class="token function">curl</span> -s http://myip.ipip.net -i</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run myip <span class="token function">curl</span> <span class="token parameter variable">-s</span> http://myip.ipip.net <span class="token parameter variable">-i</span></code></pre>
 
 
 
@@ -812,7 +812,7 @@ docker: Error response from daemon: invalid header field value <span class="toke
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run myip
 当前 IP：61.148.226.66 来自：北京市 联通
 
-$ <span class="token function">docker</span> run myip -i
+$ <span class="token function">docker</span> run myip <span class="token parameter variable">-i</span>
 HTTP/1.1 <span class="token number">200</span> OK
 Server: nginx/1.8.0
 Date: Tue, <span class="token number">22</span> Nov <span class="token number">2016</span> 05:12:40 GMT
@@ -833,7 +833,7 @@ Connection: keep-alive
 <p>这种情况下，可以写一个脚本，然后放入 <code>ENTRYPOINT</code> 中去执行，而这个脚本会将接到的参数（也就是 <code>&lt;CMD&gt;</code>）作为命令，在脚本最后执行。比如官方镜像 <code>redis</code> 中就是这么做的：</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">FROM alpine:3.4
 <span class="token punctuation">..</span>.
-RUN addgroup -S redis <span class="token operator">&amp;&amp;</span> adduser -S -G redis redis
+RUN addgroup <span class="token parameter variable">-S</span> redis <span class="token operator">&amp;&amp;</span> adduser <span class="token parameter variable">-S</span> <span class="token parameter variable">-G</span> redis redis
 <span class="token punctuation">..</span>.
 ENTRYPOINT <span class="token punctuation">[</span><span class="token string">"docker-entrypoint.sh"</span><span class="token punctuation">]</span>
 
@@ -844,15 +844,15 @@ CMD <span class="token punctuation">[</span> <span class="token string">"redis-s
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/sh</span>
 <span class="token punctuation">..</span>.
 <span class="token comment"># allow the container to be started with `--user`</span>
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">=</span> <span class="token string">'redis-server'</span> -a <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -u<span class="token variable">)</span></span>"</span> <span class="token operator">=</span> <span class="token string">'0'</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-	<span class="token function">find</span> <span class="token builtin class-name">.</span> <span class="token punctuation">\</span><span class="token operator">!</span> -user redis -exec <span class="token function">chown</span> redis <span class="token string">'&#123;&#125;'</span> +
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">=</span> <span class="token string">'redis-server'</span> <span class="token parameter variable">-a</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> <span class="token parameter variable">-u</span><span class="token variable">)</span></span>"</span> <span class="token operator">=</span> <span class="token string">'0'</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+	<span class="token function">find</span> <span class="token builtin class-name">.</span> <span class="token punctuation">\</span><span class="token operator">!</span> <span class="token parameter variable">-user</span> redis <span class="token parameter variable">-exec</span> <span class="token function">chown</span> redis <span class="token string">'&#123;&#125;'</span> +
 	<span class="token builtin class-name">exec</span> gosu redis <span class="token string">"<span class="token variable">$0</span>"</span> <span class="token string">"<span class="token variable">$@</span>"</span>
 <span class="token keyword">fi</span>
 
 <span class="token builtin class-name">exec</span> <span class="token string">"<span class="token variable">$@</span>"</span></code></pre>
 
 <p>该脚本的内容就是根据 <code>CMD</code> 的内容来判断，如果是 <code>redis-server</code> 的话，则切换到 <code>redis</code> 用户身份启动服务器，否则依旧使用 <code>root</code> 身份执行。比如：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -it redis <span class="token function">id</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> redis <span class="token function">id</span>
 <span class="token assign-left variable">uid</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">(</span>root<span class="token punctuation">)</span> <span class="token assign-left variable">gid</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">(</span>root<span class="token punctuation">)</span> <span class="token assign-left variable">groups</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">(</span>root<span class="token punctuation">)</span></code></pre>
 
 <h3 id="ENV-设置环境变量"><a href="#ENV-设置环境变量" class="headerlink" title="ENV 设置环境变量"></a><code>ENV</code> 设置环境变量</h3><p><code>ENV</code> 指令设置环境变量，无论是后面的其它指令，如 RUN，还是运行时的应用，都可以直接使用这里定义的环境变量。</p>
@@ -943,7 +943,7 @@ CMD <span class="token punctuation">[</span> <span class="token string">"redis-s
 <pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">VOLUME</span> /data</span></code></pre>
 
 <p>运行容器时可以覆盖这个挂载设置。比如，使用了 <code>mydata</code> 这个命名卷挂载到了 <code>/data</code> 这个位置，替代了 <code>Dockerfile</code> 中定义的匿名卷的挂载配置：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -v mydata:/data xxxx</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-v</span> mydata:/data xxxx</code></pre>
 
 <h3 id="EXPOSE-暴露端口"><a href="#EXPOSE-暴露端口" class="headerlink" title="EXPOSE 暴露端口"></a><code>EXPOSE</code> 暴露端口</h3><p><code>EXPOSE</code> 指令是声明容器运行时提供服务的端口，这只是一个声明，在容器运行时并不会因为这个声明应用就会开启这个端口的服务。格式为：</p>
 <ul>
@@ -1012,16 +1012,16 @@ CMD <span class="token punctuation">[</span> <span class="token string">"redis-s
 <p>在 <code>HEALTHCHECK [选项] CMD</code> 后面的命令，格式和 <code>ENTRYPOINT</code> 一样，分为 <code>shell</code> 格式和 <code>exec</code> 格式。命令的返回值决定了该次健康检查的成功与否：<code>0</code>：成功；<code>1</code>：失败；<code>2</code>：保留，不要使用这个值。</p>
 <p>假设我们有个镜像是个最简单的 Web 服务，我们希望增加健康检查来判断其 Web 服务是否在正常工作，我们可以用 <code>curl</code> 来帮助判断，其 <code>Dockerfile</code> 的 <code>HEALTHCHECK</code> 可以这么写：</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">FROM nginx
-RUN <span class="token function">apt-get</span> update <span class="token operator">&amp;&amp;</span> <span class="token function">apt-get</span> <span class="token function">install</span> -y <span class="token function">curl</span> <span class="token operator">&amp;&amp;</span> <span class="token function">rm</span> -rf /var/lib/apt/lists/*
-HEALTHCHECK --interval<span class="token operator">=</span>5s --timeout<span class="token operator">=</span>3s <span class="token punctuation">\</span>
-  CMD <span class="token function">curl</span> -fs http://localhost/ <span class="token operator">||</span> <span class="token builtin class-name">exit</span> <span class="token number">1</span></code></pre>
+RUN <span class="token function">apt-get</span> update <span class="token operator">&amp;&amp;</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token parameter variable">-y</span> <span class="token function">curl</span> <span class="token operator">&amp;&amp;</span> <span class="token function">rm</span> <span class="token parameter variable">-rf</span> /var/lib/apt/lists/*
+HEALTHCHECK <span class="token parameter variable">--interval</span><span class="token operator">=</span>5s <span class="token parameter variable">--timeout</span><span class="token operator">=</span>3s <span class="token punctuation">\</span>
+  CMD <span class="token function">curl</span> <span class="token parameter variable">-fs</span> http://localhost/ <span class="token operator">||</span> <span class="token builtin class-name">exit</span> <span class="token number">1</span></code></pre>
 
 <p>这里我们设置了每 5 秒检查一次（这里为了试验所以间隔非常短，实际应该相对较长），如果健康检查命令超过 3 秒没响应就视为失败，并且使用 <code>curl -fs http://localhost/ || exit 1</code> 作为健康检查命令。</p>
 <p>使用 <code>docker build</code> 来构建这个镜像：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build -t myweb:v1 <span class="token builtin class-name">.</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> myweb:v1 <span class="token builtin class-name">.</span></code></pre>
 
 <p>构建好了后，我们启动一个容器：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d --name web -p <span class="token number">80</span>:80 myweb:v1</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">--name</span> web <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 myweb:v1</code></pre>
 
 
 
@@ -1104,13 +1104,13 @@ HEALTHCHECK --interval<span class="token operator">=</span>5s --timeout<span cla
 <span class="token instruction"><span class="token keyword">CMD</span> [<span class="token string">"./app"</span>]</span></code></pre>
 
 <p>构建镜像：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build -t go/helloworld:3 <span class="token builtin class-name">.</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> go/helloworld:3 <span class="token builtin class-name">.</span></code></pre>
 
 <h4 id="只构建某一阶段的镜像"><a href="#只构建某一阶段的镜像" class="headerlink" title="只构建某一阶段的镜像"></a>只构建某一阶段的镜像</h4><p>我们可以使用 <code>as</code> 来为某一阶段命名，例如</p>
 <pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> golang:alpine <span class="token keyword">as</span> builder</span></code></pre>
 
 <p>例如当我们只想构建 <code>builder</code> 阶段的镜像时，增加 <code>--target=builder</code> 参数即可：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build --target builder -t username/imagename:tag <span class="token builtin class-name">.</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build <span class="token parameter variable">--target</span> builder <span class="token parameter variable">-t</span> username/imagename:tag <span class="token builtin class-name">.</span></code></pre>
 
 <h4 id="构建时从其他镜像复制文件"><a href="#构建时从其他镜像复制文件" class="headerlink" title="构建时从其他镜像复制文件"></a>构建时从其他镜像复制文件</h4><p>上面例子中我们使用 <code>COPY --from=0 /go/src/github.com/go/helloworld/app .</code> 从上一阶段的镜像中复制文件，我们也可以复制任意镜像中的文件。</p>
 <pre class="language-docker" data-language="docker"><code class="language-docker">$ COPY --from=nginx:latest /etc/nginx/nginx.conf /nginx.conf</code></pre>
@@ -1195,17 +1195,17 @@ storage/
 <span class="token instruction"><span class="token keyword">COPY</span> <span class="token options"><span class="token property">--from</span><span class="token punctuation">=</span><span class="token string">laravel</span></span> <span class="token variable">$&#123;LARAVEL_PATH&#125;</span>/public <span class="token variable">$&#123;LARAVEL_PATH&#125;</span>/public</span></code></pre>
 
 <h5 id="构建-Laravel-及-Nginx-镜像"><a href="#构建-Laravel-及-Nginx-镜像" class="headerlink" title="构建 Laravel 及 Nginx 镜像"></a>构建 Laravel 及 Nginx 镜像</h5><p>使用 <code>docker build</code> 命令构建镜像。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build -t my/laravel --target<span class="token operator">=</span>laravel <span class="token builtin class-name">.</span>
-$ <span class="token function">docker</span> build -t my/nginx --target<span class="token operator">=</span>nginx <span class="token builtin class-name">.</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> my/laravel <span class="token parameter variable">--target</span><span class="token operator">=</span>laravel <span class="token builtin class-name">.</span>
+$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> my/nginx <span class="token parameter variable">--target</span><span class="token operator">=</span>nginx <span class="token builtin class-name">.</span></code></pre>
 
 <h5 id="启动容器并测试"><a href="#启动容器并测试" class="headerlink" title="启动容器并测试"></a>启动容器并测试</h5><p>新建 Docker 网络</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> network create laravel</code></pre>
 
 <p>启动 laravel 容器， <code>--name=laravel</code> 参数设定的名字必须与 <code>nginx</code> 配置文件中的 <code>fastcgi_pass laravel:9000;</code> 一致：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -dit --rm --name<span class="token operator">=</span>laravel --network<span class="token operator">=</span>laravel my/laravel</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-dit</span> <span class="token parameter variable">--rm</span> <span class="token parameter variable">--name</span><span class="token operator">=</span>laravel <span class="token parameter variable">--network</span><span class="token operator">=</span>laravel my/laravel</code></pre>
 
 <p>启动 nginx 容器</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -dit --rm --network<span class="token operator">=</span>laravel -p <span class="token number">8080</span>:80 my/nginx</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-dit</span> <span class="token parameter variable">--rm</span> <span class="token parameter variable">--network</span><span class="token operator">=</span>laravel <span class="token parameter variable">-p</span> <span class="token number">8080</span>:80 my/nginx</code></pre>
 
 <p>浏览器访问 <code>127.0.0.1:8080</code> 可以看到 Laravel 项目首页。</p>
 <blockquote>
@@ -1265,7 +1265,7 @@ $ <span class="token function">docker</span> build -t my/nginx --target<span cla
 <span class="token instruction"><span class="token keyword">CMD</span> echo 1</span></code></pre>
 
 <p>构建镜像后推送到 Docker Hub，之后我们尝试在树莓派 <code>Linux arm64v8</code> 中使用这个镜像。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -it --rm username/test</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> <span class="token parameter variable">--rm</span> username/test</code></pre>
 
 <p>可以发现这个镜像根本获取不到。</p>
 <p>要解决这个问题，通常采用的做法是通过镜像名区分不同系统架构的镜像，例如在 <code>Linux x86_64</code> 和 <code>Linux arm64v8</code> 分别构建 <code>username/test</code> 和 <code>username/arm64v8-test</code> 镜像。运行时使用对应架构的镜像即可。</p>
@@ -1352,10 +1352,10 @@ $ <span class="token function">docker</span> manifest create username/test <span
 <h3 id="设置-manifest-列表"><a href="#设置-manifest-列表" class="headerlink" title="设置 manifest 列表"></a>设置 <code>manifest</code> 列表</h3><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># $ docker manifest annotate [OPTIONS] MANIFEST_LIST MANIFEST</span>
 $ <span class="token function">docker</span> manifest annotate username/test <span class="token punctuation">\</span>
       username/x8664-test <span class="token punctuation">\</span>
-      --os linux --arch x86_64
+      <span class="token parameter variable">--os</span> linux <span class="token parameter variable">--arch</span> x86_64
 $ <span class="token function">docker</span> manifest annotate username/test <span class="token punctuation">\</span>
       username/arm64v8-test <span class="token punctuation">\</span>
-      --os linux --arch arm64 --variant v8</code></pre>
+      <span class="token parameter variable">--os</span> linux <span class="token parameter variable">--arch</span> arm64 <span class="token parameter variable">--variant</span> v8</code></pre>
 
 <p>这样就配置好了 <code>manifest</code> 列表。</p>
 <h3 id="查看-manifest-列表"><a href="#查看-manifest-列表" class="headerlink" title="查看 manifest 列表"></a>查看 <code>manifest</code> 列表</h3><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> manifest inspect username/test</code></pre>
@@ -1397,7 +1397,7 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 alpine              latest              baa5d63471ea        <span class="token number">5</span> weeks ago         <span class="token number">4.803</span> MB</code></pre>
 
 <p>保存镜像的命令为：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> save alpine -o filename
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> save alpine <span class="token parameter variable">-o</span> filename
 $ <span class="token function">file</span> filename
 filename: POSIX <span class="token function">tar</span> archive</code></pre>
 
@@ -1407,7 +1407,7 @@ filename: POSIX <span class="token function">tar</span> archive</code></pre>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> save alpine <span class="token operator">|</span> <span class="token function">gzip</span> <span class="token operator">></span> alpine-latest.tar.gz</code></pre>
 
 <p>然后我们将 <code>alpine-latest.tar.gz</code> 文件复制到了到了另一个机器上，可以用下面这个命令加载镜像：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> load -i alpine-latest.tar.gz
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> load <span class="token parameter variable">-i</span> alpine-latest.tar.gz
 Loaded image: alpine:latest</code></pre>
 
 <p>如果我们结合这两个命令以及 <code>ssh</code> 甚至 <code>pv</code> 的话，利用 Linux 强大的管道，我们可以写一个命令完成从一个机器将镜像迁移到另一个机器，并且带进度条的功能：</p>
@@ -1442,7 +1442,7 @@ Hello world</code></pre>
 
 <p>这跟在本地直接执行 <code>/bin/echo &#39;hello world&#39;</code> 几乎感觉不出任何区别。</p>
 <p>下面的命令则启动一个 bash 终端，允许用户进行交互。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -t -i ubuntu:18.04 /bin/bash
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-t</span> <span class="token parameter variable">-i</span> ubuntu:18.04 /bin/bash
 root@af8bae53bdd3:/<span class="token comment">#</span></code></pre>
 
 <p>其中，<code>-t</code> 选项让Docker分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上， <code>-i</code> 则让容器的标准输入保持打开。</p>
@@ -1462,7 +1462,7 @@ bin boot dev etc home lib lib64 media mnt opt proc root run sbin srv sys tmp usr
 <p>可见，容器中仅运行了指定的 bash 应用。这种特点使得 Docker 对资源的利用率极高，是货真价实的轻量级虚拟化。</p>
 <h2 id="后台运行"><a href="#后台运行" class="headerlink" title="后台运行"></a>后台运行</h2><p>更多的时候，需要让 Docker 在后台运行而不是直接把执行命令的结果输出在当前宿主机下。此时，可以通过添加 <code>-d</code> 参数来实现。</p>
 <p>如果不使用 <code>-d</code> 参数运行容器。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run ubuntu:18.04 /bin/sh -c <span class="token string">"while true; do echo hello world; sleep 1; done"</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run ubuntu:18.04 /bin/sh <span class="token parameter variable">-c</span> <span class="token string">"while true; do echo hello world; sleep 1; done"</span>
 hello world
 hello world
 hello world
@@ -1470,7 +1470,7 @@ hello world</code></pre>
 
 <p>容器会把输出的结果 (STDOUT) 打印到宿主机上面。</p>
 <p>如果使用了 <code>-d</code> 参数运行容器。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d ubuntu:18.04 /bin/sh -c <span class="token string">"while true; do echo hello world; sleep 1; done"</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> ubuntu:18.04 /bin/sh <span class="token parameter variable">-c</span> <span class="token string">"while true; do echo hello world; sleep 1; done"</span>
 77b2dc01fe0f3f1265df143181e7b9af5e05279a884f4776ee75350ea9d8017a</code></pre>
 
 <p>此时容器会在后台运行并不会把输出的结果 (STDOUT) 打印到宿主机上面(输出结果可以用 <code>docker logs</code> 查看)。</p>
@@ -1480,7 +1480,7 @@ hello world</code></pre>
 <p>使用 <code>-d</code> 参数启动后会返回一个唯一的 id，也可以通过 <code>docker ps</code>命令或<code>docker container ls</code> 命令来查看容器信息。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> container <span class="token function">ls</span>
 CONTAINER ID  IMAGE         COMMAND               CREATED        STATUS       PORTS NAMES
-77b2dc01fe0f  ubuntu:18.04  /bin/sh -c 'while <span class="token function">tr</span>  <span class="token number">2</span> minutes ago  Up <span class="token number">1</span> minute        agitated_wright</code></pre>
+77b2dc01fe0f  ubuntu:18.04  /bin/sh <span class="token parameter variable">-c</span> 'while <span class="token function">tr</span>  <span class="token number">2</span> minutes ago  Up <span class="token number">1</span> minute        agitated_wright</code></pre>
 
 <p>可以通过<code>docker logs</code>命令或 <code>docker container logs</code> 命令获取容器的输出信息：</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> container logs <span class="token punctuation">[</span>container ID or NAMES<span class="token punctuation">]</span>
@@ -1493,7 +1493,7 @@ hello world
 <p>此外，当 Docker 容器中指定的应用终结时，容器也自动终止。</p>
 <p>例如对于上一章节中只启动了一个终端的容器，用户通过 <code>exit</code> 命令或 <code>Ctrl+d</code> 来退出终端时，所创建的容器立刻终止。</p>
 <p>终止状态的容器可以用 <code>docker container ls -a</code> 命令看到。例如：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> container <span class="token function">ls</span> -a
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> container <span class="token function">ls</span> <span class="token parameter variable">-a</span>
 CONTAINER ID        IMAGE                    COMMAND                CREATED             STATUS                          PORTS               NAMES
 ba267838cc1b        ubuntu:18.04             <span class="token string">"/bin/bash"</span>            <span class="token number">30</span> minutes ago      Exited <span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> About a minute ago                       trusting_newton</code></pre>
 
@@ -1502,7 +1502,7 @@ ba267838cc1b        ubuntu:18.04             <span class="token string">"/bin/ba
 <h2 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h2><p>在使用 <code>-d</code> 参数时，容器启动后会进入后台。</p>
 <p>某些时候需要进入容器进行操作，包括使用 <code>docker attach</code> 命令或 <code>docker exec</code> 命令，推荐大家使用 <code>docker exec</code> 命令，原因会在下面说明。</p>
 <h3 id="attach-命令"><a href="#attach-命令" class="headerlink" title="attach 命令"></a><code>attach</code> 命令</h3><p>下面示例如何使用 <code>docker attach</code> 命令。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -dit ubuntu
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-dit</span> ubuntu
 243c32535da7d142fb0e6df616a3c3ada0b8ab417937c853a9e1c251f499f550
 $ <span class="token function">docker</span> container <span class="token function">ls</span>
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
@@ -1514,24 +1514,24 @@ root@243c32535da7:/<span class="token comment">#</span></code></pre>
 <h3 id="exec-命令"><a href="#exec-命令" class="headerlink" title="exec 命令"></a><code>exec</code> 命令</h3><h4 id="i-t-参数"><a href="#i-t-参数" class="headerlink" title="-i -t 参数"></a><code>-i</code> <code>-t</code> 参数</h4><p><code>docker exec</code> 后边可以跟多个参数，这里主要说明 <code>-i</code> <code>-t</code> 参数。</p>
 <p>只用 <code>-i</code> 参数时，由于没有分配伪终端，界面没有我们熟悉的 Linux 命令提示符，但命令执行结果仍然可以返回。</p>
 <p>当 <code>-i</code> <code>-t</code> 参数一起使用时，则可以看到我们熟悉的 Linux 命令提示符。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -dit ubuntu
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-dit</span> ubuntu
 69d137adef7a8a689cbcb059e94da5489d3cddd240ff675c640c8d96e84fe1f6
 $ <span class="token function">docker</span> container <span class="token function">ls</span>
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 69d137adef7a        ubuntu:latest       <span class="token string">"/bin/bash"</span>         <span class="token number">18</span> seconds ago      Up <span class="token number">17</span> seconds                           zealous_swirles
-$ <span class="token function">docker</span> <span class="token builtin class-name">exec</span> -i 69d1 <span class="token function">bash</span>
+$ <span class="token function">docker</span> <span class="token builtin class-name">exec</span> <span class="token parameter variable">-i</span> 69d1 <span class="token function">bash</span>
 <span class="token function">ls</span>
 bin
 boot
 dev
 <span class="token punctuation">..</span>.
-$ <span class="token function">docker</span> <span class="token builtin class-name">exec</span> -it 69d1 <span class="token function">bash</span>
+$ <span class="token function">docker</span> <span class="token builtin class-name">exec</span> <span class="token parameter variable">-it</span> 69d1 <span class="token function">bash</span>
 root@69d137adef7a:/<span class="token comment">#</span></code></pre>
 
 <p>如果从这个 stdin 中 exit，不会导致容器的停止。这就是为什么推荐大家使用 <code>docker exec</code> 的原因。</p>
 <p>更多参数说明请使用 <code>docker exec --help</code> 查看。</p>
 <h2 id="导出和导入容器"><a href="#导出和导入容器" class="headerlink" title="导出和导入容器"></a>导出和导入容器</h2><h3 id="导出容器"><a href="#导出容器" class="headerlink" title="导出容器"></a>导出容器</h3><p>如果要导出本地某个容器，可以使用 <code>docker export</code> 命令。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> container <span class="token function">ls</span> -a
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> container <span class="token function">ls</span> <span class="token parameter variable">-a</span>
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                    PORTS               NAMES
 7691a814370e        ubuntu:18.04        <span class="token string">"/bin/bash"</span>         <span class="token number">36</span> hours ago        Exited <span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token number">21</span> hours ago                       <span class="token builtin class-name">test</span>
 $ <span class="token function">docker</span> <span class="token builtin class-name">export</span> 7691a814370e <span class="token operator">></span> ubuntu.tar</code></pre>
@@ -1625,12 +1625,12 @@ username/ubuntu</code></pre>
 <h2 id="私有仓库"><a href="#私有仓库" class="headerlink" title="私有仓库"></a>私有仓库</h2><p>有时候使用 Docker Hub 这样的公共仓库可能不方便，用户可以创建一个本地仓库供私人使用。</p>
 <p><a target="_blank" rel="noopener" href="https://docs.docker.com/registry/"><code>docker-registry</code></a> 是官方提供的工具，可以用于构建私有的镜像仓库。本文内容基于 <a target="_blank" rel="noopener" href="https://github.com/docker/distribution"><code>docker-registry</code></a> v2.x 版本。</p>
 <h3 id="安装运行-docker-registry"><a href="#安装运行-docker-registry" class="headerlink" title="安装运行 docker-registry"></a>安装运行 docker-registry</h3><h4 id="容器运行"><a href="#容器运行" class="headerlink" title="容器运行"></a>容器运行</h4><p>你可以使用官方 <code>registry</code> 镜像来运行。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -p <span class="token number">5000</span>:5000 --restart<span class="token operator">=</span>always --name registry registry</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-p</span> <span class="token number">5000</span>:5000 <span class="token parameter variable">--restart</span><span class="token operator">=</span>always <span class="token parameter variable">--name</span> registry registry</code></pre>
 
 <p>这将使用官方的 <code>registry</code> 镜像来启动私有仓库。默认情况下，仓库会被创建在容器的 <code>/var/lib/registry</code> 目录下。你可以通过 <code>-v</code> 参数来将镜像文件存放在本地的指定路径。例如下面的例子将上传的镜像放到本地的 <code>/opt/data/registry</code> 目录。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d <span class="token punctuation">\</span>
-    -p <span class="token number">5000</span>:5000 <span class="token punctuation">\</span>
-    -v /opt/data/registry:/var/lib/registry <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-p</span> <span class="token number">5000</span>:5000 <span class="token punctuation">\</span>
+    <span class="token parameter variable">-v</span> /opt/data/registry:/var/lib/registry <span class="token punctuation">\</span>
     registry</code></pre>
 
 <h3 id="在私有仓库上传、搜索、下载镜像"><a href="#在私有仓库上传、搜索、下载镜像" class="headerlink" title="在私有仓库上传、搜索、下载镜像"></a>在私有仓库上传、搜索、下载镜像</h3><p>创建好私有仓库之后，就可以使用 <code>docker tag</code> 来标记一个镜像，然后推送它到仓库。例如私有仓库地址为 <code>127.0.0.1:5000</code>。</p>
@@ -1699,13 +1699,13 @@ REPOSITORY                         TAG                 IMAGE ID            CREAT
 <h3 id="准备站点证书"><a href="#准备站点证书" class="headerlink" title="准备站点证书"></a>准备站点证书</h3><p>如果你拥有一个域名，国内各大云服务商均提供免费的站点证书。你也可以使用 <code>openssl</code> 自行签发证书。</p>
 <p>这里假设我们将要搭建的私有仓库地址为 <code>docker.domain.com</code>，下面我们介绍使用 <code>openssl</code> 自行签发 <code>docker.domain.com</code> 的站点 SSL 证书。</p>
 <p>第一步创建 <code>CA</code> 私钥。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl genrsa -out <span class="token string">"root-ca.key"</span> <span class="token number">4096</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl genrsa <span class="token parameter variable">-out</span> <span class="token string">"root-ca.key"</span> <span class="token number">4096</span></code></pre>
 
 <p>第二步利用私钥创建 <code>CA</code> 根证书请求文件。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl req <span class="token punctuation">\</span>
-          -new -key <span class="token string">"root-ca.key"</span> <span class="token punctuation">\</span>
-          -out <span class="token string">"root-ca.csr"</span> -sha256 <span class="token punctuation">\</span>
-          -subj <span class="token string">'/C=CN/ST=Shanxi/L=Datong/O=Your Company Name/CN=Your Company Name Docker Registry CA'</span></code></pre>
+          <span class="token parameter variable">-new</span> <span class="token parameter variable">-key</span> <span class="token string">"root-ca.key"</span> <span class="token punctuation">\</span>
+          <span class="token parameter variable">-out</span> <span class="token string">"root-ca.csr"</span> <span class="token parameter variable">-sha256</span> <span class="token punctuation">\</span>
+          <span class="token parameter variable">-subj</span> <span class="token string">'/C=CN/ST=Shanxi/L=Datong/O=Your Company Name/CN=Your Company Name Docker Registry CA'</span></code></pre>
 
 <blockquote>
 <p>以上命令中 <code>-subj</code> 参数里的 <code>/C</code> 表示国家，如 <code>CN</code>；<code>/ST</code> 表示省；<code>/L</code> 表示城市或者地区；<code>/O</code> 表示组织名；<code>/CN</code> 通用名称。</p>
@@ -1717,17 +1717,17 @@ keyUsage <span class="token operator">=</span> critical, nonRepudiation, cRLSign
 <span class="token assign-left variable">subjectKeyIdentifier</span><span class="token operator">=</span>hash</code></pre>
 
 <p>第四步签发根证书。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl x509 -req  -days <span class="token number">3650</span>  -in <span class="token string">"root-ca.csr"</span> <span class="token punctuation">\</span>
-               -signkey <span class="token string">"root-ca.key"</span> -sha256 -out <span class="token string">"root-ca.crt"</span> <span class="token punctuation">\</span>
-               -extfile <span class="token string">"root-ca.cnf"</span> -extensions <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl x509 <span class="token parameter variable">-req</span>  <span class="token parameter variable">-days</span> <span class="token number">3650</span>  <span class="token parameter variable">-in</span> <span class="token string">"root-ca.csr"</span> <span class="token punctuation">\</span>
+               <span class="token parameter variable">-signkey</span> <span class="token string">"root-ca.key"</span> <span class="token parameter variable">-sha256</span> <span class="token parameter variable">-out</span> <span class="token string">"root-ca.crt"</span> <span class="token punctuation">\</span>
+               <span class="token parameter variable">-extfile</span> <span class="token string">"root-ca.cnf"</span> <span class="token parameter variable">-extensions</span> <span class="token punctuation">\</span>
                root_ca</code></pre>
 
 <p>第五步生成站点 <code>SSL</code> 私钥。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl genrsa -out <span class="token string">"docker.domain.com.key"</span> <span class="token number">4096</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl genrsa <span class="token parameter variable">-out</span> <span class="token string">"docker.domain.com.key"</span> <span class="token number">4096</span></code></pre>
 
 <p>第六步使用私钥生成证书请求文件。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl req -new -key <span class="token string">"docker.domain.com.key"</span> -out <span class="token string">"site.csr"</span> -sha256 <span class="token punctuation">\</span>
-          -subj <span class="token string">'/C=CN/ST=Shanxi/L=Datong/O=Your Company Name/CN=docker.domain.com'</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl req <span class="token parameter variable">-new</span> <span class="token parameter variable">-key</span> <span class="token string">"docker.domain.com.key"</span> <span class="token parameter variable">-out</span> <span class="token string">"site.csr"</span> <span class="token parameter variable">-sha256</span> <span class="token punctuation">\</span>
+          <span class="token parameter variable">-subj</span> <span class="token string">'/C=CN/ST=Shanxi/L=Datong/O=Your Company Name/CN=docker.domain.com'</span></code></pre>
 
 <p>第七步配置证书，新建 <code>site.cnf</code> 文件。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>server<span class="token punctuation">]</span>
@@ -1739,9 +1739,9 @@ subjectAltName <span class="token operator">=</span> DNS:docker.domain.com, IP:1
 <span class="token assign-left variable">subjectKeyIdentifier</span><span class="token operator">=</span>hash</code></pre>
 
 <p>第八步签署站点 <code>SSL</code> 证书。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl x509 -req -days <span class="token number">750</span> -in <span class="token string">"site.csr"</span> -sha256 <span class="token punctuation">\</span>
-    -CA <span class="token string">"root-ca.crt"</span> -CAkey <span class="token string">"root-ca.key"</span>  -CAcreateserial <span class="token punctuation">\</span>
-    -out <span class="token string">"docker.domain.com.crt"</span> -extfile <span class="token string">"site.cnf"</span> -extensions server</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl x509 <span class="token parameter variable">-req</span> <span class="token parameter variable">-days</span> <span class="token number">750</span> <span class="token parameter variable">-in</span> <span class="token string">"site.csr"</span> <span class="token parameter variable">-sha256</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-CA</span> <span class="token string">"root-ca.crt"</span> <span class="token parameter variable">-CAkey</span> <span class="token string">"root-ca.key"</span>  <span class="token parameter variable">-CAcreateserial</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-out</span> <span class="token string">"docker.domain.com.crt"</span> <span class="token parameter variable">-extfile</span> <span class="token string">"site.cnf"</span> <span class="token parameter variable">-extensions</span> server</code></pre>
 
 <p>这样已经拥有了 <code>docker.domain.com</code> 的网站 SSL 私钥 <code>docker.domain.com.key</code> 和 SSL 证书 <code>docker.domain.com.crt</code> 及 CA 根证书 <code>root-ca.crt</code>。</p>
 <p>新建 <code>ssl</code> 文件夹并将 <code>docker.domain.com.key</code> <code>docker.domain.com.crt</code> <code>root-ca.crt</code> 这三个文件移入，删除其他文件。</p>
@@ -1783,10 +1783,10 @@ subjectAltName <span class="token operator">=</span> DNS:docker.domain.com, IP:1
 <span class="token key atrule">threshold</span><span class="token punctuation">:</span> <span class="token number">3</span></code></pre>
 
 <h3 id="生成-http-认证文件"><a href="#生成-http-认证文件" class="headerlink" title="生成 http 认证文件"></a>生成 http 认证文件</h3><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">mkdir</span> auth
-$ <span class="token function">docker</span> run --rm <span class="token punctuation">\</span>
-    --entrypoint htpasswd <span class="token punctuation">\</span>
+$ <span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--entrypoint</span> htpasswd <span class="token punctuation">\</span>
     httpd:alpine <span class="token punctuation">\</span>
-    -Bbn username password <span class="token operator">></span> auth/nginx.htpasswd</code></pre>
+    <span class="token parameter variable">-Bbn</span> username password <span class="token operator">></span> auth/nginx.htpasswd</code></pre>
 
 <blockquote>
 <p>将上面的 <code>username</code> <code>password</code> 替换为你自己的用户名和密码。</p>
@@ -1806,11 +1806,11 @@ $ <span class="token function">docker</span> run --rm <span class="token punctua
 <h3 id="修改-hosts"><a href="#修改-hosts" class="headerlink" title="修改 hosts"></a>修改 hosts</h3><p>编辑 <code>/etc/hosts</code></p>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">127.0</span>.0.1 docker.domain.com</code></pre>
 
-<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker-compose</span> up -d</code></pre>
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker-compose</span> up <span class="token parameter variable">-d</span></code></pre>
 
 <p>这样我们就搭建好了一个具有权限认证、TLS 的私有仓库，接下来我们测试其功能是否正常。</p>
 <h3 id="测试私有仓库功能"><a href="#测试私有仓库功能" class="headerlink" title="测试私有仓库功能"></a>测试私有仓库功能</h3><p>由于自行签发的 CA 根证书不被系统信任，所以我们需要将 CA 根证书 <code>ssl/root-ca.crt</code> 移入 <code>/etc/docker/certs.d/docker.domain.com</code> 文件夹中。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">mkdir</span> -p /etc/docker/certs.d/docker.domain.com
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /etc/docker/certs.d/docker.domain.com
 $ <span class="token function">sudo</span> <span class="token function">cp</span> ssl/root-ca.crt /etc/docker/certs.d/docker.domain.com/ca.crt</code></pre>
 
 <p>登录到私有仓库。</p>
@@ -1831,13 +1831,13 @@ no basic auth credentials</code></pre>
 <p>发现会提示没有登录，不能将镜像推送到私有仓库中。</p>
 <h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>如果你本机占用了 <code>443</code> 端口，你可以配置 <a target="_blank" rel="noopener" href="https://docs.docker.com/registry/recipes/nginx/">Nginx 代理</a>，这里不再赘述。</p>
 <h2 id="Nexus3-x-的私有仓库"><a href="#Nexus3-x-的私有仓库" class="headerlink" title="Nexus3.x 的私有仓库"></a>Nexus3.x 的私有仓库</h2><p>使用 Docker 官方的 Registry 创建的仓库面临一些维护问题。比如某些镜像删除以后空间默认是不会回收的，需要一些命令去回收空间然后重启 Registry。在企业中把内部的一些工具包放入 <code>Nexus</code> 中是比较常见的做法，最新版本 <code>Nexus3.x</code> 全面支持 Docker 的私有镜像。所以使用 <a target="_blank" rel="noopener" href="https://www.sonatype.com/product/repository-oss-download"><code>Nexus3.x</code></a> 一个软件来管理 <code>Docker</code> , <code>Maven</code> , <code>Yum</code> , <code>PyPI</code> 等是一个明智的选择。</p>
-<h3 id="启动-Nexus-容器"><a href="#启动-Nexus-容器" class="headerlink" title="启动 Nexus 容器"></a>启动 Nexus 容器</h3><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d --name nexus3 --restart<span class="token operator">=</span>always <span class="token punctuation">\</span>
-    -p <span class="token number">8081</span>:8081 <span class="token punctuation">\</span>
-    --mount <span class="token assign-left variable">src</span><span class="token operator">=</span>nexus-data,target<span class="token operator">=</span>/nexus-data <span class="token punctuation">\</span>
+<h3 id="启动-Nexus-容器"><a href="#启动-Nexus-容器" class="headerlink" title="启动 Nexus 容器"></a>启动 Nexus 容器</h3><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">--name</span> nexus3 <span class="token parameter variable">--restart</span><span class="token operator">=</span>always <span class="token punctuation">\</span>
+    <span class="token parameter variable">-p</span> <span class="token number">8081</span>:8081 <span class="token punctuation">\</span>
+    <span class="token parameter variable">--mount</span> <span class="token assign-left variable">src</span><span class="token operator">=</span>nexus-data,target<span class="token operator">=</span>/nexus-data <span class="token punctuation">\</span>
     sonatype/nexus3</code></pre>
 
 <p>首次运行需等待 3-5 分钟，你可以使用 <code>docker logs nexus3 -f</code> 查看日志：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> logs nexus3 -f
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> logs nexus3 <span class="token parameter variable">-f</span>
 <span class="token number">2021</span>-03-11 <span class="token number">15</span>:31:21,990+0000 INFO  <span class="token punctuation">[</span>jetty-main-1<span class="token punctuation">]</span> *SYSTEM org.sonatype.nexus.bootstrap.jetty.JettyServer -
 -------------------------------------------------
 Started Sonatype Nexus OSS <span class="token number">3.30</span>.0-01
@@ -1906,8 +1906,8 @@ Started Sonatype Nexus OSS <span class="token number">3.30</span>.0-01
 
 <h3 id="Docker-主机访问镜像仓库"><a href="#Docker-主机访问镜像仓库" class="headerlink" title="Docker 主机访问镜像仓库"></a>Docker 主机访问镜像仓库</h3><p>如果不启用 SSL 加密可以通过 <a href="./registry.md">前面章节</a> 的方法添加非 https 仓库地址到 Docker 的配置文件中然后重启 Docker。</p>
 <p>使用 SSL 加密以后程序需要访问就不能采用修改配置的方式了。具体方法如下：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl s_client -showcerts -connect YourDomainName OR HostIP:443 <span class="token operator">&lt;</span>/dev/null <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span class="token operator">|</span>openssl x509 -outform PEM <span class="token operator">></span>ca.crt
-$ <span class="token function">cat</span> ca.crt <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> -a /etc/ssl/certs/ca-certificates.crt
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl s_client <span class="token parameter variable">-showcerts</span> <span class="token parameter variable">-connect</span> YourDomainName OR HostIP:443 <span class="token operator">&lt;</span>/dev/null <span class="token operator"><span class="token file-descriptor important">2</span>></span>/dev/null<span class="token operator">|</span>openssl x509 <span class="token parameter variable">-outform</span> PEM <span class="token operator">></span>ca.crt
+$ <span class="token function">cat</span> ca.crt <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> <span class="token parameter variable">-a</span> /etc/ssl/certs/ca-certificates.crt
 $ systemctl restart <span class="token function">docker</span></code></pre>
 
 <p>使用 <code>docker login YourDomainName OR HostIP</code> 进行测试，用户名密码填写上面 Nexus 中设置的。</p>
@@ -1922,16 +1922,16 @@ $ systemctl restart <span class="token function">docker</span></code></pre>
 <blockquote>
 <p>注意：使用 <code>-v</code> 参数时如果本地目录不存在 Docker 会自动为你创建一个文件夹，使用 <code>--mount</code> 参数时如果本地目录不存在，Docker 会报错。</p>
 </blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -P <span class="token punctuation">\</span>
-    --name web <span class="token punctuation">\</span>
-    --mount <span class="token assign-left variable">type</span><span class="token operator">=</span>bind,source<span class="token operator">=</span>/src/webapp,target<span class="token operator">=</span>/usr/share/nginx/html <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-P</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--name</span> web <span class="token punctuation">\</span>
+    <span class="token parameter variable">--mount</span> <span class="token assign-left variable">type</span><span class="token operator">=</span>bind,source<span class="token operator">=</span>/src/webapp,target<span class="token operator">=</span>/usr/share/nginx/html <span class="token punctuation">\</span>
     nginx:alpine</code></pre>
 
 <p>上面的命令加载主机的 <code>/src/webapp</code> 目录到容器的 <code>/usr/share/nginx/html</code>目录。这个功能在进行测试的时候十分方便，比如用户可以放置一些程序到本地目录中，来查看容器是否正常工作。</p>
 <p>Docker 挂载主机目录的默认权限是 <em><strong>读写</strong></em>，用户也可以通过增加 <code>readonly</code> 指定为 <em><strong>只读</strong></em>。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -P <span class="token punctuation">\</span>
-    --name web <span class="token punctuation">\</span>
-    --mount <span class="token assign-left variable">type</span><span class="token operator">=</span>bind,source<span class="token operator">=</span>/src/webapp,target<span class="token operator">=</span>/usr/share/nginx/html,readonly <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-P</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--name</span> web <span class="token punctuation">\</span>
+    <span class="token parameter variable">--mount</span> <span class="token assign-left variable">type</span><span class="token operator">=</span>bind,source<span class="token operator">=</span>/src/webapp,target<span class="token operator">=</span>/usr/share/nginx/html,readonly <span class="token punctuation">\</span>
     nginx:alpine</code></pre>
 
 <p>加了 <code>readonly</code> 之后，就挂载为 <code>只读</code> 了。如果你在容器内 <code>/usr/share/nginx/html</code> 目录新建文件，会显示如下错误：</p>
@@ -1954,8 +1954,8 @@ touch: new.txt: Read-only <span class="token function">file</span> system</code>
 <span class="token punctuation">]</span><span class="token punctuation">,</span></code></pre>
 
 <h3 id="挂载一个本地主机文件作为数据卷"><a href="#挂载一个本地主机文件作为数据卷" class="headerlink" title="挂载一个本地主机文件作为数据卷"></a>挂载一个本地主机文件作为数据卷</h3><p><code>--mount</code> 标记也可以从主机挂载单个文件到容器中：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run --rm -it <span class="token punctuation">\</span>
-   --mount <span class="token assign-left variable">type</span><span class="token operator">=</span>bind,source<span class="token operator">=</span><span class="token environment constant">$HOME</span>/.bash_history,target<span class="token operator">=</span>/root/.bash_history <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token parameter variable">-it</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--mount</span> <span class="token assign-left variable">type</span><span class="token operator">=</span>bind,source<span class="token operator">=</span><span class="token environment constant">$HOME</span>/.bash_history,target<span class="token operator">=</span>/root/.bash_history <span class="token punctuation">\</span>
    ubuntu:18.04 <span class="token punctuation">\</span>
    <span class="token function">bash</span>
 root@2affd44b4667:/<span class="token comment"># history</span>
@@ -2000,21 +2000,21 @@ DRIVER              VOLUME NAME
 
 <h3 id="启动一个挂载数据卷的容器"><a href="#启动一个挂载数据卷的容器" class="headerlink" title="启动一个挂载数据卷的容器"></a>启动一个挂载数据卷的容器</h3><p>在用 <code>docker run</code> 命令的时候，使用 <code>-v</code> 参数来将 <code>数据卷</code> 挂载到容器里。在一次 <code>docker run</code> 中可以挂载多个 <code>数据卷</code>。</p>
 <p>下面创建一个名为 <code>web</code> 的容器，并加载一个 <code>数据卷</code> 到容器的 <code>/usr/share/nginx/html</code> 目录。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -P <span class="token punctuation">\</span>
-    --name web <span class="token punctuation">\</span>
-    -v my-vol:/usr/share/nginx/html <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-P</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--name</span> web <span class="token punctuation">\</span>
+    <span class="token parameter variable">-v</span> my-vol:/usr/share/nginx/html <span class="token punctuation">\</span>
     nginx:alpine</code></pre>
 
 <p>Docker 挂载数据卷的默认权限是<code>rw</code> <em><strong>读写</strong></em>，用户也可以通过增加 <code>ro</code> 指定为 <em><strong>只读</strong></em>。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -P <span class="token punctuation">\</span>
-    --name web <span class="token punctuation">\</span>
-    -v my-vol:/usr/share/nginx/html:ro <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-P</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--name</span> web <span class="token punctuation">\</span>
+    <span class="token parameter variable">-v</span> my-vol:/usr/share/nginx/html:ro <span class="token punctuation">\</span>
     nginx:alpine</code></pre>
 
 <p><code>-v</code>参数也可以直接挂载宿主机上的目录或文件：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -P <span class="token punctuation">\</span>
-    --name web <span class="token punctuation">\</span>
-    -v <span class="token environment constant">$HOME</span>/.bash_history:/root/.bash_history <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-P</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--name</span> web <span class="token punctuation">\</span>
+    <span class="token parameter variable">-v</span> <span class="token environment constant">$HOME</span>/.bash_history:/root/.bash_history <span class="token punctuation">\</span>
     nginx:alpine</code></pre>
 
 
@@ -2082,8 +2082,8 @@ DRIVER              VOLUME NAME
 <h1 id="Docker-网络管理"><a href="#Docker-网络管理" class="headerlink" title="Docker 网络管理"></a>Docker 网络管理</h1><h2 id="外部访问容器"><a href="#外部访问容器" class="headerlink" title="外部访问容器"></a>外部访问容器</h2><p>可以通过 <code>-P</code> 或 <code>-p</code> 参数来指定端口映射，以使外部可以访问容器中的服务。</p>
 <p>当使用 <code>-P</code> 标记时，Docker 会随机映射一个端口到内部容器开放的网络端口。</p>
 <p>使用 <code>docker container ls</code> 可以看到，本地主机的 32768 被映射到了容器的 80 端口。此时访问本机的 32768 端口即可访问容器内 NGINX 默认页面。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -P nginx:alpine
-$ <span class="token function">docker</span> container <span class="token function">ls</span> -l
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-P</span> nginx:alpine
+$ <span class="token function">docker</span> container <span class="token function">ls</span> <span class="token parameter variable">-l</span>
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                   NAMES
 fae320d08268        nginx:alpine        <span class="token string">"/docker-entrypoint.…"</span>   <span class="token number">24</span> seconds ago      Up <span class="token number">20</span> seconds       <span class="token number">0.0</span>.0.0:32768-<span class="token operator">></span><span class="token number">80</span>/tcp   bold_mcnulty</code></pre>
 
@@ -2093,17 +2093,17 @@ fae320d08268        nginx:alpine        <span class="token string">"/docker-entr
 
 <p><code>-p</code> 则可以指定要映射的端口，并且，在一个指定端口上只可以绑定一个容器。支持的格式有 <code>ip:hostPort:containerPort | ip::containerPort | hostPort:containerPort</code>。</p>
 <h3 id="映射所有接口地址"><a href="#映射所有接口地址" class="headerlink" title="映射所有接口地址"></a>映射所有接口地址</h3><p>使用 <code>hostPort:containerPort</code> 格式本地的 80 端口映射到容器的 80 端口，可以执行</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -p <span class="token number">80</span>:80 nginx:alpine</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 nginx:alpine</code></pre>
 
 <p>此时默认会绑定本地所有接口上的所有地址。</p>
 <h3 id="映射到指定地址的指定端口"><a href="#映射到指定地址的指定端口" class="headerlink" title="映射到指定地址的指定端口"></a>映射到指定地址的指定端口</h3><p>可以使用 <code>ip:hostPort:containerPort</code> 格式指定映射使用一个特定地址，比如 localhost 地址 127.0.0.1</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -p <span class="token number">127.0</span>.0.1:80:80 nginx:alpine</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-p</span> <span class="token number">127.0</span>.0.1:80:80 nginx:alpine</code></pre>
 
 <h3 id="映射到指定地址的任意端口"><a href="#映射到指定地址的任意端口" class="headerlink" title="映射到指定地址的任意端口"></a>映射到指定地址的任意端口</h3><p>使用 <code>ip::containerPort</code> 绑定 localhost 的任意端口到容器的 80 端口，本地主机会自动分配一个端口。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -p <span class="token number">127.0</span>.0.1::80 nginx:alpine</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-p</span> <span class="token number">127.0</span>.0.1::80 nginx:alpine</code></pre>
 
 <p>还可以使用 <code>udp</code> 标记来指定 <code>udp</code> 端口</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d -p <span class="token number">127.0</span>.0.1:80:80/udp nginx:alpine</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-p</span> <span class="token number">127.0</span>.0.1:80:80/udp nginx:alpine</code></pre>
 
 <h3 id="查看映射端口配置"><a href="#查看映射端口配置" class="headerlink" title="查看映射端口配置"></a>查看映射端口配置</h3><p>使用 <code>docker port</code> 来查看当前映射的端口配置，也可以查看到绑定的地址</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> port fa <span class="token number">80</span>
@@ -2117,21 +2117,21 @@ fae320d08268        nginx:alpine        <span class="token string">"/docker-entr
 </li>
 </ul>
 <p>例如：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -d <span class="token punctuation">\</span>
-    -p <span class="token number">80</span>:80 <span class="token punctuation">\</span>
-    -p <span class="token number">443</span>:443 <span class="token punctuation">\</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-d</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 <span class="token punctuation">\</span>
+    <span class="token parameter variable">-p</span> <span class="token number">443</span>:443 <span class="token punctuation">\</span>
     nginx:alpine</code></pre>
 
 <h2 id="容器互联"><a href="#容器互联" class="headerlink" title="容器互联"></a>容器互联</h2><p>如果你之前有 <code>Docker</code> 使用经验，你可能已经习惯了使用 <code>--link</code> 参数来使容器互联。随着 Docker 网络的完善，强烈建议大家将容器加入自定义的 Docker 网络来连接多个容器，而不是使用 <code>--link</code> 参数。</p>
 <h3 id="新建网络"><a href="#新建网络" class="headerlink" title="新建网络"></a>新建网络</h3><p>下面先创建一个新的 Docker 网络。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> network create -d bridge my-net</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> network create <span class="token parameter variable">-d</span> bridge my-net</code></pre>
 
 <p><code>-d</code> 参数指定 Docker 网络类型，有 <code>bridge</code> <code>overlay</code>。其中 <code>overlay</code> 网络类型用于 <a href="../swarm_mode/">Swarm mode</a>，在本小节中你可以忽略它。</p>
 <h3 id="连接容器"><a href="#连接容器" class="headerlink" title="连接容器"></a>连接容器</h3><p>运行一个容器并连接到新建的 <code>my-net</code> 网络</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -it --rm --name busybox1 --network my-net busybox <span class="token function">sh</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> <span class="token parameter variable">--rm</span> <span class="token parameter variable">--name</span> busybox1 <span class="token parameter variable">--network</span> my-net busybox <span class="token function">sh</span></code></pre>
 
 <p>打开新的终端，再运行一个容器并加入到 <code>my-net</code> 网络</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -it --rm --name busybox2 --network my-net busybox <span class="token function">sh</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> <span class="token parameter variable">--rm</span> <span class="token parameter variable">--name</span> busybox2 <span class="token parameter variable">--network</span> my-net busybox <span class="token function">sh</span></code></pre>
 
 <p>再打开一个新的终端查看容器信息</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> container <span class="token function">ls</span>
@@ -2172,7 +2172,7 @@ tmpfs on /etc/resolv.conf <span class="token builtin class-name">type</span> tmp
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>这样每次启动的容器 DNS 自动配置为 <code>114.114.114.114</code> 和 <code>8.8.8.8</code>。使用以下命令来证明其已经生效：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -it --rm ubuntu:18.04  <span class="token function">cat</span> etc/resolv.conf
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> <span class="token parameter variable">--rm</span> ubuntu:18.04  <span class="token function">cat</span> etc/resolv.conf
 nameserver <span class="token number">114.114</span>.114.114
 nameserver <span class="token number">8.8</span>.8.8</code></pre>
 
@@ -2223,7 +2223,7 @@ nameserver <span class="token number">8.8</span>.8.8</code></pre>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token variable">$sysctl</span> net.ipv4.ip_forward
 net.ipv4.ip_forward <span class="token operator">=</span> <span class="token number">1</span></code></pre>
 <p>如果为 0，说明没有开启转发，则需要手动打开。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token variable">$sysctl</span> -w net.ipv4.ip_forward<span class="token operator">=</span><span class="token number">1</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token variable">$sysctl</span> <span class="token parameter variable">-w</span> <span class="token assign-left variable">net.ipv4.ip_forward</span><span class="token operator">=</span><span class="token number">1</span></code></pre>
 <p>如果在启动 Docker 服务的时候设定 <code>--ip-forward=true</code>, Docker 就会自动设定系统的 <code>ip_forward</code> 参数为 1。</p>
 <h3 id="容器之间访问"><a href="#容器之间访问" class="headerlink" title="容器之间访问"></a>容器之间访问</h3><p>容器之间相互访问，需要两方面的支持：</p>
 <ul>
@@ -2235,7 +2235,7 @@ net.ipv4.ip_forward <span class="token operator">=</span> <span class="token num
 <h4 id="访问指定端口"><a href="#访问指定端口" class="headerlink" title="访问指定端口"></a>访问指定端口</h4><p>在通过 <code>-icc=false</code> 关闭网络访问后，还可以通过 <code>--link=CONTAINER_NAME:ALIAS</code> 选项来访问容器的开放端口。</p>
 <p>例如，在启动 Docker 服务时，可以同时使用 <code>icc=false --iptables=true</code> 参数来关闭允许相互的网络访问，并让 Docker 可以修改系统中的 <code>iptables</code> 规则。</p>
 <p>此时，系统中的 <code>iptables</code> 规则可能是类似</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> iptables -nL
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> iptables <span class="token parameter variable">-nL</span>
 <span class="token punctuation">..</span>.
 Chain FORWARD <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
 target     prot opt <span class="token builtin class-name">source</span>               destination
@@ -2244,7 +2244,7 @@ DROP       all  --  <span class="token number">0.0</span>.0.0/0            <span
 
 <p>之后，启动容器（<code>docker run</code>）时使用 <code>--link=CONTAINER_NAME:ALIAS</code> 选项。Docker 会在 <code>iptables</code> 中为 两个容器分别添加一条 <code>ACCEPT</code> 规则，允许相互访问开放的端口（取决于 <code>Dockerfile</code> 中的 <code>EXPOSE</code> 指令）。</p>
 <p>当添加了 <code>--link=CONTAINER_NAME:ALIAS</code> 选项后，添加了 <code>iptables</code> 规则。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> iptables -nL
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> iptables <span class="token parameter variable">-nL</span>
 <span class="token punctuation">..</span>.
 Chain FORWARD <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
 target     prot opt <span class="token builtin class-name">source</span>               destination
@@ -2256,7 +2256,7 @@ DROP       all  --  <span class="token number">0.0</span>.0.0/0            <span
 <h2 id="映射容器端口到宿主主机"><a href="#映射容器端口到宿主主机" class="headerlink" title="映射容器端口到宿主主机"></a>映射容器端口到宿主主机</h2><p>默认情况下，容器可以主动访问到外部网络的连接，但是外部网络无法访问到容器。</p>
 <h3 id="容器访问外部实现"><a href="#容器访问外部实现" class="headerlink" title="容器访问外部实现"></a>容器访问外部实现</h3><p>容器所有到外部网络的连接，源地址都会被 NAT 成本地系统的 IP 地址。这是使用 <code>iptables</code> 的源地址伪装实现的。</p>
 <p>查看主机的 NAT 规则。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> iptables -t nat -nL
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> iptables <span class="token parameter variable">-t</span> nat <span class="token parameter variable">-nL</span>
 <span class="token punctuation">..</span>.
 Chain POSTROUTING <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
 target     prot opt <span class="token builtin class-name">source</span>               destination
@@ -2266,14 +2266,14 @@ MASQUERADE  all  --  <span class="token number">172.17</span>.0.0/16       <span
 <p>其中，上述规则将所有源地址在 <code>172.17.0.0/16</code> 网段，目标地址为其他网段（外部网络）的流量动态伪装为从系统网卡发出。MASQUERADE 跟传统 SNAT 的好处是它能动态从网卡获取地址。</p>
 <h3 id="外部访问容器实现"><a href="#外部访问容器实现" class="headerlink" title="外部访问容器实现"></a>外部访问容器实现</h3><p>容器允许外部访问，可以在 <code>docker run</code> 时候通过 <code>-p</code> 或 <code>-P</code> 参数来启用。不管用那种办法，其实也是在本地的 <code>iptable</code> 的 nat 表中添加相应的规则。</p>
 <p>使用 <code>-P</code> 时：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ iptables -t nat -nL
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ iptables <span class="token parameter variable">-t</span> nat <span class="token parameter variable">-nL</span>
 <span class="token punctuation">..</span>.
 Chain DOCKER <span class="token punctuation">(</span><span class="token number">2</span> references<span class="token punctuation">)</span>
 target     prot opt <span class="token builtin class-name">source</span>               destination
 DNAT       tcp  --  <span class="token number">0.0</span>.0.0/0            <span class="token number">0.0</span>.0.0/0            tcp dpt:49153 to:172.17.0.2:80</code></pre>
 
 <p>使用 <code>-p 80:80</code> 时：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ iptables -t nat -nL
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ iptables <span class="token parameter variable">-t</span> nat <span class="token parameter variable">-nL</span>
 Chain DOCKER <span class="token punctuation">(</span><span class="token number">2</span> references<span class="token punctuation">)</span>
 target     prot opt <span class="token builtin class-name">source</span>               destination
 DNAT       tcp  --  <span class="token number">0.0</span>.0.0/0            <span class="token number">0.0</span>.0.0/0            tcp dpt:80 to:172.17.0.2:80</code></pre>
@@ -2303,7 +2303,7 @@ docker0         <span class="token number">8000</span>.3a1d7362b4ee       no    
                                              vethdda6</code></pre>
 <p>*注：<code>brctl</code> 命令在 Debian、Ubuntu 中可以使用 <code>sudo apt-get install bridge-utils</code> 来安装。</p>
 <p>每次创建一个新容器的时候，Docker 从可用的地址段中选择一个空闲的 IP 地址分配给容器的 eth0 端口。使用本地主机上 <code>docker0</code> 接口的 IP 作为所有容器的默认网关。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">docker</span> run -i -t --rm base /bin/bash
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">docker</span> run <span class="token parameter variable">-i</span> <span class="token parameter variable">-t</span> <span class="token parameter variable">--rm</span> base /bin/bash
 $ <span class="token function">ip</span> addr show eth0
 <span class="token number">24</span>: eth0: <span class="token operator">&lt;</span>BROADCAST,UP,LOWER_UP<span class="token operator">></span> mtu <span class="token number">1500</span> qdisc pfifo_fast state UP group default qlen <span class="token number">1000</span>
     link/ether <span class="token number">32</span>:6f:e0:35:57:91 brd ff:ff:ff:ff:ff:ff
@@ -2352,19 +2352,19 @@ $ <span class="token function">sudo</span> <span class="token function">ip</span
 <p>用户有时候需要两个容器之间可以直连通信，而不用通过主机网桥进行桥接。</p>
 <p>解决办法很简单：创建一对 <code>peer</code> 接口，分别放到两个容器中，配置成点到点链路类型即可。</p>
 <p>首先启动 2 个容器：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -i -t --rm --net<span class="token operator">=</span>none base /bin/bash
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-i</span> <span class="token parameter variable">-t</span> <span class="token parameter variable">--rm</span> <span class="token parameter variable">--net</span><span class="token operator">=</span>none base /bin/bash
 root@1f1f4c1f931a:/<span class="token comment">#</span>
-$ <span class="token function">docker</span> run -i -t --rm --net<span class="token operator">=</span>none base /bin/bash
+$ <span class="token function">docker</span> run <span class="token parameter variable">-i</span> <span class="token parameter variable">-t</span> <span class="token parameter variable">--rm</span> <span class="token parameter variable">--net</span><span class="token operator">=</span>none base /bin/bash
 root@12e343489d2f:/<span class="token comment">#</span></code></pre>
 
 <p>找到进程号，然后创建网络命名空间的跟踪文件。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> inspect -f <span class="token string">'&#123;&#123;.State.Pid&#125;&#125;'</span> 1f1f4c1f931a
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> inspect <span class="token parameter variable">-f</span> <span class="token string">'&#123;&#123;.State.Pid&#125;&#125;'</span> 1f1f4c1f931a
 <span class="token number">2989</span>
-$ <span class="token function">docker</span> inspect -f <span class="token string">'&#123;&#123;.State.Pid&#125;&#125;'</span> 12e343489d2f
+$ <span class="token function">docker</span> inspect <span class="token parameter variable">-f</span> <span class="token string">'&#123;&#123;.State.Pid&#125;&#125;'</span> 12e343489d2f
 <span class="token number">3004</span>
-$ <span class="token function">sudo</span> <span class="token function">mkdir</span> -p /var/run/netns
-$ <span class="token function">sudo</span> <span class="token function">ln</span> -s /proc/2989/ns/net /var/run/netns/2989
-$ <span class="token function">sudo</span> <span class="token function">ln</span> -s /proc/3004/ns/net /var/run/netns/3004</code></pre>
+$ <span class="token function">sudo</span> <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /var/run/netns
+$ <span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /proc/2989/ns/net /var/run/netns/2989
+$ <span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /proc/3004/ns/net /var/run/netns/3004</code></pre>
 
 <p>创建一对 <code>peer</code> 接口，然后配置路由</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">ip</span> <span class="token function">link</span> <span class="token function">add</span> A <span class="token builtin class-name">type</span> veth peer name B
@@ -2478,7 +2478,7 @@ redis <span class="token operator">=</span> Redis<span class="token punctuation"
 <h4 id="kill"><a href="#kill" class="headerlink" title="kill"></a><code>kill</code></h4><p>格式为 <code>docker-compose kill [options] [SERVICE...]</code>。</p>
 <p>通过发送 <code>SIGKILL</code> 信号来强制停止服务容器。</p>
 <p>支持通过 <code>-s</code> 参数来指定发送的信号，例如通过如下指令发送 <code>SIGINT</code> 信号。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker-compose</span> <span class="token function">kill</span> -s SIGINT</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker-compose</span> <span class="token function">kill</span> <span class="token parameter variable">-s</span> SIGINT</code></pre>
 
 <h4 id="logs"><a href="#logs" class="headerlink" title="logs"></a><code>logs</code></h4><p>格式为 <code>docker-compose logs [options] [SERVICE...]</code>。</p>
 <p>查看服务容器的输出。默认情况下，docker-compose 将对不同的服务输出使用不同的颜色来区分。可以通过 <code>--no-color</code> 来关闭颜色。</p>
@@ -2985,7 +2985,7 @@ psycopg<span class="token operator"><span class="token file-descriptor important
 Dockerfile       docker-compose.yml          django_example       manage.py       requirements.txt</code></pre>
 
 <p>如果你的系统是 Linux,记得更改文件权限。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">chown</span> -R <span class="token environment constant">$USER</span><span class="token builtin class-name">:</span><span class="token environment constant">$USER</span> <span class="token builtin class-name">.</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">chown</span> <span class="token parameter variable">-R</span> <span class="token environment constant">$USER</span><span class="token builtin class-name">:</span><span class="token environment constant">$USER</span> <span class="token builtin class-name">.</span></code></pre>
 
 <p>首先，我们要为应用设置好数据库的连接信息。用以下内容替换 <code>django_example/settings.py</code> 文件中 <code>DATABASES = ...</code> 定义的节点内容。</p>
 <pre class="language-python" data-language="python"><code class="language-python">DATABASES <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
@@ -3059,7 +3059,7 @@ gem <span class="token string">'rails'</span>, <span class="token string">'4.0.2
       <span class="token punctuation">-</span> <span class="token string">"3000:3000"</span></code></pre>
 
 <p>所有文件就绪后，我们就可以通过使用 <code>docker-compose run</code> 命令生成应用的骨架了。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker-compose</span> run web rails new <span class="token builtin class-name">.</span> --force --database<span class="token operator">=</span>postgresql --skip-bundle</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker-compose</span> run web rails new <span class="token builtin class-name">.</span> <span class="token parameter variable">--force</span> <span class="token parameter variable">--database</span><span class="token operator">=</span>postgresql --skip-bundle</code></pre>
 
 <p><code>Compose</code> 会先使用 <code>Dockerfile</code> 为 web 服务创建一个镜像，接着使用这个镜像在容器里运行 <code>rails new </code> 和它之后的命令。一旦这个命令运行完后，应该就可以看一个崭新的应用已经生成了。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">ls</span>
@@ -3165,7 +3165,7 @@ myapp_web_1 <span class="token operator">|</span> <span class="token punctuation
 Swarm initialized: current <span class="token function">node</span> <span class="token punctuation">(</span>dxn1zf6l61qsb1josjja83ngz<span class="token punctuation">)</span> is now a manager.
 To <span class="token function">add</span> a worker to this swarm, run the following command:
     <span class="token function">docker</span> swarm <span class="token function">join</span> <span class="token punctuation">\</span>
-    --token SWMTKN-1-49nj1cmql0jkz5s954yi3oex3nedyz0fb0xx14ie39trti4wxv-8vxv8rssmk743ojnwacrr2e7c <span class="token punctuation">\</span>
+    <span class="token parameter variable">--token</span> SWMTKN-1-49nj1cmql0jkz5s954yi3oex3nedyz0fb0xx14ie39trti4wxv-8vxv8rssmk743ojnwacrr2e7c <span class="token punctuation">\</span>
     <span class="token number">192.168</span>.99.100:2377
 To <span class="token function">add</span> a manager to this swarm, run <span class="token string">'docker swarm join-token manager'</span> and follow the instructions.</code></pre>
 
@@ -3175,7 +3175,7 @@ To <span class="token function">add</span> a manager to this swarm, run <span cl
 </blockquote>
 <h3 id="增加工作节点"><a href="#增加工作节点" class="headerlink" title="增加工作节点"></a>增加工作节点</h3><p>上一步我们初始化了一个 <code>Swarm</code> 集群，拥有了一个管理节点，下面我们继续在两个 Docker 主机中分别执行如下命令，创建工作节点并加入到集群中。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> swarm <span class="token function">join</span> <span class="token punctuation">\</span>
-    --token SWMTKN-1-49nj1cmql0jkz5s954yi3oex3nedyz0fb0xx14ie39trti4wxv-8vxv8rssmk743ojnwacrr2e7c <span class="token punctuation">\</span>
+    <span class="token parameter variable">--token</span> SWMTKN-1-49nj1cmql0jkz5s954yi3oex3nedyz0fb0xx14ie39trti4wxv-8vxv8rssmk743ojnwacrr2e7c <span class="token punctuation">\</span>
     <span class="token number">192.168</span>.99.100:2377
 This <span class="token function">node</span> joined a swarm as a worker.</code></pre>
 
@@ -3189,7 +3189,7 @@ dxn1zf6l61qsb1josjja83ngz *  manager   Ready   Active        Leader</code></pre>
 
 <h2 id="部署服务"><a href="#部署服务" class="headerlink" title="部署服务"></a>部署服务</h2><p>我们使用 <code>docker service</code> 命令来管理 <code>Swarm</code> 集群中的服务，该命令只能在管理节点运行。</p>
 <h3 id="新建服务"><a href="#新建服务" class="headerlink" title="新建服务"></a>新建服务</h3><p>现在我们在上一节创建的 <code>Swarm</code> 集群中运行一个名为 <code>nginx</code> 服务。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> <span class="token function">service</span> create --replicas <span class="token number">3</span> -p <span class="token number">80</span>:80 --name nginx nginx:1.13.7-alpine</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> <span class="token function">service</span> create <span class="token parameter variable">--replicas</span> <span class="token number">3</span> <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 <span class="token parameter variable">--name</span> nginx nginx:1.13.7-alpine</code></pre>
 
 <p>现在我们使用浏览器，输入任意节点 IP ，即可看到 nginx 默认页面。</p>
 <h3 id="查看服务"><a href="#查看服务" class="headerlink" title="查看服务"></a>查看服务</h3><p>使用 <code>docker service ls</code> 来查看当前 <code>Swarm</code> 集群运行的服务。</p>
@@ -3273,7 +3273,7 @@ nginx.1.pjfzd39buzlt@swarm2    <span class="token operator">|</span> <span class
 <p>在 <code>Swarm</code> 集群管理节点新建该文件，其中的 <code>visualizer</code> 服务提供一个可视化页面，我们可以从浏览器中很直观的查看集群中各个服务的运行节点。</p>
 <p>在 <code>Swarm</code> 集群中使用 <code>docker-compose.yml</code> 我们用 <code>docker stack</code> 命令，下面我们对该命令进行详细讲解。</p>
 <h3 id="部署服务-1"><a href="#部署服务-1" class="headerlink" title="部署服务"></a>部署服务</h3><p>部署服务使用 <code>docker stack deploy</code>，其中 <code>-c</code> 参数指定 compose 文件名。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> stack deploy -c docker-compose.yml wordpress</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> stack deploy <span class="token parameter variable">-c</span> docker-compose.yml wordpress</code></pre>
 
 <p>现在我们打开浏览器输入 <code>任一节点IP:8080</code> 即可看到各节点运行状态。如下图所示：</p>
 <p><img src="/2022/docker_practice/wordpress.png" alt="img"></p>
@@ -3299,8 +3299,8 @@ Removing network wordpress_default</code></pre>
 <p>我们可以用 <code>docker secret</code> 命令来管理敏感信息。接下来我们在上面章节中创建好的 Swarm 集群中介绍该命令的使用。</p>
 <p>这里我们以在 Swarm 集群中部署 <code>mysql</code> 和 <code>wordpress</code> 服务为例。</p>
 <h3 id="创建-secret"><a href="#创建-secret" class="headerlink" title="创建 secret"></a>创建 secret</h3><p>我们使用 <code>docker secret create</code> 命令以管道符的形式创建 <code>secret</code></p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl rand -base64 <span class="token number">20</span> <span class="token operator">|</span> <span class="token function">docker</span> secret create mysql_password -
-$ openssl rand -base64 <span class="token number">20</span> <span class="token operator">|</span> <span class="token function">docker</span> secret create mysql_root_password -</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ openssl rand <span class="token parameter variable">-base64</span> <span class="token number">20</span> <span class="token operator">|</span> <span class="token function">docker</span> secret create mysql_password -
+$ openssl rand <span class="token parameter variable">-base64</span> <span class="token number">20</span> <span class="token operator">|</span> <span class="token function">docker</span> secret create mysql_root_password -</code></pre>
 
 <h3 id="查看-secret"><a href="#查看-secret" class="headerlink" title="查看 secret"></a>查看 secret</h3><p>使用 <code>docker secret ls</code> 命令来查看 <code>secret</code></p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> secret <span class="token function">ls</span>
@@ -3309,32 +3309,32 @@ l1vinzevzhj4goakjap5ya409   mysql_password        <span class="token number">41<
 yvsczlx9votfw3l0nz5rlidig   mysql_root_password   <span class="token number">12</span> seconds ago      <span class="token number">12</span> seconds ago</code></pre>
 
 <h3 id="创建-MySQL-服务"><a href="#创建-MySQL-服务" class="headerlink" title="创建 MySQL 服务"></a>创建 MySQL 服务</h3><p>创建服务相关命令已经在前边章节进行了介绍，这里直接列出命令。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> network create -d overlay mysql_private
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> network create <span class="token parameter variable">-d</span> overlay mysql_private
 $ <span class="token function">docker</span> <span class="token function">service</span> create <span class="token punctuation">\</span>
-     --name mysql <span class="token punctuation">\</span>
-     --replicas <span class="token number">1</span> <span class="token punctuation">\</span>
-     --network mysql_private <span class="token punctuation">\</span>
-     --mount <span class="token assign-left variable">type</span><span class="token operator">=</span>volume,source<span class="token operator">=</span>mydata,destination<span class="token operator">=</span>/var/lib/mysql <span class="token punctuation">\</span>
-     --secret <span class="token assign-left variable">source</span><span class="token operator">=</span>mysql_root_password,target<span class="token operator">=</span>mysql_root_password <span class="token punctuation">\</span>
-     --secret <span class="token assign-left variable">source</span><span class="token operator">=</span>mysql_password,target<span class="token operator">=</span>mysql_password <span class="token punctuation">\</span>
-     -e <span class="token assign-left variable">MYSQL_ROOT_PASSWORD_FILE</span><span class="token operator">=</span><span class="token string">"/run/secrets/mysql_root_password"</span> <span class="token punctuation">\</span>
-     -e <span class="token assign-left variable">MYSQL_PASSWORD_FILE</span><span class="token operator">=</span><span class="token string">"/run/secrets/mysql_password"</span> <span class="token punctuation">\</span>
-     -e <span class="token assign-left variable">MYSQL_USER</span><span class="token operator">=</span><span class="token string">"wordpress"</span> <span class="token punctuation">\</span>
-     -e <span class="token assign-left variable">MYSQL_DATABASE</span><span class="token operator">=</span><span class="token string">"wordpress"</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">--name</span> mysql <span class="token punctuation">\</span>
+     <span class="token parameter variable">--replicas</span> <span class="token number">1</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">--network</span> mysql_private <span class="token punctuation">\</span>
+     <span class="token parameter variable">--mount</span> <span class="token assign-left variable">type</span><span class="token operator">=</span>volume,source<span class="token operator">=</span>mydata,destination<span class="token operator">=</span>/var/lib/mysql <span class="token punctuation">\</span>
+     <span class="token parameter variable">--secret</span> <span class="token assign-left variable">source</span><span class="token operator">=</span>mysql_root_password,target<span class="token operator">=</span>mysql_root_password <span class="token punctuation">\</span>
+     <span class="token parameter variable">--secret</span> <span class="token assign-left variable">source</span><span class="token operator">=</span>mysql_password,target<span class="token operator">=</span>mysql_password <span class="token punctuation">\</span>
+     <span class="token parameter variable">-e</span> <span class="token assign-left variable">MYSQL_ROOT_PASSWORD_FILE</span><span class="token operator">=</span><span class="token string">"/run/secrets/mysql_root_password"</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">-e</span> <span class="token assign-left variable">MYSQL_PASSWORD_FILE</span><span class="token operator">=</span><span class="token string">"/run/secrets/mysql_password"</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">-e</span> <span class="token assign-left variable">MYSQL_USER</span><span class="token operator">=</span><span class="token string">"wordpress"</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">-e</span> <span class="token assign-left variable">MYSQL_DATABASE</span><span class="token operator">=</span><span class="token string">"wordpress"</span> <span class="token punctuation">\</span>
      mysql:latest</code></pre>
 
 <p>如果你没有在 <code>target</code> 中显式的指定路径时，<code>secret</code> 默认通过 <code>tmpfs</code> 文件系统挂载到容器的 <code>/run/secrets</code> 目录中。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> <span class="token function">service</span> create <span class="token punctuation">\</span>
-     --name wordpress <span class="token punctuation">\</span>
-     --replicas <span class="token number">1</span> <span class="token punctuation">\</span>
-     --network mysql_private <span class="token punctuation">\</span>
-     --publish <span class="token assign-left variable">target</span><span class="token operator">=</span><span class="token number">30000</span>,port<span class="token operator">=</span><span class="token number">80</span> <span class="token punctuation">\</span>
-     --mount <span class="token assign-left variable">type</span><span class="token operator">=</span>volume,source<span class="token operator">=</span>wpdata,destination<span class="token operator">=</span>/var/www/html <span class="token punctuation">\</span>
-     --secret <span class="token assign-left variable">source</span><span class="token operator">=</span>mysql_password,target<span class="token operator">=</span>wp_db_password,mode<span class="token operator">=</span>0444 <span class="token punctuation">\</span>
-     -e <span class="token assign-left variable">WORDPRESS_DB_USER</span><span class="token operator">=</span><span class="token string">"wordpress"</span> <span class="token punctuation">\</span>
-     -e <span class="token assign-left variable">WORDPRESS_DB_PASSWORD_FILE</span><span class="token operator">=</span><span class="token string">"/run/secrets/wp_db_password"</span> <span class="token punctuation">\</span>
-     -e <span class="token assign-left variable">WORDPRESS_DB_HOST</span><span class="token operator">=</span><span class="token string">"mysql:3306"</span> <span class="token punctuation">\</span>
-     -e <span class="token assign-left variable">WORDPRESS_DB_NAME</span><span class="token operator">=</span><span class="token string">"wordpress"</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">--name</span> wordpress <span class="token punctuation">\</span>
+     <span class="token parameter variable">--replicas</span> <span class="token number">1</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">--network</span> mysql_private <span class="token punctuation">\</span>
+     <span class="token parameter variable">--publish</span> <span class="token assign-left variable">target</span><span class="token operator">=</span><span class="token number">30000</span>,port<span class="token operator">=</span><span class="token number">80</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">--mount</span> <span class="token assign-left variable">type</span><span class="token operator">=</span>volume,source<span class="token operator">=</span>wpdata,destination<span class="token operator">=</span>/var/www/html <span class="token punctuation">\</span>
+     <span class="token parameter variable">--secret</span> <span class="token assign-left variable">source</span><span class="token operator">=</span>mysql_password,target<span class="token operator">=</span>wp_db_password,mode<span class="token operator">=</span>0444 <span class="token punctuation">\</span>
+     <span class="token parameter variable">-e</span> <span class="token assign-left variable">WORDPRESS_DB_USER</span><span class="token operator">=</span><span class="token string">"wordpress"</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">-e</span> <span class="token assign-left variable">WORDPRESS_DB_PASSWORD_FILE</span><span class="token operator">=</span><span class="token string">"/run/secrets/wp_db_password"</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">-e</span> <span class="token assign-left variable">WORDPRESS_DB_HOST</span><span class="token operator">=</span><span class="token string">"mysql:3306"</span> <span class="token punctuation">\</span>
+     <span class="token parameter variable">-e</span> <span class="token assign-left variable">WORDPRESS_DB_NAME</span><span class="token operator">=</span><span class="token string">"wordpress"</span> <span class="token punctuation">\</span>
      wordpress:latest</code></pre>
 
 <p>查看服务</p>
@@ -3364,10 +3364,10 @@ ID                          NAME                CREATED             UPDATED
 yod8fx8iiqtoo84jgwadp86yk   redis.conf          <span class="token number">4</span> seconds ago       <span class="token number">4</span> seconds ago</code></pre>
 
 <h3 id="创建-redis-服务"><a href="#创建-redis-服务" class="headerlink" title="创建 redis 服务"></a>创建 redis 服务</h3><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> <span class="token function">service</span> create <span class="token punctuation">\</span>
-     --name redis <span class="token punctuation">\</span>
+     <span class="token parameter variable">--name</span> redis <span class="token punctuation">\</span>
      <span class="token comment"># --config source=redis.conf,target=/etc/redis.conf \</span>
-     --config redis.conf <span class="token punctuation">\</span>
-     -p <span class="token number">6379</span>:6380 <span class="token punctuation">\</span>
+     <span class="token parameter variable">--config</span> redis.conf <span class="token punctuation">\</span>
+     <span class="token parameter variable">-p</span> <span class="token number">6379</span>:6380 <span class="token punctuation">\</span>
      redis:latest <span class="token punctuation">\</span>
      redis-server /redis.conf</code></pre>
 
@@ -3380,7 +3380,7 @@ yod8fx8iiqtoo84jgwadp86yk   redis.conf          <span class="token number">4</sp
 <p>这样做的弊端很明显，如果新部署的服务出现问题，原来的服务删除之后，很难恢复，那么在 Swarm mode 中到底该如何对服务进行滚动升级呢？</p>
 <p>答案就是使用 <code>docker service update</code> 命令。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> <span class="token function">service</span> update <span class="token punctuation">\</span>
-    --image nginx:1.13.12-alpine <span class="token punctuation">\</span>
+    <span class="token parameter variable">--image</span> nginx:1.13.12-alpine <span class="token punctuation">\</span>
     nginx</code></pre>
 
 <p>以上命令使用 <code>--image</code> 选项更新了服务的镜像。当然我们也可以使用 <code>docker service update</code> 更新任意的配置。</p>
@@ -3529,14 +3529,14 @@ i7ynkbg6ybq5         <span class="token punctuation">\</span>_ nginx.1         n
 </ul>
 <h3 id="网络配置细节"><a href="#网络配置细节" class="headerlink" title="网络配置细节"></a>网络配置细节</h3><p>用户使用 <code>--net=none</code> 后，可以自行配置网络，让容器达到跟平常一样具有访问网络的权限。通过这个过程，可以了解 Docker 配置网络的细节。</p>
 <p>首先，启动一个 <code>/bin/bash</code> 容器，指定 <code>--net=none</code> 参数。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run -i -t --rm --net<span class="token operator">=</span>none base /bin/bash
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">-i</span> <span class="token parameter variable">-t</span> <span class="token parameter variable">--rm</span> <span class="token parameter variable">--net</span><span class="token operator">=</span>none base /bin/bash
 root@63f36fc01b5f:/<span class="token comment">#</span></code></pre>
 <p>在本地主机查找容器的进程 id，并为它创建网络命名空间。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> inspect -f <span class="token string">'&#123;&#123;.State.Pid&#125;&#125;'</span> 63f36fc01b5f
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> inspect <span class="token parameter variable">-f</span> <span class="token string">'&#123;&#123;.State.Pid&#125;&#125;'</span> 63f36fc01b5f
 <span class="token number">2778</span>
 $ <span class="token assign-left variable">pid</span><span class="token operator">=</span><span class="token number">2778</span>
-$ <span class="token function">sudo</span> <span class="token function">mkdir</span> -p /var/run/netns
-$ <span class="token function">sudo</span> <span class="token function">ln</span> -s /proc/<span class="token variable">$pid</span>/ns/net /var/run/netns/<span class="token variable">$pid</span></code></pre>
+$ <span class="token function">sudo</span> <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /var/run/netns
+$ <span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /proc/<span class="token variable">$pid</span>/ns/net /var/run/netns/<span class="token variable">$pid</span></code></pre>
 <p>检查桥接网卡的 IP 和子网掩码信息。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">ip</span> addr show docker0
 <span class="token number">21</span>: docker0: <span class="token punctuation">..</span>.
@@ -3652,7 +3652,7 @@ $ <span class="token function">sudo</span> <span class="token function">ip</span
 <span class="token instruction"><span class="token keyword">RUN</span> <span class="token options"><span class="token property">--mount</span><span class="token punctuation">=</span><span class="token string">type=secret,id=aws,target=/root/.aws/credentials</span></span> <span class="token operator">\</span>
         cat /root/.aws/credentials</span></code></pre>
 
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build -t <span class="token builtin class-name">test</span> --secret <span class="token assign-left variable">id</span><span class="token operator">=</span>aws,src<span class="token operator">=</span><span class="token environment constant">$HOME</span>/.aws/credentials <span class="token builtin class-name">.</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> <span class="token builtin class-name">test</span> <span class="token parameter variable">--secret</span> <span class="token assign-left variable">id</span><span class="token operator">=</span>aws,src<span class="token operator">=</span><span class="token environment constant">$HOME</span>/.aws/credentials <span class="token builtin class-name">.</span></code></pre>
 
 <h4 id="RUN-mount-type-ssh"><a href="#RUN-mount-type-ssh" class="headerlink" title="RUN --mount=type=ssh"></a><code>RUN --mount=type=ssh</code></h4><p>该指令可以挂载 <code>ssh</code> 密钥。</p>
 <pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token comment"># syntax = docker/dockerfile:experimental</span>
@@ -3664,7 +3664,7 @@ $ <span class="token function">sudo</span> <span class="token function">ip</span
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token builtin class-name">eval</span> <span class="token variable"><span class="token variable">$(</span>ssh-agent<span class="token variable">)</span></span>
 $ ssh-add ~/.ssh/id_rsa
 <span class="token punctuation">(</span>Input your passphrase here<span class="token punctuation">)</span>
-$ <span class="token function">docker</span> build -t <span class="token builtin class-name">test</span> --ssh <span class="token assign-left variable">default</span><span class="token operator">=</span><span class="token environment constant">$SSH_AUTH_SOCK</span> <span class="token builtin class-name">.</span></code></pre>
+$ <span class="token function">docker</span> build <span class="token parameter variable">-t</span> <span class="token builtin class-name">test</span> <span class="token parameter variable">--ssh</span> <span class="token assign-left variable">default</span><span class="token operator">=</span><span class="token environment constant">$SSH_AUTH_SOCK</span> <span class="token builtin class-name">.</span></code></pre>
 
 <h3 id="docker-compose-build-使用-Buildkit"><a href="#docker-compose-build-使用-Buildkit" class="headerlink" title="docker-compose build 使用 Buildkit"></a>docker-compose build 使用 Buildkit</h3><p>设置 <code>COMPOSE_DOCKER_CLI_BUILD=1</code> 环境变量即可使用。</p>
 <h3 id="官方文档-1"><a href="#官方文档-1" class="headerlink" title="官方文档"></a>官方文档</h3><ul>
@@ -3682,16 +3682,16 @@ $ <span class="token function">docker</span> build -t <span class="token builtin
 <h2 id="使用-buildx-构建多种系统架构支持的-Docker-镜像"><a href="#使用-buildx-构建多种系统架构支持的-Docker-镜像" class="headerlink" title="使用 buildx 构建多种系统架构支持的 Docker 镜像"></a>使用 buildx 构建多种系统架构支持的 Docker 镜像</h2><p>在之前的版本中构建多种系统架构支持的 Docker 镜像，要想使用统一的名字必须使用 <a href="../image/manifest.md"><code>$ docker manifest</code></a> 命令。</p>
 <p>在 Docker 19.03+ 版本中可以使用 <code>$ docker buildx build</code> 命令使用 <code>BuildKit</code> 构建镜像。该命令支持 <code>--platform</code> 参数可以同时构建支持多种系统架构的 Docker 镜像，大大简化了构建步骤。</p>
 <h3 id="新建-builder-实例"><a href="#新建-builder-实例" class="headerlink" title="新建 builder 实例"></a>新建 <code>builder</code> 实例</h3><p>Docker for Linux 不支持构建 <code>arm</code> 架构镜像，我们可以运行一个新的容器让其支持该特性，Docker 桌面版无需进行此项设置。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run --rm --privileged tonistiigi/binfmt:latest --install all</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token parameter variable">--privileged</span> tonistiigi/binfmt:latest <span class="token parameter variable">--install</span> all</code></pre>
 
 <p>由于 Docker 默认的 <code>builder</code> 实例不支持同时指定多个 <code>--platform</code>，我们必须首先创建一个新的 <code>builder</code> 实例。同时由于国内拉取镜像较缓慢，我们可以使用配置了 <a target="_blank" rel="noopener" href="https://github.com/moby/buildkit/blob/master/docs/buildkitd.toml.md">镜像加速地址</a>  的 <a target="_blank" rel="noopener" href="https://github.com/docker-practice/buildx"><code>dockerpracticesig/buildkit:master</code></a> 镜像替换官方镜像。</p>
 <blockquote>
 <p>如果你有私有的镜像加速器，可以基于 <a target="_blank" rel="noopener" href="https://github.com/docker-practice/buildx">https://github.com/docker-practice/buildx</a> 构建自己的 buildkit 镜像并使用它。</p>
 </blockquote>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 适用于国内环境</span>
-$ <span class="token function">docker</span> buildx create --use --name<span class="token operator">=</span>mybuilder-cn --driver docker-container --driver-opt <span class="token assign-left variable">image</span><span class="token operator">=</span>dockerpracticesig/buildkit:master
+$ <span class="token function">docker</span> buildx create <span class="token parameter variable">--use</span> <span class="token parameter variable">--name</span><span class="token operator">=</span>mybuilder-cn <span class="token parameter variable">--driver</span> docker-container --driver-opt <span class="token assign-left variable">image</span><span class="token operator">=</span>dockerpracticesig/buildkit:master
 <span class="token comment"># 适用于腾讯云环境(腾讯云主机、coding.net 持续集成)</span>
-$ <span class="token function">docker</span> buildx create --use --name<span class="token operator">=</span>mybuilder-cn --driver docker-container --driver-opt <span class="token assign-left variable">image</span><span class="token operator">=</span>dockerpracticesig/buildkit:master-tencent
+$ <span class="token function">docker</span> buildx create <span class="token parameter variable">--use</span> <span class="token parameter variable">--name</span><span class="token operator">=</span>mybuilder-cn <span class="token parameter variable">--driver</span> docker-container --driver-opt <span class="token assign-left variable">image</span><span class="token operator">=</span>dockerpracticesig/buildkit:master-tencent
 <span class="token comment"># $ docker buildx create --name mybuilder --driver docker-container</span>
 $ <span class="token function">docker</span> buildx use mybuilder</code></pre>
 
@@ -3702,19 +3702,19 @@ $ <span class="token function">docker</span> buildx use mybuilder</code></pre>
 
 <p>使用 <code>$ docker buildx build</code> 命令构建镜像，注意将 <code>myusername</code> 替换为自己的 Docker Hub 用户名。</p>
 <p><code>--push</code> 参数表示将构建好的镜像推送到 Docker 仓库。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> buildx build --platform linux/arm,linux/arm64,linux/amd64 -t myusername/hello <span class="token builtin class-name">.</span> --push
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> buildx build <span class="token parameter variable">--platform</span> linux/arm,linux/arm64,linux/amd64 <span class="token parameter variable">-t</span> myusername/hello <span class="token builtin class-name">.</span> <span class="token parameter variable">--push</span>
 <span class="token comment"># 查看镜像信息</span>
 $ <span class="token function">docker</span> buildx imagetools inspect myusername/hello</code></pre>
 
 <p>在不同架构运行该镜像，可以得到该架构的信息。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># arm</span>
-$ <span class="token function">docker</span> run -it --rm myusername/hello
+$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> <span class="token parameter variable">--rm</span> myusername/hello
 Linux buildkitsandbox <span class="token number">4.9</span>.125-linuxkit <span class="token comment">#1 SMP Fri Sep 7 08:20:28 UTC 2018 armv7l Linux</span>
 <span class="token comment"># arm64</span>
-$ <span class="token function">docker</span> run -it --rm myusername/hello
+$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> <span class="token parameter variable">--rm</span> myusername/hello
 Linux buildkitsandbox <span class="token number">4.9</span>.125-linuxkit <span class="token comment">#1 SMP Fri Sep 7 08:20:28 UTC 2018 aarch64 Linux</span>
 <span class="token comment"># amd64</span>
-$ <span class="token function">docker</span> run -it --rm myusername/hello
+$ <span class="token function">docker</span> run <span class="token parameter variable">-it</span> <span class="token parameter variable">--rm</span> myusername/hello
 Linux buildkitsandbox <span class="token number">4.9</span>.125-linuxkit <span class="token comment">#1 SMP Fri Sep 7 08:20:28 UTC 2018 x86_64 Linux</span></code></pre>
 
 <h3 id="架构相关变量"><a href="#架构相关变量" class="headerlink" title="架构相关变量"></a>架构相关变量</h3><p><code>Dockerfile</code> 支持如下架构相关的变量</p>
@@ -3773,9 +3773,9 @@ Linux buildkitsandbox <span class="token number">4.9</span>.125-linuxkit <span c
 </blockquote>
 <h3 id="二进制文件方式下载"><a href="#二进制文件方式下载" class="headerlink" title="二进制文件方式下载"></a>二进制文件方式下载</h3><p>编译好的二进制文件都在 <a target="_blank" rel="noopener" href="https://github.com/etcd-io/etcd/releases/">github.com&#x2F;etcd-io&#x2F;etcd&#x2F;releases</a> 页面，用户可以选择需要的版本，或通过下载工具下载。</p>
 <p>例如，使用 <code>curl</code> 工具下载压缩包，并解压。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">curl</span> -L https://github.com/etcd-io/etcd/releases/download/v3.4.0/etcd-v3.4.0-linux-amd64.tar.gz -o etcd-v3.4.0-linux-amd64.tar.gz
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">curl</span> <span class="token parameter variable">-L</span> https://github.com/etcd-io/etcd/releases/download/v3.4.0/etcd-v3.4.0-linux-amd64.tar.gz <span class="token parameter variable">-o</span> etcd-v3.4.0-linux-amd64.tar.gz
 <span class="token comment"># 国内用户可以使用以下方式加快下载</span>
-$ <span class="token function">curl</span> -L https://download.fastgit.org/etcd-io/etcd/releases/download/v3.4.0/etcd-v3.4.0-linux-amd64.tar.gz -o etcd-v3.4.0-linux-amd64.tar.gz
+$ <span class="token function">curl</span> <span class="token parameter variable">-L</span> https://download.fastgit.org/etcd-io/etcd/releases/download/v3.4.0/etcd-v3.4.0-linux-amd64.tar.gz <span class="token parameter variable">-o</span> etcd-v3.4.0-linux-amd64.tar.gz
 $ <span class="token function">tar</span> xzvf etcd-v3.4.0-linux-amd64.tar.gz
 $ <span class="token builtin class-name">cd</span> etcd-v3.4.0-linux-amd64</code></pre>
 
@@ -3805,13 +3805,13 @@ hello world</code></pre>
 <p>说明 etcd 服务已经成功启动了。</p>
 <h3 id="Docker-镜像方式运行"><a href="#Docker-镜像方式运行" class="headerlink" title="Docker 镜像方式运行"></a>Docker 镜像方式运行</h3><p>镜像名称为 <code>quay.io/coreos/etcd</code>，可以通过下面的命令启动 <code>etcd</code> 服务监听到 <code>2379</code> 和 <code>2380</code> 端口。</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token punctuation">\</span>
--p <span class="token number">2379</span>:2379 <span class="token punctuation">\</span>
--p <span class="token number">2380</span>:2380 <span class="token punctuation">\</span>
---mount <span class="token assign-left variable">type</span><span class="token operator">=</span>bind,source<span class="token operator">=</span>/tmp/etcd-data.tmp,destination<span class="token operator">=</span>/etcd-data <span class="token punctuation">\</span>
---name etcd-gcr-v3.4.0 <span class="token punctuation">\</span>
+<span class="token parameter variable">-p</span> <span class="token number">2379</span>:2379 <span class="token punctuation">\</span>
+<span class="token parameter variable">-p</span> <span class="token number">2380</span>:2380 <span class="token punctuation">\</span>
+<span class="token parameter variable">--mount</span> <span class="token assign-left variable">type</span><span class="token operator">=</span>bind,source<span class="token operator">=</span>/tmp/etcd-data.tmp,destination<span class="token operator">=</span>/etcd-data <span class="token punctuation">\</span>
+<span class="token parameter variable">--name</span> etcd-gcr-v3.4.0 <span class="token punctuation">\</span>
 quay.io/coreos/etcd:v3.4.0 <span class="token punctuation">\</span>
 /usr/local/bin/etcd <span class="token punctuation">\</span>
---name s1 <span class="token punctuation">\</span>
+<span class="token parameter variable">--name</span> s1 <span class="token punctuation">\</span>
 --data-dir /etcd-data <span class="token punctuation">\</span>
 --listen-client-urls http://0.0.0.0:2379 <span class="token punctuation">\</span>
 --advertise-client-urls http://0.0.0.0:2379 <span class="token punctuation">\</span>
@@ -3821,7 +3821,7 @@ quay.io/coreos/etcd:v3.4.0 <span class="token punctuation">\</span>
 --initial-cluster-token tkn <span class="token punctuation">\</span>
 --initial-cluster-state new <span class="token punctuation">\</span>
 --log-level info <span class="token punctuation">\</span>
---logger zap <span class="token punctuation">\</span>
+<span class="token parameter variable">--logger</span> zap <span class="token punctuation">\</span>
 --log-outputs stderr</code></pre>
 
 <p>打开新的终端按照上一步的方法测试 <code>etcd</code> 是否成功启动。</p>
@@ -3965,8 +3965,8 @@ COMMANDS:
 	alarm disarm		Disarms all alarms
 	alarm list		Lists all alarms
 	defrag			Defragments the storage of the etcd members with given endpoints
-	endpoint health		Checks the healthiness of endpoints specified <span class="token keyword">in</span> <span class="token variable"><span class="token variable">`</span>--endpoints<span class="token variable">`</span></span> flag
-	endpoint status		Prints out the status of endpoints specified <span class="token keyword">in</span> <span class="token variable"><span class="token variable">`</span>--endpoints<span class="token variable">`</span></span> flag
+	endpoint health		Checks the healthiness of endpoints specified <span class="token keyword">in</span> <span class="token variable"><span class="token variable">`</span><span class="token parameter variable">--endpoints</span><span class="token variable">`</span></span> flag
+	endpoint status		Prints out the status of endpoints specified <span class="token keyword">in</span> <span class="token variable"><span class="token variable">`</span><span class="token parameter variable">--endpoints</span><span class="token variable">`</span></span> flag
 	<span class="token function">watch</span>			Watches events stream on keys or prefixes
 	version			Prints the version of etcdctl
 	lease grant		Creates leases
@@ -4002,17 +4002,17 @@ COMMANDS:
 	check perf		Check the performance of the etcd cluster
 	<span class="token builtin class-name">help</span>			Help about any <span class="token builtin class-name">command</span>
 OPTIONS:
-      --cacert<span class="token operator">=</span><span class="token string">""</span>				verify certificates of TLS-enabled secure servers using this CA bundle
-      --cert<span class="token operator">=</span><span class="token string">""</span>					identify secure client using this TLS certificate <span class="token function">file</span>
+      <span class="token parameter variable">--cacert</span><span class="token operator">=</span><span class="token string">""</span>				verify certificates of TLS-enabled secure servers using this CA bundle
+      <span class="token parameter variable">--cert</span><span class="token operator">=</span><span class="token string">""</span>					identify secure client using this TLS certificate <span class="token function">file</span>
       --command-timeout<span class="token operator">=</span>5s			<span class="token function">timeout</span> <span class="token keyword">for</span> short running <span class="token builtin class-name">command</span> <span class="token punctuation">(</span>excluding dial <span class="token function">timeout</span><span class="token punctuation">)</span>
       --debug<span class="token punctuation">[</span><span class="token operator">=</span>false<span class="token punctuation">]</span>				<span class="token builtin class-name">enable</span> client-side debug logging
       --dial-timeout<span class="token operator">=</span>2s				dial <span class="token function">timeout</span> <span class="token keyword">for</span> client connections
-      --endpoints<span class="token operator">=</span><span class="token punctuation">[</span><span class="token number">127.0</span>.0.1:2379<span class="token punctuation">]</span>		gRPC endpoints
+      <span class="token parameter variable">--endpoints</span><span class="token operator">=</span><span class="token punctuation">[</span><span class="token number">127.0</span>.0.1:2379<span class="token punctuation">]</span>		gRPC endpoints
       --hex<span class="token punctuation">[</span><span class="token operator">=</span>false<span class="token punctuation">]</span>				print byte strings as hex encoded strings
       --insecure-skip-tls-verify<span class="token punctuation">[</span><span class="token operator">=</span>false<span class="token punctuation">]</span>	skip server certificate verification
       --insecure-transport<span class="token punctuation">[</span><span class="token operator">=</span>true<span class="token punctuation">]</span>		disable transport security <span class="token keyword">for</span> client connections
-      --key<span class="token operator">=</span><span class="token string">""</span>					identify secure client using this TLS key <span class="token function">file</span>
-      --user<span class="token operator">=</span><span class="token string">""</span>					username<span class="token punctuation">[</span>:password<span class="token punctuation">]</span> <span class="token keyword">for</span> authentication <span class="token punctuation">(</span>prompt <span class="token keyword">if</span> password is not supplied<span class="token punctuation">)</span>
+      <span class="token parameter variable">--key</span><span class="token operator">=</span><span class="token string">""</span>					identify secure client using this TLS key <span class="token function">file</span>
+      <span class="token parameter variable">--user</span><span class="token operator">=</span><span class="token string">""</span>					username<span class="token punctuation">[</span>:password<span class="token punctuation">]</span> <span class="token keyword">for</span> authentication <span class="token punctuation">(</span>prompt <span class="token keyword">if</span> password is not supplied<span class="token punctuation">)</span>
   -w, --write-out<span class="token operator">=</span><span class="token string">"simple"</span>			<span class="token builtin class-name">set</span> the output <span class="token function">format</span> <span class="token punctuation">(</span>fields, json, protobuf, simple, table<span class="token punctuation">)</span></code></pre>
 
 <h3 id="数据库操作"><a href="#数据库操作" class="headerlink" title="数据库操作"></a>数据库操作</h3><p>数据库操作围绕对键值和目录的 CRUD （符合 REST 风格的一套操作：Create）完整生命周期的管理。</p>
@@ -4063,11 +4063,11 @@ testkey
 <li><a target="_blank" rel="noopener" href="https://docs.openshift.com/container-platform/4.3/architecture/architecture-rhcos.html">openshift 官方文档</a></li>
 </ul>
 <h1 id="podman"><a href="#podman" class="headerlink" title="podman"></a>podman</h1><p><a target="_blank" rel="noopener" href="https://github.com/containers/podman"><code>podman</code></a> 是一个无守护程序与 docker 命令兼容的下一代 Linux 容器工具。</p>
-<h2 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h2><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> yum -y <span class="token function">install</span> <span class="token function">podman</span></code></pre>
+<h2 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h2><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> yum <span class="token parameter variable">-y</span> <span class="token function">install</span> <span class="token function">podman</span></code></pre>
 
 <h2 id="使用-2"><a href="#使用-2" class="headerlink" title="使用"></a>使用</h2><p><code>podman</code> 与 docker 命令完全兼容，只需将 <code>docker</code> 替换为 <code>podman</code> 即可，例如运行一个容器：</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># $ docker run -d -p 80:80 nginx:alpine</span>
-$ <span class="token function">podman</span> run -d -p <span class="token number">80</span>:80 nginx:alpine</code></pre>
+$ <span class="token function">podman</span> run <span class="token parameter variable">-d</span> <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 nginx:alpine</code></pre>
 
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://developers.redhat.com/blog/2019/02/21/podman-and-buildah-for-docker-users/">https://developers.redhat.com/blog/2019/02/21/podman-and-buildah-for-docker-users/</a></li>
@@ -4096,14 +4096,14 @@ $ <span class="token function">podman</span> run -d -p <span class="token number
 <h3 id="如何停止所有正在运行的容器？"><a href="#如何停止所有正在运行的容器？" class="headerlink" title="如何停止所有正在运行的容器？"></a>如何停止所有正在运行的容器？</h3><p>答：可以使用 <code>docker stop $(docker container ls -q)</code> 命令。</p>
 <h3 id="如何批量清理已经停止的容器？"><a href="#如何批量清理已经停止的容器？" class="headerlink" title="如何批量清理已经停止的容器？"></a>如何批量清理已经停止的容器？</h3><p>答：可以使用 <code>docker container prune</code> 命令。</p>
 <h3 id="如何获取某个容器的-PID-信息？"><a href="#如何获取某个容器的-PID-信息？" class="headerlink" title="如何获取某个容器的 PID 信息？"></a>如何获取某个容器的 PID 信息？</h3><p>答：可以使用</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> inspect --format <span class="token string">'&#123;&#123; .State.Pid &#125;&#125;'</span> <span class="token operator">&lt;</span>CONTAINER ID or NAME<span class="token operator">></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> inspect <span class="token parameter variable">--format</span> <span class="token string">'&#123;&#123; .State.Pid &#125;&#125;'</span> <span class="token operator">&lt;</span>CONTAINER ID or NAME<span class="token operator">></span></code></pre>
 
 <h3 id="如何获取某个容器的-IP-地址？"><a href="#如何获取某个容器的-IP-地址？" class="headerlink" title="如何获取某个容器的 IP 地址？"></a>如何获取某个容器的 IP 地址？</h3><p>答：可以使用</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> inspect --format <span class="token string">'&#123;&#123; .NetworkSettings.IPAddress &#125;&#125;'</span> <span class="token operator">&lt;</span>CONTAINER ID or NAME<span class="token operator">></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> inspect <span class="token parameter variable">--format</span> <span class="token string">'&#123;&#123; .NetworkSettings.IPAddress &#125;&#125;'</span> <span class="token operator">&lt;</span>CONTAINER ID or NAME<span class="token operator">></span></code></pre>
 
 <h3 id="如何给容器指定一个固定-IP-地址，而不是每次重启容器-IP-地址都会变？"><a href="#如何给容器指定一个固定-IP-地址，而不是每次重启容器-IP-地址都会变？" class="headerlink" title="如何给容器指定一个固定 IP 地址，而不是每次重启容器 IP 地址都会变？"></a>如何给容器指定一个固定 IP 地址，而不是每次重启容器 IP 地址都会变？</h3><p>答：使用以下命令启动容器可以使容器 IP 固定不变</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> network create -d bridge --subnet <span class="token number">172.25</span>.0.0/16 my-net
-$ <span class="token function">docker</span> run --network<span class="token operator">=</span>my-net --ip<span class="token operator">=</span><span class="token number">172.25</span>.3.3 -itd --name<span class="token operator">=</span>my-container busybox</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> network create <span class="token parameter variable">-d</span> bridge <span class="token parameter variable">--subnet</span> <span class="token number">172.25</span>.0.0/16 my-net
+$ <span class="token function">docker</span> run <span class="token parameter variable">--network</span><span class="token operator">=</span>my-net <span class="token parameter variable">--ip</span><span class="token operator">=</span><span class="token number">172.25</span>.3.3 <span class="token parameter variable">-itd</span> <span class="token parameter variable">--name</span><span class="token operator">=</span>my-container busybox</code></pre>
 
 <h3 id="如何临时退出一个正在交互的容器的终端，而不终止它？"><a href="#如何临时退出一个正在交互的容器的终端，而不终止它？" class="headerlink" title="如何临时退出一个正在交互的容器的终端，而不终止它？"></a>如何临时退出一个正在交互的容器的终端，而不终止它？</h3><p>答：按 <code>Ctrl-p Ctrl-q</code>。如果按 <code>Ctrl-c</code> 往往会让容器内应用进程终止，进而会终止容器。</p>
 <h3 id="使用-docker-port-命令映射容器的端口时，系统报错“Error-No-public-port-‘80’-published-for-xxx”？"><a href="#使用-docker-port-命令映射容器的端口时，系统报错“Error-No-public-port-‘80’-published-for-xxx”？" class="headerlink" title="使用 docker port 命令映射容器的端口时，系统报错“Error: No public port ‘80’ published for xxx”？"></a>使用 <code>docker port</code> 命令映射容器的端口时，系统报错“Error: No public port ‘80’ published for xxx”？</h3><p>答：</p>
@@ -4120,20 +4120,20 @@ $ <span class="token function">docker</span> run --network<span class="token ope
 <h2 id="配置相关"><a href="#配置相关" class="headerlink" title="配置相关"></a>配置相关</h2><h3 id="Docker-的配置文件放在哪里，如何修改配置？"><a href="#Docker-的配置文件放在哪里，如何修改配置？" class="headerlink" title="Docker 的配置文件放在哪里，如何修改配置？"></a>Docker 的配置文件放在哪里，如何修改配置？</h3><p>答：使用 <code>systemd</code> 的系统（如 Ubuntu 16.04、Centos 等）的配置文件在 <code>/etc/docker/daemon.json</code>。</p>
 <h3 id="如何更改-Docker-的默认存储位置？"><a href="#如何更改-Docker-的默认存储位置？" class="headerlink" title="如何更改 Docker 的默认存储位置？"></a>如何更改 Docker 的默认存储位置？</h3><p>答：Docker 的默认存储位置是 <code>/var/lib/docker</code>，如果希望将 Docker 的本地文件存储到其他分区，可以使用 Linux 软连接的方式来完成，或者在启动 daemon 时通过 <code>-g</code> 参数指定，或者修改配置文件 <code>/etc/docker/daemon.json</code> 的 “data-root” 项 。可以使用 <code>docker system info | grep &quot;Root Dir&quot;</code> 查看当前使用的存储位置。</p>
 <p>例如，如下操作将默认存储位置迁移到 &#x2F;storage&#x2F;docker。</p>
-<pre class="language-sh" data-language="sh"><code class="language-sh">[root@s26 ~]# df -h
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@s26 ~<span class="token punctuation">]</span><span class="token comment"># df -h</span>
 Filesystem                    Size  Used Avail Use% Mounted on
-&#x2F;dev&#x2F;mapper&#x2F;VolGroup-lv_root   50G  5.3G   42G  12% &#x2F;
-tmpfs                          48G  228K   48G   1% &#x2F;dev&#x2F;shm
-&#x2F;dev&#x2F;sda1                     485M   40M  420M   9% &#x2F;boot
-&#x2F;dev&#x2F;mapper&#x2F;VolGroup-lv_home  222G  188M  210G   1% &#x2F;home
-&#x2F;dev&#x2F;sdb2                     2.7T  323G  2.3T  13% &#x2F;storage
-[root@s26 ~]# service docker stop
-[root@s26 ~]# cd &#x2F;var&#x2F;lib&#x2F;
-[root@s26 lib]# mv docker &#x2F;storage&#x2F;
-[root@s26 lib]# ln -s &#x2F;storage&#x2F;docker&#x2F; docker
-[root@s26 lib]# ls -la docker
-lrwxrwxrwx. 1 root root 15 11月 17 13:43 docker -&gt; &#x2F;storage&#x2F;docker
-[root@s26 lib]# service docker start</code></pre>
+/dev/mapper/VolGroup-lv_root   50G  <span class="token number">5</span>.3G   42G  <span class="token number">12</span>% /
+tmpfs                          48G  228K   48G   <span class="token number">1</span>% /dev/shm
+/dev/sda1                     485M   40M  420M   <span class="token number">9</span>% /boot
+/dev/mapper/VolGroup-lv_home  222G  188M  210G   <span class="token number">1</span>% /home
+/dev/sdb2                     <span class="token number">2</span>.7T  323G  <span class="token number">2</span>.3T  <span class="token number">13</span>% /storage
+<span class="token punctuation">[</span>root@s26 ~<span class="token punctuation">]</span><span class="token comment"># service docker stop</span>
+<span class="token punctuation">[</span>root@s26 ~<span class="token punctuation">]</span><span class="token comment"># cd /var/lib/</span>
+<span class="token punctuation">[</span>root@s26 lib<span class="token punctuation">]</span><span class="token comment"># mv docker /storage/</span>
+<span class="token punctuation">[</span>root@s26 lib<span class="token punctuation">]</span><span class="token comment"># ln -s /storage/docker/ docker</span>
+<span class="token punctuation">[</span>root@s26 lib<span class="token punctuation">]</span><span class="token comment"># ls -la docker</span>
+lrwxrwxrwx. <span class="token number">1</span> root root <span class="token number">15</span> <span class="token number">11</span>月 <span class="token number">17</span> <span class="token number">13</span>:43 <span class="token function">docker</span> -<span class="token operator">></span> /storage/docker
+<span class="token punctuation">[</span>root@s26 lib<span class="token punctuation">]</span><span class="token comment"># service docker start</span></code></pre>
 
 <h3 id="使用内存和-swap-限制启动容器时候报警告：”WARNING-Your-kernel-does-not-support-cgroup-swap-limit-WARNING-Your-kernel-does-not-support-swap-limit-capabilities-Limitation-discarded-”？"><a href="#使用内存和-swap-限制启动容器时候报警告：”WARNING-Your-kernel-does-not-support-cgroup-swap-limit-WARNING-Your-kernel-does-not-support-swap-limit-capabilities-Limitation-discarded-”？" class="headerlink" title="使用内存和 swap 限制启动容器时候报警告：”WARNING: Your kernel does not support cgroup swap limit. WARNING: Your kernel does not support swap limit capabilities. Limitation discarded.”？"></a>使用内存和 swap 限制启动容器时候报警告：”WARNING: Your kernel does not support cgroup swap limit. WARNING: Your kernel does not support swap limit capabilities. Limitation discarded.”？</h3><p>答：这是因为系统默认没有开启对内存和 swap 使用的统计功能，引入该功能会带来性能的下降。要开启该功能，可以采取如下操作：</p>
 <ul>
@@ -4168,11 +4168,11 @@ lrwxrwxrwx. 1 root root 15 11月 17 13:43 docker -&gt; &#x2F;storage&#x2F;docker
 <h3 id="如何进入-Docker-容器的网络命名空间？"><a href="#如何进入-Docker-容器的网络命名空间？" class="headerlink" title="如何进入 Docker 容器的网络命名空间？"></a>如何进入 Docker 容器的网络命名空间？</h3><p>答：Docker 在创建容器后，删除了宿主主机上 <code>/var/run/netns</code> 目录中的相关的网络命名空间文件。因此，在宿主主机上是无法看到或访问容器的网络命名空间的。</p>
 <p>用户可以通过如下方法来手动恢复它。</p>
 <p>首先，使用下面的命令查看容器进程信息，比如这里的 1234。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> inspect --format<span class="token operator">=</span><span class="token string">'&#123;&#123;.State.Pid&#125;&#125; '</span> <span class="token variable">$container_id</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> inspect <span class="token parameter variable">--format</span><span class="token operator">=</span><span class="token string">'&#123;&#123;.State.Pid&#125;&#125; '</span> <span class="token variable">$container_id</span>
 <span class="token number">1234</span></code></pre>
 
 <p>接下来，在 <code>/proc</code> 目录下，把对应的网络命名空间文件链接到 <code>/var/run/netns</code> 目录。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">ln</span> -s /proc/1234/ns/net /var/run/netns/</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /proc/1234/ns/net /var/run/netns/</code></pre>
 
 <p>然后，在宿主主机上就可以看到容器的网络命名空间信息。例如</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">ip</span> netns show
@@ -4453,10 +4453,10 @@ lrwxrwxrwx. 1 root root 15 11月 17 13:43 docker -&gt; &#x2F;storage&#x2F;docker
 <p><code>ENTRYPOINT</code> 指令也可以结合一个辅助脚本使用，和前面命令行风格类似，即使启动工具需要不止一个步骤。</p>
 <p>例如，<code>Postgres</code> 官方镜像使用下面的脚本作为 <code>ENTRYPOINT</code>：</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-<span class="token builtin class-name">set</span> -e
+<span class="token builtin class-name">set</span> <span class="token parameter variable">-e</span>
 <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">=</span> <span class="token string">'postgres'</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-    <span class="token function">chown</span> -R postgres <span class="token string">"<span class="token variable">$PGDATA</span>"</span>
-    <span class="token keyword">if</span> <span class="token punctuation">[</span> -z <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">ls</span> -A <span class="token string">"<span class="token variable">$PGDATA</span>"</span><span class="token variable">)</span></span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token function">chown</span> <span class="token parameter variable">-R</span> postgres <span class="token string">"<span class="token variable">$PGDATA</span>"</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">ls</span> <span class="token parameter variable">-A</span> <span class="token string">"<span class="token variable">$PGDATA</span>"</span><span class="token variable">)</span></span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
         gosu postgres initdb
     <span class="token keyword">fi</span>
     <span class="token builtin class-name">exec</span> gosu postgres <span class="token string">"<span class="token variable">$@</span>"</span>
@@ -4475,10 +4475,10 @@ lrwxrwxrwx. 1 root root 15 11月 17 13:43 docker -&gt; &#x2F;storage&#x2F;docker
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run postgres</code></pre>
 
 <p>也可以执行 <code>Postgres</code> 并传递参数：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run postgres postgres --help</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run postgres postgres <span class="token parameter variable">--help</span></code></pre>
 
 <p>最后，你还可以启动另外一个完全不同的工具，比如 <code>Bash</code>：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run --rm -it postgres <span class="token function">bash</span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token parameter variable">-it</span> postgres <span class="token function">bash</span></code></pre>
 
 <h3 id="VOLUME"><a href="#VOLUME" class="headerlink" title="VOLUME"></a>VOLUME</h3><p><code>VOLUME</code> 指令用于暴露任何数据库存储文件，配置文件，或容器创建的文件和目录。强烈建议使用 <code>VOLUME</code> 来管理镜像中的可变部分和用户可以改变的部分。</p>
 <h3 id="USER"><a href="#USER" class="headerlink" title="USER"></a>USER</h3><p>如果某个服务不需要特权执行，建议使用 <code>USER</code> 指令切换到非 root 用户。先在 <code>Dockerfile</code> 中使用类似 <code>RUN groupadd -r postgres &amp;&amp; useradd -r -g postgres postgres</code> 的指令创建用户和用户组。</p>
@@ -4495,17 +4495,17 @@ lrwxrwxrwx. 1 root root 15 11月 17 13:43 docker -&gt; &#x2F;storage&#x2F;docker
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>重启守护进程。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">kill</span> -SIGHUP <span class="token variable"><span class="token variable">$(</span>pidof dockerd<span class="token variable">)</span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">kill</span> <span class="token parameter variable">-SIGHUP</span> <span class="token variable"><span class="token variable">$(</span>pidof dockerd<span class="token variable">)</span></span></code></pre>
 
 <p>此时 dockerd 会在日志中输入更多信息供分析。</p>
 <h2 id="检查内核日志"><a href="#检查内核日志" class="headerlink" title="检查内核日志"></a>检查内核日志</h2><pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">dmesg</span> <span class="token operator">|</span><span class="token function">grep</span> dockerd
 $ <span class="token function">sudo</span> <span class="token function">dmesg</span> <span class="token operator">|</span><span class="token function">grep</span> runc</code></pre>
 
 <h2 id="Docker-不响应时处理"><a href="#Docker-不响应时处理" class="headerlink" title="Docker 不响应时处理"></a>Docker 不响应时处理</h2><p>可以杀死 dockerd 进程查看其堆栈调用情况。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">kill</span> -SIGUSR1 <span class="token variable"><span class="token variable">$(</span>pidof dockerd<span class="token variable">)</span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">kill</span> <span class="token parameter variable">-SIGUSR1</span> <span class="token variable"><span class="token variable">$(</span>pidof dockerd<span class="token variable">)</span></span></code></pre>
 
 <h2 id="重置-Docker-本地数据"><a href="#重置-Docker-本地数据" class="headerlink" title="重置 Docker 本地数据"></a>重置 Docker 本地数据</h2><p><em>注意，本操作会移除所有的 Docker 本地数据，包括镜像和容器等。</em></p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">rm</span> -rf /var/lib/docker</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">rm</span> <span class="token parameter variable">-rf</span> /var/lib/docker</code></pre>
 
 <h1 id="资源链接"><a href="#资源链接" class="headerlink" title="资源链接"></a>资源链接</h1><h2 id="官方网站"><a href="#官方网站" class="headerlink" title="官方网站"></a>官方网站</h2><ul>
 <li>Docker 官方主页：<a target="_blank" rel="noopener" href="https://www.docker.com/">https://www.docker.com</a></li>

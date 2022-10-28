@@ -346,7 +346,7 @@ $ <span class="token builtin class-name">export</span> <span class="token assign
 <p>如果你将你的代码放到了某处的源码库，那就应当使用该源码库的根目录作为你的基本路径。 例如，若你在 <a target="_blank" rel="noopener" href="https://github.com/">GitHub</a> 上有账户 <code>github.com/user</code> 那么它就应该是你的基本路径。</p>
 <p>注意，在你能构建这些代码之前，无需将其公布到远程代码库上。只是若你某天会发布它， 这会是个好习惯。在实践中，你可以选择任何路径名，只要它对于标准库和更大的Go生态系统来说， 是唯一的就行。</p>
 <p>我们将使用 <code>github.com/user</code> 作为基本路径。在你的工作空间里创建一个目录， 我们将源码存放到其中：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">mkdir</span> -p <span class="token variable">$GOPATH</span>/src/github.com/user</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token variable">$GOPATH</span>/src/github.com/user</code></pre>
 
 <h2 id="你的第一个程序"><a href="#你的第一个程序" class="headerlink" title="你的第一个程序"></a>你的第一个程序</h2><p>要编译并运行简单的程序，首先要选择包路径（我们在这里使用 <code>github.com/user/hello</code>），并在你的工作空间内创建相应的包目录：</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">mkdir</span> <span class="token variable">$GOPATH</span>/src/github.com/user/hello</code></pre>
@@ -383,7 +383,7 @@ Hello, world.</code></pre>
 $ <span class="token function">git</span> init
 Initialized empty Git repository <span class="token keyword">in</span> /home/user/work/src/github.com/user/hello/.git/
 $ <span class="token function">git</span> <span class="token function">add</span> hello.go
-$ <span class="token function">git</span> commit -m <span class="token string">"initial commit"</span>
+$ <span class="token function">git</span> commit <span class="token parameter variable">-m</span> <span class="token string">"initial commit"</span>
 <span class="token punctuation">[</span>master <span class="token punctuation">(</span>root-commit<span class="token punctuation">)</span> 0b4507d<span class="token punctuation">]</span> initial commit
  <span class="token number">1</span> <span class="token function">file</span> changed, <span class="token number">1</span> insertion<span class="token punctuation">(</span>+<span class="token punctuation">)</span>
   create mode <span class="token number">100644</span> hello.go</code></pre>
