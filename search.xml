@@ -7952,6 +7952,72 @@ L        <span class="token number">192.168</span><span class="token number">.34
       </tags>
   </entry>
   <entry>
+    <title>How does the Recycle Bin in Windows work?</title>
+    <url>/2022/How-does-the-Recycle-Bin-in-Windows-work/</url>
+    <content><![CDATA[<blockquote>
+<p>References from:</p>
+<p><a href="https://superuser.com/questions/368890/how-does-the-recycle-bin-in-windows-work/1736690#1736690">https://superuser.com/questions/368890/how-does-the-recycle-bin-in-windows-work/1736690#1736690</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Trash_(computing)#Microsoft_Windows">https://en.wikipedia.org/wiki/Trash_(computing)#Microsoft_Windows</a></p>
+</blockquote>
+<span id="more"></span>
+
+<p>The actual location of the Recycle Bin depends on the type of operating system and file system. On older <a href="https://en.wikipedia.org/wiki/File_Allocation_Table">FAT</a> file systems (typically Windows 98 and prior), it is located in <em>Drive:\RECYCLED</em>. In the <a href="https://en.wikipedia.org/wiki/NTFS">NTFS</a> filesystem (Windows 2000, XP, NT) it is <em>Drive:\RECYCLER</em>. On Windows Vista and above it is <em>Drive:$Recycle.Bin</em> folder.[<a href="https://en.wikipedia.org/wiki/Trash_(computing)#cite_note-35">35]</a></p>
+<p>The Recycle Bin can be accessed from the desktop or Windows Explorer,[<em><a href="https://en.wikipedia.org/wiki/Wikipedia:Please_clarify">how?</a></em>] or by typing “shell:RecycleBinFolder” in the <a href="https://en.wikipedia.org/wiki/Run_command">Run dialog box</a> (⊞ Win+R). It is the only icon shown by default on the Windows XP desktop. When accessed from the desktop, the Recycle Bin options and information are different from those of the physical Recycle Bin folders seen on each partition in <a href="https://en.wikipedia.org/wiki/Windows_Explorer">Windows Explorer</a>. From <a href="https://en.wikipedia.org/wiki/Windows_XP">Windows XP</a> onwards, with <a href="https://en.wikipedia.org/wiki/NTFS">NTFS</a>, different users cannot see the contents of each other’s Recycle Bins.</p>
+<p>Prior to Windows Vista, a file in the Recycle Bin is stored in its physical location and renamed as <code>D&lt;original drive letter of file&gt;&lt;#&gt;.&lt;original extension&gt;</code>.[<a href="https://en.wikipedia.org/wiki/Trash_(computing)#cite_note-RBOverview-16">16]</a> A hidden file called <em>info2</em> (<em>info</em> in Windows 95 without the <a href="https://en.wikipedia.org/wiki/Windows_Desktop_Update">Windows Desktop Update</a>) stores the file’s original path and original name in binary format.[<a href="https://en.wikipedia.org/wiki/Trash_(computing)#cite_note-RBOverview-16">16]</a> Since Windows Vista, the “meta” information of each file is saved as <code>$I&lt;number&gt;.&lt;original extension&gt;</code> and the original file is renamed to <code>$R&lt;number&gt;.&lt;original extension&gt;</code>.</p>
+<p>When the user views the Recycle Bin, the files are displayed with their original names. When the file is “Restored” from the Recycle Bin, it is returned to its original directory and name.[<a href="https://en.wikipedia.org/wiki/Trash_(computing)#cite_note-RBOverview-16">16]</a></p>
+<hr>
+<p>When you delete file in the Bin, it is not actually moved to it.</p>
+<p>First, lets take a look at the subfolders of <code>$Recycle.Bin</code>:</p>
+<ul>
+<li><code>C:\$Recycle.Bin\S-1-5-18</code> is folder for built-in SYSTEM account</li>
+<li><code>C:\$Recycle.Bin\S-1-5-21-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXX-1XXX\</code>, starting from 1000 are non-built in user folders. You should first check which one of them is the one you need by typing <code>whoami /all</code> in command prompt to get your <a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/well-known-sids">SID</a>, or <code>wmic useraccount get name,sid</code> to get all local accounts SIDs, then choose the folder matching with SID.</li>
+</ul>
+<blockquote>
+<p>The subfolders name such as <code>S-1-5-21-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXX-1XXX</code> is a User <a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/well-known-sids">SID</a></p>
+</blockquote>
+<p>If you give security rights to your account to all this folders, Explorer might show your deleted files in every folder, however its just Explorer bug. If you navigate to, say, <code>C:\$Recycle.Bin\S-1-5-18</code> folder and type <code>dir /a</code>, you will see that its actually empty, and only folder that match with your SID contains your deleted files.</p>
+<p>Note that even if you are the only user on the PC, you might still have folder <code>C:\$Recycle.Bin\S-1-5-21-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXX-1000\</code> that most likely will be empty. Then your actual folder will be <code>...-1001\</code>. User “1000” seems to be dangling folder for user that was created automatically by Windows on installation or some updates, then deleted. But <code>Recycle.Bin</code> folder wasn’t destroyed and just stayed there. I assume that its safe to delete this dangling folder. I’m not so sure about <code>C:\$Recycle.Bin\S-1-5-18</code>, but I’m fairly sure its safe too, as there is no need for OS SYSTEM account to use the Bin, anyway.</p>
+<p>So, here is deletion algorithm:</p>
+<ol>
+<li>System creates <a href="https://docs.microsoft.com/en-us/windows/win32/fileio/hard-links-and-junctions">hardlink</a> of the deleted file in <code>C:\$Recycle.Bin\S-1-5-21-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXX-1XXX\</code> folder with the name <code>$RXXXXXX.&lt;file_ext&gt;</code>, where <code>XXXXXX</code> is 6 symbols HASH calculated based on the file contents, as I assume.</li>
+<li>Metadata file is created in the same folder with the name <code>$IXXXXXX.&lt;file_ext&gt;</code>. I will show you the content of this file later.</li>
+<li>Original file is deleted, but because of extra hardlink in <code>$Recycle.Bin</code>, actual file’s data stays in the same location on the drive as if file where never touched. It is not moved anywhere. This is why each logical volume must have it’s own <code>$Recycle.Bin</code> folder, as hardlinks only work within the same volume.</li>
+</ol>
+<p>That’s about it. Restoration algorithm:</p>
+<ol>
+<li>Metadata file is read and hardlink of <code>$RXXXXXX.&lt;file_ext&gt;</code> is created based on <code>$IXXXXXX.&lt;file_ext&gt;</code>‘s info in original file location, with original file name.</li>
+<li>Both metadata and backup file are deleted from <code>$Recycle.Bin</code></li>
+</ol>
+<p>Pretty simple, ain’t it?</p>
+<p>Now, the most interesting part is that metadata file:</p>
+<pre class="language-none"><code class="language-none">0000  02 00 00 00 00 00 00 00  &lt;-- File header (QW)
+0008  00 7C 0A 00 00 00 00 00  &lt;-- File size (QW)
+0010  90 83 72 44 28 9C D8 01  &lt;-- File deletion date (QW)
+0018  18 00 00 00|43 00 3A 00  &lt;-- File path string length (DW)
+0020  5C 00 24 00 52 00 65 00  
+0028  63 00 79 00 63 00 6C 00
+0030  65 00 2E 00 42 00 69 00
+0038  6E 00 5C 00 66 00 73 00
+0040  73 00 2E 00 65 00 78 00
+0048  65 00 00 00|             &lt;-- |Null-terminated path string| (wchar_t)</code></pre>
+
+<p>All values are in <a href="https://en.wikipedia.org/wiki/Endianness">Little Endian</a> format.</p>
+<p>Header is fixed and its identical for all the files. Be warned that some <code>$I</code> files might have some junk bytes <code>FF FE</code> appear before the Header. I have no idea what are this for, so you should check for full header before reading further.</p>
+<p>Deletion date is in <a href="https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime">FILETIME</a> format and can be converted to usual <a href="https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime">SYSTEMTIME</a> via <a href="https://docs.microsoft.com/en-us/windows/win32/api/timezoneapi/nf-timezoneapi-filetimetosystemtime">FileTimeToSystemTime</a>. It represents 100-nanosecond intervals since January 1, 1601 (UTC).</p>
+<p>So it’s not super complicated file format, but quite interesting design.</p>
+<p>To reclaim all of that storage, We can open an elevated command prompt and execute the following command:</p>
+<pre class="language-none"><code class="language-none">rd &#x2F;s &#x2F;q c:\$Recycle.Bin</code></pre>
+
+<p>Following a reboot, the <code>$RECYCLE.BIN</code> folder will be recreated and each Windows user profile will now have an empty recycle bin.</p>
+]]></content>
+      <categories>
+        <category>Windows</category>
+      </categories>
+      <tags>
+        <tag>Windows</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>配置和管理逻辑卷管理器 (Logical Volume Manager)</title>
     <url>/2022/Logical_Volume_Manager_Administration/</url>
     <content><![CDATA[<h1 id="1-逻辑卷管理概述"><a href="#1-逻辑卷管理概述" class="headerlink" title="1. 逻辑卷管理概述"></a>1. 逻辑卷管理概述</h1><p>逻辑卷管理 (LVM) 在物理存储上创建抽象层，帮助您创建逻辑存储卷。这比直接使用物理存储的方式具有更大的灵活性。</p>
@@ -18076,184 +18142,6 @@ networks:
       </tags>
   </entry>
   <entry>
-    <title>tkinter 一例</title>
-    <url>/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/</url>
-    <content><![CDATA[<p>entry输入命令，text实时获得命令输出：</p>
-<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> tkinter <span class="token keyword">as</span> tk
-<span class="token keyword">import</span> tkinter<span class="token punctuation">.</span>ttk <span class="token keyword">as</span> ttk
-<span class="token keyword">import</span> subprocess
-<span class="token keyword">import</span> shlex
-<span class="token keyword">import</span> sys
-
-
-<span class="token keyword">class</span> <span class="token class-name">App</span><span class="token punctuation">(</span>tk<span class="token punctuation">.</span>Frame<span class="token punctuation">)</span><span class="token punctuation">:</span>
-	<span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>master<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-		<span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>master<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>fill<span class="token operator">=</span>tk<span class="token punctuation">.</span>BOTH<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>create_widgets<span class="token punctuation">(</span><span class="token punctuation">)</span>
-	
-	<span class="token keyword">def</span> <span class="token function">test</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-		content <span class="token operator">=</span> self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span>
-		<span class="token keyword">if</span> content<span class="token punctuation">:</span>
-			cmd <span class="token operator">=</span> shlex<span class="token punctuation">.</span>split<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
-			result <span class="token operator">=</span> subprocess<span class="token punctuation">.</span>Popen<span class="token punctuation">(</span>cmd<span class="token punctuation">,</span> shell<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> stdout<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> stderr<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> encoding<span class="token operator">=</span><span class="token string">"gbk"</span><span class="token punctuation">)</span>
-			<span class="token comment"># 实时获取子进程输出的每一行内容</span>
-			<span class="token keyword">for</span> line <span class="token keyword">in</span> <span class="token builtin">iter</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>readline<span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-				<span class="token comment"># 将子进程输出的每一行写入text文本框</span>
-				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>tk<span class="token punctuation">.</span>END<span class="token punctuation">,</span> line<span class="token punctuation">)</span>
-				<span class="token comment"># 立即重绘Text内容</span>
-				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">)</span>
-			
-	
-	<span class="token keyword">def</span> <span class="token function">create_widgets</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-		self<span class="token punctuation">.</span>entry <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		
-		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>button <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"确定"</span><span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>test<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>button<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>scrollbar <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Scrollbar<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>text <span class="token operator">=</span> tk<span class="token punctuation">.</span>Text<span class="token punctuation">(</span>self<span class="token punctuation">,</span> yscrollcommand<span class="token operator">=</span>self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span><span class="token builtin">set</span><span class="token punctuation">)</span>
-		<span class="token comment"># 渲染以上2个组件</span>
-		self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token operator">+</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>config<span class="token punctuation">(</span>command<span class="token operator">=</span>self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>yview<span class="token punctuation">)</span>
-		
-		
-<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-	root <span class="token operator">=</span> tk<span class="token punctuation">.</span>Tk<span class="token punctuation">(</span><span class="token punctuation">)</span>
-	root<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">"Test"</span>
-	
-	app <span class="token operator">=</span> App<span class="token punctuation">(</span>master<span class="token operator">=</span>root<span class="token punctuation">)</span>
-	app<span class="token punctuation">.</span>mainloop<span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-
-<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
-	main<span class="token punctuation">(</span><span class="token punctuation">)</span>
-</code></pre>
-
-
-
-]]></content>
-      <categories>
-        <category>Python</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>tkinter</tag>
-        <tag>GUI</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用 http-proxy-middleware 创建 npm 代理</title>
-    <url>/2022/using-http-proxy-middleware-as-npm-proxy/</url>
-    <content><![CDATA[<p>在上一篇中，我们使用 <a href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 <code>http-proxy-middleware</code> 包，我们也可以使用 Node.js 来创建 HTTP 代理。</p>
-<p><strong>环境</strong></p>
-<ul>
-<li>开发计算机：<ul>
-<li>Windows 10</li>
-<li>可以访问服务器，也可访问互联网</li>
-<li>IP: 192.168.200.1</li>
-</ul>
-</li>
-<li>服务器：<ul>
-<li>CentOS 8 </li>
-<li>仅可访问开发主机，无法直接访问互联网</li>
-<li>IP: 192.168.200.129</li>
-</ul>
-</li>
-</ul>
-<span id="more"></span>
-
-
-<p><strong>安装依赖</strong></p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i express http-proxy-middleware</code></pre>
-
-<p><strong>代码实现</strong></p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// proxy.js</span>
-
-<span class="token comment">// include dependencies</span>
-<span class="token keyword">const</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> createProxyMiddleware <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http-proxy-middleware'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token comment">// proxy middleware options</span>
-<span class="token comment">/** @type &#123;import('http-proxy-middleware/dist/types').Options&#125; */</span>
-<span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
-  <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'https://registry.npmmirror.com'</span><span class="token punctuation">,</span> <span class="token comment">// target host with the same base path</span>
-<span class="token comment">//   changeOrigin: true, // needed for virtual hosted sites</span>
-  <span class="token literal-property property">logger</span><span class="token operator">:</span> console<span class="token punctuation">,</span>
-  <span class="token literal-property property">secure</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">// don't verify the SSL certs</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-<span class="token comment">// create the proxy</span>
-<span class="token keyword">const</span> proxy <span class="token operator">=</span> <span class="token function">createProxyMiddleware</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token comment">// mount `exampleProxy` in web server</span>
-app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>proxy<span class="token punctuation">)</span><span class="token punctuation">;</span>
-app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">33080</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p><strong>服务器配置</strong></p>
-<p>在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
-<blockquote>
-<p>注意：这里 <code>http_proxy</code> 和 <code>https_proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
-</blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">http_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080
-<span class="token builtin class-name">export</span> <span class="token assign-left variable">https_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080</code></pre>
-
-<p>配置 NPM 代理，将 <code>proxy</code> 和 <code>https-proxy</code> 同时指向 <code>http://192.168.200.1:33080</code>。</p>
-<blockquote>
-<p>注意：这里 <code>proxy</code> 和 <code>https-proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
-</blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> proxy http://192.168.200.1:33080
-<span class="token function">npm</span> config <span class="token builtin class-name">set</span> https-proxy http://192.168.200.1:33080</code></pre>
-
-<p><strong>修改 npm registry</strong></p>
-<p><strong>注意，由于我们的实现没有使用HTTPS，需要修改 npm registry 为<code>http://</code>。</strong></p>
-<pre class="language-none"><code class="language-none">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</code></pre>
-
-<p><strong>测试</strong></p>
-<p>在开发用的电脑上运行我们实现的代码：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">node</span> proxy.js</code></pre>
-
-<p>在服务器上使用 npm 安装外部依赖包：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i <span class="token function">npm</span> -g
-
-changed <span class="token number">14</span> packages <span class="token keyword">in</span> 3s
-
-<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
-
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm -g
-<span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
-<span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
-<span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
-
-changed <span class="token number">73</span> packages <span class="token keyword">in</span> 6s
-
-<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
-
-<p>可以看到，内网服务器同样可以通过我们实现的 HTTP 代理使用 npm 安装第三方外部依赖了。</p>
-]]></content>
-      <categories>
-        <category>Node.js</category>
-      </categories>
-      <tags>
-        <tag>Proxy</tag>
-        <tag>Node.js</tag>
-        <tag>NPM</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Python tkinter 布局管理</title>
     <url>/2022/tkinter_geometry_manager/</url>
     <content><![CDATA[<p>本文讲述如何使用 tkinter 的布局管理 (被称作 layout managers 或 geometry managers)。tkinter 有三种布局管理方式：</p>
@@ -18585,6 +18473,184 @@ mainloop<span class="token punctuation">(</span><span class="token punctuation">
         <tag>Python</tag>
         <tag>tkinter</tag>
         <tag>GUI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>tkinter 一例</title>
+    <url>/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/</url>
+    <content><![CDATA[<p>entry输入命令，text实时获得命令输出：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> tkinter <span class="token keyword">as</span> tk
+<span class="token keyword">import</span> tkinter<span class="token punctuation">.</span>ttk <span class="token keyword">as</span> ttk
+<span class="token keyword">import</span> subprocess
+<span class="token keyword">import</span> shlex
+<span class="token keyword">import</span> sys
+
+
+<span class="token keyword">class</span> <span class="token class-name">App</span><span class="token punctuation">(</span>tk<span class="token punctuation">.</span>Frame<span class="token punctuation">)</span><span class="token punctuation">:</span>
+	<span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>master<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+		<span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>master<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>fill<span class="token operator">=</span>tk<span class="token punctuation">.</span>BOTH<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>create_widgets<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	
+	<span class="token keyword">def</span> <span class="token function">test</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		content <span class="token operator">=</span> self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> content<span class="token punctuation">:</span>
+			cmd <span class="token operator">=</span> shlex<span class="token punctuation">.</span>split<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+			result <span class="token operator">=</span> subprocess<span class="token punctuation">.</span>Popen<span class="token punctuation">(</span>cmd<span class="token punctuation">,</span> shell<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> stdout<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> stderr<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> encoding<span class="token operator">=</span><span class="token string">"gbk"</span><span class="token punctuation">)</span>
+			<span class="token comment"># 实时获取子进程输出的每一行内容</span>
+			<span class="token keyword">for</span> line <span class="token keyword">in</span> <span class="token builtin">iter</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>readline<span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+				<span class="token comment"># 将子进程输出的每一行写入text文本框</span>
+				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>tk<span class="token punctuation">.</span>END<span class="token punctuation">,</span> line<span class="token punctuation">)</span>
+				<span class="token comment"># 立即重绘Text内容</span>
+				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">)</span>
+			
+	
+	<span class="token keyword">def</span> <span class="token function">create_widgets</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		self<span class="token punctuation">.</span>entry <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		
+		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>button <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"确定"</span><span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>test<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>button<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>scrollbar <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Scrollbar<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>text <span class="token operator">=</span> tk<span class="token punctuation">.</span>Text<span class="token punctuation">(</span>self<span class="token punctuation">,</span> yscrollcommand<span class="token operator">=</span>self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span><span class="token builtin">set</span><span class="token punctuation">)</span>
+		<span class="token comment"># 渲染以上2个组件</span>
+		self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token operator">+</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>config<span class="token punctuation">(</span>command<span class="token operator">=</span>self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>yview<span class="token punctuation">)</span>
+		
+		
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+	root <span class="token operator">=</span> tk<span class="token punctuation">.</span>Tk<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	root<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">"Test"</span>
+	
+	app <span class="token operator">=</span> App<span class="token punctuation">(</span>master<span class="token operator">=</span>root<span class="token punctuation">)</span>
+	app<span class="token punctuation">.</span>mainloop<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+	main<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+
+
+
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>tkinter</tag>
+        <tag>GUI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用 http-proxy-middleware 创建 npm 代理</title>
+    <url>/2022/using-http-proxy-middleware-as-npm-proxy/</url>
+    <content><![CDATA[<p>在上一篇中，我们使用 <a href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 <code>http-proxy-middleware</code> 包，我们也可以使用 Node.js 来创建 HTTP 代理。</p>
+<p><strong>环境</strong></p>
+<ul>
+<li>开发计算机：<ul>
+<li>Windows 10</li>
+<li>可以访问服务器，也可访问互联网</li>
+<li>IP: 192.168.200.1</li>
+</ul>
+</li>
+<li>服务器：<ul>
+<li>CentOS 8 </li>
+<li>仅可访问开发主机，无法直接访问互联网</li>
+<li>IP: 192.168.200.129</li>
+</ul>
+</li>
+</ul>
+<span id="more"></span>
+
+
+<p><strong>安装依赖</strong></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i express http-proxy-middleware</code></pre>
+
+<p><strong>代码实现</strong></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// proxy.js</span>
+
+<span class="token comment">// include dependencies</span>
+<span class="token keyword">const</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> createProxyMiddleware <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http-proxy-middleware'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// proxy middleware options</span>
+<span class="token comment">/** @type &#123;import('http-proxy-middleware/dist/types').Options&#125; */</span>
+<span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'https://registry.npmmirror.com'</span><span class="token punctuation">,</span> <span class="token comment">// target host with the same base path</span>
+<span class="token comment">//   changeOrigin: true, // needed for virtual hosted sites</span>
+  <span class="token literal-property property">logger</span><span class="token operator">:</span> console<span class="token punctuation">,</span>
+  <span class="token literal-property property">secure</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">// don't verify the SSL certs</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token comment">// create the proxy</span>
+<span class="token keyword">const</span> proxy <span class="token operator">=</span> <span class="token function">createProxyMiddleware</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// mount `exampleProxy` in web server</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>proxy<span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">33080</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p><strong>服务器配置</strong></p>
+<p>在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
+<blockquote>
+<p>注意：这里 <code>http_proxy</code> 和 <code>https_proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
+</blockquote>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">http_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">https_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080</code></pre>
+
+<p>配置 NPM 代理，将 <code>proxy</code> 和 <code>https-proxy</code> 同时指向 <code>http://192.168.200.1:33080</code>。</p>
+<blockquote>
+<p>注意：这里 <code>proxy</code> 和 <code>https-proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
+</blockquote>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> proxy http://192.168.200.1:33080
+<span class="token function">npm</span> config <span class="token builtin class-name">set</span> https-proxy http://192.168.200.1:33080</code></pre>
+
+<p><strong>修改 npm registry</strong></p>
+<p><strong>注意，由于我们的实现没有使用HTTPS，需要修改 npm registry 为<code>http://</code>。</strong></p>
+<pre class="language-none"><code class="language-none">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</code></pre>
+
+<p><strong>测试</strong></p>
+<p>在开发用的电脑上运行我们实现的代码：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">node</span> proxy.js</code></pre>
+
+<p>在服务器上使用 npm 安装外部依赖包：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i <span class="token function">npm</span> -g
+
+changed <span class="token number">14</span> packages <span class="token keyword">in</span> 3s
+
+<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
+  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
+
+<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm -g
+<span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
+<span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
+<span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+
+changed <span class="token number">73</span> packages <span class="token keyword">in</span> 6s
+
+<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
+  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
+
+<p>可以看到，内网服务器同样可以通过我们实现的 HTTP 代理使用 npm 安装第三方外部依赖了。</p>
+]]></content>
+      <categories>
+        <category>Node.js</category>
+      </categories>
+      <tags>
+        <tag>Proxy</tag>
+        <tag>Node.js</tag>
+        <tag>NPM</tag>
       </tags>
   </entry>
   <entry>
