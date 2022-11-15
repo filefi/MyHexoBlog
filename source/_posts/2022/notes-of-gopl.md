@@ -750,7 +750,7 @@ if err != nil {
 
 让我们简单地将这里的web服务器和之前写的 lissajous 函数结合起来，这样GIF动画可以被写到HTTP的客户端，而不是之前的标准输出流。只要在web服务器的代码里加入下面这几行。
 
-```Go
+```go
 handler := func(w http.ResponseWriter, r *http.Request) {
     lissajous(w)
 }
@@ -759,7 +759,7 @@ http.HandleFunc("/", handler)
 
 或者另一种等价形式：
 
-```Go
+```go
 http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     lissajous(w)
 })
@@ -894,7 +894,7 @@ continue   for           import   return      var
 
 例如，下面的例子中声明了一个常量、一个函数和两个变量：
 
-```Go
+```go
 // Boiling prints the boiling point of water.
 package main
 
@@ -916,4 +916,73 @@ func main() {
 一个函数的声明由一个函数名字、参数列表（由函数的调用者提供参数变量的具体值）、一个可选的返回值列表和包含函数定义的函数体组成。如果函数没有返回值，那么返回值列表是省略的。执行函数从函数的第一个语句开始，依次顺序执行直到遇到return返回语句，如果没有返回语句则是执行到函数末尾，然后返回到函数调用者。
 
 ## 变量
+
+var声明语句用于声明变量，并设置变量初始值。其中“*类型*”或“*= 表达式*”两个部分可以省略其中的一个。变量声明的一般语法如下：
+
+```go
+var 变量名字 类型 = 表达式  //创建一个特定类型的变量，并设置变量的初始值。
+var 变量名字 = 表达式 // 省略类型信息，将根据初始化表达式来推导变量的类型信息。
+var 变量名字 类型 // 初始化表达式被省略，那么将用零值初始化该变量。
+```
+
+也可以在一个声明语句中同时声明一组变量，或用一组初始化表达式声明并初始化一组变量。如果省略每个变量的类型，将可以声明多个类型不同的变量（类型由初始化表达式推导）：
+
+```go
+var i, j, k int                 // int, int, int
+var b, f, s = true, 2.3, "four" // bool, float64, string
+```
+
+一组变量也可以通过调用一个函数，由函数返回的多个返回值初始化：
+
+```go
+var f, err = os.Open(name) // os.Open returns a file and an error
+```
+
+数值类型变量对应的零值是0，布尔类型变量对应的零值是false，字符串类型对应的零值是空字符串，接口或引用类型（包括slice、指针、map、chan 和函数）变量对应的零值是nil。数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
+
+```go
+	var s string
+	fmt.Println(s == "") // true
+
+	var i int
+	fmt.Println(i == 0) // true
+
+	var n float64
+	fmt.Println(n == 0.0) // true
+
+	var b bool
+	fmt.Println(b == false) // true
+
+	var sli []string
+	fmt.Println(sli == nil) // true
+
+	var p *int
+	fmt.Println(p == nil) // true
+
+	var c chan string
+	fmt.Println(c == nil) // true
+
+	var f func()
+	fmt.Println(f == nil) // true
+
+	var m map[string]string
+	fmt.Println(m == nil) // true
+
+	var arr [3]int
+	fmt.Println(arr) // [0 0 0]
+
+	type T struct {
+		name string
+		age  int
+	}
+
+	var t T
+	fmt.Println(t) //{ 0}
+	fmt.Println(t.name == "") // true
+	fmt.Println(t.age == 0) // true
+```
+
+零值初始化机制可以确保每个声明的变量总是有一个良好定义的值，因此在Go语言中不存在未初始化的变量。Go语言程序员应该让一些聚合类型的零值也具有意义，这样可以保证不管任何类型的变量总是有一个合理有效的零值状态。
+
+### 简短变量声明
 
