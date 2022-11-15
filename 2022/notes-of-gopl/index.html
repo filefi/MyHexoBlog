@@ -970,7 +970,7 @@ continue   for           import   return      var</code></pre>
 
 <p>在包一级声明语句声明的名字可在整个包对应的每个源文件中访问，而不是仅仅在其声明语句所在的源文件中访问。相比之下，局部声明的名字就只能在函数内部很小的范围被访问。</p>
 <p>一个函数的声明由一个函数名字、参数列表（由函数的调用者提供参数变量的具体值）、一个可选的返回值列表和包含函数定义的函数体组成。如果函数没有返回值，那么返回值列表是省略的。执行函数从函数的第一个语句开始，依次顺序执行直到遇到return返回语句，如果没有返回语句则是执行到函数末尾，然后返回到函数调用者。</p>
-<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>var声明语句用于声明变量，并设置变量初始值。其中“<em>类型</em>”或“*&#x3D; 表达式*”两个部分可以省略其中的一个。变量声明的一般语法如下：</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>var声明语句用于声明变量，并设置变量初始值。其中<code>类型</code>或<code>= 表达式</code>两个部分可以省略其中的一个。变量声明的一般语法如下：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> 变量名字 类型 <span class="token operator">=</span> 表达式  <span class="token comment">//创建一个特定类型的变量，并设置变量的初始值。</span>
 <span class="token keyword">var</span> 变量名字 <span class="token operator">=</span> 表达式 <span class="token comment">// 省略类型信息，将根据初始化表达式来推导变量的类型信息。</span>
 <span class="token keyword">var</span> 变量名字 类型 <span class="token comment">// 初始化表达式被省略，那么将用零值初始化该变量。</span></code></pre>
