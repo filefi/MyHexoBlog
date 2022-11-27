@@ -18174,7 +18174,117 @@ func init() &#123;
 
 
 
-<h1 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h1><h2 id="布尔型"><a href="#布尔型" class="headerlink" title="布尔型"></a>布尔型</h2><p>一个布尔类型的值只有2种：<code>true</code>和<code>false</code>。if和for语句的条件部分都是布尔类型的值，并且<code>==</code>和<code>&lt;</code>等比较操作也会产生布尔型的值。一元操作符<code>!</code>对应逻辑非操作，因此<code>!true</code>的值为<code>false</code>，更罗嗦的说法是<code>(!true==false)==true</code>，虽然表达方式不一样，不过我们一般会采用简洁的布尔表达式，就像用x来表示<code>x==true</code>。</p>
+<h1 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h1><h2 id="整型"><a href="#整型" class="headerlink" title="整型"></a>整型</h2><p>Go语言同时提供了有符号和无符号类型的整数运算。这里有<code>int8</code>、<code>int16</code>、<code>int32</code>和<code>int64</code>四种截然不同大小的有符号整数类型，分别对应8、16、32、64bit大小的有符号整数，与此对应的是<code>uint8</code>、<code>uint16</code>、<code>uint32</code>和<code>uint64</code>四种无符号整数类型。</p>
+<p>这里还有两种一般对应特定CPU平台机器字大小的有符号和无符号整数<code>int</code>和<code>uint</code>；其中<code>int</code>是应用最广泛的数值类型。这两种类型都有同样的大小，32或64bit。不同的编译器即使在相同的硬件平台上可能产生不同的大小。</p>
+<p>Unicode字符<code>rune</code>类型是和<code>int32</code>等价的类型，通常用于表示一个Unicode码点。同样<code>byte</code>也是<code>uint8</code>类型的等价类型，<code>byte</code>类型一般用于强调数值是一个原始的数据而不是一个小的整数。</p>
+<p>最后，还有一种无符号的整数类型<code>uintptr</code>，没有指定具体的bit大小但是足以容纳指针。<code>uintptr</code>类型只有在底层编程时才需要，特别是Go语言和C语言函数库或操作系统接口相交互的地方。</p>
+<p>下面是Go语言中关于算术运算、逻辑运算和比较运算的二元运算符，它们按照优先级递减的顺序排列：</p>
+<pre class="language-none"><code class="language-none">*      &#x2F;      %      &lt;&lt;       &gt;&gt;     &amp;       &amp;^
++      -      |      ^
+&#x3D;&#x3D;     !&#x3D;     &lt;      &lt;&#x3D;       &gt;      &gt;&#x3D;
+&amp;&amp;
+||</code></pre>
+
+<p>算术运算符<code>+</code>、<code>-</code>、<code>*</code>和<code>/</code>可以适用于整数、浮点数和复数，但是取模运算符%仅用于整数间的运算。对于不同编程语言，%取模运算的行为可能并不相同。在Go语言中，%取模运算符的符号和被取模数的符号总是一致的，因此<code>-5%3</code>和<code>-5%-3</code>结果都是-2。除法运算符<code>/</code>的行为则依赖于操作数是否全为整数，比如<code>5.0/4.0</code>的结果是1.25，但是5&#x2F;4的结果是1，因为整数除法会向着0方向截断余数。</p>
+<p>两个相同的整数类型可以使用下面的二元比较运算符进行比较；比较表达式的结果是布尔类型。</p>
+<pre class="language-none"><code class="language-none">&#x3D;&#x3D;    等于
+!&#x3D;    不等于
+&lt;     小于
+&lt;&#x3D;    小于等于
+&gt;     大于
+&gt;&#x3D;    大于等于</code></pre>
+
+
+
+<p>尽管Go语言提供了无符号数的运算，但即使数值本身不可能出现负数，我们还是倾向于使用有符号的<code>int</code>类型。无符号数往往只有在位运算或其它特殊的运算场景才会使用，就像bit集合、分析二进制文件格式或者是哈希和加密操作等。它们通常并不用于仅仅是表达非负数量的场合。</p>
+<p>一般来说，需要一个显式的转换将一个值从一种类型转化为另一种类型，并且算术和逻辑运算的二元操作中必须是相同的类型。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> compote <span class="token operator">=</span> <span class="token function">int</span><span class="token punctuation">(</span>apples<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">int</span><span class="token punctuation">(</span>oranges<span class="token punctuation">)</span></code></pre>
+
+<p>任何大小的整数字面值都可以用以0开始的八进制格式书写，例如0666；或用以0x或0X开头的十六进制格式书写，例如0xdeadbeef。十六进制数字可以用大写或小写字母。如今八进制数据通常用于POSIX操作系统上的文件访问权限标志，十六进制数字则更强调数字值的bit位模式。</p>
+<p>当使用fmt包打印一个数值时，我们可以用%d、%o或%x参数控制输出的进制格式，就像下面的例子：</p>
+<pre class="language-go" data-language="go"><code class="language-go">o <span class="token operator">:=</span> <span class="token number">0666</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%d %[1]o %#[1]o\n"</span><span class="token punctuation">,</span> o<span class="token punctuation">)</span> <span class="token comment">// "438 666 0666"</span>
+x <span class="token operator">:=</span> <span class="token function">int64</span><span class="token punctuation">(</span><span class="token number">0xdeadbeef</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%d %[1]x %#[1]x %#[1]X\n"</span><span class="token punctuation">,</span> x<span class="token punctuation">)</span>
+<span class="token comment">// Output:</span>
+<span class="token comment">// 3735928559 deadbeef 0xdeadbeef 0XDEADBEEF</span></code></pre>
+
+<p>请注意fmt的两个使用技巧。通常<code>Printf</code>格式化字符串包含多个<code>%</code>参数时将会包含对应相同数量的额外操作数，但是<code>%</code>之后的<code>[1]</code>副词告诉<code>Printf</code>函数再次使用第一个操作数。第二，<code>%</code>后的<code>#</code>副词告诉<code>Printf</code>在用<code>%o</code>、<code>%x</code>或<code>%X</code>输出时生成<code>0</code>、<code>0x</code>或<code>0X</code>前缀。</p>
+<p>字符面值通过一对单引号直接包含对应字符。最简单的例子是ASCII中类似’a’写法的字符面值，但是我们也可以通过转义的数值来表示任意的Unicode码点对应的字符，马上将会看到这样的例子。</p>
+<p>字符使用<code>%c</code>参数打印，或者是用<code>%q</code>参数打印带单引号的字符：</p>
+<pre class="language-go" data-language="go"><code class="language-go">ascii <span class="token operator">:=</span> <span class="token char">'a'</span>
+unicode <span class="token operator">:=</span> <span class="token char">'国'</span>
+newline <span class="token operator">:=</span> <span class="token char">'\n'</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%d %[1]c %[1]q\n"</span><span class="token punctuation">,</span> ascii<span class="token punctuation">)</span>   <span class="token comment">// "97 a 'a'"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%d %[1]c %[1]q\n"</span><span class="token punctuation">,</span> unicode<span class="token punctuation">)</span> <span class="token comment">// "22269 国 '国'"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%d %[1]q\n"</span><span class="token punctuation">,</span> newline<span class="token punctuation">)</span>       <span class="token comment">// "10 '\n'"</span></code></pre>
+
+<h2 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h2><p>Go语言提供了两种精度的浮点数，float32和float64。它们的算术规范由IEEE754浮点数国际标准定义，该浮点数规范被所有现代的CPU支持。</p>
+<p>这些浮点数类型的取值范围可以从很微小到很巨大。浮点数的范围极限值可以在math包找到。常量<code>math.MaxFloat32</code>表示float32能表示的最大数值，大约是 <code>3.4e38</code>；对应的<code>math.MaxFloat64</code>常量大约是<code>1.8e308</code>。它们分别能表示的最小值近似为<code>1.4e-45</code>和<code>4.9e-324</code>。</p>
+<p>通常应该优先使用float64类型，因为float32类型的累计计算误差很容易扩散，并且float32能精确表示的正整数并不是很大（译注：因为float32的有效bit位只有23个，其它的bit位用于指数和符号；当整数大于23bit能表达的范围时，float32的表示将出现误差）：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> f <span class="token builtin">float32</span> <span class="token operator">=</span> <span class="token number">16777216</span> <span class="token comment">// 1 &lt;&lt; 24</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>f <span class="token operator">==</span> f<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span>    <span class="token comment">// "true"!</span></code></pre>
+
+<p>浮点数的字面值可以直接写小数部分，像这样：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">const</span> e <span class="token operator">=</span> <span class="token number">2.71828</span> <span class="token comment">// (approximately)</span></code></pre>
+
+<p>小数点前面或后面的数字都可能被省略（例如.707或1.）。很小或很大的数最好用科学计数法书写，通过e或E来指定指数部分：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">const</span> Avogadro <span class="token operator">=</span> <span class="token number">6.02214129e23</span>  <span class="token comment">// 阿伏伽德罗常数</span>
+<span class="token keyword">const</span> Planck   <span class="token operator">=</span> <span class="token number">6.62606957e-34</span> <span class="token comment">// 普朗克常数</span></code></pre>
+
+<p>用<code>Printf</code>函数的<code>%g</code>参数打印浮点数，将采用更紧凑的表示形式打印，并提供足够的精度，但是对应表格的数据，使用<code>%e</code>（带指数）或<code>%f</code>的形式打印可能更合适。所有的这三个打印形式都可以指定打印的宽度和控制打印精度。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">for</span> x <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> x <span class="token operator">&lt;</span> <span class="token number">8</span><span class="token punctuation">;</span> x<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"x = %d e^x = %8.3f\n"</span><span class="token punctuation">,</span> x<span class="token punctuation">,</span> math<span class="token punctuation">.</span><span class="token function">Exp</span><span class="token punctuation">(</span><span class="token function">float64</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>上面代码打印e的幂，打印精度是小数点后三个小数精度和8个字符宽度：</p>
+<pre class="language-none"><code class="language-none">x &#x3D; 0       e^x &#x3D;    1.000
+x &#x3D; 1       e^x &#x3D;    2.718
+x &#x3D; 2       e^x &#x3D;    7.389
+x &#x3D; 3       e^x &#x3D;   20.086
+x &#x3D; 4       e^x &#x3D;   54.598
+x &#x3D; 5       e^x &#x3D;  148.413
+x &#x3D; 6       e^x &#x3D;  403.429
+x &#x3D; 7       e^x &#x3D; 1096.633</code></pre>
+
+<p>math包中除了提供大量常用的数学函数外，还提供了IEEE754浮点数标准中定义的特殊值的创建和测试：正无穷大和负无穷大，分别用于表示太大溢出的数字和除零的结果；还有NaN非数，一般用于表示无效的除法操作结果0&#x2F;0或Sqrt(-1).</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> z <span class="token builtin">float64</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>z<span class="token punctuation">,</span> <span class="token operator">-</span>z<span class="token punctuation">,</span> <span class="token number">1</span><span class="token operator">/</span>z<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token operator">/</span>z<span class="token punctuation">,</span> z<span class="token operator">/</span>z<span class="token punctuation">)</span> <span class="token comment">// "0 -0 +Inf -Inf NaN"</span></code></pre>
+
+<p>函数<code>math.IsNaN</code>用于测试一个数是否是非数NaN，<code>math.NaN</code>则返回非数对应的值。虽然可以用<code>math.NaN</code>来表示一个非法的结果，但是测试一个结果是否是非数NaN则是充满风险的，因为NaN和任何数都是不相等的（译注：在浮点数中，NaN、正无穷大和负无穷大都不是唯一的，每个都有非常多种的bit模式表示）：</p>
+<pre class="language-go" data-language="go"><code class="language-go">nan <span class="token operator">:=</span> math<span class="token punctuation">.</span><span class="token function">NaN</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>nan <span class="token operator">==</span> nan<span class="token punctuation">,</span> nan <span class="token operator">&lt;</span> nan<span class="token punctuation">,</span> nan <span class="token operator">></span> nan<span class="token punctuation">)</span> <span class="token comment">// "false false false"</span></code></pre>
+
+<p>如果一个函数返回的浮点数结果可能失败，最好的做法是用单独的标志报告失败，像这样：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">compute</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>value <span class="token builtin">float64</span><span class="token punctuation">,</span> ok <span class="token builtin">bool</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// ...</span>
+    <span class="token keyword">if</span> failed <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token boolean">false</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> result<span class="token punctuation">,</span> <span class="token boolean">true</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h2 id="复数"><a href="#复数" class="headerlink" title="复数"></a>复数</h2><p>Go语言提供了两种精度的复数类型：complex64和complex128，分别对应float32和float64两种浮点数精度。内置的complex函数用于构建复数，内建的real和imag函数分别返回复数的实部和虚部：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">var x complex128 &#x3D; complex(1, 2) &#x2F;&#x2F; 1+2i
+var y complex128 &#x3D; complex(3, 4) &#x2F;&#x2F; 3+4i
+fmt.Println(x*y)                 &#x2F;&#x2F; &quot;(-5+10i)&quot;
+fmt.Println(real(x*y))           &#x2F;&#x2F; &quot;-5&quot;
+fmt.Println(imag(x*y))           &#x2F;&#x2F; &quot;10&quot;</code></pre>
+
+<p>如果一个浮点数面值或一个十进制整数面值后面跟着一个i，例如3.141592i或2i，它将构成一个复数的虚部，复数的实部是0：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">fmt.Println(1i * 1i) &#x2F;&#x2F; &quot;(-1+0i)&quot;, i^2 &#x3D; -1</code></pre>
+
+<p>在常量算术规则下，一个复数常量可以加到另一个普通数值常量（整数或浮点数、实部或虚部），我们可以用自然的方式书写复数，就像<code>1+2i</code>或与之等价的写法<code>2i+1</code>。上面x和y的声明语句还可以简化：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">x :&#x3D; 1 + 2i
+y :&#x3D; 3 + 4i</code></pre>
+
+<p>复数也可以用<code>==</code>和<code>!=</code>进行相等比较。只有两个复数的实部和虚部都相等的时候它们才是相等的（译注：浮点数的相等比较是危险的，需要特别小心处理精度问题）。</p>
+<p><code>math/cmplx</code>包提供了复数处理的许多函数，例如求复数的平方根函数和求幂函数。</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">fmt.Println(cmplx.Sqrt(-1)) &#x2F;&#x2F; &quot;(0+1i)&quot;</code></pre>
+
+
+
+<h2 id="布尔型"><a href="#布尔型" class="headerlink" title="布尔型"></a>布尔型</h2><p>一个布尔类型的值只有2种：<code>true</code>和<code>false</code>。if和for语句的条件部分都是布尔类型的值，并且<code>==</code>和<code>&lt;</code>等比较操作也会产生布尔型的值。一元操作符<code>!</code>对应逻辑非操作，因此<code>!true</code>的值为<code>false</code>，更罗嗦的说法是<code>(!true==false)==true</code>，虽然表达方式不一样，不过我们一般会采用简洁的布尔表达式，就像用x来表示<code>x==true</code>。</p>
 <p>布尔值可以和&amp;&amp;（AND）和||（OR）操作符结合，并且有短路行为：如果运算符左边值已经可以确定整个布尔表达式的值，那么运算符右边的值将不再被求值，因此下面的表达式总是安全的：</p>
 <pre class="language-Go" data-language="Go"><code class="language-Go">s !&#x3D; &quot;&quot; &amp;&amp; s[0] &#x3D;&#x3D; &#39;x&#39;</code></pre>
 
@@ -18207,66 +18317,290 @@ func init() &#123;
 
 
 
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>一个字符串是一个不可改变的字节序列。字符串可以包含任意的数据，包括byte值0，但是通常是用来包含人类可读的文本。文本字符串通常被解释为采用UTF8编码的Unicode码点（rune）序列。</p>
+<p><strong>内置的len函数可以返回一个字符串中的字节数目（不是rune字符数目），索引操作<code>s[i]</code>返回第<code>i</code>个字节的字节值，<code>i</code>必须满足<code>0 ≤ i&lt; len(s)</code>条件约束。</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go">s <span class="token operator">:=</span> <span class="token string">"hello, world"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span>     <span class="token comment">// "12"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> s<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// "104 119" ('h' and 'w')</span></code></pre>
 
+<p>如果试图访问超出字符串索引范围的字节将会导致panic异常：</p>
+<pre class="language-go" data-language="go"><code class="language-go">c <span class="token operator">:=</span> s<span class="token punctuation">[</span><span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token comment">// panic: index out of range</span></code></pre>
 
+<p><strong>第i个字节并不一定是字符串的第i个字符，因为对于非ASCII字符的UTF8编码会要两个或多个字节。</strong></p>
+<p>子字符串操作<code>s[i:j]</code>基于原始的s字符串的第i个字节开始到第j个字节（并不包含j本身）生成一个新字符串。生成的新字符串将包含<code>j-i</code>个字节。</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">:</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// "hello"</span></code></pre>
 
+<p>同样，如果索引超出字符串范围或者<code>j</code>小于<code>i</code>的话将导致panic异常。</p>
+<p>不管i还是<code>j</code>都可能被忽略，当它们被忽略时将采用0作为开始位置，采用<code>len(s)</code>作为结束的位置。</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// "hello"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// "world"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span>  <span class="token comment">// "hello, world"</span></code></pre>
 
+<p>其中<code>+</code>操作符将两个字符串连接构造一个新字符串：</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"goodbye"</span> <span class="token operator">+</span> s<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// "goodbye, world"</span></code></pre>
 
+<p>字符串可以用&#x3D;&#x3D;和&lt;进行比较；比较通过逐个字节比较完成的，因此比较的结果是字符串自然编码的顺序。</p>
+<p>字符串的值是不可变的：一个字符串包含的字节序列永远不会被改变，当然我们也可以给一个字符串变量分配一个新字符串值。可以像下面这样将一个字符串追加到另一个字符串：</p>
+<pre class="language-go" data-language="go"><code class="language-go">s <span class="token operator">:=</span> <span class="token string">"left foot"</span>
+t <span class="token operator">:=</span> s
+s <span class="token operator">+=</span> <span class="token string">", right foot"</span></code></pre>
 
+<p>这并不会导致原始的字符串值被改变，但是变量s将因为+&#x3D;语句持有一个新的字符串值，但是t依然是包含原先的字符串值。</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token comment">// "left foot, right foot"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span> <span class="token comment">// "left foot"</span></code></pre>
 
+<p>因为字符串是不可修改的，因此尝试修改字符串内部数据的操作也是被禁止的：</p>
+<pre class="language-go" data-language="go"><code class="language-go">s<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token char">'L'</span> <span class="token comment">// compile error: cannot assign to s[0]</span></code></pre>
 
+<p>不变性意味着如果两个字符串共享相同的底层数据的话也是安全的，这使得复制任何长度的字符串代价是低廉的。同样，一个字符串<code>s</code>和对应的子字符串切片<code>s[7:]</code>的操作也可以安全地共享相同的内存，因此字符串切片操作代价也是低廉的。在这两种情况下都没有必要分配新的内存。</p>
+<p>下图演示了一个字符串和两个子串共享相同的底层数据：</p>
+<p><img src="/2022/notes-of-gopl/ch3-04.png" alt="img"></p>
+<h3 id="字符串字面量"><a href="#字符串字面量" class="headerlink" title="字符串字面量"></a>字符串字面量</h3><p>字符串值也可以用字符串面值方式编写，只要将一系列字节序列包含在双引号内即可：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token string">"Hello, 世界"</span></code></pre>
 
+<p>因为Go语言源文件总是用UTF8编码，并且Go语言的文本字符串也以UTF8编码的方式处理，因此我们可以将 <em>Unicode码点</em> 也写到字符串面值中。</p>
+<p>在一个双引号包含的字符串面值中，可以用以反斜杠<code>\</code>开头的转义序列插入任意的数据。下面的换行、回车和制表符等是常见的ASCII控制代码的转义方式：</p>
+<pre class="language-none"><code class="language-none">\a      响铃
+\b      退格
+\f      换页
+\n      换行
+\r      回车
+\t      制表符
+\v      垂直制表符
+\&#39;      单引号（只用在 &#39;\&#39;&#39; 形式的rune符号面值中）
+\&quot;      双引号（只用在 &quot;...&quot; 形式的字符串面值中）
+\\      反斜杠</code></pre>
 
+<p>一个原生的字符串面值形式是<code>...</code>，使用反引号代替双引号。在原生的字符串面值中，没有转义操作；全部的内容都是字面的意思，包含退格和换行，因此一个程序中的原生字符串面值可能跨越多行（译注：在原生字符串面值内部是无法直接写`字符的，可以用八进制或十六进制转义或+”`“连接字符串常量完成）。</p>
+<p>原生字符串面值用于编写正则表达式会很方便，因为正则表达式往往会包含很多反斜杠。原生字符串面值同时被广泛应用于HTML模板、JSON面值、命令行提示信息以及那些需要扩展到多行的场景。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">const</span> GoUsage <span class="token operator">=</span> <span class="token string">`Go is a tool for managing Go source code.
 
+Usage:
+    go command [arguments]
+...`</span></code></pre>
 
+<h3 id="Unicode"><a href="#Unicode" class="headerlink" title="Unicode"></a>Unicode</h3><p>Unicode（ <a href="http://unicode.org/">http://unicode.org</a> ），它收集了这个世界上所有的符号系统，包括重音符号和其它变音符号，制表符和回车符，还有很多神秘的符号，每个符号都分配一个唯一的Unicode码点，Unicode码点对应Go语言中的rune整数类型（译注：rune是int32等价类型）。</p>
+<h3 id="UTF-8"><a href="#UTF-8" class="headerlink" title="UTF-8"></a>UTF-8</h3><p>UTF8是一个将Unicode码点编码为字节序列的变长编码。UTF8编码是由Go语言之父Ken Thompson和Rob Pike共同发明的，现在已经是Unicode的标准。UTF8编码使用1到4个字节来表示每个Unicode码点，ASCII部分字符只使用1个字节，常用字符部分使用2或3个字节表示。</p>
+<p>Go语言的源文件采用UTF8编码，并且Go语言处理UTF8编码的文本也很出色。unicode包提供了诸多处理rune字符相关功能的函数（比如区分字母和数字，或者是字母的大写和小写转换等），<code>unicode/utf8</code>包则提供了用于rune字符序列的UTF8编码和解码的功能。</p>
+<p>有很多Unicode字符很难直接从键盘输入，并且还有很多字符有着相似的结构；有一些甚至是不可见的字符（译注：中文和日文就有很多相似但不同的字）。Go语言字符串面值中的Unicode转义字符让我们可以通过Unicode码点输入特殊的字符。有两种形式：<code>\uhhhh</code>对应16bit的码点值，<code>\Uhhhhhhhh</code>对应32bit的码点值，其中h是一个十六进制数字；一般很少需要使用32bit的形式。每一个对应码点的UTF8编码。例如：下面的字母串面值都表示相同的值：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token string">"世界"</span>
+<span class="token string">"\xe4\xb8\x96\xe7\x95\x8c"</span>
+<span class="token string">"\u4e16\u754c"</span>
+<span class="token string">"\U00004e16\U0000754c"</span></code></pre>
 
+<p>上面三个转义序列都为第一个字符串提供替代写法，但是它们的值都是相同的。</p>
+<p>Unicode转义也可以使用在rune字符中。下面三个字符是等价的：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token char">'世'</span> <span class="token char">'\u4e16'</span> <span class="token char">'\U00004e16'</span></code></pre>
 
+<p>对于小于256的码点值可以写在一个十六进制转义字节中，例如<code>\x41</code>对应字符’A’，但是对于更大的码点则必须使用<code>\u</code>或<code>\U</code>转义形式。因此，<code>\xe4\xb8\x96</code>并不是一个合法的rune字符，虽然这三个字节对应一个有效的UTF8编码的码点。</p>
+<p>得益于UTF8编码优良的设计，诸多字符串操作都不需要解码操作。我们可以不用解码直接测试一个字符串是否是另一个字符串的前缀：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">HasPrefix</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> prefix <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">bool</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">>=</span> <span class="token function">len</span><span class="token punctuation">(</span>prefix<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> s<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token function">len</span><span class="token punctuation">(</span>prefix<span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">==</span> prefix
+<span class="token punctuation">&#125;</span></code></pre>
 
+<p>或者是后缀测试：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">HasSuffix</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> suffix <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">bool</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">>=</span> <span class="token function">len</span><span class="token punctuation">(</span>suffix<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> s<span class="token punctuation">[</span><span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token operator">-</span><span class="token function">len</span><span class="token punctuation">(</span>suffix<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token punctuation">]</span> <span class="token operator">==</span> suffix
+<span class="token punctuation">&#125;</span></code></pre>
 
+<p>或者是包含子串测试：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Contains</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> substr <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">bool</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token function">HasPrefix</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span>i<span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">,</span> substr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token boolean">false</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
+<p>对于UTF8编码后文本的处理和原始的字节处理逻辑是一样的。但是对应很多其它编码则并不是这样的。</p>
+<p>另一方面，如果我们真的关心每个Unicode字符，我们可以使用其它处理方式。考虑前面的第一个例子中的字符串，它混合了中西两种字符。图3.5展示了它的内存表示形式。字符串包含13个字节，以UTF8形式编码，但是只对应9个Unicode字符：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">import</span> <span class="token string">"unicode/utf8"</span>
 
+s <span class="token operator">:=</span> <span class="token string">"Hello, 世界"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span>                    <span class="token comment">// "13"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>utf8<span class="token punctuation">.</span><span class="token function">RuneCountInString</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "9"</span></code></pre>
 
+<p>为了处理这些真实的字符，我们需要一个UTF8解码器。unicode&#x2F;utf8包提供了该功能，我们可以这样使用：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#123;</span>
+    r<span class="token punctuation">,</span> size <span class="token operator">:=</span> utf8<span class="token punctuation">.</span><span class="token function">DecodeRuneInString</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span>i<span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%d\t%c\n"</span><span class="token punctuation">,</span> i<span class="token punctuation">,</span> r<span class="token punctuation">)</span>
+    i <span class="token operator">+=</span> size
+<span class="token punctuation">&#125;</span></code></pre>
 
+<p>每一次调用<code>DecodeRuneInString</code>函数都返回一个r和长度，r对应字符本身，长度对应r采用UTF8编码后的编码字节数目。长度可以用于更新第i个字符在字符串中的字节索引位置。但是这种编码方式是笨拙的，我们需要更简洁的语法。幸运的是，Go语言的range循环在处理字符串的时候，会自动隐式解码UTF8字符串。下面的循环运行如图3.5所示；需要注意的是对于非ASCII，索引更新的步长将超过1个字节。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">for</span> i<span class="token punctuation">,</span> r <span class="token operator">:=</span> <span class="token keyword">range</span> <span class="token string">"Hello, 世界"</span> <span class="token punctuation">&#123;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%d\t%q\t%d\n"</span><span class="token punctuation">,</span> i<span class="token punctuation">,</span> r<span class="token punctuation">,</span> r<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
 
+<span class="token comment">/*
+0       'H'     72
+1       'e'     101
+2       'l'     108
+3       'l'     108
+4       'o'     111
+5       ','     44
+6       ' '     32
+7       '世'    19990
+10      '界'    30028
+*/</span></code></pre>
 
+<p><img src="/2022/notes-of-gopl/ch3-05.png" alt="图3.5"></p>
+<p>我们可以使用一个简单的循环来统计字符串中字符的数目，像这样：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">n :&#x3D; 0
+for _, _ &#x3D; range s &#123;
+    n++
+&#125;</code></pre>
 
+<p>像其它形式的循环那样，我们也可以忽略不需要的变量：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">n :&#x3D; 0
+for range s &#123;
+    n++
+&#125;</code></pre>
 
+<p>或者我们可以直接调用<code>utf8.RuneCountInString(s)</code>函数。</p>
+<p>每一个UTF8字符解码，不管是显式地调用<code>utf8.DecodeRuneInString</code>解码或是在range循环中隐式地解码，如果遇到一个错误的UTF8编码输入，将生成一个特别的Unicode字符<code>\uFFFD</code>，在印刷中这个符号通常是一个黑色六角或钻石形状，里面包含一个白色的问号”?”。当程序遇到这样的一个字符，通常是一个危险信号，说明输入并不是一个完美没有错误的UTF8字符串。</p>
+<p>UTF8字符串作为交换格式是非常方便的，但是在程序内部采用rune序列可能更方便，因为rune大小一致，支持数组索引和方便切割。</p>
+<p>将[]rune类型转换应用到UTF8编码的字符串，将返回字符串编码的Unicode码点序列：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// "program" in Japanese katakana</span>
+s <span class="token operator">:=</span> <span class="token string">"プログラム"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"% x\n"</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span> <span class="token comment">// "e3 83 97 e3 83 ad e3 82 b0 e3 83 a9 e3 83 a0"</span>
+r <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">rune</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%x\n"</span><span class="token punctuation">,</span> r<span class="token punctuation">)</span>  <span class="token comment">// "[30d7 30ed 30b0 30e9 30e0]"</span></code></pre>
 
+<p>（在第一个<code>Printf</code>中的<code>% x</code>参数用于在每个十六进制数字前插入一个空格。）</p>
+<p>如果是将一个<code>[]rune</code>类型的Unicode字符slice或数组转为string，则对它们进行UTF8编码：</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "プログラム"</span></code></pre>
 
+<p>将一个整数转型为字符串意思是生成以只包含对应Unicode码点字符的UTF8字符串：</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token number">65</span><span class="token punctuation">)</span><span class="token punctuation">)</span>     <span class="token comment">// "A", not "65"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token number">0x4eac</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "京"</span></code></pre>
 
+<p>如果对应码点的字符是无效的，则用<code>\uFFFD</code>无效字符作为替换：</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token number">1234567</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "⶧"</span></code></pre>
 
+<h3 id="字符串和Byte切片"><a href="#字符串和Byte切片" class="headerlink" title="字符串和Byte切片"></a>字符串和Byte切片</h3><p><strong>标准库中有4个包对字符串处理尤为重要：</strong></p>
+<ul>
+<li><p><code>strings</code>包：提供了许多如字符串的查询、替换、比较、截断、拆分和合并等功能。</p>
+</li>
+<li><p><code>bytes</code>包：也提供了很多与<code>strings</code>包类似功能的函数，但是针对和字符串有着相同结构的<code>[]byte</code>类型。因为字符串是只读的，因此逐步构建字符串会导致很多分配和复制。在这种情况下，使用<code>bytes.Buffer</code>类型将会更有效。</p>
+</li>
+<li><p><code>strconv</code>包提供了布尔型、整型数、浮点数和对应字符串的相互转换，还提供了双引号转义相关的转换。</p>
+</li>
+<li><p><code>unicode</code>包：提供了<code>IsDigit</code>、<code>IsLetter</code>、<code>IsUpper</code>和<code>IsLower</code>等类似功能，它们用于给字符分类。每个函数有一个单一的rune类型的参数，然后返回一个布尔值。而像<code>ToUpper</code>和<code>ToLower</code>之类的转换函数将用于rune字符的大小写转换。所有的这些函数都是遵循Unicode标准定义的字母、数字等分类规范。strings包也有类似的函数，它们是<code>ToUpper</code>和<code>ToLower</code>，将原始字符串的每个字符都做相应的转换，然后返回新的字符串。</p>
+</li>
+</ul>
+<p>下面例子的basename函数灵感源于Unix shell的同名工具。在我们实现的版本中，<code>basename(s)</code>将看起来像是系统路径的前缀删除，同时将看似文件类型的后缀名部分删除：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">fmt.Println(basename(&quot;a&#x2F;b&#x2F;c.go&quot;)) &#x2F;&#x2F; &quot;c&quot;
+fmt.Println(basename(&quot;c.d.go&quot;))   &#x2F;&#x2F; &quot;c.d&quot;
+fmt.Println(basename(&quot;abc&quot;))      &#x2F;&#x2F; &quot;abc&quot;</code></pre>
 
+<p>第一个版本并没有使用任何库，全部手工硬编码实现：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">&#x2F;&#x2F; basename removes directory components and a .suffix.
+&#x2F;&#x2F; e.g., a &#x3D;&gt; a, a.go &#x3D;&gt; a, a&#x2F;b&#x2F;c.go &#x3D;&gt; c, a&#x2F;b.c.go &#x3D;&gt; b.c
+func basename(s string) string &#123;
+    &#x2F;&#x2F; Discard last &#39;&#x2F;&#39; and everything before.
+    for i :&#x3D; len(s) - 1; i &gt;&#x3D; 0; i-- &#123;
+        if s[i] &#x3D;&#x3D; &#39;&#x2F;&#39; &#123;
+            s &#x3D; s[i+1:]
+            break
+        &#125;
+    &#125;
+    &#x2F;&#x2F; Preserve everything before last &#39;.&#39;.
+    for i :&#x3D; len(s) - 1; i &gt;&#x3D; 0; i-- &#123;
+        if s[i] &#x3D;&#x3D; &#39;.&#39; &#123;
+            s &#x3D; s[:i]
+            break
+        &#125;
+    &#125;
+    return s
+&#125;</code></pre>
 
+<p>这个简化版本使用了<code>strings.LastIndex</code>库函数：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">func basename(s string) string &#123;
+    slash :&#x3D; strings.LastIndex(s, &quot;&#x2F;&quot;) &#x2F;&#x2F; -1 if &quot;&#x2F;&quot; not found
+    s &#x3D; s[slash+1:]
+    if dot :&#x3D; strings.LastIndex(s, &quot;.&quot;); dot &gt;&#x3D; 0 &#123;
+        s &#x3D; s[:dot]
+    &#125;
+    return s
+&#125;</code></pre>
 
+<p><code>path</code>和<code>path/filepath</code>包提供了关于文件路径名更一般的函数操作。使用斜杠分隔路径可以在任何操作系统上工作。斜杠本身不应该用于文件名，但是在其他一些领域可能会用于文件名，例如URL路径组件。相比之下，<code>path/filepath</code>包则使用操作系统本身的路径规则，例如POSIX系统使用<code>/foo/bar</code>，而Microsoft Windows使用<code>c:\foo\bar</code>等。</p>
+<p>让我们继续另一个字符串的例子。函数的功能是将一个表示整数值的字符串，每隔三个字符插入一个逗号分隔符，例如“12345”处理后成为“12,345”。这个版本只适用于整数类型。</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">&#x2F;&#x2F; comma inserts commas in a non-negative decimal integer string.
+func comma(s string) string &#123;
+    n :&#x3D; len(s)
+    if n &lt;&#x3D; 3 &#123;
+        return s
+    &#125;
+    return comma(s[:n-3]) + &quot;,&quot; + s[n-3:]
+&#125;</code></pre>
 
+<p>输入comma函数的参数是一个字符串。如果输入字符串的长度小于或等于3的话，则不需要插入逗号分隔符。否则，comma函数将在最后三个字符前的位置将字符串切割为两个子串并插入逗号分隔符，然后通过递归调用自身来得出前面的子串。</p>
+<p><strong>一个字符串是包含只读字节的数组，一旦创建，是不可变的。相比之下，一个字节slice的元素则可以自由地修改。</strong></p>
+<p><strong>字符串和字节slice之间可以相互转换：</strong></p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">s :&#x3D; &quot;abc&quot;
+b :&#x3D; []byte(s)
+s2 :&#x3D; string(b)</code></pre>
 
+<p>从概念上讲，一个<code>[]byte(s)</code>转换是分配了一个新的字节数组用于保存字符串数据的拷贝，然后引用这个底层的字节数组。编译器的优化可以避免在一些场景下分配和复制字符串数据，但总的来说需要确保在变量b被修改的情况下，原始的s字符串也不会改变。将一个<code>[]byte</code>字节slice转换到字符串的<code>string(b)</code>操作则是构造一个字符串拷贝，以确保<code>s2</code>字符串是只读的。</p>
+<p><strong>为了避免转换中不必要的内存分配，<code>bytes</code>包和<code>strings</code>同时提供了许多实用函数。下面是<code>strings</code>包中的六个函数：</strong></p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">func Contains(s, substr string) bool
+func Count(s, sep string) int
+func Fields(s string) []string
+func HasPrefix(s, prefix string) bool
+func Index(s, sep string) int
+func Join(a []string, sep string) string</code></pre>
 
+<p><strong><code>bytes</code>包中也对应的六个函数：</strong></p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">func Contains(b, subslice []byte) bool
+func Count(s, sep []byte) int
+func Fields(s []byte) [][]byte
+func HasPrefix(s, prefix []byte) bool
+func Index(s, sep []byte) int
+func Join(s [][]byte, sep []byte) []byte</code></pre>
 
+<p><strong>它们之间唯一的区别是字符串类型参数被替换成了字节slice类型的参数。</strong></p>
+<p><code>bytes</code>包还提供了<code>Buffer</code>类型用于字节slice的缓存。一个<code>Buffer</code>开始是空的，但是随着<code>string</code>、<code>byte</code>或<code>[]byte</code>等类型数据的写入可以动态增长，一个<code>bytes.Buffer</code>变量并不需要初始化，因为零值也是有效的：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">&#x2F;&#x2F; intsToString is like fmt.Sprint(values) but adds commas.
+func intsToString(values []int) string &#123;
+    var buf bytes.Buffer
+    buf.WriteByte(&#39;[&#39;)
+    for i, v :&#x3D; range values &#123;
+        if i &gt; 0 &#123;
+            buf.WriteString(&quot;, &quot;)
+        &#125;
+        fmt.Fprintf(&amp;buf, &quot;%d&quot;, v)
+    &#125;
+    buf.WriteByte(&#39;]&#39;)
+    return buf.String()
+&#125;
 
+func main() &#123;
+    fmt.Println(intsToString([]int&#123;1, 2, 3&#125;)) &#x2F;&#x2F; &quot;[1, 2, 3]&quot;
+&#125;</code></pre>
 
+<p>当向<code>bytes.Buffer</code>添加任意字符的UTF8编码时，最好使用<code>bytes.Buffer</code>的<code>WriteRune</code>方法，但是<code>WriteByte</code>方法对于写入类似<code>[</code>和<code>]</code>等ASCII字符则会更加有效。</p>
+<p><code>bytes.Buffer</code>类型有着很多实用的功能，可以将它用作一个I&#x2F;O的输入和输出对象，例如当做<code>Fprintf</code>的<code>io.Writer</code>输出对象，或者当作<code>io.Reader</code>类型的输入源对象。</p>
+<h3 id="字符串和数字的转换"><a href="#字符串和数字的转换" class="headerlink" title="字符串和数字的转换"></a>字符串和数字的转换</h3><p>除了字符串、字符、字节之间的转换，字符串和数值之间的转换也比较常见。由<code>strconv</code>包提供这类转换功能。</p>
+<p>将一个整数转为字符串，一种方法是用<code>fmt.Sprintf</code>返回一个格式化的字符串；另一个方法是用<code>strconv.Itoa(&quot;整数到ASCII&quot;)</code>：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">x :&#x3D; 123
+y :&#x3D; fmt.Sprintf(&quot;%d&quot;, x)
+fmt.Println(y, strconv.Itoa(x)) &#x2F;&#x2F; &quot;123 123&quot;</code></pre>
 
+<p><code>FormatInt</code>和<code>FormatUint</code>函数可以用不同的进制来格式化数字：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">fmt.Println(strconv.FormatInt(int64(x), 2)) &#x2F;&#x2F; &quot;1111011&quot;</code></pre>
 
+<p><code>fmt.Printf</code>函数的<code>%b</code>、<code>%d</code>、<code>%o</code>和<code>%x</code>等参数提供功能往往比<code>strconv</code>包的<code>Format</code>函数方便很多，特别是在需要包含有附加额外信息的时候：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">s :&#x3D; fmt.Sprintf(&quot;x&#x3D;%b&quot;, x) &#x2F;&#x2F; &quot;x&#x3D;1111011&quot;</code></pre>
 
+<p>如果要将一个字符串解析为整数，可以使用<code>strconv</code>包的<code>Atoi</code>或<code>ParseInt</code>函数，还有用于解析无符号整数的<code>ParseUint</code>函数：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">x, err :&#x3D; strconv.Atoi(&quot;123&quot;)             &#x2F;&#x2F; x is an int
+y, err :&#x3D; strconv.ParseInt(&quot;123&quot;, 10, 64) &#x2F;&#x2F; base 10, up to 64 bits</code></pre>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<p><code>ParseInt</code>函数的第三个参数是用于指定整型数的大小；例如16表示<code>int16</code>，0则表示int。在任何情况下，返回的结果y总是<code>int64</code>类型，你可以通过强制类型转换将它转为更小的整数类型。</p>
+<p>有时候也会使用<code>fmt.Scanf</code>来解析输入的字符串和数字，特别是当字符串和数字混合在一行的时候，它可以灵活处理不完整或不规则的输入。</p>
 ]]></content>
       <categories>
         <category>Golang</category>
