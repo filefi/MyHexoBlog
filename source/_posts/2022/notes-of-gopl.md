@@ -1743,6 +1743,183 @@ func init() {
 
 # 基本数据类型
 
+## 整型
+
+Go语言同时提供了有符号和无符号类型的整数运算。这里有`int8`、`int16`、`int32`和`int64`四种截然不同大小的有符号整数类型，分别对应8、16、32、64bit大小的有符号整数，与此对应的是`uint8`、`uint16`、`uint32`和`uint64`四种无符号整数类型。
+
+这里还有两种一般对应特定CPU平台机器字大小的有符号和无符号整数`int`和`uint`；其中`int`是应用最广泛的数值类型。这两种类型都有同样的大小，32或64bit。不同的编译器即使在相同的硬件平台上可能产生不同的大小。
+
+Unicode字符`rune`类型是和`int32`等价的类型，通常用于表示一个Unicode码点。同样`byte`也是`uint8`类型的等价类型，`byte`类型一般用于强调数值是一个原始的数据而不是一个小的整数。
+
+最后，还有一种无符号的整数类型`uintptr`，没有指定具体的bit大小但是足以容纳指针。`uintptr`类型只有在底层编程时才需要，特别是Go语言和C语言函数库或操作系统接口相交互的地方。
+
+下面是Go语言中关于算术运算、逻辑运算和比较运算的二元运算符，它们按照优先级递减的顺序排列：
+
+```
+*      /      %      <<       >>     &       &^
++      -      |      ^
+==     !=     <      <=       >      >=
+&&
+||
+```
+
+算术运算符`+`、`-`、`*`和`/`可以适用于整数、浮点数和复数，但是取模运算符%仅用于整数间的运算。对于不同编程语言，%取模运算的行为可能并不相同。在Go语言中，%取模运算符的符号和被取模数的符号总是一致的，因此`-5%3`和`-5%-3`结果都是-2。除法运算符`/`的行为则依赖于操作数是否全为整数，比如`5.0/4.0`的结果是1.25，但是5/4的结果是1，因为整数除法会向着0方向截断余数。
+
+两个相同的整数类型可以使用下面的二元比较运算符进行比较；比较表达式的结果是布尔类型。
+
+```
+==    等于
+!=    不等于
+<     小于
+<=    小于等于
+>     大于
+>=    大于等于
+```
+
+
+
+尽管Go语言提供了无符号数的运算，但即使数值本身不可能出现负数，我们还是倾向于使用有符号的`int`类型。无符号数往往只有在位运算或其它特殊的运算场景才会使用，就像bit集合、分析二进制文件格式或者是哈希和加密操作等。它们通常并不用于仅仅是表达非负数量的场合。
+
+一般来说，需要一个显式的转换将一个值从一种类型转化为另一种类型，并且算术和逻辑运算的二元操作中必须是相同的类型。
+
+```go
+var compote = int(apples) + int(oranges)
+```
+
+任何大小的整数字面值都可以用以0开始的八进制格式书写，例如0666；或用以0x或0X开头的十六进制格式书写，例如0xdeadbeef。十六进制数字可以用大写或小写字母。如今八进制数据通常用于POSIX操作系统上的文件访问权限标志，十六进制数字则更强调数字值的bit位模式。
+
+当使用fmt包打印一个数值时，我们可以用%d、%o或%x参数控制输出的进制格式，就像下面的例子：
+
+```go
+o := 0666
+fmt.Printf("%d %[1]o %#[1]o\n", o) // "438 666 0666"
+x := int64(0xdeadbeef)
+fmt.Printf("%d %[1]x %#[1]x %#[1]X\n", x)
+// Output:
+// 3735928559 deadbeef 0xdeadbeef 0XDEADBEEF
+```
+
+请注意fmt的两个使用技巧。通常`Printf`格式化字符串包含多个`%`参数时将会包含对应相同数量的额外操作数，但是`%`之后的`[1]`副词告诉`Printf`函数再次使用第一个操作数。第二，`%`后的`#`副词告诉`Printf`在用`%o`、`%x`或`%X`输出时生成`0`、`0x`或`0X`前缀。
+
+字符面值通过一对单引号直接包含对应字符。最简单的例子是ASCII中类似'a'写法的字符面值，但是我们也可以通过转义的数值来表示任意的Unicode码点对应的字符，马上将会看到这样的例子。
+
+字符使用`%c`参数打印，或者是用`%q`参数打印带单引号的字符：
+
+```go
+ascii := 'a'
+unicode := '国'
+newline := '\n'
+fmt.Printf("%d %[1]c %[1]q\n", ascii)   // "97 a 'a'"
+fmt.Printf("%d %[1]c %[1]q\n", unicode) // "22269 国 '国'"
+fmt.Printf("%d %[1]q\n", newline)       // "10 '\n'"
+```
+
+## 浮点数
+
+Go语言提供了两种精度的浮点数，float32和float64。它们的算术规范由IEEE754浮点数国际标准定义，该浮点数规范被所有现代的CPU支持。
+
+这些浮点数类型的取值范围可以从很微小到很巨大。浮点数的范围极限值可以在math包找到。常量`math.MaxFloat32`表示float32能表示的最大数值，大约是 `3.4e38`；对应的`math.MaxFloat64`常量大约是`1.8e308`。它们分别能表示的最小值近似为`1.4e-45`和`4.9e-324`。
+
+通常应该优先使用float64类型，因为float32类型的累计计算误差很容易扩散，并且float32能精确表示的正整数并不是很大（译注：因为float32的有效bit位只有23个，其它的bit位用于指数和符号；当整数大于23bit能表达的范围时，float32的表示将出现误差）：
+
+```go
+var f float32 = 16777216 // 1 << 24
+fmt.Println(f == f+1)    // "true"!
+```
+
+浮点数的字面值可以直接写小数部分，像这样：
+
+```go
+const e = 2.71828 // (approximately)
+```
+
+小数点前面或后面的数字都可能被省略（例如.707或1.）。很小或很大的数最好用科学计数法书写，通过e或E来指定指数部分：
+
+```go
+const Avogadro = 6.02214129e23  // 阿伏伽德罗常数
+const Planck   = 6.62606957e-34 // 普朗克常数
+```
+
+用`Printf`函数的`%g`参数打印浮点数，将采用更紧凑的表示形式打印，并提供足够的精度，但是对应表格的数据，使用`%e`（带指数）或`%f`的形式打印可能更合适。所有的这三个打印形式都可以指定打印的宽度和控制打印精度。
+
+```go
+for x := 0; x < 8; x++ {
+    fmt.Printf("x = %d e^x = %8.3f\n", x, math.Exp(float64(x)))
+}
+```
+
+上面代码打印e的幂，打印精度是小数点后三个小数精度和8个字符宽度：
+
+```
+x = 0       e^x =    1.000
+x = 1       e^x =    2.718
+x = 2       e^x =    7.389
+x = 3       e^x =   20.086
+x = 4       e^x =   54.598
+x = 5       e^x =  148.413
+x = 6       e^x =  403.429
+x = 7       e^x = 1096.633
+```
+
+math包中除了提供大量常用的数学函数外，还提供了IEEE754浮点数标准中定义的特殊值的创建和测试：正无穷大和负无穷大，分别用于表示太大溢出的数字和除零的结果；还有NaN非数，一般用于表示无效的除法操作结果0/0或Sqrt(-1).
+
+```go
+var z float64
+fmt.Println(z, -z, 1/z, -1/z, z/z) // "0 -0 +Inf -Inf NaN"
+```
+
+函数`math.IsNaN`用于测试一个数是否是非数NaN，`math.NaN`则返回非数对应的值。虽然可以用`math.NaN`来表示一个非法的结果，但是测试一个结果是否是非数NaN则是充满风险的，因为NaN和任何数都是不相等的（译注：在浮点数中，NaN、正无穷大和负无穷大都不是唯一的，每个都有非常多种的bit模式表示）：
+
+```go
+nan := math.NaN()
+fmt.Println(nan == nan, nan < nan, nan > nan) // "false false false"
+```
+
+如果一个函数返回的浮点数结果可能失败，最好的做法是用单独的标志报告失败，像这样：
+
+```go
+func compute() (value float64, ok bool) {
+    // ...
+    if failed {
+        return 0, false
+    }
+    return result, true
+}
+```
+
+## 复数
+
+Go语言提供了两种精度的复数类型：complex64和complex128，分别对应float32和float64两种浮点数精度。内置的complex函数用于构建复数，内建的real和imag函数分别返回复数的实部和虚部：
+
+```Go
+var x complex128 = complex(1, 2) // 1+2i
+var y complex128 = complex(3, 4) // 3+4i
+fmt.Println(x*y)                 // "(-5+10i)"
+fmt.Println(real(x*y))           // "-5"
+fmt.Println(imag(x*y))           // "10"
+```
+
+如果一个浮点数面值或一个十进制整数面值后面跟着一个i，例如3.141592i或2i，它将构成一个复数的虚部，复数的实部是0：
+
+```Go
+fmt.Println(1i * 1i) // "(-1+0i)", i^2 = -1
+```
+
+在常量算术规则下，一个复数常量可以加到另一个普通数值常量（整数或浮点数、实部或虚部），我们可以用自然的方式书写复数，就像`1+2i`或与之等价的写法`2i+1`。上面x和y的声明语句还可以简化：
+
+```Go
+x := 1 + 2i
+y := 3 + 4i
+```
+
+复数也可以用`==`和`!=`进行相等比较。只有两个复数的实部和虚部都相等的时候它们才是相等的（译注：浮点数的相等比较是危险的，需要特别小心处理精度问题）。
+
+`math/cmplx`包提供了复数处理的许多函数，例如求复数的平方根函数和求幂函数。
+
+```Go
+fmt.Println(cmplx.Sqrt(-1)) // "(0+1i)"
+```
+
 
 
 ## 布尔型
@@ -1797,45 +1974,445 @@ func itob(i int) bool { return i != 0 }
 
 
 
+## 字符串
+
+一个字符串是一个不可改变的字节序列。字符串可以包含任意的数据，包括byte值0，但是通常是用来包含人类可读的文本。文本字符串通常被解释为采用UTF8编码的Unicode码点（rune）序列。
+
+**内置的len函数可以返回一个字符串中的字节数目（不是rune字符数目），索引操作`s[i]`返回第`i`个字节的字节值，`i`必须满足`0 ≤ i< len(s)`条件约束。**
+
+```go
+s := "hello, world"
+fmt.Println(len(s))     // "12"
+fmt.Println(s[0], s[7]) // "104 119" ('h' and 'w')
+```
+
+如果试图访问超出字符串索引范围的字节将会导致panic异常：
+
+```go
+c := s[len(s)] // panic: index out of range
+```
+
+**第i个字节并不一定是字符串的第i个字符，因为对于非ASCII字符的UTF8编码会要两个或多个字节。**
+
+子字符串操作`s[i:j]`基于原始的s字符串的第i个字节开始到第j个字节（并不包含j本身）生成一个新字符串。生成的新字符串将包含`j-i`个字节。
+
+```go
+fmt.Println(s[0:5]) // "hello"
+```
+
+同样，如果索引超出字符串范围或者`j`小于`i`的话将导致panic异常。
+
+不管i还是`j`都可能被忽略，当它们被忽略时将采用0作为开始位置，采用`len(s)`作为结束的位置。
+
+```go
+fmt.Println(s[:5]) // "hello"
+fmt.Println(s[7:]) // "world"
+fmt.Println(s[:])  // "hello, world"
+```
+
+其中`+`操作符将两个字符串连接构造一个新字符串：
+
+```go
+fmt.Println("goodbye" + s[5:]) // "goodbye, world"
+```
+
+字符串可以用==和<进行比较；比较通过逐个字节比较完成的，因此比较的结果是字符串自然编码的顺序。
+
+字符串的值是不可变的：一个字符串包含的字节序列永远不会被改变，当然我们也可以给一个字符串变量分配一个新字符串值。可以像下面这样将一个字符串追加到另一个字符串：
+
+```go
+s := "left foot"
+t := s
+s += ", right foot"
+```
+
+这并不会导致原始的字符串值被改变，但是变量s将因为+=语句持有一个新的字符串值，但是t依然是包含原先的字符串值。
+
+```go
+fmt.Println(s) // "left foot, right foot"
+fmt.Println(t) // "left foot"
+```
+
+因为字符串是不可修改的，因此尝试修改字符串内部数据的操作也是被禁止的：
+
+```go
+s[0] = 'L' // compile error: cannot assign to s[0]
+```
+
+不变性意味着如果两个字符串共享相同的底层数据的话也是安全的，这使得复制任何长度的字符串代价是低廉的。同样，一个字符串`s`和对应的子字符串切片`s[7:]`的操作也可以安全地共享相同的内存，因此字符串切片操作代价也是低廉的。在这两种情况下都没有必要分配新的内存。
+
+下图演示了一个字符串和两个子串共享相同的底层数据：
+
+![img](ch3-04.png)
+
+### 字符串字面量
+
+字符串值也可以用字符串面值方式编写，只要将一系列字节序列包含在双引号内即可：
+
+```go
+"Hello, 世界"
+```
+
+因为Go语言源文件总是用UTF8编码，并且Go语言的文本字符串也以UTF8编码的方式处理，因此我们可以将 *Unicode码点* 也写到字符串面值中。
+
+在一个双引号包含的字符串面值中，可以用以反斜杠`\`开头的转义序列插入任意的数据。下面的换行、回车和制表符等是常见的ASCII控制代码的转义方式：
+
+```
+\a      响铃
+\b      退格
+\f      换页
+\n      换行
+\r      回车
+\t      制表符
+\v      垂直制表符
+\'      单引号（只用在 '\'' 形式的rune符号面值中）
+\"      双引号（只用在 "..." 形式的字符串面值中）
+\\      反斜杠
+```
+
+一个原生的字符串面值形式是`...`，使用反引号代替双引号。在原生的字符串面值中，没有转义操作；全部的内容都是字面的意思，包含退格和换行，因此一个程序中的原生字符串面值可能跨越多行（译注：在原生字符串面值内部是无法直接写\`字符的，可以用八进制或十六进制转义或+"\`"连接字符串常量完成）。
+
+原生字符串面值用于编写正则表达式会很方便，因为正则表达式往往会包含很多反斜杠。原生字符串面值同时被广泛应用于HTML模板、JSON面值、命令行提示信息以及那些需要扩展到多行的场景。
+
+```go
+const GoUsage = `Go is a tool for managing Go source code.
+
+Usage:
+    go command [arguments]
+...`
+```
+
+### Unicode
+
+Unicode（ [http://unicode.org](http://unicode.org/) ），它收集了这个世界上所有的符号系统，包括重音符号和其它变音符号，制表符和回车符，还有很多神秘的符号，每个符号都分配一个唯一的Unicode码点，Unicode码点对应Go语言中的rune整数类型（译注：rune是int32等价类型）。
+
+### UTF-8
+
+UTF8是一个将Unicode码点编码为字节序列的变长编码。UTF8编码是由Go语言之父Ken Thompson和Rob Pike共同发明的，现在已经是Unicode的标准。UTF8编码使用1到4个字节来表示每个Unicode码点，ASCII部分字符只使用1个字节，常用字符部分使用2或3个字节表示。
+
+Go语言的源文件采用UTF8编码，并且Go语言处理UTF8编码的文本也很出色。unicode包提供了诸多处理rune字符相关功能的函数（比如区分字母和数字，或者是字母的大写和小写转换等），`unicode/utf8`包则提供了用于rune字符序列的UTF8编码和解码的功能。
 
 
 
+有很多Unicode字符很难直接从键盘输入，并且还有很多字符有着相似的结构；有一些甚至是不可见的字符（译注：中文和日文就有很多相似但不同的字）。Go语言字符串面值中的Unicode转义字符让我们可以通过Unicode码点输入特殊的字符。有两种形式：`\uhhhh`对应16bit的码点值，`\Uhhhhhhhh`对应32bit的码点值，其中h是一个十六进制数字；一般很少需要使用32bit的形式。每一个对应码点的UTF8编码。例如：下面的字母串面值都表示相同的值：
+
+```go
+"世界"
+"\xe4\xb8\x96\xe7\x95\x8c"
+"\u4e16\u754c"
+"\U00004e16\U0000754c"
+```
+
+上面三个转义序列都为第一个字符串提供替代写法，但是它们的值都是相同的。
+
+Unicode转义也可以使用在rune字符中。下面三个字符是等价的：
+
+```go
+'世' '\u4e16' '\U00004e16'
+```
+
+对于小于256的码点值可以写在一个十六进制转义字节中，例如`\x41`对应字符'A'，但是对于更大的码点则必须使用`\u`或`\U`转义形式。因此，`\xe4\xb8\x96`并不是一个合法的rune字符，虽然这三个字节对应一个有效的UTF8编码的码点。
+
+得益于UTF8编码优良的设计，诸多字符串操作都不需要解码操作。我们可以不用解码直接测试一个字符串是否是另一个字符串的前缀：
+
+```go
+func HasPrefix(s, prefix string) bool {
+    return len(s) >= len(prefix) && s[:len(prefix)] == prefix
+}
+```
+
+或者是后缀测试：
+
+```go
+func HasSuffix(s, suffix string) bool {
+    return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
+}
+```
+
+或者是包含子串测试：
+
+```go
+func Contains(s, substr string) bool {
+    for i := 0; i < len(s); i++ {
+        if HasPrefix(s[i:], substr) {
+            return true
+        }
+    }
+    return false
+}
+```
+
+对于UTF8编码后文本的处理和原始的字节处理逻辑是一样的。但是对应很多其它编码则并不是这样的。
+
+另一方面，如果我们真的关心每个Unicode字符，我们可以使用其它处理方式。考虑前面的第一个例子中的字符串，它混合了中西两种字符。图3.5展示了它的内存表示形式。字符串包含13个字节，以UTF8形式编码，但是只对应9个Unicode字符：
+
+```go
+import "unicode/utf8"
+
+s := "Hello, 世界"
+fmt.Println(len(s))                    // "13"
+fmt.Println(utf8.RuneCountInString(s)) // "9"
+```
+
+为了处理这些真实的字符，我们需要一个UTF8解码器。unicode/utf8包提供了该功能，我们可以这样使用：
+
+```go
+for i := 0; i < len(s); {
+    r, size := utf8.DecodeRuneInString(s[i:])
+    fmt.Printf("%d\t%c\n", i, r)
+    i += size
+}
+```
+
+每一次调用`DecodeRuneInString`函数都返回一个r和长度，r对应字符本身，长度对应r采用UTF8编码后的编码字节数目。长度可以用于更新第i个字符在字符串中的字节索引位置。但是这种编码方式是笨拙的，我们需要更简洁的语法。幸运的是，Go语言的range循环在处理字符串的时候，会自动隐式解码UTF8字符串。下面的循环运行如图3.5所示；需要注意的是对于非ASCII，索引更新的步长将超过1个字节。
+
+```go
+for i, r := range "Hello, 世界" {
+    fmt.Printf("%d\t%q\t%d\n", i, r, r)
+}
+
+/*
+0       'H'     72
+1       'e'     101
+2       'l'     108
+3       'l'     108
+4       'o'     111
+5       ','     44
+6       ' '     32
+7       '世'    19990
+10      '界'    30028
+*/
+```
+
+![图3.5](ch3-05.png)
+
+我们可以使用一个简单的循环来统计字符串中字符的数目，像这样：
+
+```Go
+n := 0
+for _, _ = range s {
+    n++
+}
+```
+
+像其它形式的循环那样，我们也可以忽略不需要的变量：
+
+```Go
+n := 0
+for range s {
+    n++
+}
+```
+
+或者我们可以直接调用`utf8.RuneCountInString(s)`函数。
 
 
 
+每一个UTF8字符解码，不管是显式地调用`utf8.DecodeRuneInString`解码或是在range循环中隐式地解码，如果遇到一个错误的UTF8编码输入，将生成一个特别的Unicode字符`\uFFFD`，在印刷中这个符号通常是一个黑色六角或钻石形状，里面包含一个白色的问号"?"。当程序遇到这样的一个字符，通常是一个危险信号，说明输入并不是一个完美没有错误的UTF8字符串。
 
+UTF8字符串作为交换格式是非常方便的，但是在程序内部采用rune序列可能更方便，因为rune大小一致，支持数组索引和方便切割。
 
+将[]rune类型转换应用到UTF8编码的字符串，将返回字符串编码的Unicode码点序列：
 
+```go
+// "program" in Japanese katakana
+s := "プログラム"
+fmt.Printf("% x\n", s) // "e3 83 97 e3 83 ad e3 82 b0 e3 83 a9 e3 83 a0"
+r := []rune(s)
+fmt.Printf("%x\n", r)  // "[30d7 30ed 30b0 30e9 30e0]"
+```
 
+（在第一个`Printf`中的`% x`参数用于在每个十六进制数字前插入一个空格。）
 
+如果是将一个`[]rune`类型的Unicode字符slice或数组转为string，则对它们进行UTF8编码：
 
+```go
+fmt.Println(string(r)) // "プログラム"
+```
 
+将一个整数转型为字符串意思是生成以只包含对应Unicode码点字符的UTF8字符串：
 
+```go
+fmt.Println(string(65))     // "A", not "65"
+fmt.Println(string(0x4eac)) // "京"
+```
 
+如果对应码点的字符是无效的，则用`\uFFFD`无效字符作为替换：
 
+```go
+fmt.Println(string(1234567)) // "⶧"
+```
 
+### 字符串和Byte切片
 
+**标准库中有4个包对字符串处理尤为重要：**
 
+- `strings`包：提供了许多如字符串的查询、替换、比较、截断、拆分和合并等功能。
 
+- `bytes`包：也提供了很多与`strings`包类似功能的函数，但是针对和字符串有着相同结构的`[]byte`类型。因为字符串是只读的，因此逐步构建字符串会导致很多分配和复制。在这种情况下，使用`bytes.Buffer`类型将会更有效。
 
+- `strconv`包提供了布尔型、整型数、浮点数和对应字符串的相互转换，还提供了双引号转义相关的转换。
 
+- `unicode`包：提供了`IsDigit`、`IsLetter`、`IsUpper`和`IsLower`等类似功能，它们用于给字符分类。每个函数有一个单一的rune类型的参数，然后返回一个布尔值。而像`ToUpper`和`ToLower`之类的转换函数将用于rune字符的大小写转换。所有的这些函数都是遵循Unicode标准定义的字母、数字等分类规范。strings包也有类似的函数，它们是`ToUpper`和`ToLower`，将原始字符串的每个字符都做相应的转换，然后返回新的字符串。
 
+下面例子的basename函数灵感源于Unix shell的同名工具。在我们实现的版本中，`basename(s)`将看起来像是系统路径的前缀删除，同时将看似文件类型的后缀名部分删除：
 
+```Go
+fmt.Println(basename("a/b/c.go")) // "c"
+fmt.Println(basename("c.d.go"))   // "c.d"
+fmt.Println(basename("abc"))      // "abc"
+```
 
+第一个版本并没有使用任何库，全部手工硬编码实现：
 
+```Go
+// basename removes directory components and a .suffix.
+// e.g., a => a, a.go => a, a/b/c.go => c, a/b.c.go => b.c
+func basename(s string) string {
+    // Discard last '/' and everything before.
+    for i := len(s) - 1; i >= 0; i-- {
+        if s[i] == '/' {
+            s = s[i+1:]
+            break
+        }
+    }
+    // Preserve everything before last '.'.
+    for i := len(s) - 1; i >= 0; i-- {
+        if s[i] == '.' {
+            s = s[:i]
+            break
+        }
+    }
+    return s
+}
+```
 
+这个简化版本使用了`strings.LastIndex`库函数：
 
+```Go
+func basename(s string) string {
+    slash := strings.LastIndex(s, "/") // -1 if "/" not found
+    s = s[slash+1:]
+    if dot := strings.LastIndex(s, "."); dot >= 0 {
+        s = s[:dot]
+    }
+    return s
+}
+```
 
+`path`和`path/filepath`包提供了关于文件路径名更一般的函数操作。使用斜杠分隔路径可以在任何操作系统上工作。斜杠本身不应该用于文件名，但是在其他一些领域可能会用于文件名，例如URL路径组件。相比之下，`path/filepath`包则使用操作系统本身的路径规则，例如POSIX系统使用`/foo/bar`，而Microsoft Windows使用`c:\foo\bar`等。
 
+让我们继续另一个字符串的例子。函数的功能是将一个表示整数值的字符串，每隔三个字符插入一个逗号分隔符，例如“12345”处理后成为“12,345”。这个版本只适用于整数类型。
 
+```Go
+// comma inserts commas in a non-negative decimal integer string.
+func comma(s string) string {
+    n := len(s)
+    if n <= 3 {
+        return s
+    }
+    return comma(s[:n-3]) + "," + s[n-3:]
+}
+```
 
+输入comma函数的参数是一个字符串。如果输入字符串的长度小于或等于3的话，则不需要插入逗号分隔符。否则，comma函数将在最后三个字符前的位置将字符串切割为两个子串并插入逗号分隔符，然后通过递归调用自身来得出前面的子串。
 
+**一个字符串是包含只读字节的数组，一旦创建，是不可变的。相比之下，一个字节slice的元素则可以自由地修改。**
 
+**字符串和字节slice之间可以相互转换：**
 
+```Go
+s := "abc"
+b := []byte(s)
+s2 := string(b)
+```
 
+从概念上讲，一个`[]byte(s)`转换是分配了一个新的字节数组用于保存字符串数据的拷贝，然后引用这个底层的字节数组。编译器的优化可以避免在一些场景下分配和复制字符串数据，但总的来说需要确保在变量b被修改的情况下，原始的s字符串也不会改变。将一个`[]byte`字节slice转换到字符串的`string(b)`操作则是构造一个字符串拷贝，以确保`s2`字符串是只读的。
 
+**为了避免转换中不必要的内存分配，`bytes`包和`strings`同时提供了许多实用函数。下面是`strings`包中的六个函数：**
 
+```Go
+func Contains(s, substr string) bool
+func Count(s, sep string) int
+func Fields(s string) []string
+func HasPrefix(s, prefix string) bool
+func Index(s, sep string) int
+func Join(a []string, sep string) string
+```
 
+**`bytes`包中也对应的六个函数：**
+
+```Go
+func Contains(b, subslice []byte) bool
+func Count(s, sep []byte) int
+func Fields(s []byte) [][]byte
+func HasPrefix(s, prefix []byte) bool
+func Index(s, sep []byte) int
+func Join(s [][]byte, sep []byte) []byte
+```
+
+**它们之间唯一的区别是字符串类型参数被替换成了字节slice类型的参数。**
+
+`bytes`包还提供了`Buffer`类型用于字节slice的缓存。一个`Buffer`开始是空的，但是随着`string`、`byte`或`[]byte`等类型数据的写入可以动态增长，一个`bytes.Buffer`变量并不需要初始化，因为零值也是有效的：
+
+```Go
+// intsToString is like fmt.Sprint(values) but adds commas.
+func intsToString(values []int) string {
+    var buf bytes.Buffer
+    buf.WriteByte('[')
+    for i, v := range values {
+        if i > 0 {
+            buf.WriteString(", ")
+        }
+        fmt.Fprintf(&buf, "%d", v)
+    }
+    buf.WriteByte(']')
+    return buf.String()
+}
+
+func main() {
+    fmt.Println(intsToString([]int{1, 2, 3})) // "[1, 2, 3]"
+}
+```
+
+当向`bytes.Buffer`添加任意字符的UTF8编码时，最好使用`bytes.Buffer`的`WriteRune`方法，但是`WriteByte`方法对于写入类似`[`和`]`等ASCII字符则会更加有效。
+
+`bytes.Buffer`类型有着很多实用的功能，可以将它用作一个I/O的输入和输出对象，例如当做`Fprintf`的`io.Writer`输出对象，或者当作`io.Reader`类型的输入源对象。
+
+### 字符串和数字的转换
+
+除了字符串、字符、字节之间的转换，字符串和数值之间的转换也比较常见。由`strconv`包提供这类转换功能。
+
+将一个整数转为字符串，一种方法是用`fmt.Sprintf`返回一个格式化的字符串；另一个方法是用`strconv.Itoa("整数到ASCII")`：
+
+```Go
+x := 123
+y := fmt.Sprintf("%d", x)
+fmt.Println(y, strconv.Itoa(x)) // "123 123"
+```
+
+`FormatInt`和`FormatUint`函数可以用不同的进制来格式化数字：
+
+```Go
+fmt.Println(strconv.FormatInt(int64(x), 2)) // "1111011"
+```
+
+`fmt.Printf`函数的`%b`、`%d`、`%o`和`%x`等参数提供功能往往比`strconv`包的`Format`函数方便很多，特别是在需要包含有附加额外信息的时候：
+
+```Go
+s := fmt.Sprintf("x=%b", x) // "x=1111011"
+```
+
+如果要将一个字符串解析为整数，可以使用`strconv`包的`Atoi`或`ParseInt`函数，还有用于解析无符号整数的`ParseUint`函数：
+
+```Go
+x, err := strconv.Atoi("123")             // x is an int
+y, err := strconv.ParseInt("123", 10, 64) // base 10, up to 64 bits
+```
+
+`ParseInt`函数的第三个参数是用于指定整型数的大小；例如16表示`int16`，0则表示int。在任何情况下，返回的结果y总是`int64`类型，你可以通过强制类型转换将它转为更小的整数类型。
+
+有时候也会使用`fmt.Scanf`来解析输入的字符串和数字，特别是当字符串和数字混合在一行的时候，它可以灵活处理不完整或不规则的输入。
 
 
 
