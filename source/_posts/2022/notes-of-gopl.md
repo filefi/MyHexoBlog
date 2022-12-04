@@ -2738,7 +2738,7 @@ fmt.Println(a == d) // compile error: cannot compare [2]int == [3]int
 
 作为一个真实的例子，`crypto/sha256`包的`Sum256`函数对一个任意的字节slice类型的数据生成一个对应的消息摘要。消息摘要有256bit大小，因此对应`[32]byte`数组类型。如果两个消息摘要是相同的，那么可以认为两个消息本身也是相同（译注：理论上有HASH码碰撞的情况，但是实际应用可以基本忽略）；如果消息摘要不同，那么消息本身必然也是不同的。下面的例子用SHA256算法分别生成`"x"`和`"X"`两个信息的摘要：
 
-```Go
+```go
 import "crypto/sha256"
 
 func main() {
@@ -2759,7 +2759,7 @@ func main() {
 
 当然，我们可以显式地传入一个数组指针，那样的话函数通过指针对数组的任何修改都可以直接反馈到调用者。下面的函数用于给`[32]byte`类型的数组清零：
 
-```Go
+```go
 func zero(ptr *[32]byte) {
     for i := range ptr {
         ptr[i] = 0
@@ -2769,7 +2769,7 @@ func zero(ptr *[32]byte) {
 
 其实数组字面值`[32]byte{}`就可以生成一个32字节的数组。而且每个数组的元素都是零值初始化，也就是0。因此，我们可以将上面的zero函数写的更简洁一点：
 
-```Go
+```go
 func zero(ptr *[32]byte) {
     *ptr = [32]byte{}
 }
@@ -2789,7 +2789,7 @@ Slice（切片）代表变长的序列，序列中每个元素都有相同的类
 
 数组这样定义：
 
-```Go
+```go
 months := [...]string{1: "January", /* ... */, 12: "December"}
 ```
 
@@ -2870,13 +2870,13 @@ func equal(x, y []string) bool {
 
 slice唯一合法的比较操作是和nil比较，例如：
 
-```Go
+```go
 if summer == nil { /* ... */ }
 ```
 
 一个零值的slice等于`nil`。**一个`nil`值的slice并没有底层数组。一个nil值的slice的长度和容量都是0，但是也有非`nil`值的slice的长度和容量也是0的，例如`[]int{}`或`make([]int, 3)[3:]`。** 与任意类型的`nil`值一样，我们可以用`[]int(nil)`类型转换表达式来生成一个对应类型slice的`nil`值。
 
-```Go
+```go
 var s []int    // len(s) == 0, s == nil
 s = nil        // len(s) == 0, s == nil
 s = []int(nil) // len(s) == 0, s == nil
@@ -2887,7 +2887,7 @@ s = []int{}    // len(s) == 0, s != nil
 
 **内置的`make`函数创建一个指定元素类型、长度和容量的slice。容量部分可以省略，在这种情况下，容量将等于长度。**
 
-```Go
+```go
 make([]T, len)
 make([]T, len, cap) // same as make([]T, cap)[:len]
 ```
@@ -2896,23 +2896,2070 @@ make([]T, len, cap) // same as make([]T, cap)[:len]
 
 ### append函数
 
+内置的`append`函数用于向slice追加元素：
+
+```go
+var runes []rune
+for _, r := range "Hello, 世界" {
+    runes = append(runes, r)
+}
+fmt.Printf("%q\n", runes) // "['H' 'e' 'l' 'l' 'o' ',' ' ' '世' '界']"
+```
+
+在循环中使用`append`函数构建一个由9个rune字符构成的slice，当然对应这个特殊的问题我们可以通过Go语言内置的`[]rune("Hello, 世界")`转换操作完成。
+
+**通常我们并不知道append调用是否导致了内存的重新分配，因此我们也不能确认新的slice和原始的slice是否引用的是相同的底层数组空间。同样，我们不能确认在原先的slice上的操作是否会影响到新的slice。因此，通常是将append返回的结果直接赋值给输入的slice变量：**
+
+```go
+runes = append(runes, r)
+```
+
+更新slice变量不仅对调用append函数是必要的，实际上对应任何可能导致长度、容量或底层数组变化的操作都是必要的。要正确地使用slice，需要记住尽管底层数组的元素是间接访问的，但是slice对应结构体本身的指针、长度和容量部分是直接访问的。要更新这些信息需要像上面例子那样一个显式的赋值操作。从这个角度看，slice并不是一个纯粹的引用类型，它实际上是一个类似下面结构体的聚合类型：
+
+```go
+type IntSlice struct {
+    ptr      *int
+    len, cap int
+}
+```
+
+内置的`append`函数则可以追加多个元素，甚至追加一个slice。
+
+```go
+var x []int
+x = append(x, 1)
+x = append(x, 2, 3)
+x = append(x, 4, 5, 6)
+x = append(x, x...) // append the slice x
+fmt.Println(x)      // "[1 2 3 4 5 6 1 2 3 4 5 6]"
+```
+
+### Slice内存技巧
+
+让我们看看更多的例子。给定一个字符串列表，下面的`nonempty`函数将在原有slice内存空间之上返回不包含空字符串的列表：
+
+```go
+// Nonempty is an example of an in-place slice algorithm.
+package main
+
+import "fmt"
+
+// nonempty returns a slice holding only the non-empty strings.
+// The underlying array is modified during the call.
+func nonempty(strings []string) []string {
+    i := 0
+    for _, s := range strings {
+        if s != "" {
+            strings[i] = s
+            i++
+        }
+    }
+    return strings[:i]
+}
+```
+
+比较微妙的地方是，输入的slice和输出的slice共享一个底层数组。这可以避免分配另一个数组，不过原来的数据将可能会被覆盖，正如下面两个打印语句看到的那样：
+
+```go
+data := []string{"one", "", "three"}
+fmt.Printf("%q\n", nonempty(data)) // `["one" "three"]`
+fmt.Printf("%q\n", data)           // `["one" "three" "three"]`
+```
+
+因此我们通常会这样使用`nonempty`函数：`data = nonempty(data)`。
+
+`nonempty`函数也可以使用`append`函数实现：
+
+```go
+func nonempty2(strings []string) []string {
+    out := strings[:0] // zero-length slice of original
+    for _, s := range strings {
+        if s != "" {
+            out = append(out, s)
+        }
+    }
+    return out
+}
+```
+
+无论如何实现，以这种方式重用一个slice一般都要求最多为每个输入值产生一个输出值，事实上很多这类算法都是用来过滤或合并序列中相邻的元素。这种slice用法是比较复杂的技巧，虽然使用到了slice的一些技巧，但是对于某些场合是比较清晰和有效的。
+
+一个slice可以用来模拟一个stack。最初给定的空slice对应一个空的stack，然后可以使用`append`函数将新的值压入stack：
+
+```go
+stack = append(stack, v) // push v
+```
+
+stack的顶部位置对应slice的最后一个元素：
+
+```go
+top := stack[len(stack)-1] // top of stack
+```
+
+通过收缩stack可以弹出栈顶的元素
+
+```go
+stack = stack[:len(stack)-1] // pop
+```
+
+要删除slice中间的某个元素并保存原有的元素顺序，可以通过内置的`copy`函数将后面的子slice向前依次移动一位完成：
+
+```go
+func remove(slice []int, i int) []int {
+    copy(slice[i:], slice[i+1:])
+    return slice[:len(slice)-1]
+}
+
+func main() {
+    s := []int{5, 6, 7, 8, 9}
+    fmt.Println(remove(s, 2)) // "[5 6 8 9]"
+}
+```
+
+如果删除元素后不用保持原来顺序的话，我们可以简单的用最后一个元素覆盖被删除的元素：
+
+```go
+func remove(slice []int, i int) []int {
+    slice[i] = slice[len(slice)-1]
+    return slice[:len(slice)-1]
+}
+
+func main() {
+    s := []int{5, 6, 7, 8, 9}
+    fmt.Println(remove(s, 2)) // "[5 6 9 8]
+```
+
+**练习 4.3：** 重写reverse函数，使用数组指针代替slice。
+
+**练习 4.4：** 编写一个rotate函数，通过一次循环完成旋转。
+
+**练习 4.5：** 写一个函数在原地完成消除`[]string`中相邻重复的字符串的操作。
+
+**练习 4.6：** 编写一个函数，原地将一个UTF-8编码的`[]byte`类型的slice中相邻的空格（参考`unicode.IsSpace`）替换成一个空格返回
+
+**练习 4.7：** 修改reverse函数用于原地反转UTF-8编码的`[]byte`。是否可以不用分配额外的内存？
+
+```go
+func reverse(strings []rune) []rune {
+	for i := 0; i <= len(strings)/2; i++ {
+		strings[i], strings[len(strings)-i-1] = strings[len(strings)-i-1], strings[i]
+	}
+	return strings
+}
+
+func main() {
+	s := "Hello, 世界"
+	s1 := reverse([]rune(s))
+	fmt.Println(string(s1)) // 界世 ,olleH
+}
+```
 
 
 
+## Map
+
+哈希表是一种巧妙并且实用的数据结构。它是一个无序的key/value对的集合，其中所有的key都是不同的，然后通过给定的key可以在常数时间复杂度内检索、更新或删除对应的value。
+
+在Go语言中，一个map就是一个哈希表的引用，map类型可以写为`map[K]V`，其中K和V分别对应key和value。map中所有的key都有相同的类型，所有的value也有着相同的类型，但是key和value之间可以是不同的数据类型。其中K对应的key必须是支持`==`比较运算符的数据类型，所以map可以通过测试key是否相等来判断是否已经存在。虽然浮点数类型也是支持相等运算符比较的，但是将浮点数用做key类型则是一个坏的想法，正如第三章提到的，最坏的情况是可能出现的NaN和任何浮点数都不相等。对于V对应的value数据类型则没有任何的限制。
+
+内置的`make`函数可以创建一个map：
+
+```go
+ages := make(map[string]int) // mapping from strings to ints
+```
+
+我们也可以用map字面值的语法创建map，同时还可以指定一些最初的key/value：
+
+```go
+ages := map[string]int{
+    "alice":   31,
+    "charlie": 34,
+}
+```
+
+这相当于
+
+```go
+ages := make(map[string]int)
+ages["alice"] = 31
+ages["charlie"] = 34
+```
+
+因此，另一种创建空的map的表达式是`map[string]int{}`。
+
+Map中的元素通过key对应的下标语法访问：
+
+```Go
+ages["alice"] = 32
+fmt.Println(ages["alice"]) // "32"
+```
+
+使用内置的delete函数可以删除元素：
+
+```Go
+delete(ages, "alice") // remove element ages["alice"]
+```
+
+所有这些操作是安全的，即使这些元素不在map中也没有关系；如果一个查找失败将返回value类型对应的零值，例如，即使map中不存在“bob”下面的代码也可以正常工作，因为`ages["bob"]`失败时将返回0。
+
+```go
+ages["bob"] = ages["bob"] + 1 // 1
+```
+
+而且`x += y`和`x++`等简短赋值语法也可以用在map上，所以上面的代码可以改写成
+
+```go
+ages["bob"] += 1
+```
+
+更简单的写法
+
+```go
+ages["bob"]++
+```
+
+**但是map中的元素并不是一个变量，因此我们不能对map的元素进行取址操作：**
+
+```go
+_ = &ages["bob"] // compile error: cannot take address of map element
+```
+
+禁止对map元素取址的原因是map可能随着元素数量的增长而重新分配更大的内存空间，从而可能导致之前的地址无效。
+
+要想遍历map中全部的key/value对的话，可以使用range风格的for循环实现，和之前的slice遍历语法类似。下面的迭代语句将在每次迭代时设置name和age变量，它们对应下一个键/值对：
+
+```go
+for name, age := range ages {
+    fmt.Printf("%s\t%d\n", name, age)
+}
+```
+
+Map的迭代顺序是不确定的，并且不同的哈希函数实现可能导致不同的遍历顺序。在实践中，遍历的顺序是随机的，每一次遍历的顺序都不相同。这是故意的，每次都使用随机的遍历顺序可以强制要求程序不会依赖具体的哈希函数实现。如果要按顺序遍历key/value对，我们必须显式地对key进行排序，可以使用`sort`包的`Strings`函数对字符串slice进行排序。下面是常见的处理方式：
+
+```go
+import "sort"
+
+var names []string
+for name := range ages {
+    names = append(names, name)
+}
+sort.Strings(names)
+for _, name := range names {
+    fmt.Printf("%s\t%d\n", name, ages[name])
+}
+```
+
+因为我们一开始就知道names的最终大小，因此给slice分配一个合适的大小将会更有效。下面的代码创建了一个空的slice，但是slice的容量刚好可以放下map中全部的key：
+
+```Go
+names := make([]string, 0, len(ages))
+```
+
+在上面的第一个range循环中，我们只关心map中的key，所以我们忽略了第二个循环变量。在第二个循环中，我们只关心names中的名字，所以我们使用“_”空白标识符来忽略第一个循环变量，也就是迭代slice时的索引。
+
+map类型的零值是nil，也就是没有引用任何哈希表。
+
+```Go
+var ages map[string]int
+fmt.Println(ages == nil)    // "true"
+fmt.Println(len(ages) == 0) // "true"
+```
+
+map上的大部分操作，包括查找、删除、`len`和`range`循环都可以安全工作在`nil`值的map上，它们的行为和一个空的map类似。**但是向一个`nil`值的map存入元素将导致一个panic异常：**
+
+```go
+ages["carol"] = 21 // panic: assignment to entry in nil map
+```
+
+如果元素类型是一个数字，你可能需要区分一个已经存在的0，和不存在而返回零值的0，可以像下面这样测试：
+
+```go
+age, ok := ages["bob"]
+if !ok { /* "bob" is not a key in this map; age == 0. */ }
+```
+
+你会经常看到将这两个结合起来使用，像这样：
+
+```go
+if age, ok := ages["bob"]; !ok { /* ... */ }
+```
+
+在这种场景下，map的下标语法将产生两个值；第二个是一个布尔值，用于报告元素是否真的存在。布尔变量一般命名为`ok`，特别适合马上用于if条件判断部分。
+
+**和slice一样，map之间也不能进行相等比较；唯一的例外是和nil进行比较。要判断两个map是否包含相同的key和value，我们必须通过一个循环实现：**
+
+```go
+func equal(x, y map[string]int) bool {
+    if len(x) != len(y) {
+        return false
+    }
+    for k, xv := range x {
+        if yv, ok := y[k]; !ok || yv != xv {
+            return false
+        }
+    }
+    return true
+}
+```
+
+从例子中可以看到如何用`!ok`来区分元素不存在，与元素存在但为0的。我们不能简单地用`xv != y[k]`判断，那样会导致在判断下面两个map时产生错误的结果：
+
+```Go
+// True if equal is written incorrectly.
+equal(map[string]int{"A": 0}, map[string]int{"B": 42})
+```
+
+Go语言中并没有提供一个set类型，但是map中的key也是不相同的，可以用map实现类似set的功能。为了说明这一点，下面的dedup程序读取多行输入，但是只打印第一次出现的行。（它是1.3节中出现的dup程序的变体。）dedup程序通过map来表示所有的输入行所对应的set集合，以确保已经在集合存在的行不会被重复打印。
+
+```Go
+func main() {
+    seen := make(map[string]bool) // a set of strings
+    input := bufio.NewScanner(os.Stdin)
+    for input.Scan() {
+        line := input.Text()
+        if !seen[line] {
+            seen[line] = true
+            fmt.Println(line)
+        }
+    }
+
+    if err := input.Err(); err != nil {
+        fmt.Fprintf(os.Stderr, "dedup: %v\n", err)
+        os.Exit(1)
+    }
+}
+```
+
+Go程序员将这种忽略value的map当作一个字符串集合，并非所有`map[string]bool`类型value都是无关紧要的；有一些则可能会同时包含true和false的值。
+
+有时候我们需要一个map或set的key是slice类型，但是map的key必须是可比较的类型，但是slice并不满足这个条件。不过，我们可以通过两个步骤绕过这个限制。第一步，定义一个辅助函数k，将slice转为map对应的string类型的key，确保只有x和y相等时k(x) == k(y)才成立。然后创建一个key为string类型的map，在每次对map操作时先用k辅助函数将slice转化为string类型。
+
+下面的例子演示了如何使用map来记录提交相同的字符串列表的次数。它使用了fmt.Sprintf函数将字符串列表转换为一个字符串以用于map的key，通过%q参数忠实地记录每个字符串元素的信息：
+
+```Go
+var m = make(map[string]int)
+
+func k(list []string) string { return fmt.Sprintf("%q", list) }
+
+func Add(list []string)       { m[k(list)]++ }
+func Count(list []string) int { return m[k(list)] }
+```
+
+使用同样的技术可以处理任何不可比较的key类型，而不仅仅是slice类型。这种技术对于想使用自定义key比较函数的时候也很有用，例如在比较字符串的时候忽略大小写。同时，辅助函数`k(x)`也不一定是字符串类型，它可以返回任何可比较的类型，例如整数、数组或结构体等。
+
+这是map的另一个例子，下面的程序用于统计输入中每个Unicode码点出现的次数。虽然Unicode全部码点的数量巨大，但是出现在特定文档中的字符种类并没有多少，使用map可以用比较自然的方式来跟踪那些出现过的字符的次数。
+
+```Go
+// Charcount computes counts of Unicode characters.
+package main
+
+import (
+    "bufio"
+    "fmt"
+    "io"
+    "os"
+    "unicode"
+    "unicode/utf8"
+)
+
+func main() {
+    counts := make(map[rune]int)    // counts of Unicode characters
+    var utflen [utf8.UTFMax + 1]int // count of lengths of UTF-8 encodings
+    invalid := 0                    // count of invalid UTF-8 characters
+
+    in := bufio.NewReader(os.Stdin)
+    for {
+        r, n, err := in.ReadRune() // returns rune, nbytes, error
+        if err == io.EOF {
+            break
+        }
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "charcount: %v\n", err)
+            os.Exit(1)
+        }
+        if r == unicode.ReplacementChar && n == 1 {
+            invalid++
+            continue
+        }
+        counts[r]++
+        utflen[n]++
+    }
+    fmt.Printf("rune\tcount\n")
+    for c, n := range counts {
+        fmt.Printf("%q\t%d\n", c, n)
+    }
+    fmt.Print("\nlen\tcount\n")
+    for i, n := range utflen {
+        if i > 0 {
+            fmt.Printf("%d\t%d\n", i, n)
+        }
+    }
+    if invalid > 0 {
+        fmt.Printf("\n%d invalid UTF-8 characters\n", invalid)
+    }
+}
+```
+
+`ReadRune`方法执行UTF-8解码并返回三个值：解码的rune字符的值，字符UTF-8编码后的长度，和一个错误值。我们可预期的错误值只有对应文件结尾的`io.EOF`。如果输入的是无效的UTF-8编码的字符，返回的将是`unicode.ReplacementChar`表示无效字符，并且编码长度是1。
+
+charcount程序同时打印不同UTF-8编码长度的字符数目。对此，map并不是一个合适的数据结构；因为UTF-8编码的长度总是从1到`utf8.UTFMax`（最大是4个字节），使用数组将更有效。
+
+Map的value类型也可以是一个聚合类型，比如是一个map或slice。在下面的代码中，图graph的key类型是一个字符串，value类型`map[string]bool`代表一个字符串集合。从概念上讲，graph将一个字符串类型的key映射到一组相关的字符串集合，它们指向新的graph的key。
+
+```Go
+var graph = make(map[string]map[string]bool)
+
+func addEdge(from, to string) {
+    edges := graph[from]
+    if edges == nil {
+        edges = make(map[string]bool)
+        graph[from] = edges
+    }
+    edges[to] = true
+}
+
+func hasEdge(from, to string) bool {
+    return graph[from][to]
+}
+```
+
+其中`addEdge`函数惰性初始化map是一个惯用方式，也就是说在每个值首次作为key时才初始化。`addEdge`函数显示了如何让map的零值也能正常工作；即使`from`到`to`的边不存在，`graph[from][to]`依然可以返回一个有意义的结果。
+
+**练习 4.8：** 修改charcount程序，使用`unicode.IsLetter`等相关的函数，统计字母、数字等Unicode中不同的字符类别。
+
+**练习 4.9：** 编写一个程序wordfreq程序，报告输入文本中每个单词出现的频率。在第一次调用Scan前先调用`input.Split(bufio.ScanWords)`函数，这样可以按单词而不是按行输入。
+
+## 结构体
+
+结构体是一种聚合的数据类型，是由零个或多个任意类型的值聚合成的实体。每个值称为结构体的成员。用结构体的经典案例是处理公司的员工信息，每个员工信息包含一个唯一的员工编号、员工的名字、家庭住址、出生日期、工作岗位、薪资、上级领导等等。所有的这些信息都需要绑定到一个实体中，可以作为一个整体单元被复制，作为函数的参数或返回值，或者是被存储到数组中，等等。
+
+下面两个语句声明了一个叫Employee的命名的结构体类型，并且声明了一个Employee类型的变量`dilbert`：
+
+```go
+type Employee struct {
+    ID        int
+    Name      string
+    Address   string
+    DoB       time.Time
+    Position  string
+    Salary    int
+    ManagerID int
+}
+
+var dilbert Employee
+```
+
+dilbert结构体变量的成员可以通过点操作符访问，比如`dilbert.Name`和`dilbert.DoB`。因为dilbert是一个变量，它所有的成员也同样是变量，我们可以直接对每个成员赋值：
+
+```go
+dilbert.Salary -= 5000 // demoted, for writing too few lines of code
+```
+
+或者是对成员取地址，然后通过指针访问：
+
+```go
+position := &dilbert.Position
+*position = "Senior " + *position // promoted, for outsourcing to Elbonia
+```
+
+点操作符也可以和指向结构体的指针一起工作：
+
+```go
+var employeeOfTheMonth *Employee = &dilbert
+employeeOfTheMonth.Position += " (proactive team player)"
+```
+
+相当于下面语句
+
+```go
+(*employeeOfTheMonth).Position += " (proactive team player)"
+```
+
+下面的`EmployeeByID`函数将根据给定的员工ID返回对应的员工信息结构体的指针。我们可以使用点操作符来访问它里面的成员：
+
+```go
+func EmployeeByID(id int) *Employee { /* ... */ }
+
+fmt.Println(EmployeeByID(dilbert.ManagerID).Position) // "Pointy-haired boss"
+
+id := dilbert.ID
+EmployeeByID(id).Salary = 0 // fired for... no real reason
+```
+
+后面的语句通过`EmployeeByID`返回的结构体指针更新了Employee结构体的成员。如果将`EmployeeByID`函数的返回值从`*Employee`指针类型改为Employee值类型，那么更新语句将不能编译通过，因为在赋值语句的左边并不确定是一个变量（译注：调用函数返回的是值，并不是一个可取地址的变量）。
+
+通常一行对应一个结构体成员，成员的名字在前类型在后，不过如果相邻的成员类型如果相同的话可以被合并到一行，就像下面的Name和Address成员那样：
+
+```go
+type Employee struct {
+    ID            int
+    Name, Address string
+    DoB           time.Time
+    Position      string
+    Salary        int
+    ManagerID     int
+}
+```
+
+**结构体成员的输入顺序也有重要的意义。**我们也可以将Position成员合并（因为也是字符串类型），或者是交换Name和Address出现的先后顺序，**那样的话就是定义了不同的结构体类型。**通常，我们只是将相关的成员写到一起。
+
+**如果结构体成员名字是以大写字母开头的，那么该成员就是导出的；这是Go语言导出规则决定的。一个结构体可能同时包含导出和未导出的成员。**
+
+**一个命名为S的结构体类型将不能再包含S类型的成员：因为一个聚合的值不能包含它自身。（该限制同样适用于数组。）但是S类型的结构体可以包含`*S`指针类型的成员，这可以让我们创建递归的数据结构，比如链表和树结构等。**
+
+在下面的代码中，我们使用一个二叉树来实现一个插入排序：
+
+```go
+type tree struct {
+    value       int
+    left, right *tree
+}
+
+// Sort sorts values in place.
+func Sort(values []int) {
+    var root *tree
+    for _, v := range values {
+        root = add(root, v)
+    }
+    appendValues(values[:0], root)
+}
+
+// appendValues appends the elements of t to values in order
+// and returns the resulting slice.
+func appendValues(values []int, t *tree) []int {
+    if t != nil {
+        values = appendValues(values, t.left)
+        values = append(values, t.value)
+        values = appendValues(values, t.right)
+    }
+    return values
+}
+
+func add(t *tree, value int) *tree {
+    if t == nil {
+        // Equivalent to return &tree{value: value}.
+        t = new(tree)
+        t.value = value
+        return t
+    }
+    if value < t.value {
+        t.left = add(t.left, value)
+    } else {
+        t.right = add(t.right, value)
+    }
+    return t
+}
+```
+
+**结构体类型的零值是每个成员都是零值。通常会将零值作为最合理的默认值。**例如，对于`bytes.Buffer`类型，结构体初始值就是一个随时可用的空缓存，还有`sync.Mutex`的零值也是有效的未锁定状态。**有时候这种零值可用的特性是自然获得的，但是也有些类型需要一些额外的工作。**
+
+**如果结构体没有任何成员的话就是空结构体，写作`struct{}`。它的大小为0，也不包含任何信息，但是有时候依然是有价值的。**有些Go语言程序员用map来模拟set数据结构时，用它来代替map中布尔类型的value，只是强调key的重要性，但是因为节约的空间有限，而且语法比较复杂，所以我们通常会避免这样的用法。
+
+```go
+seen := make(map[string]struct{}) // set of strings
+// ...
+if _, ok := seen[s]; !ok {
+    seen[s] = struct{}{}
+    // ...first time seeing s...
+}
+```
 
 
 
+### 结构体字面值
+
+**结构体值也可以用结构体字面值表示，结构体字面值可以指定每个成员的值。**
+
+**有2种形式的结构体字面值语法：**
+
+- 写法1：要求以结构体成员定义的顺序为每个结构体成员指定一个字面值。它要求写代码和读代码的人要记住结构体的每个成员的类型和顺序，不过结构体成员有细微的调整就可能导致上述代码不能编译。因此，上述的语法一般只在定义结构体的包内部使用，或者是在较小的结构体中使用，这些结构体的成员排列比较规则，比如`image.Point{x, y}`或`color.RGBA{red, green, blue, alpha}`：
+
+```go
+type Point struct{ X, Y int }
+
+p := Point{1, 2}
+```
+
+- 写法2：以成员名字和相应的值来初始化，可以包含部分或全部的成员。如果成员被忽略的话将默认用零值。因为提供了成员的名字，所以成员出现的顺序并不重要。如1.4节的Lissajous程序的写法：
+
+```go
+anim := gif.GIF{LoopCount: nframes}
+```
+
+**2种不同形式的写法不能混合使用。而且，你不能企图在外部包中用第一种顺序赋值的技巧来偷偷地初始化结构体中未导出的成员：
+
+```go
+package p
+type T struct{ a, b int } // a and b are not exported
+
+package q
+import "p"
+var _ = p.T{a: 1, b: 2} // compile error: can't reference a, b
+var _ = p.T{1, 2}       // compile error: can't reference a, b
+```
+
+虽然上面最后一行代码的编译错误信息中并没有显式提到未导出的成员，但是这样企图隐式使用未导出成员的行为也是不允许的。
+
+**结构体可以作为函数的参数和返回值。**例如，这个Scale函数将Point类型的值缩放后返回：
+
+```go
+func Scale(p Point, factor int) Point {
+    return Point{p.X * factor, p.Y * factor}
+}
+
+fmt.Println(Scale(Point{1, 2}, 5)) // "{5 10}"
+```
+
+**如果考虑效率的话，较大的结构体通常会用指针的方式传入和返回：**
+
+```go
+func Bonus(e *Employee, percent int) int {
+    return e.Salary * percent / 100
+}
+```
+
+**如果要在函数内部修改结构体成员的话，用指针传入是必须的；因为在Go语言中，所有的函数参数都是值拷贝传入的，函数参数将不再是函数调用时的原始变量。**
+
+```go
+func AwardAnnualRaise(e *Employee) {
+    e.Salary = e.Salary * 105 / 100
+}
+```
+
+**因为结构体通常通过指针处理，可以用下面的写法来创建并初始化一个结构体变量，并返回结构体的地址：**
+
+```go
+pp := &Point{1, 2}
+```
+
+**它和下面的语句是等价的：**
+
+```go
+pp := new(Point)
+*pp = Point{1, 2}
+```
+
+不过`&Point{1, 2}`写法可以直接在表达式中使用，比如一个函数调用。
+
+### 结构体比较
+
+**如果结构体的全部成员都是可以比较的，那么结构体也是可以比较的，那样的话两个结构体将可以使用`==`或`!=`运算符进行比较。相等比较运算符`==`将比较两个结构体的每个成员，因此下面两个比较的表达式是等价的：**
+
+```go
+type Point struct{ X, Y int }
+
+p := Point{1, 2}
+q := Point{2, 1}
+fmt.Println(p.X == q.X && p.Y == q.Y) // "false"
+fmt.Println(p == q)                   // "false"
+```
+
+**可比较的结构体类型和其他可比较的类型一样，可以用于map的key类型。**
+
+```go
+type address struct {
+    hostname string
+    port     int
+}
+
+hits := make(map[address]int)
+hits[address{"golang.org", 443}]++
+```
+
+### 结构体嵌入和匿名成员
+
+使用Go语言提供的不同寻常的结构体嵌入机制让一个命名的结构体包含另一个结构体类型的匿名成员，这样就可以通过简单的点运算符`x.f`来访问匿名成员链中嵌套的`x.d.e.f`成员。
+
+考虑一个二维的绘图程序，提供了一个各种图形的库，例如矩形、椭圆形、星形和轮形等几何形状。这里是其中两个的定义：
+
+```go
+type Circle struct {
+    X, Y, Radius int
+}
+
+type Wheel struct {
+    X, Y, Radius, Spokes int
+}
+```
+
+一个Circle代表的圆形类型包含了标准圆心的X和Y坐标信息，和一个Radius表示的半径信息。一个Wheel轮形除了包含Circle类型所有的全部成员外，还增加了Spokes表示径向辐条的数量。我们可以这样创建一个wheel变量：
+
+```go
+var w Wheel
+w.X = 8
+w.Y = 8
+w.Radius = 5
+w.Spokes = 20
+```
+
+随着库中几何形状数量的增多，我们一定会注意到它们之间的相似和重复之处，所以我们可能为了便于维护而将相同的属性独立出来：
+
+```go
+type Point struct {
+    X, Y int
+}
+
+type Circle struct {
+    Center Point
+    Radius int
+}
+
+type Wheel struct {
+    Circle Circle
+    Spokes int
+}
+```
+
+这样改动之后结构体类型变的清晰了，但是这种修改同时也导致了访问每个成员变得繁琐：
+
+```go
+var w Wheel
+w.Circle.Center.X = 8
+w.Circle.Center.Y = 8
+w.Circle.Radius = 5
+w.Spokes = 20
+```
+
+**Go语言有一个特性让我们只声明一个成员对应的数据类型而不指名成员的名字；这类成员就叫匿名成员。匿名成员的数据类型必须是命名的类型或指向一个命名的类型的指针。**下面的代码中，Circle和Wheel各自都有一个匿名成员。我们可以说Point类型被嵌入到了Circle结构体，同时Circle类型被嵌入到了Wheel结构体。
+
+```go
+type Circle struct {
+    Point
+    Radius int
+}
+
+type Wheel struct {
+    Circle
+    Spokes int
+}
+```
+
+**得益于匿名嵌入的特性，我们可以直接访问叶子属性而不需要给出完整的路径：**
+
+```go
+var w Wheel
+w.X = 8            // equivalent to w.Circle.Point.X = 8
+w.Y = 8            // equivalent to w.Circle.Point.Y = 8
+w.Radius = 5       // equivalent to w.Circle.Radius = 5
+w.Spokes = 20
+```
+
+**在右边的注释中给出的显式形式访问这些叶子成员的语法依然有效，因此匿名成员并不是真的无法访问了。其中匿名成员Circle和Point都有自己的名字——就是命名的类型名字——但是这些名字在点操作符中是可选的。我们在访问子成员的时候可以忽略任何匿名成员部分。**
+
+**不幸的是，结构体字面值并没有简短表示匿名成员的语法， 因此下面的语句都不能编译通过：**
+
+```go
+w = Wheel{8, 8, 5, 20}                       // compile error: unknown fields
+w = Wheel{X: 8, Y: 8, Radius: 5, Spokes: 20} // compile error: unknown fields
+```
+
+**结构体字面值必须遵循形状类型声明时的结构，所以我们只能用下面的两种语法，它们彼此是等价的：**
+
+```go
+w = Wheel{Circle{Point{8, 8}, 5}, 20}
+
+w = Wheel{
+    Circle: Circle{
+        Point:  Point{X: 8, Y: 8},
+        Radius: 5,
+    },
+    Spokes: 20, // NOTE: trailing comma necessary here (and at Radius)
+}
+
+fmt.Printf("%#v\n", w)
+// Output:
+// Wheel{Circle:Circle{Point:Point{X:8, Y:8}, Radius:5}, Spokes:20}
+
+w.X = 42
+
+fmt.Printf("%#v\n", w)
+// Output:
+// Wheel{Circle:Circle{Point:Point{X:42, Y:8}, Radius:5}, Spokes:20}
+```
+
+**需要注意的是`Printf`函数中`%v`参数包含的`#`副词，它表示用和Go语言类似的语法打印值。对于结构体类型来说，将包含每个成员的名字。**
+
+**因为匿名成员也有一个隐式的名字，因此不能同时包含两个类型相同的匿名成员，这会导致名字冲突。**
+
+**同时，因为成员的名字是由其类型隐式地决定的，所以匿名成员也有可见性的规则约束。在上面的例子中，Point和Circle匿名成员都是导出的。即使它们不导出（比如改成小写字母开头的point和circle），我们依然可以用简短形式访问匿名成员嵌套的成员：**
+
+```go
+w.X = 8 // equivalent to w.circle.point.X = 8
+```
+
+**但是在包外部，因为circle和point没有导出，不能访问它们的成员，因此简短的匿名成员访问语法也是禁止的。**
+
+**我们将会看到匿名成员并不要求是结构体类型；其实任何命名的类型都可以作为结构体的匿名成员。**但是为什么要嵌入一个没有任何子成员类型的匿名成员类型呢？
+
+**答案是匿名类型的方法集。简短的点运算符语法可以用于选择匿名成员嵌套的成员，也可以用于访问它们的方法。实际上，外层的结构体不仅仅是获得了匿名成员类型的所有成员，而且也获得了该类型导出的全部的方法。这个机制可以用于将一些有简单行为的对象组合成有复杂行为的对象。组合是Go语言中面向对象编程的核心。**
+
+## JSON
+
+JavaScript对象表示法（JSON）是一种用于发送和接收结构化信息的标准协议。在类似的协议中，JSON并不是唯一的一个标准协议。 XML、ASN.1和Google的Protocol Buffers都是类似的协议，并且有各自的特色，但是由于简洁性、可读性和流行程度等原因，JSON是应用最广泛的一个。
+
+Go语言对于这些标准格式的编码和解码都有良好的支持，由标准库中的`encoding/json`、`encoding/xml`、`encoding/asn1`等包提供支持（译注：Protocol Buffers的支持由 `github.com/golang/protobuf` 包提供），并且这类包都有着相似的API接口。本节，我们将对重要的`encoding/json`包的用法做个概述。
+
+JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和对象——Unicode本文编码。它可以用有效可读的方式表示基础数据类型和数组、slice、结构体和map等聚合数据类型。
+
+基本的JSON类型有数字（十进制或科学记数法）、布尔值（`true`或`false`）、字符串，其中字符串是以双引号包含的Unicode字符序列，支持和Go语言类似的反斜杠转义特性，不过JSON使用的是`\Uhhhh`转义数字来表示一个UTF-16编码（译注：UTF-16和UTF-8一样是一种变长的编码，有些Unicode码点较大的字符需要用4个字节表示；而且UTF-16还有大端和小端的问题），而不是Go语言的rune类型。
+
+这些基础类型可以通过JSON的数组和对象类型进行递归组合。一个JSON数组是一个有序的值序列，写在一个方括号中并以逗号分隔；一个JSON数组可以用于编码Go语言的数组和slice。一个JSON对象是一个字符串到值的映射，写成一系列的name:value对形式，用花括号包含并以逗号分隔；JSON的对象类型可以用于编码Go语言的map类型（key类型是字符串）和结构体。例如：
+
+```go
+boolean         true
+number          -273.15
+string          "She said \"Hello, BF\""
+array           ["gold", "silver", "bronze"]
+object          {"year": 1980,
+                 "event": "archery",
+                 "medals": ["gold", "silver", "bronze"]}
+```
+
+考虑一个应用程序，该程序负责收集各种电影评论并提供反馈功能。它的Movie数据类型和一个典型的表示电影的值列表如下所示。（在结构体声明中，Year和Color成员后面的字符串面值是结构体成员Tag；我们稍后会解释它的作用。）
+
+```go
+type Movie struct {
+    Title  string
+    Year   int  `json:"released"`
+    Color  bool `json:"color,omitempty"`
+    Actors []string
+}
+
+var movies = []Movie{
+    {Title: "Casablanca", Year: 1942, Color: false,
+        Actors: []string{"Humphrey Bogart", "Ingrid Bergman"}},
+    {Title: "Cool Hand Luke", Year: 1967, Color: true,
+        Actors: []string{"Paul Newman"}},
+    {Title: "Bullitt", Year: 1968, Color: true,
+        Actors: []string{"Steve McQueen", "Jacqueline Bisset"}},
+    // ...
+}
+```
+
+这样的数据结构特别适合JSON格式，并且在两者之间相互转换也很容易。将一个Go语言中类似movies的结构体slice转为JSON的过程叫编组（marshaling）。编组通过调用`json.Marshal`函数完成：
+
+```Go
+data, err := json.Marshal(movies)
+if err != nil {
+    log.Fatalf("JSON marshaling failed: %s", err)
+}
+fmt.Printf("%s\n", data)
+```
+
+Marshal函数返回一个编码后的字节slice，包含很长的字符串，并且没有空白缩进；我们将它折行以便于显示：
+
+```
+[{"Title":"Casablanca","released":1942,"Actors":["Humphrey Bogart","Ingr
+id Bergman"]},{"Title":"Cool Hand Luke","released":1967,"color":true,"Ac
+tors":["Paul Newman"]},{"Title":"Bullitt","released":1968,"color":true,"
+Actors":["Steve McQueen","Jacqueline Bisset"]}]
+```
+
+这种紧凑的表示形式虽然包含了全部的信息，但是很难阅读。为了生成便于阅读的格式，另一个json.MarshalIndent函数将产生整齐缩进的输出。该函数有两个额外的字符串参数用于表示每一行输出的前缀和每一个层级的缩进：
+
+```Go
+data, err := json.MarshalIndent(movies, "", "    ")
+if err != nil {
+    log.Fatalf("JSON marshaling failed: %s", err)
+}
+fmt.Printf("%s\n", data)
+```
+
+上面的代码将产生这样的输出（译注：在最后一个成员或元素后面并没有逗号分隔符）：
+
+```Json
+[
+    {
+        "Title": "Casablanca",
+        "released": 1942,
+        "Actors": [
+            "Humphrey Bogart",
+            "Ingrid Bergman"
+        ]
+    },
+    {
+        "Title": "Cool Hand Luke",
+        "released": 1967,
+        "color": true,
+        "Actors": [
+            "Paul Newman"
+        ]
+    },
+    {
+        "Title": "Bullitt",
+        "released": 1968,
+        "color": true,
+        "Actors": [
+            "Steve McQueen",
+            "Jacqueline Bisset"
+        ]
+    }
+]
+```
+
+在编码时，默认使用Go语言结构体的成员名字作为JSON的对象（通过reflect反射技术）。只有导出的结构体成员才会被编码，这也就是我们为什么选择用大写字母开头的成员名称。
+
+细心的读者可能已经注意到，其中`Year`名字的成员在编码后变成了`released`，还有`Color`成员编码后变成了小写字母开头的`color`。这是因为结构体成员Tag所导致的。一个结构体成员Tag是和在编译阶段关联到该成员的元信息字符串：
+
+```go
+Year  int  `json:"released"`
+Color bool `json:"color,omitempty"`
+```
+
+结构体的成员Tag可以是任意的字符串面值，但是通常是一系列用空格分隔的`key:"value"`键值对序列；因为值中含有双引号字符，因此成员Tag一般用原生字符串面值的形式书写。`json`开头键名对应的值用于控制`encoding/json`包的编码和解码的行为，并且encoding/...下面其它的包也遵循这个约定。成员Tag中json对应值的第一部分用于指定JSON对象的名字，比如将Go语言中的`TotalCount`成员对应到JSON中的`total_count`对象。Color成员的Tag还带了一个额外的`omitempty`选项，表示当Go语言结构体成员为空或零值时不生成该JSON对象（这里`false`为零值）。果然，Casablanca是一个黑白电影，并没有输出Color成员。
+
+编码的逆操作是解码，对应将JSON数据解码为Go语言的数据结构，Go语言中一般叫unmarshaling，通过`json.Unmarshal`函数完成。下面的代码将JSON格式的电影数据解码为一个结构体slice，结构体中只有Title成员。通过定义合适的Go语言数据结构，我们可以选择性地解码JSON中感兴趣的成员。当`Unmarshal`函数调用返回，slice将被只含有Title信息的值填充，其它JSON成员将被忽略。
+
+```go
+var titles []struct{ Title string }
+if err := json.Unmarshal(data, &titles); err != nil {
+    log.Fatalf("JSON unmarshaling failed: %s", err)
+}
+fmt.Println(titles) // "[{Casablanca} {Cool Hand Luke} {Bullitt}]"
+```
+
+许多web服务都提供JSON接口，通过HTTP接口发送JSON格式请求并返回JSON格式的信息。为了说明这一点，我们通过Github的issue查询服务来演示类似的用法。首先，我们要定义合适的类型和常量：
+
+```Go
+// Package github provides a Go API for the GitHub issue tracker.
+// See https://developer.github.com/v3/search/#search-issues.
+package github
+
+import "time"
+
+const IssuesURL = "https://api.github.com/search/issues"
+
+type IssuesSearchResult struct {
+    TotalCount int `json:"total_count"`
+    Items          []*Issue
+}
+
+type Issue struct {
+    Number    int
+    HTMLURL   string `json:"html_url"`
+    Title     string
+    State     string
+    User      *User
+    CreatedAt time.Time `json:"created_at"`
+    Body      string    // in Markdown format
+}
+
+type User struct {
+    Login   string
+    HTMLURL string `json:"html_url"`
+}
+```
+
+和前面一样，即使对应的JSON对象名是小写字母，每个结构体的成员名也是声明为大写字母开头的。因为有些JSON成员名字和Go结构体成员名字并不相同，因此需要Go语言结构体成员Tag来指定对应的JSON名字。同样，在解码的时候也需要做同样的处理，GitHub服务返回的信息比我们定义的要多很多。
+
+`SearchIssues`函数发出一个HTTP请求，然后解码返回的JSON格式的结果。因为用户提供的查询条件可能包含类似`?`和`&`之类的特殊字符，为了避免对URL造成冲突，我们用`url.QueryEscape`来对查询中的特殊字符进行转义操作。
+
+```Go
+package github
+
+import (
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "net/url"
+    "strings"
+)
+
+// SearchIssues queries the GitHub issue tracker.
+func SearchIssues(terms []string) (*IssuesSearchResult, error) {
+    q := url.QueryEscape(strings.Join(terms, " "))
+    resp, err := http.Get(IssuesURL + "?q=" + q)
+    if err != nil {
+        return nil, err
+    }
+
+    // We must close resp.Body on all execution paths.
+    // (Chapter 5 presents 'defer', which makes this simpler.)
+    if resp.StatusCode != http.StatusOK {
+        resp.Body.Close()
+        return nil, fmt.Errorf("search query failed: %s", resp.Status)
+    }
+
+    var result IssuesSearchResult
+    if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+        resp.Body.Close()
+        return nil, err
+    }
+    resp.Body.Close()
+    return &result, nil
+}
+```
+
+在早些的例子中，我们使用了json.Unmarshal函数来将JSON格式的字符串解码为字节slice。但是这个例子中，我们使用了基于流式的解码器json.Decoder，它可以从一个输入流解码JSON数据，尽管这不是必须的。如您所料，还有一个针对输出流的json.Encoder编码对象。
+
+我们调用Decode方法来填充变量。这里有多种方法可以格式化结构。下面是最简单的一种，以一个固定宽度打印每个issue，但是在下一节我们将看到如何利用模板来输出复杂的格式。
+
+```Go
+// Issues prints a table of GitHub issues matching the search terms.
+package main
+
+import (
+    "fmt"
+    "log"
+    "os"
+
+    "gopl.io/ch4/github"
+)
+
+func main() {
+    result, err := github.SearchIssues(os.Args[1:])
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("%d issues:\n", result.TotalCount)
+    for _, item := range result.Items {
+        fmt.Printf("#%-5d %9.9s %.55s\n",
+            item.Number, item.User.Login, item.Title)
+    }
+}
+```
+
+通过命令行参数指定检索条件。下面的命令是查询Go语言项目中和JSON解码相关的问题，还有查询返回的结果：
+
+```
+$ go build gopl.io/ch4/issues
+$ ./issues repo:golang/go is:open json decoder
+13 issues:
+#5680    eaigner encoding/json: set key converter on en/decoder
+#6050  gopherbot encoding/json: provide tokenizer
+#8658  gopherbot encoding/json: use bufio
+#8462  kortschak encoding/json: UnmarshalText confuses json.Unmarshal
+#5901        rsc encoding/json: allow override type marshaling
+#9812  klauspost encoding/json: string tag not symmetric
+#7872  extempora encoding/json: Encoder internally buffers full output
+#9650    cespare encoding/json: Decoding gives errPhase when unmarshalin
+#6716  gopherbot encoding/json: include field name in unmarshal error me
+#6901  lukescott encoding/json, encoding/xml: option to treat unknown fi
+#6384    joeshaw encoding/json: encode precise floating point integers u
+#6647    btracey x/tools/cmd/godoc: display type kind of each named type
+#4237  gjemiller encoding/base64: URLEncoding padding is optional
+```
+
+## 文本和HTML模板
+
+如果只是最简单的格式化，使用`Printf`是完全足够的。但是有时候会需要复杂的打印格式，这时候一般需要将格式化代码分离出来以便更安全地修改。这些功能是由`text/template`和`html/template`等模板包提供的，它们提供了一个将变量值填充到一个文本或HTML格式的模板的机制。
+
+一个模板是一个字符串或一个文件，里面包含了一个或多个由双花括号包含的`{{action}}`对象。大部分的字符串只是按字面值打印，但是对于actions部分将触发其它的行为。每个actions都包含了一个用模板语言书写的表达式，一个action虽然简短但是可以输出复杂的打印值，模板语言包含通过选择结构体的成员、调用函数或方法、表达式控制流if-else语句和range循环语句，还有其它实例化模板等诸多特性。下面是一个简单的模板字符串：
+
+*gopl.io/ch4/issuesreport*
+
+```go
+const templ = `{{.TotalCount}} issues:
+{{range .Items}}----------------------------------------
+Number: {{.Number}}
+User:   {{.User.Login}}
+Title:  {{.Title | printf "%.64s"}}
+Age:    {{.CreatedAt | daysAgo}} days
+{{end}}`
+```
+
+这个模板先打印匹配到的issue总数，然后打印每个issue的编号、创建用户、标题还有存在的时间。对于每一个action，都有一个当前值的概念，对应点操作符，写作`.`。当前值“.”最初被初始化为调用模板时的参数，在当前例子中对应`github.IssuesSearchResult`类型的变量。模板中`{{.TotalCount}}`对应action将展开为结构体中`TotalCount`成员以默认的方式打印的值。模板中`{{range .Items}}`和`{{end}}`对应一个循环action，因此它们之间的内容可能会被展开多次，循环每次迭代的当前值对应当前的Items元素的值。
+
+在一个action中，`|`操作符表示将前一个表达式的结果作为后一个函数的输入，类似于UNIX中管道的概念。在`Title`这一行的`action`中，第二个操作是一个`printf`函数，是一个基于`fmt.Sprintf`实现的内置函数，所有模板都可以直接使用。对于`Age`部分，第二个动作是一个叫`daysAgo`的函数，通过`time.Since`函数将`CreatedAt`成员转换为过去的时间长度：
+
+```Go
+func daysAgo(t time.Time) int {
+    return int(time.Since(t).Hours() / 24)
+}
+```
+
+需要注意的是`CreatedAt`的参数类型是`time.Time`，并不是字符串。以同样的方式，我们可以通过定义一些方法来控制字符串的格式化（§2.5），一个类型同样可以定制自己的JSON编码和解码行为。`time.Time`类型对应的JSON值是一个标准时间格式的字符串。
+
+生成模板的输出需要两个处理步骤。第一步是要分析模板并转为内部表示，然后基于指定的输入执行模板。分析模板部分一般只需要执行一次。下面的代码创建并分析上面定义的模板`templ`。注意方法调用链的顺序：`template.New`先创建并返回一个模板；`Funcs`方法将`daysAgo`等自定义函数注册到模板中，并返回模板；最后调用`Parse`函数分析模板。
+
+```Go
+report, err := template.New("report").
+    Funcs(template.FuncMap{"daysAgo": daysAgo}).
+    Parse(templ)
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+因为模板通常在编译时就测试好了，如果模板解析失败将是一个致命的错误。`template.Must`辅助函数可以简化这个致命错误的处理：它接受一个模板和一个error类型的参数，检测error是否为`nil`（如果不是nil则发出panic异常），然后返回传入的模板。
+
+一旦模板已经创建、注册了`daysAgo`函数、并通过分析和检测，我们就可以使用`github.IssuesSearchResult`作为输入源、`os.Stdout`作为输出源来执行模板：
+
+```Go
+var report = template.Must(template.New("issuelist").
+    Funcs(template.FuncMap{"daysAgo": daysAgo}).
+    Parse(templ))
+
+func main() {
+    result, err := github.SearchIssues(os.Args[1:])
+    if err != nil {
+        log.Fatal(err)
+    }
+    if err := report.Execute(os.Stdout, result); err != nil {
+        log.Fatal(err)
+    }
+}
+```
+
+程序输出一个纯文本报告：
+
+```
+$ go build gopl.io/ch4/issuesreport
+$ ./issuesreport repo:golang/go is:open json decoder
+13 issues:
+----------------------------------------
+Number: 5680
+User:      eaigner
+Title:     encoding/json: set key converter on en/decoder
+Age:       750 days
+----------------------------------------
+Number: 6050
+User:      gopherbot
+Title:     encoding/json: provide tokenizer
+Age:       695 days
+----------------------------------------
+...
+```
+
+现在让我们转到`html/template`模板包。它使用和`text/template`包相同的API和模板语言，但是增加了一个将字符串自动转义特性，这可以避免输入字符串和HTML、JavaScript、CSS或URL语法产生冲突的问题。这个特性还可以避免一些长期存在的安全问题，比如通过生成HTML注入攻击，通过构造一个含有恶意代码的问题标题，这些都可能让模板输出错误的输出，从而让他们控制页面。
+
+下面的模板以HTML格式输出issue列表。注意import语句的不同：
+
+```go
+import "html/template"
+
+var issueList = template.Must(template.New("issuelist").Parse(`
+<h1>{{.TotalCount}} issues</h1>
+<table>
+<tr style='text-align: left'>
+  <th>#</th>
+  <th>State</th>
+  <th>User</th>
+  <th>Title</th>
+</tr>
+{{range .Items}}
+<tr>
+  <td><a href='{{.HTMLURL}}'>{{.Number}}</a></td>
+  <td>{{.State}}</td>
+  <td><a href='{{.User.HTMLURL}}'>{{.User.Login}}</a></td>
+  <td><a href='{{.HTMLURL}}'>{{.Title}}</a></td>
+</tr>
+{{end}}
+</table>
+`))
+```
+
+下面的命令将在新的模板上执行一个稍微不同的查询：
+
+```
+$ go build gopl.io/ch4/issueshtml
+$ ./issueshtml repo:golang/go commenter:gopherbot json encoder >issues.html
+```
+
+注意，`html/template`包已经自动将特殊字符转义，因此我们依然可以看到正确的字面值。如果我们使用`text/template`包的话，这2个issue将会产生错误，其中`&lt;`四个字符将会被当作小于字符`<`处理，同时`<link>`字符串将会被当作一个链接元素处理，它们都会导致HTML文档结构的改变，从而导致有未知的风险。
+
+我们也可以通过对信任的HTML字符串使用`template.HTML`类型来抑制这种自动转义的行为。还有很多采用类型命名的字符串类型分别对应信任的JavaScript、CSS和URL。下面的程序演示了两个使用不同类型的相同字符串产生的不同结果：A是一个普通字符串，B是一个信任的`template.HTML`字符串类型。
+
+```go
+func main() {
+    const templ = `<p>A: {{.A}}</p><p>B: {{.B}}</p>`
+    t := template.Must(template.New("escape").Parse(templ))
+    var data struct {
+        A string        // untrusted plain text
+        B template.HTML // trusted HTML
+    }
+    data.A = "<b>Hello!</b>"
+    data.B = "<b>Hello!</b>"
+    if err := t.Execute(os.Stdout, data); err != nil {
+        log.Fatal(err)
+    }
+}
+```
+
+下图显示了出现在浏览器中的模板输出。我们看到A的黑体标记被转义失效了，但是B没有：
+
+![img](ch4-06.png)
+
+我们这里只讲述了模板系统中最基本的特性。一如既往，如果想了解更多的信息，请自己查看包文档：
+
+```go
+$ go doc text/template
+$ go doc html/template
+```
 
 
 
+# 函数
 
+## 函数声明
 
+**函数声明包括函数名、形式参数列表、返回值列表（可省略）以及函数体。**
 
+```go
+func name(parameter-list) (result-list) {
+    body
+}
+```
 
+形式参数列表描述了函数的参数名以及参数类型。这些参数作为局部变量，其值由参数调用者提供。返回值列表描述了函数返回值的变量名以及类型。如果函数返回一个无名变量或者没有返回值，返回值列表的括号是可以省略的。如果一个函数声明不包括返回值列表，那么函数体执行完毕后，不会返回任何值。在hypot函数中：
 
+```go
+func hypot(x, y float64) float64 {
+    return math.Sqrt(x*x + y*y)
+}
+fmt.Println(hypot(3,4)) // "5"
+```
 
+x和y是形参名，3和4是调用时的传入的实参，函数返回了一个float64类型的值。 返回值也可以像形式参数一样被命名。在这种情况下，每个返回值被声明成一个局部变量，并根据该返回值的类型，将其初始化为该类型的零值。 如果一个函数在声明时，包含返回值列表，该函数必须以 return语句结尾，除非函数明显无法运行到结尾处。例如函数在结尾时调用了panic异常或函数中存在无限循环。
 
+正如hypot一样，如果一组形参或返回值有相同的类型，我们不必为每个形参都写出参数类型。下面2个声明是等价的：
 
+```go
+func f(i, j, k int, s, t string)                 { /* ... */ }
+func f(i int, j int, k int,  s string, t string) { /* ... */ }
+```
+
+下面，我们给出4种方法声明拥有2个int型参数和1个int型返回值的函数.blank identifier(译者注：即下文的_符号)可以强调某个参数未被使用。
+
+```go
+func add(x int, y int) int   {return x + y}
+func sub(x, y int) (z int)   { z = x - y; return}
+func first(x int, _ int) int { return x }
+func zero(int, int) int      { return 0 }
+
+fmt.Printf("%T\n", add)   // "func(int, int) int"
+fmt.Printf("%T\n", sub)   // "func(int, int) int"
+fmt.Printf("%T\n", first) // "func(int, int) int"
+fmt.Printf("%T\n", zero)  // "func(int, int) int"
+```
+
+**函数的类型被称为函数的签名。如果两个函数形式参数列表和返回值列表中的变量类型一一对应，那么这两个函数被认为有相同的类型或签名。形参和返回值的变量名不影响函数签名，也不影响它们是否可以以省略参数类型的形式表示。**
+
+每一次函数调用都必须按照声明顺序为所有参数提供实参（参数值）。在函数调用时，Go语言没有默认参数值，也没有任何方法可以通过参数名指定形参，因此形参和返回值的变量名对于函数调用者而言没有意义。
+
+**在函数体中，函数的形参作为局部变量，被初始化为调用者提供的值。函数的形参和有名返回值作为函数最外层的局部变量，被存储在相同的词法块中。**
+
+**实参通过值的方式传递，因此函数的形参是实参的拷贝。对形参进行修改不会影响实参。但是，如果实参包括引用类型，如指针，slice(切片)、map、function、channel等类型，实参可能会由于函数的间接引用被修改。**
+
+你可能会偶尔遇到没有函数体的函数声明，这表示该函数不是以Go实现的。这样的声明定义了函数签名。
+
+```go
+package math
+
+func Sin(x float64) float //implemented in assembly language
+```
+
+## 递归
+
+函数可以是递归的，这意味着函数可以直接或间接的调用自身。对许多问题而言，递归是一种强有力的技术，例如处理递归的数据结构。在4.4节，我们通过遍历二叉树来实现简单的插入排序，在本章节，我们再次使用它来处理HTML文件。
+
+下文的示例代码使用了非标准包 `golang.org/x/net/html` ，解析HTML。`golang.org/x/...` 目录下存储了一些由Go团队设计、维护，对网络编程、国际化文件处理、移动平台、图像处理、加密解密、开发者工具提供支持的扩展包。未将这些扩展包加入到标准库原因有二，一是部分包仍在开发中，二是对大多数Go语言的开发者而言，扩展包提供的功能很少被使用。
+
+例子中调用`golang.org/x/net/html`的部分api如下所示。`html.Parse`函数读入一组bytes解析后，返回`html.Node`类型的HTML页面树状结构根节点。HTML拥有很多类型的结点如text（文本）、commnets（注释）类型，在下面的例子中，我们 只关注`< name key='value' >`形式的结点。
+
+```go
+package html
+
+type Node struct {
+    Type                    NodeType
+    Data                    string
+    Attr                    []Attribute
+    FirstChild, NextSibling *Node
+}
+
+type NodeType int32
+
+const (
+    ErrorNode NodeType = iota
+    TextNode
+    DocumentNode
+    ElementNode
+    CommentNode
+    DoctypeNode
+)
+
+type Attribute struct {
+    Key, Val string
+}
+
+func Parse(r io.Reader) (*Node, error)
+```
+
+main函数解析HTML标准输入，通过递归函数visit获得links（链接），并打印出这些links：
+
+```go
+// Findlinks1 prints the links in an HTML document read from standard input.
+package main
+
+import (
+    "fmt"
+    "os"
+
+    "golang.org/x/net/html"
+)
+
+func main() {
+    doc, err := html.Parse(os.Stdin)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "findlinks1: %v\n", err)
+        os.Exit(1)
+    }
+    for _, link := range visit(nil, doc) {
+        fmt.Println(link)
+    }
+}
+```
+
+visit函数遍历HTML的节点树，从每一个anchor元素的`href`属性获得link,将这些links存入字符串数组中，并返回这个字符串数组。
+
+```go
+// visit appends to links each link found in n and returns the result.
+func visit(links []string, n *html.Node) []string {
+    if n.Type == html.ElementNode && n.Data == "a" {
+        for _, a := range n.Attr {
+            if a.Key == "href" {
+                links = append(links, a.Val)
+            }
+        }
+    }
+    for c := n.FirstChild; c != nil; c = c.NextSibling {
+        links = visit(links, c)
+    }
+    return links
+}
+```
+
+为了遍历结点n的所有后代结点，每次遇到n的孩子结点时，visit递归的调用自身。这些孩子结点存放在FirstChild链表中。
+
+让我们以Go的主页（golang.org）作为目标，运行findlinks。我们以fetch（1.5章）的输出作为findlinks的输入。下面的输出做了简化处理。
+
+```
+$ go build gopl.io/ch1/fetch
+$ go build gopl.io/ch5/findlinks1
+$ ./fetch https://golang.org | ./findlinks1
+#
+/doc/
+/pkg/
+/help/
+/blog/
+http://play.golang.org/
+//tour.golang.org/
+https://golang.org/dl/
+//blog.golang.org/
+/LICENSE
+/doc/tos.html
+http://www.google.com/intl/en/policies/privacy/
+```
+
+注意在页面中出现的链接格式，在之后我们会介绍如何将这些链接，根据根路径（ [https://golang.org](https://golang.org/) ）生成可以直接访问的url。
+
+在函数outline中，我们通过递归的方式遍历整个HTML结点树，并输出树的结构。在outline内部，每遇到一个HTML元素标签，就将其入栈，并输出。
+
+```go
+func main() {
+    doc, err := html.Parse(os.Stdin)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "outline: %v\n", err)
+        os.Exit(1)
+    }
+    outline(nil, doc)
+}
+func outline(stack []string, n *html.Node) {
+    if n.Type == html.ElementNode {
+        stack = append(stack, n.Data) // push tag
+        fmt.Println(stack)
+    }
+    for c := n.FirstChild; c != nil; c = c.NextSibling {
+        outline(stack, c)
+    }
+}
+```
+
+有一点值得注意：outline有入栈操作，但没有相对应的出栈操作。当outline调用自身时，被调用者接收的是stack的拷贝。被调用者对stack的元素追加操作，修改的是stack的拷贝，其可能会修改slice底层的数组甚至是申请一块新的内存空间进行扩容；但这个过程并不会修改调用方的stack。因此当函数返回时，调用方的stack与其调用自身之前完全一致。
+
+下面是 [https://golang.org](https://golang.org/) 页面的简要结构:
+
+```
+$ go build gopl.io/ch5/outline
+$ ./fetch https://golang.org | ./outline
+[html]
+[html head]
+[html head meta]
+[html head title]
+[html head link]
+[html body]
+[html body div]
+[html body div]
+[html body div div]
+[html body div div form]
+[html body div div form div]
+[html body div div form div a]
+...
+```
+
+正如你在上面实验中所见，大部分HTML页面只需几层递归就能被处理，但仍然有些页面需要深层次的递归。
+
+大部分编程语言使用固定大小的函数调用栈，常见的大小从64KB到2MB不等。固定大小栈会限制递归的深度，当你用递归处理大量数据时，需要避免栈溢出；除此之外，还会导致安全性问题。与此相反，**Go语言使用可变栈，栈的大小按需增加（初始时很小）。这使得我们使用递归时不必考虑溢出和安全问题。**
+
+## 多返回值
+
+**在Go中，一个函数可以返回多个值。**我们已经在之前例子中看到，许多标准库中的函数返回2个值，一个是期望得到的返回值，另一个是函数出错时的错误信息。下面的例子会展示如何编写多返回值的函数。
+
+下面的程序是findlinks的改进版本。修改后的findlinks可以自己发起HTTP请求，这样我们就不必再运行fetch。因为HTTP请求和解析操作可能会失败，因此findlinks声明了2个返回值：链接列表和错误信息。一般而言，HTML的解析器可以处理HTML页面的错误结点，构造出HTML页面结构，所以解析HTML很少失败。这意味着如果findlinks函数失败了，很可能是由于I/O的错误导致的。
+
+```go
+func main() {
+    for _, url := range os.Args[1:] {
+        links, err := findLinks(url)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "findlinks2: %v\n", err)
+            continue
+        }
+        for _, link := range links {
+            fmt.Println(link)
+        }
+    }
+}
+
+// findLinks performs an HTTP GET request for url, parses the
+// response as HTML, and extracts and returns the links.
+func findLinks(url string) ([]string, error) {
+    resp, err := http.Get(url)
+    if err != nil {
+        return nil, err
+    }
+    if resp.StatusCode != http.StatusOK {
+        resp.Body.Close()
+        return nil, fmt.Errorf("getting %s: %s", url, resp.Status)
+    }
+    doc, err := html.Parse(resp.Body)
+    resp.Body.Close()
+    if err != nil {
+        return nil, fmt.Errorf("parsing %s as HTML: %v", url, err)
+    }
+    return visit(nil, doc), nil
+}
+```
+
+在findlinks中，有4处return语句，每一处return都返回了一组值。前三处return，将`http`和`html`包中的错误信息传递给findlinks的调用者。第一处return直接返回错误信息，其他两处通过`fmt.Errorf`输出详细的错误信息。如果findlinks成功结束，最后的return语句将一组解析获得的连接返回给用户。
+
+**在findlinks中，我们必须确保`resp.Body`被关闭，释放网络资源。虽然Go的垃圾回收机制会回收不被使用的内存，但是这不包括操作系统层面的资源，比如打开的文件、网络连接。因此我们必须显式的释放这些资源。**
+
+**调用多返回值函数时，返回给调用者的是一组值，调用者必须显式的将这些值分配给变量:**
+
+```go
+links, err := findLinks(url)
+```
+
+**如果某个值不被使用，可以将其分配给blank identifier:**
+
+```go
+links, _ := findLinks(url) // errors ignored
+```
+
+一个函数内部可以将另一个有多返回值的函数调用作为返回值，下面的例子展示了与findLinks有相同功能的函数，两者的区别在于下面的例子先输出参数：
+
+```go
+func findLinksLog(url string) ([]string, error) {
+    log.Printf("findLinks %s", url)
+    return findLinks(url)
+}
+```
+
+**当你调用接受多参数的函数时，可以将一个返回多参数的函数调用作为该函数的参数。**虽然这很少出现在实际生产代码中，但这个特性在debug时很方便，我们只需要一条语句就可以输出所有的返回值。下面的代码是等价的：
+
+```go
+log.Println(findLinks(url))
+
+links, err := findLinks(url)
+log.Println(links, err)
+```
+
+**准确的变量名可以传达函数返回值的含义。尤其在返回值的类型都相同时，就像下面这样：**
+
+```Go
+func Size(rect image.Rectangle) (width, height int)
+func Split(path string) (dir, file string)
+func HourMinSec(t time.Time) (hour, minute, second int)
+```
+
+虽然良好的命名很重要，但你也不必为每一个返回值都取一个适当的名字。比如，按照惯例，函数的最后一个bool类型的返回值表示函数是否运行成功，error类型的返回值代表函数的错误信息，对于这些类似的惯例，我们不必思考合适的命名，它们都无需解释。
+
+**如果一个函数所有的返回值都有显式的变量名，那么该函数的return语句可以省略操作数。这称之为bare return。**
+
+```Go
+// CountWordsAndImages does an HTTP GET request for the HTML
+// document url and returns the number of words and images in it.
+func CountWordsAndImages(url string) (words, images int, err error) {
+    resp, err := http.Get(url)
+    if err != nil {
+        return
+    }
+    doc, err := html.Parse(resp.Body)
+    resp.Body.Close()
+    if err != nil {
+        err = fmt.Errorf("parsing HTML: %s", err)
+        return
+    }
+    words, images = countWordsAndImages(doc)
+    return
+}
+func countWordsAndImages(n *html.Node) (words, images int) { /* ... */ }
+```
+
+按照返回值列表的次序，返回所有的返回值，在上面的例子中，每一个return语句等价于：
+
+```Go
+return words, images, err
+```
+
+当一个函数有多处return语句以及许多返回值时，bare return 可以减少代码的重复，但是使得代码难以被理解。举个例子，如果你没有仔细的审查代码，很难发现前2处return等价于 return 0,0,err（Go会将返回值 words和images在函数体的开始处，根据它们的类型，将其初始化为0），最后一处return等价于 return words, image, nil。基于以上原因，不宜过度使用bare return。
+
+## 错误
+
+在Go中有一部分函数总是能成功的运行。比如`strings.Contains`和`strconv.FormatBool`函数，对各种可能的输入都做了良好的处理，使得运行时几乎不会失败，除非遇到灾难性的、不可预料的情况，比如运行时的内存溢出。导致这种错误的原因很复杂，难以处理，从错误中恢复的可能性也很低。
+
+还有一部分函数只要输入的参数满足一定条件，也能保证运行成功。比如`time.Date`函数，该函数将年月日等参数构造成`time.Time`对象，除非最后一个参数（时区）是nil。这种情况下会引发panic异常。panic是来自被调用函数的信号，表示发生了某个已知的bug。一个良好的程序永远不应该发生panic异常。
+
+对于大部分函数而言，永远无法确保能否成功运行。这是因为错误的原因超出了程序员的控制。举个例子，任何进行I/O操作的函数都会面临出现错误的可能，**只有没有经验的程序员才会相信读写操作不会失败，即使是简单的读写。**因此，当本该可信的操作出乎意料的失败后，我们必须弄清楚导致失败的原因。
+
+在Go的错误处理中，错误是软件包API和应用程序用户界面的一个重要组成部分，程序运行失败仅被认为是几个预期的结果之一。
+
+**对于那些将运行失败看作是预期结果的函数，它们会返回一个额外的返回值，通常是最后一个，来传递错误信息。如果导致失败的原因只有一个，额外的返回值可以是一个布尔值，通常被命名为ok。**比如，`cache.Lookup`失败的唯一原因是key不存在，那么代码可以按照下面的方式组织：
+
+```Go
+value, ok := cache.Lookup(key)
+if !ok {
+    // ...cache[key] does not exist…
+}
+```
+
+**通常，导致失败的原因不止一种，尤其是对I/O操作而言，用户需要了解更多的错误信息。因此，额外的返回值不再是简单的布尔类型，而是error类型。**
+
+内置的error是接口类型。我们将在第七章了解接口类型的含义，以及它对错误处理的影响。现在我们只需要明白error类型可能是nil或者non-nil。nil意味着函数运行成功，non-nil表示失败。对于non-nil的error类型，我们可以通过调用error的Error函数或者输出函数获得字符串类型的错误信息。
+
+```Go
+fmt.Println(err)
+fmt.Printf("%v", err)
+```
+
+**通常，当函数返回non-nil的error时，其他的返回值是未定义的（undefined），这些未定义的返回值应该被忽略。然而，有少部分函数在发生错误时，仍然会返回一些有用的返回值。比如，当读取文件发生错误时，Read函数会返回可以读取的字节数以及错误信息。对于这种情况，正确的处理方式应该是先处理这些不完整的数据，再处理错误。因此对函数的返回值要有清晰的说明，以便于其他人使用。**
+
+**在Go中，函数运行失败时会返回错误信息，这些错误信息被认为是一种预期的值而非异常（exception），这使得Go有别于那些将函数运行失败看作是异常的语言。虽然Go有各种异常机制，但这些机制仅被使用在处理那些未被预料到的错误，即bug，而不是那些在健壮程序中应该被避免的程序错误。**
+
+Go这样设计的原因是由于对于某个应该在控制流程中处理的错误而言，将这个错误以异常的形式抛出会混乱对错误的描述，这通常会导致一些糟糕的后果。当某个程序错误被当作异常处理后，这个错误会将堆栈跟踪信息返回给终端用户，这些信息复杂且无用，无法帮助定位错误。
+
+正因此，Go使用控制流机制（如if和return）处理错误，这使得编码人员能更多的关注错误处理。
+
+### 错误处理策略
+
+**当一次函数调用返回错误时，调用者应该选择合适的方式处理错误。根据情况的不同，有很多处理方式，让我们来看看常用的5种方式。**
+
+**第1种错误处理策略：最常用的方式是传播错误。这意味着函数中某个子程序的失败，会变成该函数的失败。** 下面，我们以5.3节的findLinks函数作为例子。如果findLinks对`http.Get`的调用失败，findLinks会直接将这个HTTP错误返回给调用者：
+
+```Go
+resp, err := http.Get(url)
+if err != nil{
+    return nil, err
+}
+```
+
+当对`html.Parse`的调用失败时，findLinks不会直接返回`html.Parse`的错误，因为缺少两条重要信息：1、发生错误时的解析器（html parser）；2、发生错误的url。因此，findLinks构造了一个新的错误信息，既包含了这两项，也包括了底层的解析出错的信息。
+
+```Go
+doc, err := html.Parse(resp.Body)
+resp.Body.Close()
+if err != nil {
+    return nil, fmt.Errorf("parsing %s as HTML: %v", url,err)
+}
+```
+
+**`fmt.Errorf`函数使用`fmt.Sprintf`格式化错误信息并返回。我们使用该函数添加额外的前缀上下文信息到原始错误信息。**当错误最终由main函数处理时，错误信息应提供清晰的从原因到后果的因果链，就像美国宇航局事故调查时做的那样：
+
+```
+genesis: crashed: no parachute: G-switch failed: bad relay orientation
+```
+
+由于错误信息经常是以链式组合在一起的，所以错误信息中应避免大写和换行符。最终的错误信息可能很长，我们可以通过类似grep的工具处理错误信息（译者注：grep是一种文本搜索工具）。
+
+编写错误信息时，我们要确保错误信息对问题细节的描述是详尽的。尤其是要注意错误信息表达的一致性，即相同的函数或同包内的同一组函数返回的错误在构成和处理方式上是相似的。
+
+以`os`包为例，`os`包确保文件操作（如`os.Open`、`Read`、`Write`、`Close`）返回的每个错误的描述不仅仅包含错误的原因（如无权限，文件目录不存在）也包含文件名，这样调用者在构造新的错误信息时无需再添加这些信息。
+
+一般而言，被调用函数`f(x)`会将调用信息和参数信息作为发生错误时的上下文放在错误信息中并返回给调用者，调用者需要添加一些错误信息中不包含的信息，比如添加`url`到`html.Parse`返回的错误中。
+
+**第2种错误处理策略：如果错误的发生是偶然性的，或由不可预知的问题导致的。一个明智的选择是重新尝试失败的操作。在重试时，我们需要限制重试的时间间隔或重试的次数，防止无限制的重试。** 
+
+```Go
+// WaitForServer attempts to contact the server of a URL.
+// It tries for one minute using exponential back-off.
+// It reports an error if all attempts fail.
+func WaitForServer(url string) error {
+    const timeout = 1 * time.Minute
+    deadline := time.Now().Add(timeout)
+    for tries := 0; time.Now().Before(deadline); tries++ {
+        _, err := http.Head(url)
+        if err == nil {
+            return nil // success
+        }
+        log.Printf("server not responding (%s);retrying…", err)
+        time.Sleep(time.Second << uint(tries)) // exponential back-off
+    }
+    return fmt.Errorf("server %s failed to respond after %s", url, timeout)
+}
+```
+
+**第3种错误处理策略： 如果错误发生后，程序无法继续运行，则输出错误信息并结束程序。需要注意的是，这种策略只应在main中执行。对库函数而言，应仅向上传播错误，除非该错误意味着程序内部包含不一致性，即遇到了bug，才能在库函数中结束程序。**
+
+```Go
+// (In function main.)
+if err := WaitForServer(url); err != nil {
+    fmt.Fprintf(os.Stderr, "Site is down: %v\n", err)
+    os.Exit(1)
+}
+```
+
+调用`log.Fatalf`可以更简洁的代码达到与上文相同的效果。log中的所有函数，都默认会在错误信息之前输出时间信息。
+
+```Go
+if err := WaitForServer(url); err != nil {
+    log.Fatalf("Site is down: %v\n", err)
+}
+```
+
+长时间运行的服务器常采用默认的时间格式，而交互式工具很少采用包含如此多信息的格式。
+
+```
+2006/01/02 15:04:05 Site is down: no such domain:
+bad.gopl.io
+```
+
+我们可以设置log的前缀信息屏蔽时间信息，一般而言，前缀信息会被设置成命令名。
+
+```Go
+log.SetPrefix("wait: ")
+log.SetFlags(0)
+```
+
+**第4种错误处理策略：有时，我们只需要输出错误信息就足够了，不需要中断程序的运行。** 我们可以通过log包提供函数
+
+```Go
+if err := Ping(); err != nil {
+    log.Printf("ping failed: %v; networking disabled",err)
+}
+```
+
+或者标准错误流输出错误信息。
+
+```Go
+if err := Ping(); err != nil {
+    fmt.Fprintf(os.Stderr, "ping failed: %v; networking disabled\n", err)
+}
+```
+
+log包中的所有函数会为没有换行符的字符串增加换行符。
+
+**第5种错误处理策略：我们可以直接忽略掉错误。**
+
+```Go
+dir, err := ioutil.TempDir("", "scratch")
+if err != nil {
+    return fmt.Errorf("failed to create temp dir: %v",err)
+}
+// ...use temp dir…
+os.RemoveAll(dir) // ignore errors; $TMPDIR is cleaned periodically
+```
+
+尽管`os.RemoveAll`会失败，但上面的例子并没有做错误处理。这是因为操作系统会定期的清理临时目录。正因如此，虽然程序没有处理错误，但程序的逻辑不会因此受到影响。我们应该在每次函数调用后，都养成考虑错误处理的习惯，当你决定忽略某个错误时，你应该清晰地写下你的意图。
+
+**在Go中，错误处理有一套独特的编码风格。检查某个子函数是否失败后，我们通常将处理失败的逻辑代码放在处理成功的代码之前。如果某个错误会导致函数返回，那么成功时的逻辑代码不应放在else语句块中，而应直接放在函数体中。Go中大部分函数的代码结构几乎相同，首先是一系列的初始检查，防止错误发生，之后是函数的实际逻辑。**
+
+### 文件结尾错误（EOF）
+
+函数经常会返回多种错误，这对终端用户来说可能会很有趣，但对程序而言，这使得情况变得复杂。很多时候，程序必须根据错误类型，作出不同的响应。让我们考虑这样一个例子：从文件中读取n个字节。如果n等于文件的长度，读取过程的任何错误都表示失败。如果n小于文件的长度，调用者会重复的读取固定大小的数据直到文件结束。这会导致调用者必须分别处理由文件结束引起的各种错误。基于这样的原因，`io`包保证任何由文件结束引起的读取失败都返回同一个错误——`io.EOF`，该错误在`io`包中定义：
+
+```Go
+package io
+
+import "errors"
+
+// EOF is the error returned by Read when no more input is available.
+var EOF = errors.New("EOF")
+```
+
+调用者只需通过简单的比较，就可以检测出这个错误。下面的例子展示了如何从标准输入中读取字符，以及判断文件结束。（4.3的chartcount程序展示了更加复杂的代码）
+
+```Go
+in := bufio.NewReader(os.Stdin)
+for {
+    r, _, err := in.ReadRune()
+    if err == io.EOF {
+        break // finished reading
+    }
+    if err != nil {
+        return fmt.Errorf("read failed:%v", err)
+    }
+    // ...use r…
+}
+```
+
+因为文件结束这种错误不需要更多的描述，所以`io.EOF`有固定的错误信息——“EOF”。对于其他错误，我们可能需要在错误信息中描述错误的类型和数量，这使得我们不能像`io.EOF`一样采用固定的错误信息。
+
+## 函数值
+
+**在Go中，函数被看作第一类值（first-class values）：函数像其他值一样，拥有类型，可以被赋值给其他变量，传递给函数，从函数返回。对函数值（function value）的调用类似函数调用。**例子如下：
+
+```go
+func square(n int) int { return n * n }
+func negative(n int) int { return -n }
+func product(m, n int) int { return m * n }
+
+f := square
+fmt.Println(f(3)) // "9"
+
+f = negative
+fmt.Println(f(3))     // "-3"
+fmt.Printf("%T\n", f) // "func(int) int"
+
+f = product // compile error: can't assign func(int, int) int to func(int) int
+```
+
+**函数类型的零值是nil。调用值为nil的函数值会引起panic错误：**
+
+```go
+var f func(int) int
+f(3) // 此处f的值为nil, 会引起panic错误
+```
+
+函数值可以与nil比较：
+
+```go
+var f func(int) int
+if f != nil {
+  f(3)
+}
+```
+
+**但是函数值之间是不可比较的，也不能用函数值作为map的key。**
+
+函数值使得我们不仅仅可以通过数据来参数化函数，亦可通过行为。标准库中包含许多这样的例子。下面的代码展示了如何使用这个技巧。`strings.Map`对字符串中的每个字符调用`add1`函数，并将每个`add1`函数的返回值组成一个新的字符串返回给调用者。
+
+```go
+func add1(r rune) rune { return r + 1 }
+
+fmt.Println(strings.Map(add1, "HAL-9000")) // "IBM.:111"
+fmt.Println(strings.Map(add1, "VMS"))      // "WNT"
+fmt.Println(strings.Map(add1, "Admix"))    // "Benjy"
+```
+
+## 匿名函数
+
+拥有函数名的函数只能在包级语法块中被声明，通过函数字面量（function literal），我们可绕过这一限制，在任何表达式中表示一个函数值。函数字面量的语法和函数声明相似，区别在于func关键字后没有函数名。函数值字面量是一种表达式，它的值被称为匿名函数（anonymous function）。
+
+函数字面量允许我们在使用函数时，再定义它。通过这种技巧，我们可以改写之前对strings.Map的调用：
+
+```Go
+strings.Map(func(r rune) rune { return r + 1 }, "HAL-9000")
+```
+
+更为重要的是，通过这种方式定义的函数可以访问完整的词法环境（lexical environment），这意味着在函数中定义的内部函数可以引用该函数的变量，如下例所示：
+
+*gopl.io/ch5/squares*
+
+```Go
+// squares返回一个匿名函数。
+// 该匿名函数每次被调用时都会返回下一个数的平方。
+func squares() func() int {
+    var x int
+    return func() int {
+        x++
+        return x * x
+    }
+}
+func main() {
+    f := squares()
+    fmt.Println(f()) // "1"
+    fmt.Println(f()) // "4"
+    fmt.Println(f()) // "9"
+    fmt.Println(f()) // "16"
+}
+```
+
+函数squares返回另一个类型为 func() int 的函数。对squares的一次调用会生成一个局部变量x并返回一个匿名函数。每次调用匿名函数时，该函数都会先使x的值加1，再返回x的平方。第二次调用squares时，会生成第二个x变量，并返回一个新的匿名函数。新匿名函数操作的是第二个x变量。
+
+squares的例子证明，函数值不仅仅是一串代码，还记录了状态。在squares中定义的匿名内部函数可以访问和更新squares中的局部变量，这意味着匿名函数和squares中，存在变量引用。这就是函数值属于引用类型和函数值不可比较的原因。Go使用闭包（closures）技术实现函数值，Go程序员也把函数值叫做闭包。
+
+通过这个例子，我们看到变量的生命周期不由它的作用域决定：squares返回后，变量x仍然隐式的存在于f中。
+
+接下来，我们讨论一个有点学术性的例子，考虑这样一个问题：给定一些计算机课程，每个课程都有前置课程，只有完成了前置课程才可以开始当前课程的学习；我们的目标是选择出一组课程，这组课程必须确保按顺序学习时，能全部被完成。每个课程的前置课程如下：
+
+*gopl.io/ch5/toposort*
+
+```Go
+// prereqs记录了每个课程的前置课程
+var prereqs = map[string][]string{
+    "algorithms": {"data structures"},
+    "calculus": {"linear algebra"},
+    "compilers": {
+        "data structures",
+        "formal languages",
+        "computer organization",
+    },
+    "data structures":       {"discrete math"},
+    "databases":             {"data structures"},
+    "discrete math":         {"intro to programming"},
+    "formal languages":      {"discrete math"},
+    "networks":              {"operating systems"},
+    "operating systems":     {"data structures", "computer organization"},
+    "programming languages": {"data structures", "computer organization"},
+}
+```
+
+这类问题被称作拓扑排序。从概念上说，前置条件可以构成有向图。图中的顶点表示课程，边表示课程间的依赖关系。显然，图中应该无环，这也就是说从某点出发的边，最终不会回到该点。下面的代码用深度优先搜索了整张图，获得了符合要求的课程序列。
+
+```Go
+func main() {
+    for i, course := range topoSort(prereqs) {
+        fmt.Printf("%d:\t%s\n", i+1, course)
+    }
+}
+
+func topoSort(m map[string][]string) []string {
+    var order []string
+    seen := make(map[string]bool)
+    var visitAll func(items []string)
+    visitAll = func(items []string) {
+        for _, item := range items {
+            if !seen[item] {
+                seen[item] = true
+                visitAll(m[item])
+                order = append(order, item)
+            }
+        }
+    }
+    var keys []string
+    for key := range m {
+        keys = append(keys, key)
+    }
+    sort.Strings(keys)
+    visitAll(keys)
+    return order
+}
+```
+
+当匿名函数需要被递归调用时，我们必须首先声明一个变量（在上面的例子中，我们首先声明了 visitAll），再将匿名函数赋值给这个变量。如果不分成两步，函数字面量无法与visitAll绑定，我们也无法递归调用该匿名函数。
+
+```Go
+visitAll := func(items []string) {
+    // ...
+    visitAll(m[item]) // compile error: undefined: visitAll
+    // ...
+}
+```
+
+在toposort程序的输出如下所示，它的输出顺序是大多人想看到的固定顺序输出，但是这需要我们多花点心思才能做到。哈希表prepreqs的value是遍历顺序固定的切片，而不再试遍历顺序随机的map，所以我们对prereqs的key值进行排序，保证每次运行toposort程序，都以相同的遍历顺序遍历prereqs。
+
+```
+1: intro to programming
+2: discrete math
+3: data structures
+4: algorithms
+5: linear algebra
+6: calculus
+7: formal languages
+8: computer organization
+9: compilers
+10: databases
+11: operating systems
+12: networks
+13: programming languages
+```
+
+让我们回到findLinks这个例子。我们将代码移动到了links包下，将函数重命名为Extract，在第八章我们会再次用到这个函数。新的匿名函数被引入，用于替换原来的visit函数。该匿名函数负责将新连接添加到切片中。在Extract中，使用forEachNode遍历HTML页面，由于Extract只需要在遍历结点前操作结点，所以forEachNode的post参数被传入nil。
+
+*gopl.io/ch5/links*
+
+```Go
+// Package links provides a link-extraction function.
+package links
+import (
+    "fmt"
+    "net/http"
+    "golang.org/x/net/html"
+)
+// Extract makes an HTTP GET request to the specified URL, parses
+// the response as HTML, and returns the links in the HTML document.
+func Extract(url string) ([]string, error) {
+    resp, err := http.Get(url)
+    if err != nil {
+        return nil, err
+    }
+    if resp.StatusCode != http.StatusOK {
+    resp.Body.Close()
+        return nil, fmt.Errorf("getting %s: %s", url, resp.Status)
+    }
+    doc, err := html.Parse(resp.Body)
+    resp.Body.Close()
+    if err != nil {
+        return nil, fmt.Errorf("parsing %s as HTML: %v", url, err)
+    }
+    var links []string
+    visitNode := func(n *html.Node) {
+        if n.Type == html.ElementNode && n.Data == "a" {
+            for _, a := range n.Attr {
+                if a.Key != "href" {
+                    continue
+                }
+                link, err := resp.Request.URL.Parse(a.Val)
+                if err != nil {
+                    continue // ignore bad URLs
+                }
+                links = append(links, link.String())
+            }
+        }
+    }
+    forEachNode(doc, visitNode, nil)
+    return links, nil
+}
+```
+
+上面的代码对之前的版本做了改进，现在links中存储的不是href属性的原始值，而是通过resp.Request.URL解析后的值。解析后，这些连接以绝对路径的形式存在，可以直接被http.Get访问。
+
+网页抓取的核心问题就是如何遍历图。在topoSort的例子中，已经展示了深度优先遍历，在网页抓取中，我们会展示如何用广度优先遍历图。在第8章，我们会介绍如何将深度优先和广度优先结合使用。
+
+下面的函数实现了广度优先算法。调用者需要输入一个初始的待访问列表和一个函数f。待访问列表中的每个元素被定义为string类型。广度优先算法会为每个元素调用一次f。每次f执行完毕后，会返回一组待访问元素。这些元素会被加入到待访问列表中。当待访问列表中的所有元素都被访问后，breadthFirst函数运行结束。为了避免同一个元素被访问两次，代码中维护了一个map。
+
+*gopl.io/ch5/findlinks3*
+
+```Go
+// breadthFirst calls f for each item in the worklist.
+// Any items returned by f are added to the worklist.
+// f is called at most once for each item.
+func breadthFirst(f func(item string) []string, worklist []string) {
+    seen := make(map[string]bool)
+    for len(worklist) > 0 {
+        items := worklist
+        worklist = nil
+        for _, item := range items {
+            if !seen[item] {
+                seen[item] = true
+                worklist = append(worklist, f(item)...)
+            }
+        }
+    }
+}
+```
+
+就像我们在章节3解释的那样，append的参数“f(item)...”，会将f返回的一组元素一个个添加到worklist中。
+
+在我们网页抓取器中，元素的类型是url。crawl函数会将URL输出，提取其中的新链接，并将这些新链接返回。我们会将crawl作为参数传递给breadthFirst。
+
+```go
+func crawl(url string) []string {
+    fmt.Println(url)
+    list, err := links.Extract(url)
+    if err != nil {
+        log.Print(err)
+    }
+    return list
+}
+```
+
+为了使抓取器开始运行，我们用命令行输入的参数作为初始的待访问url。
+
+```Go
+func main() {
+    // Crawl the web breadth-first,
+    // starting from the command-line arguments.
+    breadthFirst(crawl, os.Args[1:])
+}
+```
+
+让我们从 [https://golang.org](https://golang.org/) 开始，下面是程序的输出结果：
+
+```
+$ go build gopl.io/ch5/findlinks3
+$ ./findlinks3 https://golang.org
+https://golang.org/
+https://golang.org/doc/
+https://golang.org/pkg/
+https://golang.org/project/
+https://code.google.com/p/go-tour/
+https://golang.org/doc/code.html
+https://www.youtube.com/watch?v=XCsL89YtqCs
+http://research.swtch.com/gotour
+```
+
+当所有发现的链接都已经被访问或电脑的内存耗尽时，程序运行结束。
+
+**练习5.10：** 重写topoSort函数，用map代替切片并移除对key的排序代码。验证结果的正确性（结果不唯一）。
+
+**练习5.11：** 现在线性代数的老师把微积分设为了前置课程。完善topSort，使其能检测有向图中的环。
+
+**练习5.12：** gopl.io/ch5/outline2（5.5节）的startElement和endElement共用了全局变量depth，将它们修改为匿名函数，使其共享outline中的局部变量。
+
+**练习5.13：** 修改crawl，使其能保存发现的页面，必要时，可以创建目录来保存这些页面。只保存来自原始域名下的页面。假设初始页面在golang.org下，就不要保存vimeo.com下的页面。
+
+**练习5.14：** 使用breadthFirst遍历其他数据结构。比如，topoSort例子中的课程依赖关系（有向图）、个人计算机的文件层次结构（树）；你所在城市的公交或地铁线路（无向图）。
+
+### 5.6.1. 警告：捕获迭代变量
+
+本节，将介绍Go词法作用域的一个陷阱。请务必仔细的阅读，弄清楚发生问题的原因。即使是经验丰富的程序员也会在这个问题上犯错误。
+
+考虑这样一个问题：你被要求首先创建一些目录，再将目录删除。在下面的例子中我们用函数值来完成删除操作。下面的示例代码需要引入os包。为了使代码简单，我们忽略了所有的异常处理。
+
+```Go
+var rmdirs []func()
+for _, d := range tempDirs() {
+    dir := d // NOTE: necessary!
+    os.MkdirAll(dir, 0755) // creates parent directories too
+    rmdirs = append(rmdirs, func() {
+        os.RemoveAll(dir)
+    })
+}
+// ...do some work…
+for _, rmdir := range rmdirs {
+    rmdir() // clean up
+}
+```
+
+你可能会感到困惑，为什么要在循环体中用循环变量d赋值一个新的局部变量，而不是像下面的代码一样直接使用循环变量dir。需要注意，下面的代码是错误的。
+
+```go
+var rmdirs []func()
+for _, dir := range tempDirs() {
+    os.MkdirAll(dir, 0755)
+    rmdirs = append(rmdirs, func() {
+        os.RemoveAll(dir) // NOTE: incorrect!
+    })
+}
+```
+
+问题的原因在于循环变量的作用域。在上面的程序中，for循环语句引入了新的词法块，循环变量dir在这个词法块中被声明。在该循环中生成的所有函数值都共享相同的循环变量。需要注意，函数值中记录的是循环变量的内存地址，而不是循环变量某一时刻的值。以dir为例，后续的迭代会不断更新dir的值，当删除操作执行时，for循环已完成，dir中存储的值等于最后一次迭代的值。这意味着，每次对os.RemoveAll的调用删除的都是相同的目录。
+
+通常，为了解决这个问题，我们会引入一个与循环变量同名的局部变量，作为循环变量的副本。比如下面的变量dir，虽然这看起来很奇怪，但却很有用。
+
+```Go
+for _, dir := range tempDirs() {
+    dir := dir // declares inner dir, initialized to outer dir
+    // ...
+}
+```
+
+这个问题不仅存在基于range的循环，在下面的例子中，对循环变量i的使用也存在同样的问题：
+
+```Go
+var rmdirs []func()
+dirs := tempDirs()
+for i := 0; i < len(dirs); i++ {
+    os.MkdirAll(dirs[i], 0755) // OK
+    rmdirs = append(rmdirs, func() {
+        os.RemoveAll(dirs[i]) // NOTE: incorrect!
+    })
+}
+```
+
+如果你使用go语句（第八章）或者defer语句（5.8节）会经常遇到此类问题。这不是go或defer本身导致的，而是因为它们都会等待循环结束后，再执行函数值。
 
 
 
