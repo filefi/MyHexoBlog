@@ -5397,14 +5397,14 @@ string ""
 ```go
 func main() {
 	s := causePanic()
-	fmt.Printf("%T %q", s, s) // string ""
+	fmt.Printf("%T %q", s, s) // string "set in defer"
 }
 
 func causePanic() (s string) {
 	defer func() {
 		if p := recover(); p != nil {
 			fmt.Printf("recover from panic: %s\n", p)
-      s = "set in defer"
+      s = "set in defer" // 在defer中对返回值s进行修改
 		}
 	}()
 	panic("oops!")
@@ -5412,7 +5412,12 @@ func causePanic() (s string) {
 }
 ```
 
+输出结果为：
 
+```
+recover from panic: oops!
+string "set in defer"
+```
 
 # 方法
 
