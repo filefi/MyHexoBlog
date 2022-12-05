@@ -20201,220 +20201,47 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">Map</span><span class="token punctuation">(</span>add1<span class="token punctuation">,</span> <span class="token string">"VMS"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>      <span class="token comment">// "WNT"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">Map</span><span class="token punctuation">(</span>add1<span class="token punctuation">,</span> <span class="token string">"Admix"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>    <span class="token comment">// "Benjy"</span></code></pre>
 
-<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p>拥有函数名的函数只能在包级语法块中被声明，通过函数字面量（function literal），我们可绕过这一限制，在任何表达式中表示一个函数值。函数字面量的语法和函数声明相似，区别在于func关键字后没有函数名。函数值字面量是一种表达式，它的值被称为匿名函数（anonymous function）。</p>
-<p>函数字面量允许我们在使用函数时，再定义它。通过这种技巧，我们可以改写之前对strings.Map的调用：</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">strings.Map(func(r rune) rune &#123; return r + 1 &#125;, &quot;HAL-9000&quot;)</code></pre>
+<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p><strong>拥有函数名的函数只能在包级语法块中被声明，我们可以使用函数字面量（function literal）来绕过这一限制，在任何表达式中表示一个函数值。函数字面量的语法和函数声明相似，区别在于<code>func</code>关键字后没有函数名。函数值字面量是一种表达式，它的值被称为匿名函数（anonymous function）。</strong></p>
+<p><strong>函数字面量允许我们在使用函数时，再定义它。通过这种技巧，我们可以改写之前对<code>strings.Map</code>的调用：</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go">strings<span class="token punctuation">.</span><span class="token function">Map</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>r <span class="token builtin">rune</span><span class="token punctuation">)</span> <span class="token builtin">rune</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> r <span class="token operator">+</span> <span class="token number">1</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token string">"HAL-9000"</span><span class="token punctuation">)</span></code></pre>
 
-<p>更为重要的是，通过这种方式定义的函数可以访问完整的词法环境（lexical environment），这意味着在函数中定义的内部函数可以引用该函数的变量，如下例所示：</p>
-<p><em>gopl.io&#x2F;ch5&#x2F;squares</em></p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">&#x2F;&#x2F; squares返回一个匿名函数。
-&#x2F;&#x2F; 该匿名函数每次被调用时都会返回下一个数的平方。
-func squares() func() int &#123;
-    var x int
-    return func() int &#123;
-        x++
-        return x * x
-    &#125;
-&#125;
-func main() &#123;
-    f :&#x3D; squares()
-    fmt.Println(f()) &#x2F;&#x2F; &quot;1&quot;
-    fmt.Println(f()) &#x2F;&#x2F; &quot;4&quot;
-    fmt.Println(f()) &#x2F;&#x2F; &quot;9&quot;
-    fmt.Println(f()) &#x2F;&#x2F; &quot;16&quot;
-&#125;</code></pre>
-
-<p>函数squares返回另一个类型为 func() int 的函数。对squares的一次调用会生成一个局部变量x并返回一个匿名函数。每次调用匿名函数时，该函数都会先使x的值加1，再返回x的平方。第二次调用squares时，会生成第二个x变量，并返回一个新的匿名函数。新匿名函数操作的是第二个x变量。</p>
-<p>squares的例子证明，函数值不仅仅是一串代码，还记录了状态。在squares中定义的匿名内部函数可以访问和更新squares中的局部变量，这意味着匿名函数和squares中，存在变量引用。这就是函数值属于引用类型和函数值不可比较的原因。Go使用闭包（closures）技术实现函数值，Go程序员也把函数值叫做闭包。</p>
-<p>通过这个例子，我们看到变量的生命周期不由它的作用域决定：squares返回后，变量x仍然隐式的存在于f中。</p>
-<p>接下来，我们讨论一个有点学术性的例子，考虑这样一个问题：给定一些计算机课程，每个课程都有前置课程，只有完成了前置课程才可以开始当前课程的学习；我们的目标是选择出一组课程，这组课程必须确保按顺序学习时，能全部被完成。每个课程的前置课程如下：</p>
-<p><em>gopl.io&#x2F;ch5&#x2F;toposort</em></p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">&#x2F;&#x2F; prereqs记录了每个课程的前置课程
-var prereqs &#x3D; map[string][]string&#123;
-    &quot;algorithms&quot;: &#123;&quot;data structures&quot;&#125;,
-    &quot;calculus&quot;: &#123;&quot;linear algebra&quot;&#125;,
-    &quot;compilers&quot;: &#123;
-        &quot;data structures&quot;,
-        &quot;formal languages&quot;,
-        &quot;computer organization&quot;,
-    &#125;,
-    &quot;data structures&quot;:       &#123;&quot;discrete math&quot;&#125;,
-    &quot;databases&quot;:             &#123;&quot;data structures&quot;&#125;,
-    &quot;discrete math&quot;:         &#123;&quot;intro to programming&quot;&#125;,
-    &quot;formal languages&quot;:      &#123;&quot;discrete math&quot;&#125;,
-    &quot;networks&quot;:              &#123;&quot;operating systems&quot;&#125;,
-    &quot;operating systems&quot;:     &#123;&quot;data structures&quot;, &quot;computer organization&quot;&#125;,
-    &quot;programming languages&quot;: &#123;&quot;data structures&quot;, &quot;computer organization&quot;&#125;,
-&#125;</code></pre>
-
-<p>这类问题被称作拓扑排序。从概念上说，前置条件可以构成有向图。图中的顶点表示课程，边表示课程间的依赖关系。显然，图中应该无环，这也就是说从某点出发的边，最终不会回到该点。下面的代码用深度优先搜索了整张图，获得了符合要求的课程序列。</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">func main() &#123;
-    for i, course :&#x3D; range topoSort(prereqs) &#123;
-        fmt.Printf(&quot;%d:\t%s\n&quot;, i+1, course)
-    &#125;
-&#125;
-
-func topoSort(m map[string][]string) []string &#123;
-    var order []string
-    seen :&#x3D; make(map[string]bool)
-    var visitAll func(items []string)
-    visitAll &#x3D; func(items []string) &#123;
-        for _, item :&#x3D; range items &#123;
-            if !seen[item] &#123;
-                seen[item] &#x3D; true
-                visitAll(m[item])
-                order &#x3D; append(order, item)
-            &#125;
-        &#125;
-    &#125;
-    var keys []string
-    for key :&#x3D; range m &#123;
-        keys &#x3D; append(keys, key)
-    &#125;
-    sort.Strings(keys)
-    visitAll(keys)
-    return order
-&#125;</code></pre>
-
-<p>当匿名函数需要被递归调用时，我们必须首先声明一个变量（在上面的例子中，我们首先声明了 visitAll），再将匿名函数赋值给这个变量。如果不分成两步，函数字面量无法与visitAll绑定，我们也无法递归调用该匿名函数。</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">visitAll :&#x3D; func(items []string) &#123;
-    &#x2F;&#x2F; ...
-    visitAll(m[item]) &#x2F;&#x2F; compile error: undefined: visitAll
-    &#x2F;&#x2F; ...
-&#125;</code></pre>
-
-<p>在toposort程序的输出如下所示，它的输出顺序是大多人想看到的固定顺序输出，但是这需要我们多花点心思才能做到。哈希表prepreqs的value是遍历顺序固定的切片，而不再试遍历顺序随机的map，所以我们对prereqs的key值进行排序，保证每次运行toposort程序，都以相同的遍历顺序遍历prereqs。</p>
-<pre class="language-none"><code class="language-none">1: intro to programming
-2: discrete math
-3: data structures
-4: algorithms
-5: linear algebra
-6: calculus
-7: formal languages
-8: computer organization
-9: compilers
-10: databases
-11: operating systems
-12: networks
-13: programming languages</code></pre>
-
-<p>让我们回到findLinks这个例子。我们将代码移动到了links包下，将函数重命名为Extract，在第八章我们会再次用到这个函数。新的匿名函数被引入，用于替换原来的visit函数。该匿名函数负责将新连接添加到切片中。在Extract中，使用forEachNode遍历HTML页面，由于Extract只需要在遍历结点前操作结点，所以forEachNode的post参数被传入nil。</p>
-<p><em>gopl.io&#x2F;ch5&#x2F;links</em></p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">&#x2F;&#x2F; Package links provides a link-extraction function.
-package links
-import (
-    &quot;fmt&quot;
-    &quot;net&#x2F;http&quot;
-    &quot;golang.org&#x2F;x&#x2F;net&#x2F;html&quot;
-)
-&#x2F;&#x2F; Extract makes an HTTP GET request to the specified URL, parses
-&#x2F;&#x2F; the response as HTML, and returns the links in the HTML document.
-func Extract(url string) ([]string, error) &#123;
-    resp, err :&#x3D; http.Get(url)
-    if err !&#x3D; nil &#123;
-        return nil, err
-    &#125;
-    if resp.StatusCode !&#x3D; http.StatusOK &#123;
-    resp.Body.Close()
-        return nil, fmt.Errorf(&quot;getting %s: %s&quot;, url, resp.Status)
-    &#125;
-    doc, err :&#x3D; html.Parse(resp.Body)
-    resp.Body.Close()
-    if err !&#x3D; nil &#123;
-        return nil, fmt.Errorf(&quot;parsing %s as HTML: %v&quot;, url, err)
-    &#125;
-    var links []string
-    visitNode :&#x3D; func(n *html.Node) &#123;
-        if n.Type &#x3D;&#x3D; html.ElementNode &amp;&amp; n.Data &#x3D;&#x3D; &quot;a&quot; &#123;
-            for _, a :&#x3D; range n.Attr &#123;
-                if a.Key !&#x3D; &quot;href&quot; &#123;
-                    continue
-                &#125;
-                link, err :&#x3D; resp.Request.URL.Parse(a.Val)
-                if err !&#x3D; nil &#123;
-                    continue &#x2F;&#x2F; ignore bad URLs
-                &#125;
-                links &#x3D; append(links, link.String())
-            &#125;
-        &#125;
-    &#125;
-    forEachNode(doc, visitNode, nil)
-    return links, nil
-&#125;</code></pre>
-
-<p>上面的代码对之前的版本做了改进，现在links中存储的不是href属性的原始值，而是通过resp.Request.URL解析后的值。解析后，这些连接以绝对路径的形式存在，可以直接被http.Get访问。</p>
-<p>网页抓取的核心问题就是如何遍历图。在topoSort的例子中，已经展示了深度优先遍历，在网页抓取中，我们会展示如何用广度优先遍历图。在第8章，我们会介绍如何将深度优先和广度优先结合使用。</p>
-<p>下面的函数实现了广度优先算法。调用者需要输入一个初始的待访问列表和一个函数f。待访问列表中的每个元素被定义为string类型。广度优先算法会为每个元素调用一次f。每次f执行完毕后，会返回一组待访问元素。这些元素会被加入到待访问列表中。当待访问列表中的所有元素都被访问后，breadthFirst函数运行结束。为了避免同一个元素被访问两次，代码中维护了一个map。</p>
-<p><em>gopl.io&#x2F;ch5&#x2F;findlinks3</em></p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">&#x2F;&#x2F; breadthFirst calls f for each item in the worklist.
-&#x2F;&#x2F; Any items returned by f are added to the worklist.
-&#x2F;&#x2F; f is called at most once for each item.
-func breadthFirst(f func(item string) []string, worklist []string) &#123;
-    seen :&#x3D; make(map[string]bool)
-    for len(worklist) &gt; 0 &#123;
-        items :&#x3D; worklist
-        worklist &#x3D; nil
-        for _, item :&#x3D; range items &#123;
-            if !seen[item] &#123;
-                seen[item] &#x3D; true
-                worklist &#x3D; append(worklist, f(item)...)
-            &#125;
-        &#125;
-    &#125;
-&#125;</code></pre>
-
-<p>就像我们在章节3解释的那样，append的参数“f(item)…”，会将f返回的一组元素一个个添加到worklist中。</p>
-<p>在我们网页抓取器中，元素的类型是url。crawl函数会将URL输出，提取其中的新链接，并将这些新链接返回。我们会将crawl作为参数传递给breadthFirst。</p>
-<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">crawl</span><span class="token punctuation">(</span>url <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
-    list<span class="token punctuation">,</span> err <span class="token operator">:=</span> links<span class="token punctuation">.</span><span class="token function">Extract</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
-        log<span class="token punctuation">.</span><span class="token function">Print</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<p><strong>更为重要的是，通过这种方式定义的函数可以访问完整的词法环境（lexical environment），这意味着在函数中定义的内部函数可以引用该函数的变量，如下例所示：</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// squares返回一个匿名函数。</span>
+<span class="token comment">// 该匿名函数每次被调用时都会返回下一个数的平方。</span>
+<span class="token keyword">func</span> <span class="token function">squares</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">var</span> x <span class="token builtin">int</span>
+    <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
+        x<span class="token operator">++</span>
+        <span class="token keyword">return</span> x <span class="token operator">*</span> x
     <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> list
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    f <span class="token operator">:=</span> <span class="token function">squares</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">f</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "1"</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">f</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "4"</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">f</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "9"</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">f</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "16"</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>为了使抓取器开始运行，我们用命令行输入的参数作为初始的待访问url。</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">func main() &#123;
-    &#x2F;&#x2F; Crawl the web breadth-first,
-    &#x2F;&#x2F; starting from the command-line arguments.
-    breadthFirst(crawl, os.Args[1:])
-&#125;</code></pre>
+<p>函数squares返回另一个类型为 <code>func() int</code> 的函数。对squares的一次调用会生成一个局部变量x并返回一个匿名函数。每次调用匿名函数时，该函数都会先使x的值加1，再返回x的平方。第二次调用squares时，会生成第二个x变量，并返回一个新的匿名函数。新匿名函数操作的是第二个x变量。</p>
+<p><strong>squares的例子证明，函数值不仅仅是一串代码，还记录了状态。在squares中定义的匿名内部函数可以访问和更新squares中的局部变量，这意味着匿名函数和squares中，存在变量引用。这就是函数值属于引用类型和函数值不可比较的原因。Go使用闭包（closures）技术实现函数值，Go程序员也把函数值叫做闭包。</strong></p>
+<p>通过这个例子，我们看到变量的生命周期不由它的作用域决定：squares返回后，变量x仍然隐式的存在于f中。</p>
+<h3 id="警告：捕获迭代变量"><a href="#警告：捕获迭代变量" class="headerlink" title="警告：捕获迭代变量"></a>警告：捕获迭代变量</h3><p>本节，将介绍Go词法作用域的一个陷阱。请务必仔细的阅读，弄清楚发生问题的原因。即使是经验丰富的程序员也会在这个问题上犯错误。</p>
+<p>考虑这样一个问题：你被要求首先创建一些目录，再将目录删除。在下面的例子中我们用函数值来完成删除操作。下面的示例代码需要引入<code>os</code>包。为了使代码简单，我们忽略了所有的异常处理。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> rmdirs <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> d <span class="token operator">:=</span> <span class="token keyword">range</span> <span class="token function">tempDirs</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    dir <span class="token operator">:=</span> d <span class="token comment">// NOTE: necessary!</span>
+    os<span class="token punctuation">.</span><span class="token function">MkdirAll</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> <span class="token number">0755</span><span class="token punctuation">)</span> <span class="token comment">// creates parent directories too</span>
+    rmdirs <span class="token operator">=</span> <span class="token function">append</span><span class="token punctuation">(</span>rmdirs<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        os<span class="token punctuation">.</span><span class="token function">RemoveAll</span><span class="token punctuation">(</span>dir<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">// ...do some work…</span>
+<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> rmdir <span class="token operator">:=</span> <span class="token keyword">range</span> rmdirs <span class="token punctuation">&#123;</span>
+    <span class="token function">rmdir</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// clean up</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
-<p>让我们从 <a href="https://golang.org/">https://golang.org</a> 开始，下面是程序的输出结果：</p>
-<pre class="language-none"><code class="language-none">$ go build gopl.io&#x2F;ch5&#x2F;findlinks3
-$ .&#x2F;findlinks3 https:&#x2F;&#x2F;golang.org
-https:&#x2F;&#x2F;golang.org&#x2F;
-https:&#x2F;&#x2F;golang.org&#x2F;doc&#x2F;
-https:&#x2F;&#x2F;golang.org&#x2F;pkg&#x2F;
-https:&#x2F;&#x2F;golang.org&#x2F;project&#x2F;
-https:&#x2F;&#x2F;code.google.com&#x2F;p&#x2F;go-tour&#x2F;
-https:&#x2F;&#x2F;golang.org&#x2F;doc&#x2F;code.html
-https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v&#x3D;XCsL89YtqCs
-http:&#x2F;&#x2F;research.swtch.com&#x2F;gotour</code></pre>
-
-<p>当所有发现的链接都已经被访问或电脑的内存耗尽时，程序运行结束。</p>
-<p><strong>练习5.10：</strong> 重写topoSort函数，用map代替切片并移除对key的排序代码。验证结果的正确性（结果不唯一）。</p>
-<p><strong>练习5.11：</strong> 现在线性代数的老师把微积分设为了前置课程。完善topSort，使其能检测有向图中的环。</p>
-<p><strong>练习5.12：</strong> gopl.io&#x2F;ch5&#x2F;outline2（5.5节）的startElement和endElement共用了全局变量depth，将它们修改为匿名函数，使其共享outline中的局部变量。</p>
-<p><strong>练习5.13：</strong> 修改crawl，使其能保存发现的页面，必要时，可以创建目录来保存这些页面。只保存来自原始域名下的页面。假设初始页面在golang.org下，就不要保存vimeo.com下的页面。</p>
-<p><strong>练习5.14：</strong> 使用breadthFirst遍历其他数据结构。比如，topoSort例子中的课程依赖关系（有向图）、个人计算机的文件层次结构（树）；你所在城市的公交或地铁线路（无向图）。</p>
-<h3 id="5-6-1-警告：捕获迭代变量"><a href="#5-6-1-警告：捕获迭代变量" class="headerlink" title="5.6.1. 警告：捕获迭代变量"></a>5.6.1. 警告：捕获迭代变量</h3><p>本节，将介绍Go词法作用域的一个陷阱。请务必仔细的阅读，弄清楚发生问题的原因。即使是经验丰富的程序员也会在这个问题上犯错误。</p>
-<p>考虑这样一个问题：你被要求首先创建一些目录，再将目录删除。在下面的例子中我们用函数值来完成删除操作。下面的示例代码需要引入os包。为了使代码简单，我们忽略了所有的异常处理。</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">var rmdirs []func()
-for _, d :&#x3D; range tempDirs() &#123;
-    dir :&#x3D; d &#x2F;&#x2F; NOTE: necessary!
-    os.MkdirAll(dir, 0755) &#x2F;&#x2F; creates parent directories too
-    rmdirs &#x3D; append(rmdirs, func() &#123;
-        os.RemoveAll(dir)
-    &#125;)
-&#125;
-&#x2F;&#x2F; ...do some work…
-for _, rmdir :&#x3D; range rmdirs &#123;
-    rmdir() &#x2F;&#x2F; clean up
-&#125;</code></pre>
-
-<p>你可能会感到困惑，为什么要在循环体中用循环变量d赋值一个新的局部变量，而不是像下面的代码一样直接使用循环变量dir。需要注意，下面的代码是错误的。</p>
+<p><strong>你可能会感到困惑，为什么要在循环体中用循环变量<code>d</code>赋值一个新的局部变量，而不是像下面的代码一样直接使用循环变量<code>dir</code>。&#x3D;&#x3D;需要注意，下面的代码是错误的。&#x3D;&#x3D;</strong></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> rmdirs <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> dir <span class="token operator">:=</span> <span class="token keyword">range</span> <span class="token function">tempDirs</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     os<span class="token punctuation">.</span><span class="token function">MkdirAll</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> <span class="token number">0755</span><span class="token punctuation">)</span>
@@ -20423,25 +20250,534 @@ for _, rmdir :&#x3D; range rmdirs &#123;
     <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>问题的原因在于循环变量的作用域。在上面的程序中，for循环语句引入了新的词法块，循环变量dir在这个词法块中被声明。在该循环中生成的所有函数值都共享相同的循环变量。需要注意，函数值中记录的是循环变量的内存地址，而不是循环变量某一时刻的值。以dir为例，后续的迭代会不断更新dir的值，当删除操作执行时，for循环已完成，dir中存储的值等于最后一次迭代的值。这意味着，每次对os.RemoveAll的调用删除的都是相同的目录。</p>
-<p>通常，为了解决这个问题，我们会引入一个与循环变量同名的局部变量，作为循环变量的副本。比如下面的变量dir，虽然这看起来很奇怪，但却很有用。</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">for _, dir :&#x3D; range tempDirs() &#123;
-    dir :&#x3D; dir &#x2F;&#x2F; declares inner dir, initialized to outer dir
-    &#x2F;&#x2F; ...
+<p><strong>问题的原因在于循环变量的作用域。在上面的程序中，for循环语句引入了新的词法块，循环变量<code>dir</code>在这个词法块中被声明。在该循环中生成的所有函数值都共享相同的循环变量。&#x3D;&#x3D;需要注意，函数值中记录的是循环变量的内存地址，而不是循环变量某一时刻的值。&#x3D;&#x3D;以<code>dir</code>为例，后续的迭代会不断更新<code>dir</code>的值，当删除操作执行时，for循环已完成，<code>dir</code>中存储的值等于最后一次迭代的值。这意味着，每次对<code>os.RemoveAll</code>的调用删除的都是相同的目录。</strong></p>
+<p>通常，为了解决这个问题，我们会引入一个与循环变量同名的局部变量，作为循环变量的副本。比如下面的变量<code>dir</code>，虽然这看起来很奇怪，但却很有用。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> dir <span class="token operator">:=</span> <span class="token keyword">range</span> <span class="token function">tempDirs</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    dir <span class="token operator">:=</span> dir <span class="token comment">// declares inner dir, initialized to outer dir</span>
+    <span class="token comment">// ...</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>这个问题不仅存在基于range的循环，在下面的例子中，对循环变量<code>i</code>的使用也存在同样的问题：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> rmdirs <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+dirs <span class="token operator">:=</span> <span class="token function">tempDirs</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token function">len</span><span class="token punctuation">(</span>dirs<span class="token punctuation">)</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+    os<span class="token punctuation">.</span><span class="token function">MkdirAll</span><span class="token punctuation">(</span>dirs<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">0755</span><span class="token punctuation">)</span> <span class="token comment">// OK</span>
+    rmdirs <span class="token operator">=</span> <span class="token function">append</span><span class="token punctuation">(</span>rmdirs<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        os<span class="token punctuation">.</span><span class="token function">RemoveAll</span><span class="token punctuation">(</span>dirs<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// NOTE: incorrect!</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>如果你使用go语句（第八章）或者defer语句（5.8节）会经常遇到此类问题。<strong>这不是go或defer本身导致的，而是因为它们都会等待循环结束后，再执行函数值。</strong></p>
+<p>下例更加清楚的展示几种对range语句迭代变量引用方式的不同：</p>
+<pre class="language-go" data-language="go"><code class="language-go">s <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token string">"yoyo"</span><span class="token punctuation">,</span> <span class="token string">"haha"</span><span class="token punctuation">,</span> <span class="token string">"lol"</span><span class="token punctuation">&#125;</span>
+	<span class="token keyword">var</span> arr <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span>
+	<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> s <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"1:"</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span> <span class="token comment">// 匿名函数外</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>val <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token string">"2:"</span> <span class="token operator">+</span> val <span class="token punctuation">&#125;</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// 通过传参给匿名函数</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token string">"3:"</span> <span class="token operator">+</span> v <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// 在闭包中直接引用</span>
+		arr <span class="token operator">=</span> <span class="token function">append</span><span class="token punctuation">(</span>arr<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token string">"4:"</span> <span class="token operator">+</span> v <span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// 在闭包中直接引用，并延迟执行闭包</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> f <span class="token operator">:=</span> <span class="token keyword">range</span> arr <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">f</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">//延迟执行闭包</span>
+	<span class="token punctuation">&#125;</span></code></pre>
+
+<p>执行结果如下：</p>
+<pre class="language-none"><code class="language-none">1: yoyo
+2:yoyo
+3:yoyo
+1: haha
+2:haha
+3:haha
+1: lol
+2:lol
+3:lol
+4:lol
+4:lol
+4:lol</code></pre>
+
+<p>因为所有闭包引用的是变量迭代<code>v</code>的地址，而每次迭代后，变量<code>v</code>都被重新赋了新值，所以当迭代结束后，闭包中引用的变量<code>v</code>值为最后一次迭代时的值。而所有延迟执行的闭包都输出了<code>v</code>最后一次被赋值的值。</p>
+<h2 id="可变参数"><a href="#可变参数" class="headerlink" title="可变参数"></a>可变参数</h2><p><strong>参数数量可变的函数称为 <em>可变参数函数</em> 。</strong>典型的例子就是<code>fmt.Printf</code>和类似函数。<code>Printf</code>首先接收一个必备的参数，之后接收任意个数的后续参数。</p>
+<p><strong>在声明可变参数函数时，需要在参数列表的最后一个参数类型之前加上省略符号<code>...</code>，这表示该函数会接收任意数量的该类型参数。</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">sum</span><span class="token punctuation">(</span>vals <span class="token operator">...</span><span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
+    total <span class="token operator">:=</span> <span class="token number">0</span>
+    <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> val <span class="token operator">:=</span> <span class="token keyword">range</span> vals <span class="token punctuation">&#123;</span>
+        total <span class="token operator">+=</span> val
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> total
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><code>sum</code>函数返回任意个<code>int</code>型参数的和。在函数体中，<code>vals</code>被看作是类型为<code>[] int</code>的切片。<code>sum</code>可以接收任意数量的int型参数：</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">sum</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>           <span class="token comment">// "0"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">sum</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span>          <span class="token comment">// "3"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">sum</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "10"</span></code></pre>
+
+<p>在上面的代码中，调用者隐式的创建一个数组，并将原始参数复制到数组中，再把数组的一个切片作为参数传给被调用函数。<strong>如果原始参数已经是切片类型，只需在最后一个参数后加上省略符。</strong> 下面的代码功能与上个例子中最后一条语句相同。</p>
+<pre class="language-go" data-language="go"><code class="language-go">values <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">&#125;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">sum</span><span class="token punctuation">(</span>values<span class="token operator">...</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "10"</span></code></pre>
+
+<p>虽然在可变参数函数内部，<code>...int</code> 型参数的行为看起来很像切片类型，但实际上，可变参数函数和以切片作为参数的函数是不同的。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">f</span><span class="token punctuation">(</span><span class="token operator">...</span><span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">g</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%T\n"</span><span class="token punctuation">,</span> f<span class="token punctuation">)</span> <span class="token comment">// "func(...int)"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%T\n"</span><span class="token punctuation">,</span> g<span class="token punctuation">)</span> <span class="token comment">// "func([]int)"</span></code></pre>
+
+<p>可变参数函数经常被用于格式化字符串。下面的<code>errorf</code>函数构造了一个以行号开头的，经过格式化的错误信息。函数名的后缀f是一种通用的命名规范，代表该可变参数函数可以接收<code>Printf</code>风格的格式化字符串。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">errorf</span><span class="token punctuation">(</span>linenum <span class="token builtin">int</span><span class="token punctuation">,</span> format <span class="token builtin">string</span><span class="token punctuation">,</span> args <span class="token operator">...</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Fprintf</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stderr<span class="token punctuation">,</span> <span class="token string">"Line %d: "</span><span class="token punctuation">,</span> linenum<span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Fprintf</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stderr<span class="token punctuation">,</span> format<span class="token punctuation">,</span> args<span class="token operator">...</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Fprintln</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stderr<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+linenum<span class="token punctuation">,</span> name <span class="token operator">:=</span> <span class="token number">12</span><span class="token punctuation">,</span> <span class="token string">"count"</span>
+<span class="token function">errorf</span><span class="token punctuation">(</span>linenum<span class="token punctuation">,</span> <span class="token string">"undefined: %s"</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span> <span class="token comment">// "Line 12: undefined: count"</span></code></pre>
+
+<p><code>interface&#123;&#125;</code>表示函数的最后一个参数可以接收任意类型。</p>
+<p><strong>练习5.15：</strong> 编写类似<code>sum</code>的可变参数函数<code>max</code>和<code>min</code>。考虑不传参时，<code>max</code>和<code>min</code>该如何处理，再编写至少接收1个参数的版本。</p>
+<p><strong>练习5.16：</strong>编写多参数版本的<code>strings.Join</code>。</p>
+<p><strong>练习5.17：</strong>编写多参数版本的<code>ElementsByTagName</code>，函数接收一个HTML结点树以及任意数量的标签名，返回与这些标签名匹配的所有元素。下面给出了2个例子：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">ElementsByTagName</span><span class="token punctuation">(</span>doc <span class="token operator">*</span>html<span class="token punctuation">.</span>Node<span class="token punctuation">,</span> name<span class="token operator">...</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>html<span class="token punctuation">.</span>Node
+images <span class="token operator">:=</span> <span class="token function">ElementsByTagName</span><span class="token punctuation">(</span>doc<span class="token punctuation">,</span> <span class="token string">"img"</span><span class="token punctuation">)</span>
+headings <span class="token operator">:=</span> <span class="token function">ElementsByTagName</span><span class="token punctuation">(</span>doc<span class="token punctuation">,</span> <span class="token string">"h1"</span><span class="token punctuation">,</span> <span class="token string">"h2"</span><span class="token punctuation">,</span> <span class="token string">"h3"</span><span class="token punctuation">,</span> <span class="token string">"h4"</span><span class="token punctuation">)</span></code></pre>
+
+<h2 id="Deferred函数"><a href="#Deferred函数" class="headerlink" title="Deferred函数"></a>Deferred函数</h2><p>在findLinks的例子中，我们用<code>http.Get</code>的输出作为<code>html.Parse</code>的输入。只有url的内容的确是HTML格式的，<code>html.Parse</code>才可以正常工作，但实际上，url指向的内容很丰富，可能是图片，纯文本或是其他。将这些格式的内容传递给<code>html.parse</code>，会产生不良后果。</p>
+<p>下面的例子获取HTML页面并输出页面的标题。title函数会检查服务器返回的Content-Type字段，如果发现页面不是HTML，将终止函数运行，返回错误。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">title</span><span class="token punctuation">(</span>url <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+    resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> http<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> err
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// Check Content-Type is HTML (e.g., "text/html;charset=utf-8").</span>
+    ct <span class="token operator">:=</span> resp<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> ct <span class="token operator">!=</span> <span class="token string">"text/html"</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>strings<span class="token punctuation">.</span><span class="token function">HasPrefix</span><span class="token punctuation">(</span>ct<span class="token punctuation">,</span><span class="token string">"text/html;"</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        resp<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"%s has type %s, not text/html"</span><span class="token punctuation">,</span>url<span class="token punctuation">,</span> ct<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    doc<span class="token punctuation">,</span> err <span class="token operator">:=</span> html<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
+    resp<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"parsing %s as HTML: %v"</span><span class="token punctuation">,</span> url<span class="token punctuation">,</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    visitNode <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>n <span class="token operator">*</span>html<span class="token punctuation">.</span>Node<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> n<span class="token punctuation">.</span>Type <span class="token operator">==</span> html<span class="token punctuation">.</span>ElementNode <span class="token operator">&amp;&amp;</span> n<span class="token punctuation">.</span>Data <span class="token operator">==</span> <span class="token string">"title"</span><span class="token operator">&amp;&amp;</span>n<span class="token punctuation">.</span>FirstChild <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+            fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>n<span class="token punctuation">.</span>FirstChild<span class="token punctuation">.</span>Data<span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">forEachNode</span><span class="token punctuation">(</span>doc<span class="token punctuation">,</span> visitNode<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>下面展示了运行效果：</p>
+<pre class="language-none"><code class="language-none">$ go build gopl.io&#x2F;ch5&#x2F;title1
+$ .&#x2F;title1 http:&#x2F;&#x2F;gopl.io
+The Go Programming Language
+$ .&#x2F;title1 https:&#x2F;&#x2F;golang.org&#x2F;doc&#x2F;effective_go.html
+Effective Go - The Go Programming Language
+$ .&#x2F;title1 https:&#x2F;&#x2F;golang.org&#x2F;doc&#x2F;gopher&#x2F;frontpage.png
+title1: https:&#x2F;&#x2F;golang.org&#x2F;doc&#x2F;gopher&#x2F;frontpage.png has type image&#x2F;png, not text&#x2F;html</code></pre>
+
+<p><strong><code>resp.Body.close</code>调用了多次，这是为了确保title在所有执行路径下（即使函数运行失败）都关闭了网络连接。随着函数变得复杂，需要处理的错误也变多，维护清理逻辑变得越来越困难。而Go语言独有的defer机制可以让事情变得简单。</strong></p>
+<p><strong>你只需要在调用普通函数或方法前加上关键字defer，就完成了defer所需要的语法。当执行到该条语句时，函数和参数表达式得到计算，但直到包含该defer语句的函数执行完毕时，defer后的函数才会被执行，不论包含defer语句的函数是通过return正常结束，还是由于panic导致的异常结束。你可以在一个函数中执行多条defer语句，它们的执行顺序与声明顺序相反。</strong></p>
+<p><strong>defer语句经常被用于处理成对的操作，如打开、关闭、连接、断开连接、加锁、释放锁。通过defer机制，不论函数逻辑多复杂，都能保证在任何执行路径下，资源被释放。释放资源的defer应该直接跟在请求资源的语句后。</strong> 在下面的代码中，一条defer语句替代了之前的所有<code>resp.Body.Close</code></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">title</span><span class="token punctuation">(</span>url <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+    resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> http<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> err
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">defer</span> resp<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    ct <span class="token operator">:=</span> resp<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> ct <span class="token operator">!=</span> <span class="token string">"text/html"</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>strings<span class="token punctuation">.</span><span class="token function">HasPrefix</span><span class="token punctuation">(</span>ct<span class="token punctuation">,</span><span class="token string">"text/html;"</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"%s has type %s, not text/html"</span><span class="token punctuation">,</span>url<span class="token punctuation">,</span> ct<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    doc<span class="token punctuation">,</span> err <span class="token operator">:=</span> html<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"parsing %s as HTML: %v"</span><span class="token punctuation">,</span> url<span class="token punctuation">,</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// ...print doc's title element…</span>
+    <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>在处理其他资源时，也可以采用defer机制，比如对文件的操作：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> ioutil
+<span class="token keyword">func</span> <span class="token function">ReadFile</span><span class="token punctuation">(</span>filename <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    f<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span>filename<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">defer</span> f<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token function">ReadAll</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>或是处理互斥锁：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> mu sync<span class="token punctuation">.</span>Mutex
+<span class="token keyword">var</span> m <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">)</span>
+<span class="token keyword">func</span> <span class="token function">lookup</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
+    mu<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">defer</span> mu<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> m<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><strong>调试复杂程序时，defer机制也常被用于记录何时进入和退出函数。下例中的<code>bigSlowOperation</code>函数，直接调用<code>trace</code>记录函数的被调情况。<code>bigSlowOperation</code>被调时，<code>trace</code>会返回一个函数值，该函数值会在<code>bigSlowOperation</code>退出时被调用。通过这种方式， 我们可以只通过一条语句控制函数的入口和所有的出口，甚至可以记录函数的运行时间，如例子中的<code>start</code>。需要注意一点：不要忘记defer语句后的圆括号，否则本该在进入时执行的操作会在退出时执行，而本该在退出时执行的，永远不会被执行。</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">bigSlowOperation</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token function">trace</span><span class="token punctuation">(</span><span class="token string">"bigSlowOperation"</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// don't forget the extra parentheses</span>
+    <span class="token comment">// ...lots of work…</span>
+    time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">10</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span> <span class="token comment">// simulate slow operation by sleeping</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">trace</span><span class="token punctuation">(</span>msg <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    start <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"enter %s"</span><span class="token punctuation">,</span> msg<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> 
+        log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"exit %s (%s)"</span><span class="token punctuation">,</span> msg<span class="token punctuation">,</span>time<span class="token punctuation">.</span><span class="token function">Since</span><span class="token punctuation">(</span>start<span class="token punctuation">)</span><span class="token punctuation">)</span> 
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>每一次<code>bigSlowOperation</code>被调用，程序都会记录函数的进入，退出，持续时间。（我们用<code>time.Sleep</code>模拟一个耗时的操作）</p>
+<pre class="language-go" data-language="go"><code class="language-go">$ <span class="token keyword">go</span> build gopl<span class="token punctuation">.</span>io<span class="token operator">/</span>ch5<span class="token operator">/</span>trace
+$ <span class="token punctuation">.</span><span class="token operator">/</span>trace
+<span class="token number">2015</span><span class="token operator">/</span><span class="token number">11</span><span class="token operator">/</span><span class="token number">18</span> <span class="token number">09</span><span class="token punctuation">:</span><span class="token number">53</span><span class="token punctuation">:</span><span class="token number">26</span> enter bigSlowOperation
+<span class="token number">2015</span><span class="token operator">/</span><span class="token number">11</span><span class="token operator">/</span><span class="token number">18</span> <span class="token number">09</span><span class="token punctuation">:</span><span class="token number">53</span><span class="token punctuation">:</span><span class="token number">36</span> exit bigSlowOperation <span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">.</span>000589217s<span class="token punctuation">)</span></code></pre>
+
+<p>我们知道，defer语句中的函数会在return语句更新返回值变量后再执行，又因为在函数中定义的匿名函数可以访问该函数包括返回值变量在内的所有变量，所以，对匿名函数采用defer机制，可以使其观察函数的返回值。</p>
+<p>我们只需要首先命名double的返回值，再增加defer语句，我们就可以在double每次被调用时，输出参数以及返回值。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">double</span><span class="token punctuation">(</span>x <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>result <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"double(%d) = %d\n"</span><span class="token punctuation">,</span> x<span class="token punctuation">,</span>result<span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> x <span class="token operator">+</span> x
+<span class="token punctuation">&#125;</span>
+<span class="token boolean">_</span> <span class="token operator">=</span> <span class="token function">double</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+<span class="token comment">// Output:</span>
+<span class="token comment">// "double(4) = 8"</span></code></pre>
+
+<p>可能double函数过于简单，看不出这个小技巧的作用，但对于有许多return语句的函数而言，这个技巧很有用。</p>
+<p><strong>被延迟执行的匿名函数甚至可以修改函数返回给调用者的返回值：</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">triple</span><span class="token punctuation">(</span>x <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>result <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> result <span class="token operator">+=</span> x <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token function">double</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">triple</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "12"</span></code></pre>
+
+<p><strong>在循环体中的defer语句需要特别注意，因为只有在函数执行完毕后，这些被延迟的函数才会执行。下面的代码会导致系统的文件描述符耗尽，因为在所有文件都被处理之前，没有文件会被关闭。</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> filename <span class="token operator">:=</span> <span class="token keyword">range</span> filenames <span class="token punctuation">&#123;</span>
+    f<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span>filename<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> err
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">defer</span> f<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// NOTE: risky; could run out of file descriptors</span>
+    <span class="token comment">// ...process f…</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>一种解决方法是将循环体中的defer语句移至另外一个函数。在每次循环时，调用这个函数。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> filename <span class="token operator">:=</span> <span class="token keyword">range</span> filenames <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> err <span class="token operator">:=</span> <span class="token function">doFile</span><span class="token punctuation">(</span>filename<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> err
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">doFile</span><span class="token punctuation">(</span>filename <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+    f<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span>filename<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> err
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">defer</span> f<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// ...process f…</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>下面的代码是fetch（1.5节）的改进版，我们将http响应信息写入本地文件而不是从标准输出流输出。我们通过<code>path.Base</code>提出url路径的最后一段作为文件名。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// Fetch downloads the URL and returns the</span>
+<span class="token comment">// name and length of the local file.</span>
+<span class="token keyword">func</span> <span class="token function">fetch</span><span class="token punctuation">(</span>url <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>filename <span class="token builtin">string</span><span class="token punctuation">,</span> n <span class="token builtin">int64</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> http<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> err
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">defer</span> resp<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    local <span class="token operator">:=</span> path<span class="token punctuation">.</span><span class="token function">Base</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>Request<span class="token punctuation">.</span>URL<span class="token punctuation">.</span>Path<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> local <span class="token operator">==</span> <span class="token string">"/"</span> <span class="token punctuation">&#123;</span>
+        local <span class="token operator">=</span> <span class="token string">"index.html"</span>
+    <span class="token punctuation">&#125;</span>
+    f<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span>local<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> err
+    <span class="token punctuation">&#125;</span>
+    n<span class="token punctuation">,</span> err <span class="token operator">=</span> io<span class="token punctuation">.</span><span class="token function">Copy</span><span class="token punctuation">(</span>f<span class="token punctuation">,</span> resp<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
+    <span class="token comment">// Close file, but prefer error from Copy, if any.</span>
+    <span class="token keyword">if</span> closeErr <span class="token operator">:=</span> f<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        err <span class="token operator">=</span> closeErr
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> local<span class="token punctuation">,</span> n<span class="token punctuation">,</span> err
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>对<code>resp.Body.Close</code>延迟调用我们已经见过了，在此不做解释。上例中，通过<code>os.Create</code>打开文件进行写入，在关闭文件时，我们没有对<code>f.close</code>采用defer机制，因为这会产生一些微妙的错误。许多文件系统，尤其是NFS，写入文件时发生的错误会被延迟到文件关闭时反馈。如果没有检查文件关闭时的反馈信息，可能会导致数据丢失，而我们还误以为写入操作成功。如果<code>io.Copy</code>和<code>f.close</code>都失败了，我们倾向于将<code>io.Copy</code>的错误信息反馈给调用者，因为它先于<code>f.close</code>发生，更有可能接近问题的本质。</p>
+<p>下面例子更加清楚的展示了defer的机制：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token function">deferDemo1</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">deferDemo1</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"enter"</span><span class="token punctuation">)</span>
+	n <span class="token operator">:=</span> <span class="token number">1</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"n ="</span><span class="token punctuation">,</span> n<span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> <span class="token function">yoyo</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span>
+	n <span class="token operator">=</span> <span class="token number">2</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"n ="</span><span class="token punctuation">,</span> n<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"exit"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">yoyo</span><span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"yoyo n ="</span><span class="token punctuation">,</span> n<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>通过下面输出可以发现，defer在调用时取得n等于1的值，之后n再次被赋值对defer也没有影响了，但等到函数<code>deferDemo1</code>退出后，函数<code>yoyo</code>才真正执行：</p>
+<pre class="language-none"><code class="language-none">enter
+n &#x3D; 1
+n &#x3D; 2
+exit
+yoyo n &#x3D; 1</code></pre>
+
+<p>下面例子更进一步：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  <span class="token function">deferDemo2</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">deferDemo2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"enter"</span><span class="token punctuation">)</span>
+	n <span class="token operator">:=</span> <span class="token number">1</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"n ="</span><span class="token punctuation">,</span> n<span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> <span class="token function">haha</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	n <span class="token operator">=</span> <span class="token number">2</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"n ="</span><span class="token punctuation">,</span> n<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"exit"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">haha</span><span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"haha n ="</span><span class="token punctuation">,</span> n<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"lol n + 2 ="</span><span class="token punctuation">,</span> n<span class="token operator">+</span><span class="token number">2</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>从下面输出结果可以看出，<code>defer haha(n)</code>在取得<code>n</code>等于1之后立即被运行，并输出结果，但是其返回的匿名函数在函数<code>deferDemo2</code>退出后才执行：</p>
+<pre class="language-none"><code class="language-none">enter
+n &#x3D; 1
+haha n &#x3D; 1
+n &#x3D; 2
+exit
+lol n + 2 &#x3D; 3</code></pre>
+
+<h2 id="Panic异常"><a href="#Panic异常" class="headerlink" title="Panic异常"></a>Panic异常</h2><p><strong>Go的类型系统会在编译时捕获很多错误，但有些错误只能在运行时检查，如数组访问越界、空指针引用等。这些运行时错误会引起painc异常。</strong></p>
+<p><strong>一般而言，当panic异常发生时，程序会中断运行，并立即执行在该goroutine中被延迟的函数（defer 机制）。随后，程序崩溃并输出日志信息。日志信息包括panic value和函数调用的堆栈跟踪信息。panic value通常是某种错误信息。对于每个goroutine，日志信息中都会有与之相对的，发生panic时的函数调用堆栈跟踪信息。</strong>通常，我们不需要再次运行程序去定位问题，日志信息已经提供了足够的诊断依据。因此，在我们填写问题报告时，一般会将panic异常和日志信息一并记录。</p>
+<p><strong>不是所有的panic异常都来自运行时，直接调用内置的panic函数也会引发panic异常；panic函数接受任何值作为参数。当某些不应该发生的场景发生时，我们就应该调用panic。</strong>比如，当程序到达了某条逻辑上不可能到达的路径：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">switch</span> s <span class="token operator">:=</span> <span class="token function">suit</span><span class="token punctuation">(</span><span class="token function">drawCard</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> s <span class="token punctuation">&#123;</span>
+<span class="token keyword">case</span> <span class="token string">"Spades"</span><span class="token punctuation">:</span>                                <span class="token comment">// ...</span>
+<span class="token keyword">case</span> <span class="token string">"Hearts"</span><span class="token punctuation">:</span>                                <span class="token comment">// ...</span>
+<span class="token keyword">case</span> <span class="token string">"Diamonds"</span><span class="token punctuation">:</span>                              <span class="token comment">// ...</span>
+<span class="token keyword">case</span> <span class="token string">"Clubs"</span><span class="token punctuation">:</span>                                 <span class="token comment">// ...</span>
+<span class="token keyword">default</span><span class="token punctuation">:</span>
+    <span class="token function">panic</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"invalid suit %q"</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// Joker?</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>断言函数必须满足的前置条件是明智的做法，但这很容易被滥用。除非你能提供更多的错误信息，或者能更快速的发现错误，否则不需要使用断言，编译器在运行时会帮你检查代码。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Reset</span><span class="token punctuation">(</span>x <span class="token operator">*</span>Buffer<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> x <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"x is nil"</span><span class="token punctuation">)</span> <span class="token comment">// unnecessary!</span>
+    <span class="token punctuation">&#125;</span>
+    x<span class="token punctuation">.</span>elements <span class="token operator">=</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>虽然Go的panic机制类似于其他语言的异常，但panic的适用场景有一些不同。由于panic会引起程序的崩溃，因此panic一般用于严重错误，如程序内部的逻辑不一致。勤奋的程序员认为任何崩溃都表明代码中存在漏洞，所以对于大部分漏洞，我们应该使用Go提供的错误机制，而不是panic，尽量避免程序的崩溃。在健壮的程序中，任何可以预料到的错误，如不正确的输入、错误的配置或是失败的I&#x2F;O操作都应该被优雅的处理，最好的处理方式，就是使用Go的错误机制。</p>
+<p>考虑<code>regexp.Compile</code>函数，该函数将正则表达式编译成有效的可匹配格式。当输入的正则表达式不合法时，该函数会返回一个错误。当调用者明确的知道正确的输入不会引起函数错误时，要求调用者检查这个错误是不必要和累赘的。我们应该假设函数的输入一直合法，就如前面的断言一样：当调用者输入了不应该出现的输入时，触发panic异常。</p>
+<p>在程序源码中，大多数正则表达式是字符串字面值（string literals），因此<code>regexp</code>包提供了包装函数<code>regexp.MustCompile</code>检查输入的合法性。</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">package regexp
+func Compile(expr string) (*Regexp, error) &#123; &#x2F;* ... *&#x2F; &#125;
+func MustCompile(expr string) *Regexp &#123;
+    re, err :&#x3D; Compile(expr)
+    if err !&#x3D; nil &#123;
+        panic(err)
+    &#125;
+    return re
 &#125;</code></pre>
 
-<p>这个问题不仅存在基于range的循环，在下面的例子中，对循环变量i的使用也存在同样的问题：</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">var rmdirs []func()
-dirs :&#x3D; tempDirs()
-for i :&#x3D; 0; i &lt; len(dirs); i++ &#123;
-    os.MkdirAll(dirs[i], 0755) &#x2F;&#x2F; OK
-    rmdirs &#x3D; append(rmdirs, func() &#123;
-        os.RemoveAll(dirs[i]) &#x2F;&#x2F; NOTE: incorrect!
-    &#125;)
+<p>包装函数使得调用者可以便捷的用一个编译后的正则表达式为包级别的变量赋值：</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">var httpSchemeRE &#x3D; regexp.MustCompile(&#96;^https?:&#96;) &#x2F;&#x2F;&quot;http:&quot; or &quot;https:&quot;</code></pre>
+
+<p>显然，<code>MustCompile</code>不能接收不合法的输入。函数名中的Must前缀是一种针对此类函数的命名约定，比如<code>template.Must</code>。</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">func main() &#123;
+    f(3)
+&#125;
+func f(x int) &#123;
+    fmt.Printf(&quot;f(%d)\n&quot;, x+0&#x2F;x) &#x2F;&#x2F; panics if x &#x3D;&#x3D; 0
+    defer fmt.Printf(&quot;defer %d\n&quot;, x)
+    f(x - 1)
 &#125;</code></pre>
 
-<p>如果你使用go语句（第八章）或者defer语句（5.8节）会经常遇到此类问题。这不是go或defer本身导致的，而是因为它们都会等待循环结束后，再执行函数值。</p>
-]]></content>
+<p>上例中的运行输出如下：</p>
+<pre class="language-none"><code class="language-none">f(3)
+f(2)
+f(1)
+defer 1
+defer 2
+defer 3</code></pre>
+
+<p>当<code>f(0)</code>被调用时，发生panic异常，之前被延迟执行的3个<code>fmt.Printf</code>被调用。程序中断执行后，panic信息和堆栈信息会被输出（下面是简化的输出）：</p>
+<pre class="language-none"><code class="language-none">panic: runtime error: integer divide by zero
+main.f(0)
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer1&#x2F;defer.go:14
+main.f(1)
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer1&#x2F;defer.go:16
+main.f(2)
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer1&#x2F;defer.go:16
+main.f(3)
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer1&#x2F;defer.go:16
+main.main()
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer1&#x2F;defer.go:10</code></pre>
+
+<p>我们在下一节将看到，如何使程序从panic异常中恢复，阻止程序的崩溃。</p>
+<p>为了方便诊断问题，runtime包允许程序员输出堆栈信息。在下面的例子中，我们通过在<code>main</code>函数中延迟调用<code>printStack</code>输出堆栈信息。</p>
+<pre class="language-Go" data-language="Go"><code class="language-Go">func main() &#123;
+    defer printStack()
+    f(3)
+&#125;
+func printStack() &#123;
+    var buf [4096]byte
+    n :&#x3D; runtime.Stack(buf[:], false)
+    os.Stdout.Write(buf[:n])
+&#125;</code></pre>
+
+<p><code>printStack</code>的简化输出如下（下面只是<code>printStack</code>的输出，不包括panic的日志信息）：</p>
+<pre class="language-none"><code class="language-none">goroutine 1 [running]:
+main.printStack()
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer2&#x2F;defer.go:20
+main.f(0)
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer2&#x2F;defer.go:27
+main.f(1)
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer2&#x2F;defer.go:29
+main.f(2)
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer2&#x2F;defer.go:29
+main.f(3)
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer2&#x2F;defer.go:29
+main.main()
+src&#x2F;gopl.io&#x2F;ch5&#x2F;defer2&#x2F;defer.go:15</code></pre>
+
+<p>将panic机制类比其他语言异常机制的读者可能会惊讶，<code>runtime.Stack</code>为何能输出已经被释放函数的信息？<strong>在Go的panic机制中，延迟函数的调用在释放堆栈信息之前。</strong></p>
+<h2 id="Recover捕获异常"><a href="#Recover捕获异常" class="headerlink" title="Recover捕获异常"></a>Recover捕获异常</h2><p>通常来说，不应该对panic异常做任何处理，但有时，也许我们可以从异常中恢复，至少我们可以在程序崩溃前，做一些操作。举个例子，当web服务器遇到不可预料的严重问题时，在崩溃前应该将所有的连接关闭；如果不做任何处理，会使得客户端一直处于等待状态。如果web服务器还在开发阶段，服务器甚至可以将异常信息反馈到客户端，帮助调试。</p>
+<p><strong>如果在deferred函数中调用了内置函数recover，并且定义该defer语句所在的函数发生了panic异常，recover会使程序从panic中恢复，并返回panic value。导致panic异常的函数不会继续运行，但能正常返回。在未发生panic时调用recover，recover会返回nil。</strong></p>
+<p>让我们以语言解析器为例，说明recover的使用场景。考虑到语言解析器的复杂性，即使某个语言解析器目前工作正常，也无法肯定它没有漏洞。因此，当某个异常出现时，我们不会选择让解析器崩溃，而是会将panic异常当作普通的解析错误，并附加额外信息提醒用户报告此错误。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Parse</span><span class="token punctuation">(</span>input <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>s <span class="token operator">*</span>Syntax<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> p <span class="token operator">:=</span> <span class="token function">recover</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> p <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+            err <span class="token operator">=</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"internal error: %v"</span><span class="token punctuation">,</span> p<span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// ...parser...</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>deferred函数帮助Parse从panic中恢复。在deferred函数内部，panic value被附加到错误信息中；并用err变量接收错误信息，返回给调用者。我们也可以通过调用<code>runtime.Stack</code>往错误信息中添加完整的堆栈调用信息。</p>
+<p><strong>不加区分的恢复所有的panic异常，不是可取的做法；因为在panic之后，无法保证包级变量的状态仍然和我们预期一致。比如，对数据结构的一次重要更新没有被完整完成、文件或者网络连接没有被关闭、获得的锁没有被释放。此外，如果写日志时产生的panic被不加区分的恢复，可能会导致漏洞被忽略。</strong></p>
+<p>虽然把对panic的处理都集中在一个包下，有助于简化对复杂和不可以预料问题的处理，但作为被广泛遵守的规范，你不应该试图去恢复其他包引起的panic。公有的API应该将函数的运行失败作为error返回，而不是panic。同样的，你也不应该恢复一个由他人开发的函数引起的panic，比如说调用者传入的回调函数，因为你无法确保这样做是安全的。</p>
+<p>有时我们很难完全遵循规范，举个例子，<code>net/http</code>包中提供了一个web服务器，将收到的请求分发给用户提供的处理函数。很显然，我们不能因为某个处理函数引发的panic异常，杀掉整个进程；web服务器遇到处理函数导致的panic时会调用recover，输出堆栈信息，继续运行。这样的做法在实践中很便捷，但也会引起资源泄漏，或是因为recover操作，导致其他问题。</p>
+<p>基于以上原因，安全的做法是有选择性的recover。换句话说，只恢复应该被恢复的panic异常，此外，这些异常所占的比例应该尽可能的低。为了标识某个panic是否应该被恢复，我们可以将panic value设置成特殊类型。在recover时对panic value进行检查，如果发现panic value是特殊类型，就将这个panic作为error处理，如果不是，则按照正常的panic进行处理（在下面的例子中，我们会看到这种方式）。</p>
+<p>下面的例子是title函数的变形，如果HTML页面包含多个<code>&lt;title&gt;</code>，该函数会给调用者返回一个错误（error）。在soleTitle内部处理时，如果检测到有多个<code>&lt;title&gt;</code>，会调用panic，阻止函数继续递归，并将特殊类型bailout作为panic的参数。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// soleTitle returns the text of the first non-empty title element</span>
+<span class="token comment">// in doc, and an error if there was not exactly one.</span>
+<span class="token keyword">func</span> <span class="token function">soleTitle</span><span class="token punctuation">(</span>doc <span class="token operator">*</span>html<span class="token punctuation">.</span>Node<span class="token punctuation">)</span> <span class="token punctuation">(</span>title <span class="token builtin">string</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">type</span> bailout <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+    <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">switch</span> p <span class="token operator">:=</span> <span class="token function">recover</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> p <span class="token punctuation">&#123;</span>
+        <span class="token keyword">case</span> <span class="token boolean">nil</span><span class="token punctuation">:</span>       <span class="token comment">// no panic</span>
+        <span class="token keyword">case</span> bailout<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">:</span> <span class="token comment">// "expected" panic</span>
+            err <span class="token operator">=</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"multiple title elements"</span><span class="token punctuation">)</span>
+        <span class="token keyword">default</span><span class="token punctuation">:</span>
+            <span class="token function">panic</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span> <span class="token comment">// unexpected panic; carry on panicking</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// Bail out of recursion if we find more than one nonempty title.</span>
+    <span class="token function">forEachNode</span><span class="token punctuation">(</span>doc<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>n <span class="token operator">*</span>html<span class="token punctuation">.</span>Node<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> n<span class="token punctuation">.</span>Type <span class="token operator">==</span> html<span class="token punctuation">.</span>ElementNode <span class="token operator">&amp;&amp;</span> n<span class="token punctuation">.</span>Data <span class="token operator">==</span> <span class="token string">"title"</span> <span class="token operator">&amp;&amp;</span>
+            n<span class="token punctuation">.</span>FirstChild <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> title <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">panic</span><span class="token punctuation">(</span>bailout<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// multiple title elements</span>
+            <span class="token punctuation">&#125;</span>
+            title <span class="token operator">=</span> n<span class="token punctuation">.</span>FirstChild<span class="token punctuation">.</span>Data
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> title <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token string">""</span><span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"no title element"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> title<span class="token punctuation">,</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>在上例中，deferred函数调用recover，并检查panic value。当panic value是<code>bailout&#123;&#125;</code>类型时，deferred函数生成一个error返回给调用者。当panic value是其他non-nil值时，表示发生了未知的panic异常，deferred函数将调用panic函数并将当前的panic value作为参数传入；此时，等同于recover没有做任何操作。（请注意：在例子中，对可预期的错误采用了panic，这违反了之前的建议，我们在此只是想向读者演示这种机制。）</p>
+<p>有些情况下，我们无法恢复。某些致命错误会导致Go在运行时终止程序，如内存不足。</p>
+<p><strong>练习5.19：</strong> 使用panic和recover编写一个不包含return语句但能返回一个非零值的函数。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token string">"fmt"</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    a <span class="token operator">:=</span> <span class="token function">noReturn</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">noReturn</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>result <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        p <span class="token operator">:=</span> <span class="token function">recover</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        result <span class="token operator">=</span> p<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">panic</span><span class="token punctuation">(</span><span class="token number">42</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>想知道上面代码的原理，可以观察一下下面代码：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>	
+	s <span class="token operator">:=</span> <span class="token function">deferDemo3</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%T %q"</span><span class="token punctuation">,</span> s<span class="token punctuation">,</span> s<span class="token punctuation">)</span> <span class="token comment">// string "set in defer"</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">func</span> <span class="token function">deferDemo3</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>s <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		s <span class="token operator">=</span> <span class="token string">"set in defer"</span> <span class="token comment">// 可以在defer调用中对返回值进行修改</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token string">"on return"</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>从输出结果可以看到，我们可以在defer调用中对命名返回值进行修改。因此，再观察下面代码：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	s <span class="token operator">:=</span> <span class="token function">causePanic</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%T %q"</span><span class="token punctuation">,</span> s<span class="token punctuation">,</span> s<span class="token punctuation">)</span> <span class="token comment">// string ""</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">causePanic</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> p <span class="token operator">:=</span> <span class="token function">recover</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> p <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"recover from panic: %s\n"</span><span class="token punctuation">,</span> p<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"oops!"</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token string">"after panic"</span> <span class="token comment">// 永远不会执行到</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>输出结果为：</p>
+<pre class="language-none"><code class="language-none">recover from panic: oops!
+string &quot;&quot;</code></pre>
+
+<p>虽然函数<code>causePanic</code>的return语句因为panic导致永远无法达到，但是由于函数定义了返回值，且自动被初始化为字符串零值，所以<code>main</code>函数中变量<code>s</code>依然获得了返回值<code>&quot;&quot;</code>。</p>
+<p>因此，如果返回值是命名返回值（返回值有名字），则可以在panic终止了函数<code>causePanic</code>继续运行后，同样可以在defer调用中对返回值进行修改，前提是必须是返回值必须有名字。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	s <span class="token operator">:=</span> <span class="token function">causePanic</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%T %q"</span><span class="token punctuation">,</span> s<span class="token punctuation">,</span> s<span class="token punctuation">)</span> <span class="token comment">// string ""</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">causePanic</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>s <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> p <span class="token operator">:=</span> <span class="token function">recover</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> p <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"recover from panic: %s\n"</span><span class="token punctuation">,</span> p<span class="token punctuation">)</span>
+      s <span class="token operator">=</span> <span class="token string">"set in defer"</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"oops!"</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token string">"after panic"</span> <span class="token comment">// 永远不会执行到</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+
+<h1 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h1>]]></content>
       <categories>
         <category>Golang</category>
       </categories>
