@@ -4419,9 +4419,8 @@ time<span class="token punctuation">.</span><span class="token function">AfterFu
 <p>直接用方法“值”传入<code>AfterFunc</code>的话可以更为简短：</p>
 <pre class="language-go" data-language="go"><code class="language-go">time<span class="token punctuation">.</span><span class="token function">AfterFunc</span><span class="token punctuation">(</span><span class="token number">10</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">,</span> r<span class="token punctuation">.</span>Launch<span class="token punctuation">)</span></code></pre>
 
-<p>译注：省掉了上面那个例子里的匿名函数。</p>
-<p>和方法“值”相关的还有方法表达式。当调用一个方法时，与调用一个普通的函数相比，我们必须要用选择器（<code>p.Distance</code>）语法来指定方法的接收器。</p>
-<p>当T是一个类型时，方法表达式可能会写作<code>T.f</code>或者<code>(*T).f</code>，会返回一个函数“值”，这种函数会将其第一个参数用作接收器，所以可以用通常（译注：不写选择器）的方式来对其进行调用：</p>
+<p><strong>和方法“值”相关的还有 <em>方法表达式</em> 。当调用一个方法时，与调用一个普通的函数相比，我们必须要用选择器（<code>p.Distance</code>）语法来指定方法的接收器。</strong></p>
+<p><strong>当T是一个类型时，方法表达式可能会写作<code>T.f</code>或者<code>(*T).f</code>，会返回一个函数“值”，这种函数会将其第一个参数用作接收器，所以可以用通常（译注：不写选择器）的方式来对其进行调用：</strong> </p>
 <pre class="language-go" data-language="go"><code class="language-go">p <span class="token operator">:=</span> Point<span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">&#125;</span>
 q <span class="token operator">:=</span> Point<span class="token punctuation">&#123;</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">&#125;</span>
 
@@ -4439,7 +4438,7 @@ fmt<span class="token punctuation">.</span><span class="token function">Printf</
 <span class="token comment">// 即其需要用第一个额外参数指定接收器，后面排列Distance方法的参数。</span>
 <span class="token comment">// 看起来本书中函数和方法的区别是指有没有接收器，而不像其他语言那样是指有没有返回值。</span></code></pre>
 
-<p>当你根据一个变量来决定调用同一个类型的哪个函数时，方法表达式就显得很有用了。你可以根据选择来调用接收器各不相同的方法。下面的例子，变量<code>op</code>代表<code>Point</code>类型的<code>addition</code>或者<code>subtraction</code>方法，<code>Path.TranslateBy</code>方法会为其Path数组中的每一个<code>Point</code>来调用对应的方法：</p>
+<p>当你根据一个变量来决定调用同一个类型的哪个函数时，方法表达式就显得很有用了。你可以根据选择来调用接收器各不相同的方法。下面的例子，变量<code>op</code>代表<code>Point</code>类型的<code>Add</code>或者<code>Sub</code>方法，<code>Path.TranslateBy</code>方法会为其Path数组中的每一个<code>Point</code>来调用对应的方法：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Point <span class="token keyword">struct</span><span class="token punctuation">&#123;</span> X<span class="token punctuation">,</span> Y <span class="token builtin">float64</span> <span class="token punctuation">&#125;</span>
 
 <span class="token keyword">func</span> <span class="token punctuation">(</span>p Point<span class="token punctuation">)</span> <span class="token function">Add</span><span class="token punctuation">(</span>q Point<span class="token punctuation">)</span> Point <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> Point<span class="token punctuation">&#123;</span>p<span class="token punctuation">.</span>X <span class="token operator">+</span> q<span class="token punctuation">.</span>X<span class="token punctuation">,</span> p<span class="token punctuation">.</span>Y <span class="token operator">+</span> q<span class="token punctuation">.</span>Y<span class="token punctuation">&#125;</span> <span class="token punctuation">&#125;</span>
@@ -4496,8 +4495,8 @@ fmt<span class="token punctuation">.</span><span class="token function">Printf</
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>因为每一个字都有64个二进制位，所以为了定位x的bit位，我们用了x&#x2F;64的商作为字的下标，并且用x%64得到的值作为这个字内的bit的所在位置。UnionWith这个方法里用到了bit位的“或”逻辑操作符号|来一次完成64个元素的或计算。（在练习6.5中我们还会有程序用到这个64位字的例子。）</p>
-<p>当前这个实现还缺少了很多必要的特性，我们把其中一些作为练习题列在本小节之后。但是有一个方法如果缺失的话我们的bit数组可能会比较难混：将IntSet作为一个字符串来打印。这里我们来实现它，让我们来给上面的例子添加一个String方法，类似2.5节中做的那样：</p>
+<p>因为每一个字都有64个二进制位，所以为了定位<code>x</code>的bit位，我们用了<code>x/64</code>的商作为字的下标，并且用x%64得到的值作为这个字内的bit的所在位置。<code>UnionWith</code>这个方法里用到了bit位的“或”逻辑操作符号|来一次完成64个元素的或计算。（在练习6.5中我们还会有程序用到这个64位字的例子。）</p>
+<p>当前这个实现还缺少了很多必要的特性，我们把其中一些作为练习题列在本小节之后。但是有一个方法如果缺失的话我们的bit数组可能会比较难混：将<code>IntSet</code>作为一个字符串来打印。这里我们来实现它，让我们来给上面的例子添加一个<code>String</code>方法，类似2.5节中做的那样：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// String returns the set as a string of the form "&#123;1 2 3&#125;".</span>
 <span class="token keyword">func</span> <span class="token punctuation">(</span>s <span class="token operator">*</span>IntSet<span class="token punctuation">)</span> <span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">var</span> buf bytes<span class="token punctuation">.</span>Buffer
@@ -4519,8 +4518,8 @@ fmt<span class="token punctuation">.</span><span class="token function">Printf</
     <span class="token keyword">return</span> buf<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>这里留意一下String方法，是不是和3.5.4节中的intsToString方法很相似；bytes.Buffer在String方法里经常这么用。当你为一个复杂的类型定义了一个String方法时，fmt包就会特殊对待这种类型的值，这样可以让这些类型在打印的时候看起来更加友好，而不是直接打印其原始的值。fmt会直接调用用户定义的String方法。这种机制依赖于接口和类型断言，在第7章中我们会详细介绍。</p>
-<p>现在我们就可以在实战中直接用上面定义好的IntSet了：</p>
+<p>这里留意一下<code>String</code>方法，是不是和3.5.4节中的<code>intsToString</code>方法很相似；<code>bytes.Buffer</code>在<code>String</code>方法里经常这么用。当你为一个复杂的类型定义了一个<code>String</code>方法时，<code>fmt</code>包就会特殊对待这种类型的值，这样可以让这些类型在打印的时候看起来更加友好，而不是直接打印其原始的值。<code>fmt</code>会直接调用用户定义的<code>String</code>方法。这种机制依赖于接口和类型断言，在第7章中我们会详细介绍。</p>
+<p>现在我们就可以在实战中直接用上面定义好的<code>IntSet</code>了：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> x<span class="token punctuation">,</span> y IntSet
 x<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
 x<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">144</span><span class="token punctuation">)</span>
@@ -4535,12 +4534,12 @@ x<span class="token punctuation">.</span><span class="token function">UnionWith<
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "&#123;1 9 42 144&#125;"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">.</span><span class="token function">Has</span><span class="token punctuation">(</span><span class="token number">9</span><span class="token punctuation">)</span><span class="token punctuation">,</span> x<span class="token punctuation">.</span><span class="token function">Has</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "true false"</span></code></pre>
 
-<p>这里要注意：我们声明的String和Has两个方法都是以指针类型<code>*IntSet</code>来作为接收器的，但实际上对于这两个类型来说，把接收器声明为指针类型也没什么必要。不过另外两个函数就不是这样了，因为另外两个函数操作的是s.words对象，如果你不把接收器声明为指针对象，那么实际操作的是拷贝对象，而不是原来的那个对象。因此，因为我们的String方法定义在IntSet指针上，所以当我们的变量是IntSet类型而不是IntSet指针时，可能会有下面这样让人意外的情况：</p>
+<p>这里要注意：我们声明的<code>String</code>和<code>Has</code>两个方法都是以指针类型<code>*IntSet</code>来作为接收器的，但实际上对于这两个类型来说，把接收器声明为指针类型也没什么必要。不过另外两个函数就不是这样了，因为另外两个函数操作的是<code>s.words</code>对象，如果你不把接收器声明为指针对象，那么实际操作的是拷贝对象，而不是原来的那个对象。因此，因为我们的<code>String</code>方法定义在<code>IntSet</code>指针上，所以当我们的变量是<code>IntSet</code>类型而不是<code>IntSet</code>指针时，可能会有下面这样让人意外的情况：</p>
 <pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>x<span class="token punctuation">)</span>         <span class="token comment">// "&#123;1 9 42 144&#125;"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "&#123;1 9 42 144&#125;"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>          <span class="token comment">// "&#123;[4398046511618 0 65536]&#125;"</span></code></pre>
 
-<p>在第一个Println中，我们打印一个<code>*IntSet</code>的指针，这个类型的指针确实有自定义的String方法。第二Println，我们直接调用了x变量的String()方法；这种情况下编译器会隐式地在x前插入&amp;操作符，这样相当于我们还是调用的IntSet指针的String方法。在第三个Println中，因为IntSet类型没有String方法，所以Println方法会直接以原始的方式理解并打印。所以在这种情况下&amp;符号是不能忘的。在我们这种场景下，你把String方法绑定到IntSet对象上，而不是IntSet指针上可能会更合适一些，不过这也需要具体问题具体分析。</p>
+<p>在第一个<code>Println</code>中，我们打印一个<code>*IntSet</code>的指针，这个类型的指针确实有自定义的String方法。第二<code>Println</code>，我们直接调用了x变量的<code>String()</code>方法；这种情况下编译器会隐式地在x前插入<code>&amp;</code>操作符，这样相当于我们还是调用的<code>IntSet</code>指针的<code>String</code>方法。在第三个<code>Println</code>中，因为<code>IntSet</code>类型没有<code>String</code>方法，所以<code>Println</code>方法会直接以原始的方式理解并打印。所以在这种情况下<code>&amp;</code>符号是不能忘的。在我们这种场景下，你把<code>String</code>方法绑定到<code>IntSet</code>对象上，而不是<code>IntSet</code>指针上可能会更合适一些，不过这也需要具体问题具体分析。</p>
 
     </div>
 

@@ -2,33 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://ifelif.cn/projects/index.html</loc>
-    
-    <lastmod>2022-12-07</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/index.html</loc>
-    
-    <lastmod>2022-12-07</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/topics/index.html</loc>
-    
-    <lastmod>2022-12-07</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/2022/some_pieces_of_nginx/</loc>
     
     <lastmod>2022-12-07</lastmod>
@@ -74,7 +47,25 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/2022/learn_gobyexample/</loc>
+    <loc>https://ifelif.cn/projects/index.html</loc>
+    
+    <lastmod>2022-12-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/index.html</loc>
+    
+    <lastmod>2022-12-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/topics/index.html</loc>
     
     <lastmod>2022-12-07</lastmod>
     
@@ -84,6 +75,15 @@
   
   <url>
     <loc>https://ifelif.cn/2022/linux_firewall/</loc>
+    
+    <lastmod>2022-12-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/learn_gobyexample/</loc>
     
     <lastmod>2022-12-07</lastmod>
     
@@ -433,20 +433,6 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/Golang/</loc>
-    <lastmod>2022-12-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/Programming/</loc>
-    <lastmod>2022-12-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/tags/iptables/</loc>
     <lastmod>2022-12-07</lastmod>
     <changefreq>weekly</changefreq>
@@ -511,6 +497,20 @@
   
   <url>
     <loc>https://ifelif.cn/tags/NPM/</loc>
+    <lastmod>2022-12-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Golang/</loc>
+    <lastmod>2022-12-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Programming/</loc>
     <lastmod>2022-12-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
