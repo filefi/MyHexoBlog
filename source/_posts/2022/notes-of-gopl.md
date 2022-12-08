@@ -6,6 +6,8 @@ tags: [Golang]
 categories: Golang
 ---
 
+> 本文为《The Go Programming Language》学习笔记，内容主要为https://books.studygolang.com/gopl-zh/的翻译版。
+
 # 前言
 
 ## [Go语言起源](https://gopl-zh.github.io/preface.html#go语言起源)
@@ -5879,7 +5881,7 @@ func (path Path) TranslateBy(offset Point, add bool) {
 
 Go语言里的集合一般会用`map[T]bool`这种形式来表示，T代表元素类型。集合用map类型来表示虽然非常灵活，但我们可以以一种更好的形式来表示它。例如在数据流分析领域，集合元素通常是一个非负整数，集合会包含很多元素，并且集合会经常进行并集、交集操作，这种情况下，bit数组会比map表现更加理想。（译注：这里再补充一个例子，比如我们执行一个http下载任务，把文件按照16kb一块划分为很多块，需要有一个全局变量来标识哪些块下载完成了，这种时候也需要用到bit数组。）
 
-一个bit数组通常会用一个无符号数或者称之为“字”的slice来表示，每一个元素的每一位都表示集合里的一个值。当集合的第i位被设置时，我们才说这个集合包含元素`i`。下面的这个程序展示了一个简单的bit数组类型，并且实现了三个函数来对这个bit数组来进行操作：
+一个bit数组通常会用一个无符号数或者称之为“字”的slice来表示，每一个元素的每一位都表示集合里的一个值。当集合的第`i`位被设置时，我们才说这个集合包含元素`i`。下面的这个程序展示了一个简单的bit数组类型，并且实现了三个函数来对这个bit数组来进行操作：
 
 ```go
 // An IntSet is a set of small non-negative integers.
@@ -5972,19 +5974,515 @@ fmt.Println(x)          // "{[4398046511618 0 65536]}"
 
 在第一个`Println`中，我们打印一个`*IntSet`的指针，这个类型的指针确实有自定义的String方法。第二`Println`，我们直接调用了x变量的`String()`方法；这种情况下编译器会隐式地在x前插入`&`操作符，这样相当于我们还是调用的`IntSet`指针的`String`方法。在第三个`Println`中，因为`IntSet`类型没有`String`方法，所以`Println`方法会直接以原始的方式理解并打印。所以在这种情况下`&`符号是不能忘的。在我们这种场景下，你把`String`方法绑定到`IntSet`对象上，而不是`IntSet`指针上可能会更合适一些，不过这也需要具体问题具体分析。
 
+## 封装
+
+一个对象的变量或者方法如果对调用方是不可见的话，一般就被定义为**“封装”**。封装有时候也被叫做**信息隐藏**，同时也是面向对象编程最关键的一个方面。
+
+**Go语言只有一种控制可见性的手段：大写首字母的标识符会从定义它们的包中被导出，小写字母的则不会。这种限制包内成员的方式同样适用于struct或者一个类型的方法。因而如果我们想要封装一个对象，我们必须将其定义为一个struct。**
+
+这也就是前面的小节中`IntSet`被定义为struct类型的原因，尽管它只有一个字段：
+
+```go
+type IntSet struct {
+    words []uint64
+}
+```
+
+当然，我们也可以把`IntSet`定义为一个slice类型，但这样我们就需要把代码中所有方法里用到的`s.words`用`*s`替换掉了：
+
+```go
+type IntSet []uint64
+```
+
+尽管这个版本的`IntSet`在本质上是一样的，但它也允许其它包中可以直接读取并编辑这个slice。换句话说，相对于`*s`这个表达式会出现在所有的包中，`s.words`只需要在定义`IntSet`的包中出现。
+
+**这种基于名字的手段使得在语言中最小的封装单元是package，而不是像其它语言一样的类型。一个struct类型的字段对同一个包的所有代码都有可见性，无论你的代码是写在一个函数还是一个方法里。**
+
+封装提供了3个优点：
+
+- 因为调用方不能直接修改对象的变量值，其只需要关注少量的语句并且只要弄懂少量变量的可能的值即可。
+
+- 隐藏实现的细节，可以防止调用方依赖那些可能变化的具体实现，这样使设计包的程序员在不破坏对外的API情况下能得到更大的自由。
+- 阻止了外部调用方对对象内部的值任意地进行修改。
+
+把`bytes.Buffer`这个类型作为例子来考虑。这个类型在做短字符串叠加的时候很常用，所以在设计的时候可以做一些预先的优化，比如提前预留一部分空间，来避免反复的内存分配。又因为Buffer是一个struct类型，这些额外的空间可以用附加的字节数组来保存，且放在一个小写字母开头的字段中。这样在外部的调用方只能看到性能的提升，但并不会得到这个附加变量。Buffer和其增长算法我们列在这里，为了简洁性稍微做了一些精简：
+
+```go
+type Buffer struct {
+    buf     []byte
+    initial [64]byte
+    /* ... */
+}
+
+// Grow expands the buffer's capacity, if necessary,
+// to guarantee space for another n bytes. [...]
+func (b *Buffer) Grow(n int) {
+    if b.buf == nil {
+        b.buf = b.initial[:0] // use preallocated space initially
+    }
+    if len(b.buf)+n > cap(b.buf) {
+        buf := make([]byte, b.Len(), 2*cap(b.buf) + n)
+        copy(buf, b.buf)
+        b.buf = buf
+    }
+}
+```
+
+封装的第三个优点也是最重要的优点，是阻止了外部调用方对对象内部的值任意地进行修改。因为对象内部变量只可以被同一个包内的函数修改，所以包的作者可以让这些函数确保对象内部的一些值的不变性。比如下面的`Counter`类型允许调用方来增加`n`变量的值，并且允许将这个值`reset`为`0`，但是不允许从包外随便设置这个值：
+
+```go
+type Counter struct { n int }
+func (c *Counter) N() int     { return c.n }
+func (c *Counter) Increment() { c.n++ }
+func (c *Counter) Reset()     { c.n = 0 }
+```
+
+只用来访问或修改内部变量的函数被称为`setter`或者`getter`，例子如下，比如log包里的Logger类型对应的一些函数。在命名一个`getter`方法时，我们通常会省略掉前面的`Get`前缀。这种简洁上的偏好也可以推广到各种类型的前缀比如`Fetch`，`Find`或者`Lookup`。
+
+```go
+package log
+type Logger struct {
+    flags  int
+    prefix string
+    // ...
+}
+func (l *Logger) Flags() int
+func (l *Logger) SetFlags(flag int)
+func (l *Logger) Prefix() string
+func (l *Logger) SetPrefix(prefix string)
+```
+
+Go的编码风格不禁止直接导出字段。当然，一旦进行了导出，就没有办法在保证API兼容的情况下去除对其的导出，所以在一开始的选择一定要经过深思熟虑并且要考虑到包内部的一些不变量的保证，未来可能的变化，以及调用方的代码质量是否会因为包的一点修改而变差。
+
+封装并不总是理想的。 虽然封装在有些情况是必要的，但有时候我们也需要暴露一些内部内容，比如：`time.Duration`将其表现暴露为一个int64数字的纳秒，使得我们可以用一般的数值操作来对时间进行对比，甚至可以定义这种类型的常量：
+
+```go
+const day = 24 * time.Hour
+fmt.Println(day.Seconds()) // "86400"
+```
+
+另一个例子，将`IntSet`和本章开头的`geometry.Path`进行对比。Path被定义为一个slice类型，这允许其调用slice的字面方法来对其内部的`points`用range进行迭代遍历；在这一点上，`IntSet`是没有办法让你这么做的。
+
+这两种类型决定性的不同：`geometry.Path`的本质是一个坐标点的序列，不多也不少，我们可以预见到之后也并不会给他增加额外的字段，所以在`geometry`包中将`Path`暴露为一个slice。相比之下，`IntSet`仅仅是在这里用了一个`[]uint64`的slice。这个类型还可以用`[]uint`类型来表示，或者我们甚至可以用其它完全不同的占用更小内存空间的东西来表示这个集合，所以我们可能还会需要额外的字段来在这个类型中记录元素的个数。也正是因为这些原因，我们让`IntSet`对调用方不透明。
+
+在这章中，我们学到了如何将方法与命名类型进行组合，并且知道了如何调用这些方法。尽管方法对于OOP编程来说至关重要，但他们只是OOP编程里的半边天。为了完成OOP，我们还需要接口。
 
 
 
+# 接口
+
+## 接口约定
+
+目前为止，我们看到的类型都是具体的类型。一个具体的类型可以准确的描述它所代表的值，并且展示出对类型本身的一些操作方式：就像数字类型的算术操作，切片类型的取下标、添加元素和范围获取操作。具体的类型还可以通过它的内置方法提供额外的行为操作。总的来说，当你拿到一个具体的类型时你就知道它的本身是什么和你可以用它来做什么。
+
+**在Go语言中还存在着另外一种类型：*接口类型*。*接口类型* 是一种抽象的类型。它不会暴露出它所代表的对象的内部值的结构和这个对象支持的基础操作的集合；它们只会表现出它们自己的方法。也就是说当你有看到一个接口类型的值时，你不知道它是什么，唯一知道的就是可以通过它的方法来做什么。**
+
+在本书中，我们一直使用两个相似的函数来进行字符串的格式化：`fmt.Printf`，它会把结果写到标准输出，和`fmt.Sprintf`，它会把结果以字符串的形式返回。得益于使用接口，我们不必可悲的因为返回结果在使用方式上的一些浅显不同就必需把格式化这个最困难的过程复制一份。实际上，这两个函数都使用了另一个函数`fmt.Fprintf`来进行封装。`fmt.Fprintf`这个函数对它的计算结果会被怎么使用是完全不知道的。
+
+```go
+package fmt
+
+func Fprintf(w io.Writer, format string, args ...interface{}) (int, error)
+func Printf(format string, args ...interface{}) (int, error) {
+    return Fprintf(os.Stdout, format, args...)
+}
+func Sprintf(format string, args ...interface{}) string {
+    var buf bytes.Buffer
+    Fprintf(&buf, format, args...)
+    return buf.String()
+}
+```
+
+`Fprintf`的前缀F表示文件（File）也表明格式化输出结果应该被写入第1个参数提供的文件中。在`Printf`函数中的第1个参数`os.Stdout`是`*os.File`类型；在`Sprintf`函数中的第1个参数`&buf`是一个指向可以写入字节的内存缓冲区，然而它并不是一个文件类型尽管它在某种意义上和文件类型相似。
+
+即使`Fprintf`函数中的第1个参数也不是一个文件类型。**它是`io.Writer`类型，这是一个接口类型定义如下：**
+
+```go
+package io
+
+// Writer is the interface that wraps the basic Write method.
+type Writer interface {
+    // Write writes len(p) bytes from p to the underlying data stream.
+    // It returns the number of bytes written from p (0 <= n <= len(p))
+    // and any error encountered that caused the write to stop early.
+    // Write must return a non-nil error if it returns n < len(p).
+    // Write must not modify the slice data, even temporarily.
+    //
+    // Implementations must not retain p.
+    Write(p []byte) (n int, err error)
+}
+```
+
+`io.Writer`类型定义了函数`Fprintf`和这个函数调用者之间的约定。一方面这个约定需要调用者提供具体类型的值就像`*os.File`和`*bytes.Buffer`，这些类型都有一个特定签名和行为的`Write`的函数。另一方面这个约定保证了`Fprintf`接受任何满足`io.Writer`接口的值都可以工作。`Fprintf`函数可能没有假定写入的是一个文件或是一段内存，而是写入一个可以调用`Write`函数的值。
+
+因为`fmt.Fprintf`函数没有对具体操作的值做任何假设，而是仅仅通过`io.Writer`接口的约定来保证行为，所以第1个参数可以安全地传入一个只需要满足`io.Writer`接口的任意具体类型的值。一个类型可以自由地被另一个满足相同接口的类型替换，被称作可替换性（LSP里氏替换）。这是一个面向对象的特征。
+
+让我们通过一个新的类型来进行校验，下面`*ByteCounter`类型里的`Write`方法，仅仅在丢弃写向它的字节前统计它们的长度。（在这个`+=`赋值语句中，让`len(p)`的类型和`*c`的类型匹配的转换是必须的。）
+
+```go
+type ByteCounter int
+
+func (c *ByteCounter) Write(p []byte) (int, error) {
+    *c += ByteCounter(len(p)) // convert int to ByteCounter
+    return len(p), nil
+}
+```
+
+因为`*ByteCounter`满足`io.Writer`的约定，我们可以把它传入`Fprintf`函数中；`Fprintf`函数执行字符串格式化的过程不会去关注`ByteCounter`正确的累加结果的长度。
+
+```go
+var c ByteCounter
+c.Write([]byte("hello"))
+fmt.Println(c) // "5", = len("hello")
+c = 0          // reset the counter
+var name = "Dolly"
+fmt.Fprintf(&c, "hello, %s", name)
+fmt.Println(c) // "12", = len("hello, Dolly")
+```
+
+除了`io.Writer`这个接口类型，还有另一个对`fmt`包很重要的接口类型。`Fprintf`和`Fprintln`函数向类型提供了一种控制它们值输出的途径。在2.5节中，我们为`Celsius`类型提供了一个`String`方法以便于可以打印成这样"100°C" ，在6.5节中我们给`*IntSet`添加一个`String`方法，这样集合可以用传统的符号来进行表示就像`"{1 2 3}"`。**给一个类型定义`String`方法，可以让它满足最广泛使用之一的接口类型`fmt.Stringer`：**
+
+```go
+package fmt
+
+// The String method is used to print values passed
+// as an operand to any format that accepts a string
+// or to an unformatted printer such as Print.
+type Stringer interface {
+    String() string
+}
+```
 
 
 
+## 接口类型
 
+**接口类型具体描述了一系列方法的集合，一个实现了这些方法的具体类型是这个接口类型的实例。**
 
+`io.Writer`类型是用得最广泛的接口之一，因为它提供了所有类型的写入bytes的抽象，包括文件类型，内存缓冲区，网络链接，HTTP客户端，压缩工具，哈希等等。`io`包中定义了很多其它有用的接口类型。`Reader`可以代表任意可以读取bytes的类型，`Closer`可以是任意可以关闭的值，例如一个文件或是网络链接。（到现在你可能注意到了很多Go语言中单方法接口的命名习惯）
 
+```go
+package io
+type Reader interface {
+    Read(p []byte) (n int, err error)
+}
+type Closer interface {
+    Close() error
+}
+```
 
+再往下看，我们发现有些新的接口类型通过组合已有的接口来定义。下面是两个例子：
 
+```go
+type ReadWriter interface {
+    Reader
+    Writer
+}
+type ReadWriteCloser interface {
+    Reader
+    Writer
+    Closer
+}
+```
 
+**上面用到的语法和结构内嵌相似，我们可以用这种方式以一个简写命名一个接口，而不用声明它所有的方法。这种方式称为接口内嵌。**尽管略失简洁，我们可以像下面这样，不使用内嵌来声明`io.ReadWriter`接口。
 
+```go
+type ReadWriter interface {
+    Read(p []byte) (n int, err error)
+    Write(p []byte) (n int, err error)
+}
+```
+
+或者甚至使用一种混合的风格：
+
+```go
+type ReadWriter interface {
+    Read(p []byte) (n int, err error)
+    Writer
+}
+```
+
+上面3种定义方式都是一样的效果。方法顺序的变化也没有影响，唯一重要的就是这个集合里面的方法。
+
+## 实现接口的条件
+
+**一个类型如果拥有一个接口需要的所有方法，那么这个类型就实现了这个接口。** 例如，`*os.File`类型实现了`io.Reader`，`Writer`，`Closer`，和`ReadWriter`接口。`*bytes.Buffer`实现了`Reader`，`Writer`，和`ReadWriter`这些接口，但是它没有实现`Closer`接口因为它不具有`Close`方法。Go的程序员经常会简要的把一个具体的类型描述成一个特定的接口类型。举个例子，`*bytes.Buffer`是`io.Writer`；`*os.Files`是`io.ReadWriter`。
+
+**接口指定的规则非常简单：表达一个类型属于某个接口只要这个类型实现这个接口。** 所以：
+
+```go
+var w io.Writer
+w = os.Stdout           // OK: *os.File has Write method
+w = new(bytes.Buffer)   // OK: *bytes.Buffer has Write method
+w = time.Second         // compile error: time.Duration lacks Write method
+
+var rwc io.ReadWriteCloser
+rwc = os.Stdout         // OK: *os.File has Read, Write, Close methods
+rwc = new(bytes.Buffer) // compile error: *bytes.Buffer lacks Close method
+```
+
+这个规则甚至适用于等式右边本身也是一个接口类型
+
+```go
+w = rwc                 // OK: io.ReadWriteCloser has Write method
+rwc = w                 // compile error: io.Writer lacks Close method
+```
+
+因为`ReadWriter`和`ReadWriteCloser`包含有`Writer`的方法，所以任何实现了`ReadWriter`和`ReadWriteCloser`的类型必定也实现了`Writer`接口。
+
+在进一步学习前，必须先解释一个类型持有一个方法的表示当中的细节。回想在6.2章中，对于每一个命名过的具体类型T；它的一些方法的接收者是类型T本身然而另一些则是一个`*T`的指针。还记得在T类型的参数上调用一个`*T`的方法是合法的，只要这个参数是一个变量；编译器隐式的获取了它的地址。**但这仅仅是一个语法糖：T类型的值不拥有所有`*T`指针的方法，这样它就可能只实现了更少的接口。**
+
+举个例子可能会更清晰一点。在第6.5章中，**`IntSet`类型的`String`方法的接收者是一个指针类型，所以我们不能在一个不能寻址的`IntSet`值上调用这个方法：**
+
+```go
+type IntSet struct { /* ... */ }
+func (*IntSet) String() string
+var _ = IntSet{}.String() // compile error: String requires *IntSet receiver
+```
+
+但是我们可以在一个`IntSet`变量上调用这个方法：
+
+```go
+var s IntSet
+var _ = s.String() // OK: s is a variable and &s has a String method
+```
+
+**然而，由于只有`*IntSet`类型有`String`方法，所以也只有`*IntSet`类型实现了`fmt.Stringer`接口：**
+
+```go
+var _ fmt.Stringer = &s // OK
+var _ fmt.Stringer = s  // compile error: IntSet lacks String method
+```
+
+12.8章包含了一个打印出任意值的所有方法的程序，然后可以使用`godoc -analysis=type tool`(§10.7.4)展示每个类型的方法和具体类型和接口之间的关系。
+
+**就像信封封装和隐藏起信件来一样，接口类型封装和隐藏具体类型和它的值。即使具体类型有其它的方法，也只有接口类型暴露出来的方法会被调用到：**
+
+```go
+os.Stdout.Write([]byte("hello")) // OK: *os.File has Write method
+os.Stdout.Close()                // OK: *os.File has Close method
+
+var w io.Writer
+w = os.Stdout
+w.Write([]byte("hello")) // OK: io.Writer has Write method
+w.Close()                // compile error: io.Writer lacks Close method
+```
+
+一个有更多方法的接口类型，比如`io.ReadWriter`，和少一些方法的接口类型例如`io.Reader`，进行对比；更多方法的接口类型会告诉我们更多关于它的值持有的信息，并且对实现它的类型要求更加严格。
+
+**那么关于`interface{}`类型，它没有任何方法。这看上去好像没有用，但实际上`interface{}`被称为 *空接口类型* 是不可或缺的。因为空接口类型对实现它的类型没有要求，所以我们可以将任意一个值赋给空接口类型。**
+
+```go
+var any interface{}
+any = true
+any = 12.34
+any = "hello"
+any = map[string]int{"one": 1}
+any = new(bytes.Buffer)
+```
+
+尽管不是很明显，从本书最早的例子中我们就已经在使用空接口类型。它允许像`fmt.Println`或者5.7章中的`errorf`函数接受任何类型的参数。
+
+**对于创建的一个`interface{}`值持有一个boolean，float，string，map，pointer，或者任意其它的类型；我们当然不能直接对它持有的值做操作，因为`interface{}`没有任何方法。我们会用 *类型断言* 来获取`interface{}`中值的方法。**
+
+因为接口与实现只依赖于判断两个类型的方法，所以没有必要定义一个具体类型和它实现的接口之间的关系。也就是说，有意地在文档里说明或者程序上断言这种关系偶尔是有用的，但程序上不强制这么做。下面的定义在编译期断言一个`*bytes.Buffer`的值实现了`io.Writer`接口类型:
+
+```go
+// *bytes.Buffer must satisfy io.Writer
+var w io.Writer = new(bytes.Buffer)
+```
+
+因为任意`*bytes.Buffer`的值，甚至包括nil通过`(*bytes.Buffer)(nil)`进行显示的转换都实现了这个接口，所以我们不必分配一个新的变量。并且因为我们绝不会引用变量w，我们可以使用空标识符来进行代替。总的看，这些变化可以让我们得到一个更朴素的版本：
+
+```go
+// *bytes.Buffer must satisfy io.Writer
+var _ io.Writer = (*bytes.Buffer)(nil)
+```
+
+非空的接口类型比如io.Writer经常被指针类型实现，尤其当一个或多个接口方法像Write方法那样隐式的给接收者带来变化的时候。一个结构体的指针是非常常见的承载方法的类型。
+
+但是并不意味着只有指针类型满足接口类型，甚至连一些有设置方法的接口类型也可能会被Go语言中其它的引用类型实现。我们已经看过slice类型的方法（geometry.Path，§6.1）和map类型的方法（url.Values，§6.2.1），后面还会看到函数类型的方法的例子（http.HandlerFunc，§7.7）。甚至基本的类型也可能会实现一些接口；就如我们在7.4章中看到的time.Duration类型实现了fmt.Stringer接口。
+
+一个具体的类型可能实现了很多不相关的接口。考虑在一个组织出售数字文化产品比如音乐，电影和书籍的程序中可能定义了下列的具体类型：
+
+```
+Album
+Book
+Movie
+Magazine
+Podcast
+TVEpisode
+Track
+```
+
+我们可以把每个抽象的特点用接口来表示。一些特性对于所有的这些文化产品都是共通的，例如标题，创作日期和作者列表。
+
+```go
+type Artifact interface {
+    Title() string
+    Creators() []string
+    Created() time.Time
+}
+```
+
+其它的一些特性只对特定类型的文化产品才有。和文字排版特性相关的只有books和magazines，还有只有movies和TV剧集和屏幕分辨率相关。
+
+```go
+type Text interface {
+    Pages() int
+    Words() int
+    PageSize() int
+}
+type Audio interface {
+    Stream() (io.ReadCloser, error)
+    RunningTime() time.Duration
+    Format() string // e.g., "MP3", "WAV"
+}
+type Video interface {
+    Stream() (io.ReadCloser, error)
+    RunningTime() time.Duration
+    Format() string // e.g., "MP4", "WMV"
+    Resolution() (x, y int)
+}
+```
+
+这些接口不止是一种有用的方式来分组相关的具体类型和表示他们之间的共同特点。我们后面可能会发现其它的分组。举例，如果我们发现我们需要以同样的方式处理Audio和Video，我们可以定义一个Streamer接口来代表它们之间相同的部分而不必对已经存在的类型做改变。
+
+```go
+type Streamer interface {
+    Stream() (io.ReadCloser, error)
+    RunningTime() time.Duration
+    Format() string
+}
+```
+
+每一个具体类型的组基于它们相同的行为可以表示成一个接口类型。不像基于类的语言，他们一个类实现的接口集合需要进行显式的定义，在Go语言中我们可以在需要的时候定义一个新的抽象或者特定特点的组，而不需要修改具体类型的定义。当具体的类型来自不同的作者时这种方式会特别有用。当然也确实没有必要在具体的类型中指出这些共性。
+
+## flag.Value接口
+
+在本章，我们会学到另一个标准的接口类型flag.Value是怎么帮助命令行标记定义新的符号的。思考下面这个会休眠特定时间的程序：
+
+*gopl.io/ch7/sleep*
+
+```go
+var period = flag.Duration("period", 1*time.Second, "sleep period")
+
+func main() {
+    flag.Parse()
+    fmt.Printf("Sleeping for %v...", *period)
+    time.Sleep(*period)
+    fmt.Println()
+}
+```
+
+在它休眠前它会打印出休眠的时间周期。fmt包调用time.Duration的String方法打印这个时间周期是以用户友好的注解方式，而不是一个纳秒数字：
+
+```
+$ go build gopl.io/ch7/sleep
+$ ./sleep
+Sleeping for 1s...
+```
+
+默认情况下，休眠周期是一秒，但是可以通过 -period 这个命令行标记来控制。flag.Duration函数创建一个time.Duration类型的标记变量并且允许用户通过多种用户友好的方式来设置这个变量的大小，这种方式还包括和String方法相同的符号排版形式。这种对称设计使得用户交互良好。
+
+```
+$ ./sleep -period 50ms
+Sleeping for 50ms...
+$ ./sleep -period 2m30s
+Sleeping for 2m30s...
+$ ./sleep -period 1.5h
+Sleeping for 1h30m0s...
+$ ./sleep -period "1 day"
+invalid value "1 day" for flag -period: time: invalid duration 1 day
+```
+
+因为时间周期标记值非常的有用，所以这个特性被构建到了flag包中；但是我们为我们自己的数据类型定义新的标记符号是简单容易的。我们只需要定义一个实现flag.Value接口的类型，如下：
+
+```go
+package flag
+
+// Value is the interface to the value stored in a flag.
+type Value interface {
+    String() string
+    Set(string) error
+}
+```
+
+String方法格式化标记的值用在命令行帮助消息中；这样每一个flag.Value也是一个fmt.Stringer。Set方法解析它的字符串参数并且更新标记变量的值。实际上，Set方法和String是两个相反的操作，所以最好的办法就是对他们使用相同的注解方式。
+
+让我们定义一个允许通过摄氏度或者华氏温度变换的形式指定温度的celsiusFlag类型。注意celsiusFlag内嵌了一个Celsius类型（§2.5），因此不用实现本身就已经有String方法了。为了实现flag.Value，我们只需要定义Set方法：
+
+*gopl.io/ch7/tempconv*
+
+```go
+// *celsiusFlag satisfies the flag.Value interface.
+type celsiusFlag struct{ Celsius }
+
+func (f *celsiusFlag) Set(s string) error {
+    var unit string
+    var value float64
+    fmt.Sscanf(s, "%f%s", &value, &unit) // no error check needed
+    switch unit {
+    case "C", "°C":
+        f.Celsius = Celsius(value)
+        return nil
+    case "F", "°F":
+        f.Celsius = FToC(Fahrenheit(value))
+        return nil
+    }
+    return fmt.Errorf("invalid temperature %q", s)
+}
+```
+
+调用fmt.Sscanf函数从输入s中解析一个浮点数（value）和一个字符串（unit）。虽然通常必须检查Sscanf的错误返回，但是在这个例子中我们不需要因为如果有错误发生，就没有switch case会匹配到。
+
+下面的CelsiusFlag函数将所有逻辑都封装在一起。它返回一个内嵌在celsiusFlag变量f中的Celsius指针给调用者。Celsius字段是一个会通过Set方法在标记处理的过程中更新的变量。调用Var方法将标记加入应用的命令行标记集合中，有异常复杂命令行接口的全局变量flag.CommandLine.Programs可能有几个这个类型的变量。调用Var方法将一个`*celsiusFlag`参数赋值给一个flag.Value参数，导致编译器去检查`*celsiusFlag`是否有必须的方法。
+
+```go
+// CelsiusFlag defines a Celsius flag with the specified name,
+// default value, and usage, and returns the address of the flag variable.
+// The flag argument must have a quantity and a unit, e.g., "100C".
+func CelsiusFlag(name string, value Celsius, usage string) *Celsius {
+    f := celsiusFlag{value}
+    flag.CommandLine.Var(&f, name, usage)
+    return &f.Celsius
+}
+```
+
+现在我们可以开始在我们的程序中使用新的标记：
+
+*gopl.io/ch7/tempflag*
+
+```go
+var temp = tempconv.CelsiusFlag("temp", 20.0, "the temperature")
+
+func main() {
+    flag.Parse()
+    fmt.Println(*temp)
+}
+```
+
+下面是典型的场景：
+
+```
+$ go build gopl.io/ch7/tempflag
+$ ./tempflag
+20°C
+$ ./tempflag -temp -18C
+-18°C
+$ ./tempflag -temp 212°F
+100°C
+$ ./tempflag -temp 273.15K
+invalid value "273.15K" for flag -temp: invalid temperature "273.15K"
+Usage of ./tempflag:
+  -temp value
+        the temperature (default 20°C)
+$ ./tempflag -help
+Usage of ./tempflag:
+  -temp value
+        the temperature (default 20°C)
+```
 
 
 
