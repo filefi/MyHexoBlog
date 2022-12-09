@@ -315,3 +315,33 @@ func slidingWindow(size int, input []int) [][]int {
 	return r
 }
 ```
+
+```go
+func InsertOne(s []int, pos int, num int) []int {
+	s = append(s, 0)
+	copy(s[pos+1:], s[pos:len(s)-1])
+	s[pos] = num
+	return s
+}
+func InsertOneP(s *[]int, pos int, num int) {
+	*s = append(*s, 0)
+	copy((*s)[pos+1:], (*s)[pos:len(*s)-1])
+	(*s)[pos] = num
+}
+
+func InsertMany(dst []int, pos int, src []int) []int {
+	return append(dst[:pos], append(src, dst[pos:]...)...)
+}
+
+func InsertManyP(dst *[]int, pos int, src *[]int) {
+	*dst = append((*dst)[:pos], append(*src, (*dst)[pos:]...)...)
+}
+
+type Slice []int
+
+func (s *Slice) InsertOne(pos int, num int) {
+	*s = append(*s, 0)
+	copy((*s)[pos+1:], (*s)[pos:len(*s)-1])
+	(*s)[pos] = num
+}
+```
