@@ -6,7 +6,7 @@ tags: [Golang]
 categories: Golang
 ---
 
-> 本文为《The Go Programming Language》学习笔记，内容主要为https://books.studygolang.com/gopl-zh/的翻译版。
+> 本文为《The Go Programming Language》学习笔记，内容主要为https://books.studygolang.com/gopl-zh/的翻译版，并在此翻译版基础上调整格式或添加注释，以方便学习和记忆。部分难理解的内容，会对照英文版重新翻译。
 
 # 前言
 
@@ -6302,7 +6302,7 @@ var _ io.Writer = (*bytes.Buffer)(nil)
 
 非空的接口类型比如io.Writer经常被指针类型实现，尤其当一个或多个接口方法像Write方法那样隐式的给接收者带来变化的时候。一个结构体的指针是非常常见的承载方法的类型。
 
-但是并不意味着只有指针类型满足接口类型，甚至连一些有设置方法的接口类型也可能会被Go语言中其它的引用类型实现。我们已经看过slice类型的方法（geometry.Path，§6.1）和map类型的方法（url.Values，§6.2.1），后面还会看到函数类型的方法的例子（http.HandlerFunc，§7.7）。甚至基本的类型也可能会实现一些接口；就如我们在7.4章中看到的time.Duration类型实现了fmt.Stringer接口。
+**但是并不意味着只有指针类型满足接口类型，甚至连一些有设置方法的接口类型也可能会被Go语言中其它的引用类型实现。**我们已经看过slice类型的方法（`geometry.Path`，§6.1）和map类型的方法（`url.Values`，§6.2.1），后面还会看到函数类型的方法的例子（`http.HandlerFunc`，§7.7）。**甚至基本的类型也可能会实现一些接口；**就如我们在7.4章中看到的`time.Duration`类型实现了`fmt.Stringer`接口。
 
 一个具体的类型可能实现了很多不相关的接口。考虑在一个组织出售数字文化产品比如音乐，电影和书籍的程序中可能定义了下列的具体类型：
 
@@ -6361,9 +6361,7 @@ type Streamer interface {
 
 ## flag.Value接口
 
-在本章，我们会学到另一个标准的接口类型flag.Value是怎么帮助命令行标记定义新的符号的。思考下面这个会休眠特定时间的程序：
-
-*gopl.io/ch7/sleep*
+在本章，我们会学到另一个标准的接口类型`flag.Value`是怎么帮助命令行标记定义新的符号的。思考下面这个会休眠特定时间的程序：
 
 ```go
 var period = flag.Duration("period", 1*time.Second, "sleep period")
@@ -6376,7 +6374,7 @@ func main() {
 }
 ```
 
-在它休眠前它会打印出休眠的时间周期。fmt包调用time.Duration的String方法打印这个时间周期是以用户友好的注解方式，而不是一个纳秒数字：
+在它休眠前它会打印出休眠的时间周期。`fmt`包调用`time.Duration`的`String`方法打印这个时间周期是以用户友好的注解方式，而不是一个纳秒数字：
 
 ```
 $ go build gopl.io/ch7/sleep
@@ -6384,7 +6382,7 @@ $ ./sleep
 Sleeping for 1s...
 ```
 
-默认情况下，休眠周期是一秒，但是可以通过 -period 这个命令行标记来控制。flag.Duration函数创建一个time.Duration类型的标记变量并且允许用户通过多种用户友好的方式来设置这个变量的大小，这种方式还包括和String方法相同的符号排版形式。这种对称设计使得用户交互良好。
+默认情况下，休眠周期是一秒，但是可以通过 `-period` 这个命令行标记来控制。`flag.Duration`函数创建一个`time.Duration`类型的标记变量并且允许用户通过多种用户友好的方式来设置这个变量的大小，这种方式还包括和`String`方法相同的符号排版形式。这种对称设计使得用户交互良好。
 
 ```
 $ ./sleep -period 50ms
@@ -6397,7 +6395,7 @@ $ ./sleep -period "1 day"
 invalid value "1 day" for flag -period: time: invalid duration 1 day
 ```
 
-因为时间周期标记值非常的有用，所以这个特性被构建到了flag包中；但是我们为我们自己的数据类型定义新的标记符号是简单容易的。我们只需要定义一个实现flag.Value接口的类型，如下：
+因为时间周期标记值非常的有用，所以这个特性被构建到了`flag`包中。**通过实现`flag.Value`接口，我们可以为我们自己的数据类型定义新的标记符号。** 如下：
 
 ```go
 package flag
@@ -6409,11 +6407,9 @@ type Value interface {
 }
 ```
 
-String方法格式化标记的值用在命令行帮助消息中；这样每一个flag.Value也是一个fmt.Stringer。Set方法解析它的字符串参数并且更新标记变量的值。实际上，Set方法和String是两个相反的操作，所以最好的办法就是对他们使用相同的注解方式。
+`String`方法格式化标记的值用在命令行帮助消息中；这样每一个`flag.Value`也是一个`fmt.Stringer`。`Set`方法解析它的字符串参数并且更新标记变量的值。实际上，`Set`方法和`String`是两个相反的操作，所以最好的办法就是对他们使用相同的注解方式。
 
-让我们定义一个允许通过摄氏度或者华氏温度变换的形式指定温度的celsiusFlag类型。注意celsiusFlag内嵌了一个Celsius类型（§2.5），因此不用实现本身就已经有String方法了。为了实现flag.Value，我们只需要定义Set方法：
-
-*gopl.io/ch7/tempconv*
+让我们定义一个允许通过摄氏度或者华氏温度变换的形式指定温度的`celsiusFlag`类型。注意`celsiusFlag`内嵌了一个`Celsius`类型（§2.5），因此不用实现本身就已经有`String`方法了。为了实现`flag.Value`，我们只需要定义`Set`方法：
 
 ```go
 // *celsiusFlag satisfies the flag.Value interface.
@@ -6435,9 +6431,9 @@ func (f *celsiusFlag) Set(s string) error {
 }
 ```
 
-调用fmt.Sscanf函数从输入s中解析一个浮点数（value）和一个字符串（unit）。虽然通常必须检查Sscanf的错误返回，但是在这个例子中我们不需要因为如果有错误发生，就没有switch case会匹配到。
+调用`fmt.Sscanf`函数从输入`s`中解析一个浮点数（value）和一个字符串（unit）。虽然通常必须检查`Sscanf`的错误返回，但是在这个例子中我们不需要，因为如果有错误发生，就没有switch case会匹配到。
 
-下面的CelsiusFlag函数将所有逻辑都封装在一起。它返回一个内嵌在celsiusFlag变量f中的Celsius指针给调用者。Celsius字段是一个会通过Set方法在标记处理的过程中更新的变量。调用Var方法将标记加入应用的命令行标记集合中，有异常复杂命令行接口的全局变量flag.CommandLine.Programs可能有几个这个类型的变量。调用Var方法将一个`*celsiusFlag`参数赋值给一个flag.Value参数，导致编译器去检查`*celsiusFlag`是否有必须的方法。
+下面的`CelsiusFlag`函数将所有逻辑都封装在一起。它返回一个内嵌在`celsiusFlag`变量`f`中的`Celsius`指针给调用者。`Celsius`字段是一个会通过`Set`方法在标记处理的过程中更新的变量。调用`Var`方法将标记加入应用的命令行标记集合中，有异常复杂命令行接口的全局变量`flag.CommandLine.Programs`可能有几个这个类型的变量。调用`Var`方法将一个`*celsiusFlag`参数赋值给一个`flag.Value`参数，导致编译器去检查`*celsiusFlag`是否有必须的方法。
 
 ```go
 // CelsiusFlag defines a Celsius flag with the specified name,
@@ -6451,8 +6447,6 @@ func CelsiusFlag(name string, value Celsius, usage string) *Celsius {
 ```
 
 现在我们可以开始在我们的程序中使用新的标记：
-
-*gopl.io/ch7/tempflag*
 
 ```go
 var temp = tempconv.CelsiusFlag("temp", 20.0, "the temperature")
@@ -6484,15 +6478,399 @@ Usage of ./tempflag:
         the temperature (default 20°C)
 ```
 
+## 接口值
 
+***接口值* 由2个部分组成：一个具体的类型和这个类型的值。它们被称为接口的动态类型和动态值。**对于像Go语言这种静态类型的语言，类型是编译期的概念；因此一个类型不是一个值。在我们的概念模型中，一些提供每个类型信息的值被称为类型描述符，比如类型的名称和方法。在一个接口值中，类型部分代表与之相关类型的描述符。
 
+下面4个语句中，变量`w`得到了3个不同的值。（开始和最后的值是相同的）
 
+```go
+var w io.Writer  // 由于隐式初始化，等价于 var w io.Writer = nil
+w = os.Stdout
+w = new(bytes.Buffer)
+w = nil
+```
 
+让我们进一步观察在每一个语句后的`w`变量的值和动态行为。第一个语句定义了变量`w`:
 
+```go
+var w io.Writer
+```
 
+**在Go语言中，变量总是被一个定义明确的值初始化，即使接口类型也不例外。对于一个接口的零值就是它的类型和值的部分都是`nil`（如图7.1）。**
 
+![img](ch7-01.png)
 
+**一个接口值基于它的动态类型被描述为空或非空，所以这是一个空的接口值（接口值为`nil`）。你可以通过使用`w==nil`或者`w!=nil`来判断接口值是否为空。调用一个空接口值（接口值为`nil`）上的任意方法都会产生panic:**
 
+```go
+w.Write([]byte("hello")) // panic: nil pointer dereference
+```
+
+第二个语句将一个`*os.File`类型的值赋给变量`w`:
+
+```go
+w = os.Stdout
+```
+
+这个赋值过程调用了一个具体类型到接口类型的隐式转换，这和显式的使用`io.Writer(os.Stdout)`是等价的。这类转换不管是显式的还是隐式的，都会刻画出操作到的类型和值。这个接口值的动态类型被设为`*os.File`指针的类型描述符，它的动态值持有`os.Stdout`的拷贝；这是一个代表处理标准输出的`os.File`类型变量的指针（如图7.2）。
+
+![img](ch7-02.png)
+
+调用一个包含`*os.File`类型指针的接口值的`Write`方法，使得`(*os.File).Write`方法被调用。这个调用输出“hello”。
+
+```go
+w.Write([]byte("hello")) // "hello"
+```
+
+通常在编译期，我们不知道接口值的动态类型是什么，所以一个接口上的调用必须使用动态分配。因为不是直接进行调用，所以编译器必须把代码生成在类型描述符的方法`Write`上，然后间接调用那个地址。这个调用的接收者是一个接口动态值的拷贝`os.Stdout`。效果和下面这个直接调用一样：
+
+```go
+os.Stdout.Write([]byte("hello")) // "hello"
+```
+
+第三个语句给接口值赋了一个`*bytes.Buffer`类型的值：
+
+```go
+w = new(bytes.Buffer)
+```
+
+现在动态类型是`*bytes.Buffer`并且动态值是一个指向新分配的缓冲区的指针（图7.3）。
+
+![img](ch7-03.png)
+
+`Write`方法的调用也使用了和之前一样的机制：
+
+```go
+w.Write([]byte("hello")) // writes "hello" to the bytes.Buffers
+```
+
+这次类型描述符是`*bytes.Buffer`，所以调用了`(*bytes.Buffer).Write`方法，并且接收者是该缓冲区的地址。这个调用把字符串“hello”添加到缓冲区中。
+
+最后，第四个语句将`nil`赋给了接口值：
+
+```go
+w = nil
+```
+
+这个重置将它所有的部分都设为`nil`值，把变量`w`恢复到和它之前定义时相同的状态，在图7.1中可以看到。
+
+一个接口值可以持有任意大的动态值。例如，表示时间实例的`time.Time`类型，这个类型有几个对外不公开的字段。我们从它上面创建一个接口值：
+
+```go
+var x interface{} = time.Now()
+```
+
+结果可能和图7.4相似。从概念上讲，不论接口值多大，动态值总是可以容下它。（这只是一个概念上的模型；具体的实现可能会非常不同）
+
+![img](ch7-04.png)
+
+**接口值可以使用`==`和`!＝`来进行比较。两个接口值相等仅当它们都是`nil`值，或者它们的动态类型相同并且动态值也根据这个动态类型的`==`操作相等。因为接口值是可比较的，所以它们可以用在map的键或者作为switch语句的操作数。**
+
+**然而，如果两个接口值的动态类型相同，但是这个动态类型是不可比较的（比如切片），将它们进行比较就会失败并且panic:**
+
+```go
+var x interface{} = []int{1, 2, 3}
+fmt.Println(x == x) // panic: comparing uncomparable type []int
+```
+
+**考虑到这点，接口类型是非常与众不同的。其它类型要么是安全的可比较类型（如基本类型和指针）要么是完全不可比较的类型（如切片，映射类型，和函数），但是在比较接口值或者包含了接口值的聚合类型时，我们必须要意识到潜在的panic。同样的风险也存在于使用接口作为map的键或者switch的操作数。只能比较你非常确定它们的动态值是可比较类型的接口值。**
+
+当我们处理错误或者调试的过程中，得知接口值的动态类型是非常有帮助的。所以我们使用`fmt`包的`%T`动作:
+
+```go
+var w io.Writer
+fmt.Printf("%T\n", w) // "<nil>"
+w = os.Stdout
+fmt.Printf("%T\n", w) // "*os.File"
+w = new(bytes.Buffer)
+fmt.Printf("%T\n", w) // "*bytes.Buffer"
+```
+
+在`fmt`包内部，使用反射来获取接口动态类型的名称。
+
+### 警告：一个包含`nil`指针的接口不是`nil`接口
+
+**一个不包含任何值的`nil`接口值和一个刚好包含`nil`指针的接口值是不同的。**这个细微区别产生了一个容易绊倒每个Go程序员的陷阱。
+
+思考下面的程序。当`debug`变量设置为`true`时，`main`函数会将`f`函数的输出收集到一个`bytes.Buffer`类型中。
+
+```go
+const debug = true
+
+func main() {
+    var buf *bytes.Buffer
+    if debug {
+        buf = new(bytes.Buffer) // enable collection of output
+    }
+    f(buf) // NOTE: subtly incorrect!
+    if debug {
+        // ...use buf...
+    }
+}
+
+// If out is non-nil, output will be written to it.
+func f(out io.Writer) {
+    // ...do something...
+    if out != nil {
+        out.Write([]byte("done!\n"))
+    }
+}
+```
+
+我们可能会预计当把变量`debug`设置为`false`时可以禁止对输出的收集，但是实际上在`out.Write`方法调用时程序发生了panic：
+
+```go
+if out != nil {
+    out.Write([]byte("done!\n")) // panic: nil pointer dereference
+}
+```
+
+**当`main`函数调用函数`f`时，它给`f`函数的`out`参数赋了一个`*bytes.Buffer`的空指针，所以`out`的动态值是`nil`。然而，它的动态类型是`*bytes.Buffer`，意思就是`out`变量是一个包含空指针值的非空接口（如图7.5），所以防御性检查`out!=nil`的结果依然是`true`。**
+
+![img](ch7-05.png)
+
+**动态分配机制依然决定`(*bytes.Buffer).Write`的方法会被调用，但是这次的接收者的值是`nil`。对于一些如`*os.File`的类型，`nil`是一个有效的接收者（§6.2.1），但是`*bytes.Buffer`类型不在这些种类中。这个方法会被调用，但是当它尝试去获取缓冲区时会发生panic。**
+
+问题在于尽管一个`nil`的`*bytes.Buffer`指针有实现这个接口的方法，它也不满足这个接口具体的行为上的要求。特别是这个调用违反了`(*bytes.Buffer).Write`方法隐含的先决条件，即，它的接收者不能是`nil`；所以将`nil`指针赋给这个接口是错误的。解决方案就是将`main`函数中的变量`buf`的类型改为`io.Writer`，因此可以避免一开始就将一个不完整的值赋给这个接口：
+
+```go
+var buf io.Writer
+if debug {
+    buf = new(bytes.Buffer) // enable collection of output
+}
+f(buf) // OK
+```
+
+打印前文中的代码，似乎只有当接口的动态类型和动态值都为`nil`时，`w == nil`才为真：
+
+```go
+	var w io.Writer
+	fmt.Println(w == nil) // true
+
+	w = os.Stdout
+	fmt.Println(w == nil) // false
+
+	w = new(bytes.Buffer)
+	fmt.Println(w == nil) // false
+
+	w = nil
+	fmt.Println(w == nil) // true
+```
+
+## `sort.Interface`接口
+
+`sort`包内置的提供了根据一些排序函数来对任何序列排序的功能。它的设计非常独到。在很多语言中，排序算法都是和序列数据类型关联，同时排序函数和具体类型元素关联。相比之下，Go语言的`sort.Sort`函数不会对具体的序列和它的元素做任何假设。相反，它使用了一个接口类型`sort.Interface`来指定通用的排序算法和可能被排序到的序列类型之间的约定。这个接口的实现由序列的具体表示和它希望排序的元素决定，序列的表示经常是一个切片。
+
+一个内置的排序算法需要知道三个东西：序列的长度，表示两个元素比较的结果，一种交换两个元素的方式；这就是`sort.Interface`的三个方法：
+
+```go
+package sort
+
+type Interface interface {
+    Len() int
+    Less(i, j int) bool // i, j are indices of sequence elements
+    Swap(i, j int)
+}
+```
+
+为了对序列进行排序，我们需要定义一个实现了这三个方法的类型，然后对这个类型的一个实例应用`sort.Sort`函数。思考对一个字符串切片进行排序，这可能是最简单的例子了。下面是这个新的类型`StringSlice`和它的`Len`，`Less`和`Swap`方法
+
+```go
+type StringSlice []string
+func (p StringSlice) Len() int           { return len(p) }
+func (p StringSlice) Less(i, j int) bool { return p[i] < p[j] }
+func (p StringSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+```
+
+现在我们可以通过像下面这样将一个切片转换为一个`StringSlice`类型来进行排序：
+
+```go
+sort.Sort(StringSlice(names))
+```
+
+这个转换得到一个相同长度，容量，和基于`names`数组的切片值；并且这个切片值的类型有三个排序需要的方法。
+
+对字符串切片的排序是很常用的需要，所以`sort`包提供了`StringSlice`类型，也提供了`Strings`函数能让上面这些调用简化成`sort.Strings(names)`。
+
+这里用到的技术很容易适用到其它排序序列中，例如我们可以忽略大小写或者含有的特殊字符。（本书使用Go程序对索引词和页码进行排序也用到了这个技术，对罗马数字做了额外逻辑处理。）对于更复杂的排序，我们使用相同的方法，但是会用更复杂的数据结构和更复杂地实现`sort.Interface`的方法。
+
+我们会运行上面的例子来对一个表格中的音乐播放列表进行排序。每个track都是单独的一行，每一列都是这个track的属性像艺术家，标题，和运行时间。想象一个图形用户界面来呈现这个表格，并且点击一个属性的顶部会使这个列表按照这个属性进行排序；再一次点击相同属性的顶部会进行逆向排序。让我们看下每个点击会发生什么响应。
+
+下面的变量`tracks`包含了一个播放列表。（One of the authors apologizes for the other author’s musical tastes.）每个元素都不是`Track`本身而是指向它的指针。尽管我们在下面的代码中直接存储`Tracks`也可以工作，`sort`函数会交换很多对元素，所以如果每个元素都是指针而不是`Track`类型会更快，指针是一个机器字码长度而`Track`类型可能是八个或更多。
+
+```go
+type Track struct {
+    Title  string
+    Artist string
+    Album  string
+    Year   int
+    Length time.Duration
+}
+
+var tracks = []*Track{
+    {"Go", "Delilah", "From the Roots Up", 2012, length("3m38s")},
+    {"Go", "Moby", "Moby", 1992, length("3m37s")},
+    {"Go Ahead", "Alicia Keys", "As I Am", 2007, length("4m36s")},
+    {"Ready 2 Go", "Martin Solveig", "Smash", 2011, length("4m24s")},
+}
+
+func length(s string) time.Duration {
+    d, err := time.ParseDuration(s)
+    if err != nil {
+        panic(s)
+    }
+    return d
+}
+```
+
+`printTracks`函数将播放列表打印成一个表格。一个图形化的展示可能会更好点，但是这个小程序使用`text/tabwriter`包来生成一个列整齐对齐和隔开的表格，像下面展示的这样。注意到`*tabwriter.Writer`是满足`io.Writer`接口的。它会收集每一片写向它的数据；它的`Flush`方法会格式化整个表格并且将它写向`os.Stdout`（标准输出）。
+
+```go
+func printTracks(tracks []*Track) {
+    const format = "%v\t%v\t%v\t%v\t%v\t\n"
+    tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
+    fmt.Fprintf(tw, format, "Title", "Artist", "Album", "Year", "Length")
+    fmt.Fprintf(tw, format, "-----", "------", "-----", "----", "------")
+    for _, t := range tracks {
+        fmt.Fprintf(tw, format, t.Title, t.Artist, t.Album, t.Year, t.Length)
+    }
+    tw.Flush() // calculate column widths and print table
+}
+```
+
+为了能按照`Artist`字段对播放列表进行排序，我们会像对`StringSlice`那样定义一个新的带有必须的`Len`，`Less`和`Swap`方法的切片类型。
+
+```go
+type byArtist []*Track
+func (x byArtist) Len() int           { return len(x) }
+func (x byArtist) Less(i, j int) bool { return x[i].Artist < x[j].Artist }
+func (x byArtist) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
+```
+
+为了调用通用的排序程序，我们必须先将`tracks`转换为新的`byArtist`类型，它定义了具体的排序：
+
+```go
+sort.Sort(byArtist(tracks))
+```
+
+在按照`artist`对这个切片进行排序后，`printTrack`的输出如下
+
+```
+Title       Artist          Album               Year Length
+-----       ------          -----               ---- ------
+Go Ahead    Alicia Keys     As I Am             2007 4m36s
+Go          Delilah         From the Roots Up   2012 3m38s
+Ready 2 Go  Martin Solveig  Smash               2011 4m24s
+Go          Moby            Moby                1992 3m37s
+```
+
+如果用户第二次请求“按照artist排序”，我们会对`tracks`进行逆向排序。然而我们不需要定义一个有颠倒`Less`方法的新类型`byReverseArtist`，因为`sort`包中提供了`Reverse`函数将排序顺序转换成逆序。
+
+```go
+sort.Sort(sort.Reverse(byArtist(tracks)))
+```
+
+在按照`artist`对这个切片进行逆向排序后，`printTrack`的输出如下
+
+```
+Title       Artist          Album               Year Length
+-----       ------          -----               ---- ------
+Go          Moby            Moby                1992 3m37s
+Ready 2 Go  Martin Solveig  Smash               2011 4m24s
+Go          Delilah         From the Roots Up   2012 3m38s
+Go Ahead    Alicia Keys     As I Am             2007 4m36s
+```
+
+`sort.Reverse`函数值得进行更近一步的学习，因为它使用了（§6.3）章中的组合，这是一个重要的思路。`sort`包定义了一个不公开的struct类型reverse，它嵌入了一个`sort.Interface`。`reverse`的`Less`方法调用了内嵌的`sort.Interface`值的`Less`方法，但是通过交换索引的方式使排序结果变成逆序。
+
+```go
+package sort
+
+type reverse struct{ Interface } // that is, sort.Interface
+
+func (r reverse) Less(i, j int) bool { return r.Interface.Less(j, i) }
+
+func Reverse(data Interface) Interface { return reverse{data} }
+```
+
+`reverse`的另外两个方法`Len`和`Swap`隐式地由原有内嵌的`sort.Interface`提供。因为`reverse`是一个不公开的类型，所以导出函数`Reverse`返回一个包含原有`sort.Interface`值的`reverse`类型实例。
+
+为了可以按照不同的列进行排序，我们必须定义一个新的类型例如`byYear`：
+
+```go
+type byYear []*Track
+func (x byYear) Len() int           { return len(x) }
+func (x byYear) Less(i, j int) bool { return x[i].Year < x[j].Year }
+func (x byYear) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
+```
+
+在使用`sort.Sort(byYear(tracks))`按照年对`tracks`进行排序后，`printTrack`展示了一个按时间先后顺序的列表：
+
+```
+Title       Artist          Album               Year Length
+-----       ------          -----               ---- ------
+Go          Moby            Moby                1992 3m37s
+Go Ahead    Alicia Keys     As I Am             2007 4m36s
+Ready 2 Go  Martin Solveig  Smash               2011 4m24s
+Go          Delilah         From the Roots Up   2012 3m38s
+```
+
+对于我们需要的每个切片元素类型和每个排序函数，我们需要定义一个新的`sort.Interface`实现。如你所见，`Len`和`Swap`方法对于所有的切片类型都有相同的定义。下个例子，具体的类型`customSort`会将一个切片和函数结合，使我们只需要写比较函数就可以定义一个新的排序。顺便说下，实现了`sort.Interface`的具体类型不一定是切片类型；`customSort`是一个结构体类型。
+
+```go
+type customSort struct {
+    t    []*Track
+    less func(x, y *Track) bool
+}
+
+func (x customSort) Len() int           { return len(x.t) }
+func (x customSort) Less(i, j int) bool { return x.less(x.t[i], x.t[j]) }
+func (x customSort) Swap(i, j int)    { x.t[i], x.t[j] = x.t[j], x.t[i] }
+```
+
+让我们定义一个多层的排序函数，它主要的排序键是标题，第二个键是年，第三个键是运行时间`Length`。下面是该排序的调用，其中这个排序使用了匿名排序函数：
+
+```go
+sort.Sort(customSort{tracks, func(x, y *Track) bool {
+    if x.Title != y.Title {
+        return x.Title < y.Title
+    }
+    if x.Year != y.Year {
+        return x.Year < y.Year
+    }
+    if x.Length != y.Length {
+        return x.Length < y.Length
+    }
+    return false
+}})
+```
+
+这下面是排序的结果。注意到两个标题是“Go”的`track`按照标题排序是相同的顺序，但是在按照`year`排序上更久的那个`track`优先。
+
+```
+Title       Artist          Album               Year Length
+-----       ------          -----               ---- ------
+Go          Moby            Moby                1992 3m37s
+Go          Delilah         From the Roots Up   2012 3m38s
+Go Ahead    Alicia Keys     As I Am             2007 4m36s
+Ready 2 Go  Martin Solveig  Smash               2011 4m24s
+```
+
+尽管对长度为n的序列排序需要 O(n log n)次比较操作，检查一个序列是否已经有序至少需要n-1次比较。`sort`包中的`IsSorted`函数帮我们做这样的检查。像`sort.Sort`一样，它也使用`sort.Interface`对这个序列和它的排序函数进行抽象，但是它从不会调用`Swap`方法：这段代码示范了`IntsAreSorted`和`Ints`函数在`IntSlice`类型上的使用：
+
+```go
+values := []int{3, 1, 4, 1}
+fmt.Println(sort.IntsAreSorted(values)) // "false"
+sort.Ints(values)
+fmt.Println(values)                     // "[1 1 3 4]"
+fmt.Println(sort.IntsAreSorted(values)) // "true"
+sort.Sort(sort.Reverse(sort.IntSlice(values)))
+fmt.Println(values)                     // "[4 3 1 1]"
+fmt.Println(sort.IntsAreSorted(values)) // "false"
+```
+
+为了使用方便，`sort`包为`[]int`、`[]string`和`[]float64`的正常排序提供了特定版本的函数和类型。对于其他类型，例如`[]int64`或者`[]uint`，尽管路径也很简单，还是依赖我们自己实现。
 
 
 
