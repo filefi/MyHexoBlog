@@ -6816,7 +6816,7 @@ Ready 2 Go  Martin Solveig  Smash               2011 4m24s
 Go          Delilah         From the Roots Up   2012 3m38s
 ```
 
-对于我们需要的每个切片元素类型和每个排序函数，我们需要定义一个新的`sort.Interface`实现。如你所见，`Len`和`Swap`方法对于所有的切片类型都有相同的定义。下个例子，具体的类型`customSort`会将一个切片和函数结合，使我们只需要写比较函数就可以定义一个新的排序。顺便说下，实现了`sort.Interface`的具体类型不一定是切片类型；`customSort`是一个结构体类型。
+对于我们需要的每个切片元素类型和每个排序函数，我们需要定义一个新的`sort.Interface`实现。如你所见，`Len`和`Swap`方法对于所有的切片类型都有相同的定义。下个例子，具体的类型`customSort`会将一个切片和函数结合，使我们只需要写比较函数就可以定义一个新的排序。**顺便说下，实现了`sort.Interface`的具体类型不一定是切片类型；`customSort`是一个结构体类型。**
 
 ```go
 type customSort struct {
@@ -6857,7 +6857,7 @@ Go Ahead    Alicia Keys     As I Am             2007 4m36s
 Ready 2 Go  Martin Solveig  Smash               2011 4m24s
 ```
 
-尽管对长度为n的序列排序需要 O(n log n)次比较操作，检查一个序列是否已经有序至少需要n-1次比较。`sort`包中的`IsSorted`函数帮我们做这样的检查。像`sort.Sort`一样，它也使用`sort.Interface`对这个序列和它的排序函数进行抽象，但是它从不会调用`Swap`方法：这段代码示范了`IntsAreSorted`和`Ints`函数在`IntSlice`类型上的使用：
+尽管对长度为n的序列排序需要 O(n log n)次比较操作，检查一个序列是否已经有序至少需要n-1次比较。**`sort`包中的`IsSorted`函数可以检查一个序列是否已经有序。像`sort.Sort`一样，它也使用`sort.Interface`对这个序列和它的排序函数进行抽象，但是它从不会调用`Swap`方法。** 这段代码示范了`IntsAreSorted`和`Ints`函数在`IntSlice`类型上的使用：
 
 ```go
 values := []int{3, 1, 4, 1}
@@ -6872,7 +6872,192 @@ fmt.Println(sort.IntsAreSorted(values)) // "false"
 
 为了使用方便，`sort`包为`[]int`、`[]string`和`[]float64`的正常排序提供了特定版本的函数和类型。对于其他类型，例如`[]int64`或者`[]uint`，尽管路径也很简单，还是依赖我们自己实现。
 
+## http.Handler接口
 
+在第一章中，我们粗略的了解了怎么用`net/http`包去实现网络客户端（§1.5）和服务器（§1.7）。在这个小节中，我们会对那些基于`http.Handler`接口的服务器API做更进一步的学习：
+
+```go
+package http
+
+type Handler interface {
+    ServeHTTP(w ResponseWriter, r *Request)
+}
+
+func ListenAndServe(address string, h Handler) error
+```
+
+`ListenAndServe`函数需要一个例如`"localhost:8000"`的服务器地址，和一个所有请求都可以分派的Handler接口实例。它会一直运行，直到这个服务因为一个错误而失败（或者启动失败），它的返回值一定是一个非空的错误。
+
+想象一个电子商务网站，为了销售，将数据库中物品的价格映射成美元。下面这个程序可能是能想到的最简单的实现了。它将库存清单模型化为一个命名为database的map类型，我们给这个类型一个`ServeHttp`方法，这样它可以满足`http.Handler`接口。这个handler会遍历整个map并输出物品信息。
+
+```go
+func main() {
+    db := database{"shoes": 50, "socks": 5}
+    log.Fatal(http.ListenAndServe("localhost:8000", db))
+}
+
+type dollars float32
+
+func (d dollars) String() string { return fmt.Sprintf("$%.2f", d) }
+
+type database map[string]dollars
+
+func (db database) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+    for item, price := range db {
+        fmt.Fprintf(w, "%s: %s\n", item, price)
+    }
+}
+```
+
+如果我们启动这个服务，
+
+```
+$ go build gopl.io/ch7/http1
+$ ./http1 &
+```
+
+然后用1.5节中的获取程序（如果你更喜欢可以使用web浏览器）来连接服务器，我们得到下面的输出：
+
+```
+$ go build gopl.io/ch1/fetch
+$ ./fetch http://localhost:8000
+shoes: $50.00
+socks: $5.00
+```
+
+目前为止，这个服务器不考虑URL，只能为每个请求列出它全部的库存清单。更真实的服务器会定义多个不同的URL，每一个都会触发一个不同的行为。让我们使用`/list`来调用已经存在的这个行为并且增加另一个`/price`调用表明单个货品的价格，像这样`/price?item=socks`来指定一个请求参数。
+
+```go
+func (db database) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+    switch req.URL.Path {
+    case "/list":
+        for item, price := range db {
+            fmt.Fprintf(w, "%s: %s\n", item, price)
+        }
+    case "/price":
+        item := req.URL.Query().Get("item")
+        price, ok := db[item]
+        if !ok {
+            w.WriteHeader(http.StatusNotFound) // 404
+            fmt.Fprintf(w, "no such item: %q\n", item)
+            return
+        }
+        fmt.Fprintf(w, "%s\n", price)
+    default:
+        w.WriteHeader(http.StatusNotFound) // 404
+        fmt.Fprintf(w, "no such page: %s\n", req.URL)
+    }
+}
+```
+
+现在handler基于URL的路径部分（`req.URL.Path`）来决定执行什么逻辑。如果这个handler不能识别这个路径，它会通过调用`w.WriteHeader(http.StatusNotFound)`返回客户端一个HTTP错误；这个检查应该在向w写入任何值前完成。（顺便提一下，`http.ResponseWriter`是另一个接口。它在`io.Writer`上增加了发送HTTP相应头的方法。）等效地，我们可以使用实用的`http.Error`函数：
+
+```go
+msg := fmt.Sprintf("no such page: %s\n", req.URL)
+http.Error(w, msg, http.StatusNotFound) // 404
+```
+
+`/price`的case会调用URL的Query方法来将HTTP请求参数解析为一个map，或者更准确地说一个`net/url`包中`url.Values`类型的多重映射。然后找到第一个`item`参数并查找它的价格。如果这个货品没有找到会返回一个错误。
+
+这里是一个和新服务器会话的例子：
+
+```
+$ go build gopl.io/ch7/http2
+$ go build gopl.io/ch1/fetch
+$ ./http2 &
+$ ./fetch http://localhost:8000/list
+shoes: $50.00
+socks: $5.00
+$ ./fetch http://localhost:8000/price?item=socks
+$5.00
+$ ./fetch http://localhost:8000/price?item=shoes
+$50.00
+$ ./fetch http://localhost:8000/price?item=hat
+no such item: "hat"
+$ ./fetch http://localhost:8000/help
+no such page: /help
+```
+
+显然我们可以继续向`ServeHTTP`方法中添加case，但在一个实际的应用中，将每个case中的逻辑定义到一个分开的方法或函数中会很实用。此外，相近的URL可能需要相似的逻辑；例如几个图片文件可能有形如`/images/*.png的`URL。因为这些原因，`net/http`包提供了一个请求多路器`ServeMux`来简化URL和handlers的联系。一个`ServeMux`将一批`http.Handler`聚集到一个单一的`http.Handler`中。再一次，我们可以看到满足同一接口的不同类型是可替换的：web服务器将请求指派给任意的`http.Handler` 而不需要考虑它后面的具体类型。
+
+对于更复杂的应用，一些`ServeMux`可以通过组合来处理更加错综复杂的路由需求。Go语言目前没有一个权威的web框架，类似Ruby语言有Rails和python有Django。这并不是说这样的框架不存在，而是Go语言标准库中的构建模块就已经非常灵活以至于这些框架都是不必要的。此外，尽管在一个项目早期使用框架是非常方便的，但是它们带来额外的复杂度会使长期的维护更加困难。
+
+在下面的程序中，我们创建一个`ServeMux`并且使用它将URL和相应处理`/list`和`/price`操作的handler联系起来，这些操作逻辑都已经被分到不同的方法中。然后我们在调用`ListenAndServe`函数中使用`ServeMux`为主要的handler。
+
+```go
+func main() {
+    db := database{"shoes": 50, "socks": 5}
+    mux := http.NewServeMux()
+    mux.Handle("/list", http.HandlerFunc(db.list))
+    mux.Handle("/price", http.HandlerFunc(db.price))
+    log.Fatal(http.ListenAndServe("localhost:8000", mux))
+}
+
+type database map[string]dollars
+
+func (db database) list(w http.ResponseWriter, req *http.Request) {
+    for item, price := range db {
+        fmt.Fprintf(w, "%s: %s\n", item, price)
+    }
+}
+
+func (db database) price(w http.ResponseWriter, req *http.Request) {
+    item := req.URL.Query().Get("item")
+    price, ok := db[item]
+    if !ok {
+        w.WriteHeader(http.StatusNotFound) // 404
+        fmt.Fprintf(w, "no such item: %q\n", item)
+        return
+    }
+    fmt.Fprintf(w, "%s\n", price)
+}
+```
+
+让我们关注这两个注册到handlers上的调用。第一个`db.list`是一个方法值（§6.4），它是下面这个类型的值。
+
+```go
+func(w http.ResponseWriter, req *http.Request)
+```
+
+也就是说`db.list`的调用会援引一个接收者是db的`database.list`方法。所以`db.list`是一个实现了handler类似行为的函数，但是因为它没有方法（理解：该方法没有它自己的方法），所以它不满足`http.Handler`接口并且不能直接传给`mux.Handle`。
+
+语句`http.HandlerFunc(db.list)`是一个转换而非一个函数调用，因为`http.HandlerFunc`是一个类型。它有如下的定义：
+
+```go
+package http
+
+type HandlerFunc func(w ResponseWriter, r *Request)
+
+func (f HandlerFunc) ServeHTTP(w ResponseWriter, r *Request) {
+    f(w, r)
+}
+```
+
+`HandlerFunc`显示了在Go语言接口机制中一些不同寻常的特点。这是一个实现了接口`http.Handler`的方法的函数类型。`ServeHTTP`方法的行为是调用了它的函数本身。因此`HandlerFunc`是一个让函数值满足一个接口的适配器，这里函数和这个接口仅有的方法有相同的函数签名。实际上，这个技巧让一个单一的类型例如database以多种方式满足`http.Handler`接口：一种通过它的`list`方法，一种通过它的`price`方法等等。
+
+因为handler通过这种方式注册非常普遍，`ServeMux`有一个方便的`HandleFunc`方法，它帮我们简化handler注册代码成这样：
+
+```go
+mux.HandleFunc("/list", db.list)
+mux.HandleFunc("/price", db.price)
+```
+
+从上面的代码很容易看出应该怎么构建一个程序：由两个不同的web服务器监听不同的端口，并且定义不同的URL将它们指派到不同的handler。我们只要构建另外一个`ServeMux`并且再调用一次`ListenAndServe`（可能并行的）。但是在大多数程序中，一个web服务器就足够了。此外，在一个应用程序的多个文件中定义HTTP handler也是非常典型的，如果它们必须全部都显式地注册到这个应用的`ServeMux`实例上会比较麻烦。
+
+所以为了方便，`net/http`包提供了一个全局的`ServeMux`实例`DefaultServerMux`和包级别的`http.Handle`和`http.HandleFunc`函数。现在，为了使用`DefaultServeMux`作为服务器的主handler，我们不需要将它传给`ListenAndServe`函数；`nil`值就可以工作。
+
+然后服务器的主函数可以简化成：
+
+```go
+func main() {
+    db := database{"shoes": 50, "socks": 5}
+    http.HandleFunc("/list", db.list)
+    http.HandleFunc("/price", db.price)
+    log.Fatal(http.ListenAndServe("localhost:8000", nil))
+}
+```
+
+最后，一个重要的提示：就像我们在1.7节中提到的，web服务器在一个新的协程中调用每一个handler，所以当handler获取其它协程或者这个handler本身的其它请求也可以访问到变量时，一定要使用预防措施，比如锁机制。我们后面的两章中将讲到并发相关的知识。
 
 
 
