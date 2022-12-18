@@ -7059,9 +7059,2114 @@ func main() {
 
 **最后，一个重要的提示：web服务器在一个新的协程中调用每一个handler，所以当handler获取其它协程或者这个handler本身的其它请求也可以访问到变量时，一定要使用预防措施，比如锁机制。**
 
+## [error接口](https://gopl-zh.github.io/ch7/ch7-08.html#78-error接口)
+
+从本书的开始，我们就已经创建和使用过神秘的预定义error类型，而且没有解释它究竟是什么。实际上它就是interface类型，这个类型有一个返回错误信息的单一方法：
+
+```go
+type error interface {
+    Error() string
+}
+```
+
+创建一个error最简单的方法就是调用`errors.New`函数，它会根据传入的错误信息返回一个新的error。整个`errors`包仅只有4行：
+
+```go
+package errors
+
+func New(text string) error { return &errorString{text} }
+
+type errorString struct { text string }
+
+func (e *errorString) Error() string { return e.text }
+```
+
+承载errorString的类型是一个结构体而非一个字符串，这是为了保护它表示的错误避免粗心（或有意）的更新。并且因为是指针类型`*errorString`满足error接口而非errorString类型，所以每个New函数的调用都分配了一个独特的和其他错误不相同的实例。我们也不想要重要的error例如`io.EOF`和一个刚好有相同错误消息的error比较后相等。
+
+```go
+fmt.Println(errors.New("EOF") == errors.New("EOF")) // "false"
+```
+
+调用`errors.New`函数是非常稀少的，因为有一个方便的封装函数`fmt.Errorf`，它还会处理字符串格式化。我们曾多次在第5章中用到它。
+
+```go
+package fmt
+
+import "errors"
+
+func Errorf(format string, args ...interface{}) error {
+    return errors.New(Sprintf(format, args...))
+}
+```
+
+虽然`*errorString`可能是最简单的错误类型，但远非只有它一个。例如，`syscall`包提供了Go语言底层系统调用API。在多个平台上，它定义一个实现error接口的数字类型`Errno`，并且在Unix平台上，`Errno`的`Error`方法会从一个字符串表中查找错误消息，如下面展示的这样：
+
+```go
+package syscall
+
+type Errno uintptr // operating system error code
+
+var errors = [...]string{
+    1:   "operation not permitted",   // EPERM
+    2:   "no such file or directory", // ENOENT
+    3:   "no such process",           // ESRCH
+    // ...
+}
+
+func (e Errno) Error() string {
+    if 0 <= int(e) && int(e) < len(errors) {
+        return errors[e]
+    }
+    return fmt.Sprintf("errno %d", e)
+}
+```
+
+下面的语句创建了一个持有`Errno`值为`2`的接口值，表示`POSIX ENOENT`状况：
+
+```go
+var err error = syscall.Errno(2)
+fmt.Println(err.Error()) // "no such file or directory"
+fmt.Println(err)         // "no such file or directory"
+```
+
+`err`的值图形化的呈现在图7.6中：
+
+![img](ch7-06.png)
+
+`Errno`是一个系统调用错误的高效表示方式，它通过一个有限的集合进行描述，并且它满足标准的错误接口。我们会在第7.11节了解到其它满足这个接口的类型。
+
+## [示例: 表达式求值](https://gopl-zh.github.io/ch7/ch7-09.html#79-示例-表达式求值)
+
+在本节中，我们会构建一个简单算术表达式的求值器。我们将使用一个接口`Expr`来表示Go语言中任意的表达式。现在这个接口不需要有方法，但是我们后面会为它增加一些。
+
+```go
+// An Expr is an arithmetic expression.
+type Expr interface{}
+```
+
+我们的表达式语言包括浮点数符号（小数点）；二元操作符`+`，`-`，`*`， 和`/`；一元操作符`-x`和`+x`；调用`pow(x,y)`，`sin(x)`，和`sqrt(x)`的函数；例如`x`和`pi`的变量；当然也有括号和标准的优先级运算符。所有的值都是float64类型。这下面是一些表达式的例子：
+
+```go
+sqrt(A / pi)
+pow(x, 3) + pow(y, 3)
+(F - 32) * 5 / 9
+```
+
+下面的五个具体类型表示了具体的表达式类型。`Var`类型表示对一个变量的引用。（我们很快会知道为什么它可以被输出。）`literal`类型表示一个浮点型常量。`unary`和`binary`类型表示有一到两个运算对象的运算符表达式，这些操作数可以是任意的`Expr`类型。`call`类型表示对一个函数的调用；我们限制它的`fn`字段只能是`pow`，`sin`或者`sqrt`。
+
+```go
+// A Var identifies a variable, e.g., x.
+type Var string
+
+// A literal is a numeric constant, e.g., 3.141.
+type literal float64
+
+// A unary represents a unary operator expression, e.g., -x.
+type unary struct {
+    op rune // one of '+', '-'
+    x  Expr
+}
+
+// A binary represents a binary operator expression, e.g., x+y.
+type binary struct {
+    op   rune // one of '+', '-', '*', '/'
+    x, y Expr
+}
+
+// A call represents a function call expression, e.g., sin(x).
+type call struct {
+    fn   string // one of "pow", "sin", "sqrt"
+    args []Expr
+}
+```
+
+为了计算一个包含变量的表达式，我们需要一个environment变量将变量的名字映射成对应的值：
+
+```go
+type Env map[Var]float64
+```
+
+我们也需要每个表达式去定义一个`Eval`方法，这个方法会根据给定的environment变量返回表达式的值。因为每个表达式都必须提供这个方法，我们将它加入到`Expr`接口中。这个包只会对外公开`Expr`，`Env`，和`Var`类型。调用方不需要获取其它的表达式类型就可以使用这个求值器。
+
+```go
+type Expr interface {
+    // Eval returns the value of this Expr in the environment env.
+    Eval(env Env) float64
+}
+```
+
+下面给大家展示一个具体的`Eval`方法。`Var`类型的这个方法对一个environment变量进行查找，如果这个变量没有在environment中定义过，这个方法会返回一个零值，`literal`类型的这个方法简单的返回它真实的值。
+
+```go
+func (v Var) Eval(env Env) float64 {
+    return env[v]
+}
+
+func (l literal) Eval(_ Env) float64 {
+    return float64(l)
+}
+```
+
+`unary`和`binary`的`Eval`方法会递归的计算它的运算对象，然后将运算符`op`作用到它们上。我们不将被零或无穷数除作为一个错误，因为它们都会产生一个固定的结果——无限。最后，`call`的这个方法会计算对于`pow`，`sin`，或者`sqrt`函数的参数值，然后调用对应在`math`包中的函数。
+
+```go
+func (u unary) Eval(env Env) float64 {
+    switch u.op {
+    case '+':
+        return +u.x.Eval(env)
+    case '-':
+        return -u.x.Eval(env)
+    }
+    panic(fmt.Sprintf("unsupported unary operator: %q", u.op))
+}
+
+func (b binary) Eval(env Env) float64 {
+    switch b.op {
+    case '+':
+        return b.x.Eval(env) + b.y.Eval(env)
+    case '-':
+        return b.x.Eval(env) - b.y.Eval(env)
+    case '*':
+        return b.x.Eval(env) * b.y.Eval(env)
+    case '/':
+        return b.x.Eval(env) / b.y.Eval(env)
+    }
+    panic(fmt.Sprintf("unsupported binary operator: %q", b.op))
+}
+
+func (c call) Eval(env Env) float64 {
+    switch c.fn {
+    case "pow":
+        return math.Pow(c.args[0].Eval(env), c.args[1].Eval(env))
+    case "sin":
+        return math.Sin(c.args[0].Eval(env))
+    case "sqrt":
+        return math.Sqrt(c.args[0].Eval(env))
+    }
+    panic(fmt.Sprintf("unsupported function call: %s", c.fn))
+}
+```
+
+一些方法会失败。例如，一个`call`表达式可能有未知的函数或者错误的参数个数。用一个无效的运算符如`!`或者`<`去构建一个`unary`或者`binary`表达式也是可能会发生的（尽管下面提到的`Parse`函数不会这样做）。这些错误会让`Eval`方法panic。其它的错误，像计算一个没有在environment变量中出现过的`Var`，只会让`Eval`方法返回一个错误的结果。所有的这些错误都可以通过在计算前检查`Expr`来发现。这是我们接下来要讲的`Check`方法的工作，但是让我们先测试`Eval`方法。
+
+下面的`TestEval`函数是对evaluator的一个测试。它使用了我们会在第11章讲解的`testing`包，但是现在知道调用`t.Errof`会报告一个错误就足够了。这个函数循环遍历一个表格中的输入，这个表格中定义了三个表达式和针对每个表达式不同的环境变量。第一个表达式根据给定圆的面积`A`计算它的半径，第二个表达式通过两个变量`x`和`y`计算两个立方体的体积之和，第三个表达式将华氏温度`F`转换成摄氏度。
+
+```go
+func TestEval(t *testing.T) {
+    tests := []struct {
+        expr string
+        env  Env
+        want string
+    }{
+        {"sqrt(A / pi)", Env{"A": 87616, "pi": math.Pi}, "167"},
+        {"pow(x, 3) + pow(y, 3)", Env{"x": 12, "y": 1}, "1729"},
+        {"pow(x, 3) + pow(y, 3)", Env{"x": 9, "y": 10}, "1729"},
+        {"5 / 9 * (F - 32)", Env{"F": -40}, "-40"},
+        {"5 / 9 * (F - 32)", Env{"F": 32}, "0"},
+        {"5 / 9 * (F - 32)", Env{"F": 212}, "100"},
+    }
+    var prevExpr string
+    for _, test := range tests {
+        // Print expr only when it changes.
+        if test.expr != prevExpr {
+            fmt.Printf("\n%s\n", test.expr)
+            prevExpr = test.expr
+        }
+        expr, err := Parse(test.expr)
+        if err != nil {
+            t.Error(err) // parse error
+            continue
+        }
+        got := fmt.Sprintf("%.6g", expr.Eval(test.env))
+        fmt.Printf("\t%v => %s\n", test.env, got)
+        if got != test.want {
+            t.Errorf("%s.Eval() in %v = %q, want %q\n",
+            test.expr, test.env, got, test.want)
+        }
+    }
+}
+```
+
+对于表格中的每一条记录，这个测试会解析它的表达式然后在环境变量中计算它，输出结果。这里我们没有空间来展示`Parse`函数，但是如果你使用`go get`下载这个包你就可以看到这个函数。
+
+`go test` 命令会运行一个包的测试用例：
+
+```
+$ go test -v gopl.io/ch7/eval
+```
+
+这个`-v`标识可以让我们看到测试用例打印的输出；正常情况下像这样一个成功的测试用例会阻止打印结果的输出。这里是测试用例里`fmt.Printf`语句的输出：
+
+```
+sqrt(A / pi)
+    map[A:87616 pi:3.141592653589793] => 167
+
+pow(x, 3) + pow(y, 3)
+    map[x:12 y:1] => 1729
+    map[x:9 y:10] => 1729
+
+5 / 9 * (F - 32)
+    map[F:-40] => -40
+    map[F:32] => 0
+    map[F:212] => 100
+```
+
+幸运的是目前为止所有的输入都是适合的格式，但是我们的运气不可能一直都有。甚至在解释型语言中，为了静态错误检查语法是非常常见的；静态错误就是不用运行程序就可以检测出来的错误。通过将静态检查和动态的部分分开，我们可以快速的检查错误并且对于多次检查只执行一次而不是每次表达式计算的时候都进行检查。
+
+让我们往`Expr`接口中增加另一个方法。`Check`方法对一个表达式语义树检查出静态错误。我们马上会说明它的`vars`参数。
+
+```go
+type Expr interface {
+    Eval(env Env) float64
+    // Check reports errors in this Expr and adds its Vars to the set.
+    Check(vars map[Var]bool) error
+}
+```
+
+具体的`Check`方法展示在下面。`literal`和`Var`类型的计算不可能失败，所以这些类型的`Check`方法会返回一个`nil`值。对于`unary`和`binary`的`Check`方法会首先检查操作符是否有效，然后递归的检查运算单元。相似地对于`call`的这个方法首先检查调用的函数是否已知并且有没有正确个数的参数，然后递归的检查每一个参数。
+
+```go
+func (v Var) Check(vars map[Var]bool) error {
+    vars[v] = true
+    return nil
+}
+
+func (literal) Check(vars map[Var]bool) error {
+    return nil
+}
+
+func (u unary) Check(vars map[Var]bool) error {
+    if !strings.ContainsRune("+-", u.op) {
+        return fmt.Errorf("unexpected unary op %q", u.op)
+    }
+    return u.x.Check(vars)
+}
+
+func (b binary) Check(vars map[Var]bool) error {
+    if !strings.ContainsRune("+-*/", b.op) {
+        return fmt.Errorf("unexpected binary op %q", b.op)
+    }
+    if err := b.x.Check(vars); err != nil {
+        return err
+    }
+    return b.y.Check(vars)
+}
+
+func (c call) Check(vars map[Var]bool) error {
+    arity, ok := numParams[c.fn]
+    if !ok {
+        return fmt.Errorf("unknown function %q", c.fn)
+    }
+    if len(c.args) != arity {
+        return fmt.Errorf("call to %s has %d args, want %d",
+            c.fn, len(c.args), arity)
+    }
+    for _, arg := range c.args {
+        if err := arg.Check(vars); err != nil {
+            return err
+        }
+    }
+    return nil
+}
+
+var numParams = map[string]int{"pow": 2, "sin": 1, "sqrt": 1}
+```
+
+我们在两个组中有选择地列出有问题的输入和它们得出的错误。`Parse`函数（这里没有出现）会报出一个语法错误和`Check`函数会报出语义错误。
+
+```
+x % 2               unexpected '%'
+math.Pi             unexpected '.'
+!true               unexpected '!'
+"hello"             unexpected '"'
+
+log(10)             unknown function "log"
+sqrt(1, 2)          call to sqrt has 2 args, want 1
+```
+
+`Check`方法的参数是一个`Var`类型的集合，这个集合聚集从表达式中找到的变量名。为了保证成功的计算，这些变量中的每一个都必须出现在环境变量中。从逻辑上讲，这个集合就是调用`Check`方法返回的结果，但是因为这个方法是递归调用的，所以对于`Check`方法，填充结果到一个作为参数传入的集合中会更加的方便。调用方在初始调用时必须提供一个空的集合。
+
+在第3.2节中，我们绘制了一个在编译期才确定的函数`f(x,y)`。现在我们可以解析，检查和计算在字符串中的表达式，我们可以构建一个在运行时从客户端接收表达式的web应用并且它会绘制这个函数的表示的曲面。我们可以使用集合vars来检查表达式是否是一个只有两个变量x和y的函数——实际上是3个，因为我们为了方便会提供半径大小r。并且我们会在计算前使用`Check`方法拒绝有格式问题的表达式，这样我们就不会在下面函数的40000个计算过程（100x100个栅格，每一个有4个角）重复这些检查。
+
+这个`ParseAndCheck`函数混合了解析和检查步骤的过程：
+
+```go
+import "gopl.io/ch7/eval"
+
+func parseAndCheck(s string) (eval.Expr, error) {
+    if s == "" {
+        return nil, fmt.Errorf("empty expression")
+    }
+    expr, err := eval.Parse(s)
+    if err != nil {
+        return nil, err
+    }
+    vars := make(map[eval.Var]bool)
+    if err := expr.Check(vars); err != nil {
+        return nil, err
+    }
+    for v := range vars {
+        if v != "x" && v != "y" && v != "r" {
+            return nil, fmt.Errorf("undefined variable: %s", v)
+        }
+    }
+    return expr, nil
+}
+```
+
+为了编写这个web应用，所有我们需要做的就是下面这个`plot`函数，这个函数有和`http.HandlerFunc`相似的签名：
+
+```go
+func plot(w http.ResponseWriter, r *http.Request) {
+    r.ParseForm()
+    expr, err := parseAndCheck(r.Form.Get("expr"))
+    if err != nil {
+        http.Error(w, "bad expr: "+err.Error(), http.StatusBadRequest)
+        return
+    }
+    w.Header().Set("Content-Type", "image/svg+xml")
+    surface(w, func(x, y float64) float64 {
+        r := math.Hypot(x, y) // distance from (0,0)
+        return expr.Eval(eval.Env{"x": x, "y": y, "r": r})
+    })
+}
+```
+
+![img](notes-of-gopl/ch7-07.png)
+
+这个`plot`函数解析和检查在HTTP请求中指定的表达式并且用它来创建一个两个变量的匿名函数。这个匿名函数和来自原来`surface-plotting`程序中的固定函数f有相同的签名，但是它计算一个用户提供的表达式。环境变量中定义了`x`，`y`和半径`r`。最后`plot`调用`surface`函数，它就是`gopl.io/ch3/surface`中的主要函数，修改后它可以接受`plot`中的函数和输出`io.Writer`作为参数，而不是使用固定的函数`f`和`os.Stdout`。图7.7中显示了通过程序产生的3个曲面。
+
+## [类型断言](https://gopl-zh.github.io/ch7/ch7-10.html#710-类型断言)
+
+**类型断言**是一个使用在接口值上的操作。语法上它看起来像`x.(T)`被称为断言类型，这里`x`表示一个接口的类型和`T`表示一个类型。一个类型断言检查它操作对象的动态类型是否和断言的类型匹配。
+
+这里有2种可能。第1种，如果断言的类型`T`是一个具体类型，然后类型断言检查`x`的动态类型是否和`T`相同。如果这个检查成功了，类型断言的结果是`x`的动态值，当然它的类型是`T`。换句话说，具体类型的类型断言从它的操作对象中获得具体的值。如果检查失败，接下来这个操作会抛出panic。例如：
+
+```go
+var w io.Writer
+w = os.Stdout
+f := w.(*os.File)      // success: f == os.Stdout
+c := w.(*bytes.Buffer) // panic: interface holds *os.File, not *bytes.Buffer
+```
+
+第2种，如果相反地断言的类型`T`是一个接口类型，然后类型断言检查是否`x`的动态类型满足`T`。如果这个检查成功了，动态值没有获取到；这个结果仍然是一个有相同动态类型和值部分的接口值，但是结果为类型`T。换句话说，对一个接口类型的类型断言改变了类型的表述方式，改变了可以获取的方法集合（通常更大），但是它保留了接口值内部的动态类型和值的部分。
+
+在下面的第一个类型断言后，`w`和`rw`都持有`os.Stdout`，因此它们都有一个动态类型`*os.File`，但是变量`w`是一个`io.Writer`类型，只对外公开了文件的`Write`方法，而`rw`变量还公开了它的`Read`方法。
+
+```go
+var w io.Writer
+w = os.Stdout
+rw := w.(io.ReadWriter) // success: *os.File has both Read and Write
+w = new(ByteCounter)
+rw = w.(io.ReadWriter) // panic: *ByteCounter has no Read method
+```
+
+如果断言操作的对象是一个`nil`接口值，那么不论被断言的类型是什么这个类型断言都会失败。我们几乎不需要对一个更少限制性的接口类型（更少的方法集合）做断言，因为它表现的就像是赋值操作一样，除了对于`nil`接口值的情况。
+
+```go
+w = rw             // io.ReadWriter is assignable to io.Writer
+w = rw.(io.Writer) // fails only if rw == nil
+```
+
+经常地，对一个接口值的动态类型我们是不确定的，并且我们更愿意去检验它是否是一些特定的类型。如果类型断言出现在一个预期有两个结果的赋值操作中，例如如下的定义，这个操作不会在失败的时候发生panic，但是替代地返回一个额外的第二个结果，这个结果是一个标识成功与否的布尔值：
+
+```go
+var w io.Writer = os.Stdout
+f, ok := w.(*os.File)      // success:  ok, f == os.Stdout
+b, ok := w.(*bytes.Buffer) // failure: !ok, b == nil
+```
+
+第二个结果通常赋值给一个命名为`ok`的变量。如果这个操作失败了，那么`ok`就是`false`值，第一个结果等于被断言类型的零值，在这个例子中就是一个`nil`的`*bytes.Buffer`类型。
+
+这个`ok`结果经常立即用于决定程序下面做什么。if语句的扩展格式让这个变的很简洁：
+
+```go
+if f, ok := w.(*os.File); ok {
+    // ...use f...
+}
+```
+
+当类型断言的操作对象是一个变量，你有时会看见原来的变量名重用而不是声明一个新的本地变量名，这个重用的变量原来的值会被覆盖（理解：其实是声明了一个同名的新的本地变量，外层原来的`w`不会被改变），如下面这样：
+
+```go
+if w, ok := w.(*os.File); ok {
+    // ...use w...
+}
+```
+
+## [基于类型断言区别错误类型](https://gopl-zh.github.io/ch7/ch7-11.html#711-基于类型断言区别错误类型)
+
+思考在`os`包中文件操作返回的错误集合。I/O可以因为任何数量的原因失败，但是有三种经常的错误必须进行不同的处理：文件已经存在（对于创建操作），找不到文件（对于读取操作），和权限拒绝。`os`包中提供了3个帮助函数来对给定的错误值表示的失败进行分类：
+
+```go
+package os
+
+func IsExist(err error) bool
+func IsNotExist(err error) bool
+func IsPermission(err error) bool
+```
+
+对这些判断的一个缺乏经验的实现可能会去检查错误消息是否包含了特定的子字符串，
+
+```go
+func IsNotExist(err error) bool {
+    // NOTE: not robust!
+    return strings.Contains(err.Error(), "file does not exist")
+}
+```
+
+但是处理I/O错误的逻辑可能一个和另一个平台非常的不同，所以这种方案并不健壮，并且对相同的失败可能会报出各种不同的错误消息。在测试的过程中，通过检查错误消息的子字符串来保证特定的函数以期望的方式失败是非常有用的，但对于线上的代码是不够的。
+
+一个更可靠的方式是使用一个专门的类型来描述结构化的错误。`os`包中定义了一个`PathError`类型来描述在文件路径操作中涉及到的失败，像`Open`或者`Delete`操作；并且定义了一个叫`LinkError`的变体来描述涉及到两个文件路径的操作，像`Symlink`和`Rename`。这下面是`os.PathError`：
+
+```go
+package os
+
+// PathError records an error and the operation and file path that caused it.
+type PathError struct {
+    Op   string
+    Path string
+    Err  error
+}
+
+func (e *PathError) Error() string {
+    return e.Op + " " + e.Path + ": " + e.Err.Error()
+}
+```
+
+大多数调用方都不知道`PathError`并且通过调用错误本身的`Error`方法来统一处理所有的错误。尽管`PathError`的`Error`方法简单地把这些字段连接起来生成错误消息，`PathError`的结构保护了内部的错误组件。调用方需要使用类型断言来检测错误的具体类型以便将一种失败和另一种区分开；具体的类型可以比字符串提供更多的细节。
+
+```go
+_, err := os.Open("/no/such/file")
+fmt.Println(err) // "open /no/such/file: No such file or directory"
+fmt.Printf("%#v\n", err)
+// Output:
+// &os.PathError{Op:"open", Path:"/no/such/file", Err:0x2}
+```
+
+这就是3个帮助函数是怎么工作的。例如下面展示的`IsNotExist`，它会报出是否一个错误和`syscall.ENOENT`（§7.8）或者和有名的错误`os.ErrNotExist`相等（可以在§5.4.2中找到`io.EOF`）；或者是一个`*PathError`，它内部的错误是`syscall.ENOENT`和`os.ErrNotExist`其中之一。
+
+```go
+import (
+    "errors"
+    "syscall"
+)
+
+var ErrNotExist = errors.New("file does not exist")
+
+// IsNotExist returns a boolean indicating whether the error is known to
+// report that a file or directory does not exist. It is satisfied by
+// ErrNotExist as well as some syscall errors.
+func IsNotExist(err error) bool {
+    if pe, ok := err.(*PathError); ok {
+        err = pe.Err
+    }
+    return err == syscall.ENOENT || err == ErrNotExist
+}
+```
+
+下面这里是它的实际使用：
+
+```go
+_, err := os.Open("/no/such/file")
+fmt.Println(os.IsNotExist(err)) // "true"
+```
+
+如果错误消息结合成一个更大的字符串，当然`PathError`的结构就不再为人所知，例如通过一个对`fmt.Errorf`函数的调用。区别错误通常必须在失败操作后，错误传回调用者前进行。
+
+## [通过类型断言询问行为](https://gopl-zh.github.io/ch7/ch7-12.html#712-通过类型断言询问行为)
+
+下面这段逻辑和`net/http`包中web服务器负责写入HTTP头字段（例如：`"Content-type:text/html"`）的部分相似。`io.Writer`接口类型的变量`w`代表HTTP响应；写入它的字节最终被发送到某个人的web浏览器上。
+
+```go
+func writeHeader(w io.Writer, contentType string) error {
+    if _, err := w.Write([]byte("Content-Type: ")); err != nil {
+        return err
+    }
+    if _, err := w.Write([]byte(contentType)); err != nil {
+        return err
+    }
+    // ...
+}
+```
+
+因为`Write`方法需要传入一个byte切片而我们希望写入的值是一个字符串，所以我们需要使用`[]byte(...)`进行转换。这个转换分配内存并且做一个拷贝，但是这个拷贝在转换后几乎立马就被丢弃掉。让我们假装这是一个web服务器的核心部分并且我们的性能分析表示这个内存分配使服务器的速度变慢。这里我们可以避免掉内存分配么？
+
+这个`io.Writer`接口告诉我们关于`w`持有的具体类型的唯一东西：就是可以向它写入字节切片。如果我们回顾`net/http`包中的内幕，我们知道在这个程序中的`w`变量持有的动态类型也有一个允许字符串高效写入的`WriteString`方法；这个方法会避免去分配一个临时的拷贝。（这可能像在黑夜中射击一样，但是许多满足`io.Writer`接口的重要类型同时也有`WriteString`方法，包括`*bytes.Buffer`，`*os.File`和`*bufio.Writer`。）
+
+**对于任意`io.Writer`类型的变量`w`，我们不能假设它也拥有`WriteString`方法。但是我们可以定义一个只有这个方法的新接口并且使用类型断言来检测是否`w`的动态类型满足这个新接口。**
+
+```go
+// writeString writes s to w.
+// If w has a WriteString method, it is invoked instead of w.Write.
+func writeString(w io.Writer, s string) (n int, err error) {
+    type stringWriter interface {
+        WriteString(string) (n int, err error)
+    }
+    if sw, ok := w.(stringWriter); ok {
+        return sw.WriteString(s) // avoid a copy
+    }
+    return w.Write([]byte(s)) // allocate temporary copy
+}
+
+func writeHeader(w io.Writer, contentType string) error {
+    if _, err := writeString(w, "Content-Type: "); err != nil {
+        return err
+    }
+    if _, err := writeString(w, contentType); err != nil {
+        return err
+    }
+    // ...
+}
+```
+
+为了避免重复定义，我们将这个检查移入到一个实用工具函数`writeString`中，但是它太有用了以致于标准库将它作为`io.WriteString`函数提供。这是向一个`io.Writer`接口写入字符串的推荐方法。
+
+这个例子的神奇之处在于，没有定义了`WriteString`方法的标准接口，也没有指定它是一个所需行为的标准接口。一个具体类型只会通过它的方法决定它是否满足`stringWriter`接口，而不是任何它和这个接口类型所表达的关系。它的意思就是上面的技术依赖于一个假设，这个假设就是：如果一个类型满足下面的这个接口，然后`WriteString(s)`方法就必须和`Write([]byte(s))`有相同的效果。
+
+```go
+interface {
+    io.Writer
+    WriteString(s string) (n int, err error)
+}
+```
+
+尽管`io.WriteString`实施了这个假设，但是调用它的函数极少可能会去实施类似的假设。定义一个特定类型的方法隐式地获取了对特定行为的协约。对于Go语言的新手，特别是那些来自有强类型语言使用背景的新手，可能会发现它缺乏显式的意图令人感到混乱，但是在实战的过程中这几乎不是一个问题。除了空接口`interface{}`，接口类型很少意外巧合地被实现。
+
+**上面的`writeString`函数使用一个类型断言来获知一个普遍接口类型的值是否满足一个更加具体的接口类型；并且如果满足，它会使用这个更具体接口的行为。这个技术可以被很好的使用，不论这个被询问的接口是一个标准如`io.ReadWriter`，或者用户定义的如`stringWriter`接口。**
+
+这也是`fmt.Fprintf`函数怎么从其它所有值中区分满足`error`或者`fmt.Stringer`接口的值。在`fmt.Fprintf`内部，有一个将单个操作对象转换成一个字符串的步骤，像下面这样：
+
+```go
+package fmt
+
+func formatOneValue(x interface{}) string {
+    if err, ok := x.(error); ok {
+        return err.Error()
+    }
+    if str, ok := x.(Stringer); ok {
+        return str.String()
+    }
+    // ...all other types...
+}
+```
+
+如果`x`满足这两个接口类型中的一个，具体满足的接口决定对值的格式化方式。如果都不满足，默认的case或多或少会统一地使用反射来处理所有的其它类型。
+
+再一次的，它假设任何有`String`方法的类型都满足`fmt.Stringer`中约定的行为，这个行为会返回一个适合打印的字符串。
+
+## [类型分支](https://gopl-zh.github.io/ch7/ch7-13.html#713-类型分支)
+
+接口被以2种不同的方式使用：
+
+- 在第1个方式中，以`io.Reader`，`io.Writer`，`fmt.Stringer`，`sort.Interface`，`http.Handler`和`error`为典型，一个接口的方法表达了实现这个接口的具体类型间的相似性，但是隐藏了代码的细节和这些具体类型本身的操作。重点在于方法上，而不是具体的类型上。
+
+- 第2个方式是利用一个接口值可以持有各种具体类型值的能力，将这个接口认为是这些类型的联合。类型断言用来动态地区分这些类型，并以不同的方式处理每种情况。在这个方式中，重点在于具体的类型满足这个接口，而不在于接口的方法（如果它确实有一些的话），并且没有任何的信息隐藏。我们将以这种方式使用的接口描述为discriminated unions（可辨识联合）。
+
+如果你熟悉面向对象编程，你可能会将这两种方式当作是subtype polymorphism（子类型多态）和 ad hoc polymorphism（非参数多态），但是你不需要去记住这些术语。对于本章剩下的部分，我们将会呈现一些第二种方式的例子。
+
+和其它那些语言一样，Go语言查询一个SQL数据库的API会干净地将查询中固定的部分和变化的部分分开。一个调用的例子可能看起来像这样：
+
+```go
+import "database/sql"
+
+func listTracks(db sql.DB, artist string, minYear, maxYear int) {
+    result, err := db.Exec(
+        "SELECT * FROM tracks WHERE artist = ? AND ? <= year AND year <= ?",
+        artist, minYear, maxYear)
+    // ...
+}
+```
+
+`Exec`方法使用SQL字面量替换在查询字符串中的每个`'?'`；SQL字面量表示相应参数的值，它有可能是一个布尔值，一个数字，一个字符串，或者`nil`空值。用这种方式构造查询可以帮助避免SQL注入攻击；这种攻击就是对手可以通过利用输入内容中不正确的引号来控制查询语句。在`Exec`函数内部，我们可能会找到像下面这样的一个函数，它会将每一个参数值转换成它的SQL字面量符号。
+
+```go
+func sqlQuote(x interface{}) string {
+    if x == nil {
+        return "NULL"
+    } else if _, ok := x.(int); ok {
+        return fmt.Sprintf("%d", x)
+    } else if _, ok := x.(uint); ok {
+        return fmt.Sprintf("%d", x)
+    } else if b, ok := x.(bool); ok {
+        if b {
+            return "TRUE"
+        }
+        return "FALSE"
+    } else if s, ok := x.(string); ok {
+        return sqlQuoteString(s) // (not shown)
+    } else {
+        panic(fmt.Sprintf("unexpected type %T: %v", x, x))
+    }
+}
+```
+
+switch语句可以简化if-else链，如果这个if-else链对一连串值做相等测试。一个相似的type switch（类型分支）可以简化类型断言的if-else链。
+
+在最简单的形式中，一个类型分支像普通的switch语句一样，它的运算对象是`x.(type)`——它使用了关键词字面量type——并且每个case有一到多个类型。一个类型分支基于这个接口值的动态类型使一个多路分支有效。这个`nil`的case和`if x == nil`匹配，并且这个default的case和如果其它case都不匹配的情况匹配。一个对`sqlQuote`的类型分支可能会有这些case：
+
+```go
+switch x.(type) {
+case nil:       // ...
+case int, uint: // ...
+case bool:      // ...
+case string:    // ...
+default:        // ...
+}
+```
+
+和（§1.8）中的普通switch语句一样，每一个case会被顺序的进行考虑，并且当一个匹配找到时，这个case中的内容会被执行。当一个或多个case类型是接口时，case的顺序就会变得很重要，因为可能会有两个case同时匹配的情况。default case相对其它case的位置是无所谓的。它不会允许落空发生。
+
+注意到在原来的函数中，对于bool和string情况的逻辑需要通过类型断言访问提取的值。因为这个做法很典型，类型分支语句有一个扩展的形式，它可以将提取的值绑定到一个在每个case范围内都有效的新变量。
+
+```go
+switch x := x.(type) { /* ... */ }
+```
+
+这里我们已经将新的变量也命名为`x`；和类型断言一样，重用变量名是很常见的。和一个switch语句相似地，一个类型分支隐式的创建了一个词法块，因此新变量`x`的定义不会和外面块中的`x`变量冲突。每一个case也会隐式的创建一个单独的词法块。
+
+使用类型分支的扩展形式来重写`sqlQuote`函数会让这个函数更加的清晰：
+
+```go
+func sqlQuote(x interface{}) string {
+    switch x := x.(type) {
+    case nil:
+        return "NULL"
+    case int, uint:
+        return fmt.Sprintf("%d", x) // x has type interface{} here.
+    case bool:
+        if x {
+            return "TRUE"
+        }
+        return "FALSE"
+    case string:
+        return sqlQuoteString(x) // (not shown)
+    default:
+        panic(fmt.Sprintf("unexpected type %T: %v", x, x))
+    }
+}
+```
+
+在这个版本的函数中，在每个单一类型的case内部，变量`x`和这个case的类型相同。例如，变量`x`在bool的case中是bool类型和string的case中是string类型。在所有其它的情况中，变量`x`是switch运算对象的类型（接口）；在这个例子中运算对象是一个`interface{}`。当多个case需要相同的操作时，比如`int`和`uint`的情况，类型分支可以很容易的合并这些情况。
+
+尽管`sqlQuote`接受一个任意类型的参数，但是这个函数只会在它的参数匹配类型分支中的一个case时运行到结束；其它情况的它会panic出`"unexpected type"`消息。虽然`x`的类型是`interface{}`，但是我们把它认为是一个`int`，`uint`，`bool`，`string`，和`nil`值的discriminated union（可识别联合）。
+
+## [示例: 基于标记的XML解码](https://gopl-zh.github.io/ch7/ch7-14.html#714-示例-基于标记的xml解码)
+
+第4.5章节展示了如何使用`encoding/json`包中的`Marshal`和`Unmarshal`函数来将JSON文档转换成Go语言的数据结构。`encoding/xml`包提供了一个相似的API。当我们想构造一个文档树的表示时使用`encoding/xml`包会很方便，但是对于很多程序并不是必须的。`encoding/xml`包也提供了一个更低层的基于标记的API用于XML解码。在基于标记的样式中，解析器消费输入并产生一个标记流；四个主要的标记类型－`StartElement`，`EndElement`，`CharData`，和`Comment`－每一个都是`encoding/xml`包中的具体类型。每一个对`(*xml.Decoder).Token`的调用都返回一个标记。
+
+这里显示的是和这个API相关的部分：
+
+```go
+package xml
+
+type Name struct {
+    Local string // e.g., "Title" or "id"
+}
+
+type Attr struct { // e.g., name="value"
+    Name  Name
+    Value string
+}
+
+// A Token includes StartElement, EndElement, CharData,
+// and Comment, plus a few esoteric types (not shown).
+type Token interface{}
+type StartElement struct { // e.g., <name>
+    Name Name
+    Attr []Attr
+}
+type EndElement struct { Name Name } // e.g., </name>
+type CharData []byte                 // e.g., <p>CharData</p>
+type Comment []byte                  // e.g., <!-- Comment -->
+
+type Decoder struct{ /* ... */ }
+func NewDecoder(io.Reader) *Decoder
+func (*Decoder) Token() (Token, error) // returns next Token in sequence
+```
+
+这个没有方法的`Token`接口也是一个可识别联合的例子。传统的接口如`io.Reader`的目的是隐藏满足它的具体类型的细节，这样就可以创造出新的实现：在这个实现中每个具体类型都被统一地对待。相反，满足可识别联合的具体类型的集合被设计为确定和暴露，而不是隐藏。可识别联合的类型几乎没有方法，操作它们的函数使用一个类型分支的case集合来进行表述，这个case集合中每一个case都有不同的逻辑。
+
+下面的`xmlselect`程序获取和打印在一个XML文档树中确定的元素下找到的文本。使用上面的API，它可以在输入上一次完成它的工作而从来不要实例化这个文档树。
+
+```go
+// Xmlselect prints the text of selected elements of an XML document.
+package main
+
+import (
+    "encoding/xml"
+    "fmt"
+    "io"
+    "os"
+    "strings"
+)
+
+func main() {
+    dec := xml.NewDecoder(os.Stdin)
+    var stack []string // stack of element names
+    for {
+        tok, err := dec.Token()
+        if err == io.EOF {
+            break
+        } else if err != nil {
+            fmt.Fprintf(os.Stderr, "xmlselect: %v\n", err)
+            os.Exit(1)
+        }
+        switch tok := tok.(type) {
+        case xml.StartElement:
+            stack = append(stack, tok.Name.Local) // push
+        case xml.EndElement:
+            stack = stack[:len(stack)-1] // pop
+        case xml.CharData:
+            if containsAll(stack, os.Args[1:]) {
+                fmt.Printf("%s: %s\n", strings.Join(stack, " "), tok)
+            }
+        }
+    }
+}
+
+// containsAll reports whether x contains the elements of y, in order.
+func containsAll(x, y []string) bool {
+    for len(y) <= len(x) {
+        if len(y) == 0 {
+            return true
+        }
+        if x[0] == y[0] {
+            y = y[1:]
+        }
+        x = x[1:]
+    }
+    return false
+}
+```
+
+main函数中的循环每遇到一个`StartElement`时，它把这个元素的名称压到一个栈里，并且每次遇到`EndElement`时，它将名称从这个栈中推出。这个API保证了`StartElement`和`EndElement`的序列可以被完全的匹配，甚至在一个糟糕的文档格式中。注释会被忽略。当`xmlselect`遇到一个`CharData`时，只有当栈中有序地包含所有通过命令行参数传入的元素名称时，它才会输出相应的文本。
+
+下面的命令打印出任意出现在两层`div`元素下的`h2`元素的文本。它的输入是XML的说明文档，并且它自己就是XML文档格式的。
+
+```
+$ go build gopl.io/ch1/fetch
+$ ./fetch http://www.w3.org/TR/2006/REC-xml11-20060816 |
+    ./xmlselect div div h2
+html body div div h2: 1 Introduction
+html body div div h2: 2 Documents
+html body div div h2: 3 Logical Structures
+html body div div h2: 4 Physical Structures
+html body div div h2: 5 Conformance
+html body div div h2: 6 Notation
+html body div div h2: A References
+html body div div h2: B Definitions for Character Normalization
+...
+```
+
+## [一些建议](https://gopl-zh.github.io/ch7/ch7-15.html#715-一些建议)
+
+当设计一个新的包时，新手Go程序员总是先创建一套接口，然后再定义一些满足它们的具体类型。这种方式的结果就是有很多的接口，它们中的每一个仅只有一个实现。不要再这么做了。这种接口是不必要的抽象；它们也有一个运行时损耗。你可以使用导出机制（§6.6）来限制一个类型的方法或一个结构体的字段是否在包外可见。接口只有当有两个或两个以上的具体类型必须以相同的方式进行处理时才需要。
+
+当一个接口只被一个单一的具体类型实现时有一个例外，就是由于它的依赖，这个具体类型不能和这个接口存在在一个相同的包中。这种情况下，一个接口是解耦这两个包的一个好方式。
+
+因为在Go语言中只有当两个或更多的类型实现一个接口时才使用接口，它们必定会从任意特定的实现细节中抽象出来。结果就是有更少和更简单方法的更小的接口（经常和`io.Writer`或 `fmt.Stringer`一样只有一个）。当新的类型出现时，小的接口更容易满足。对于接口设计的一个好的标准就是 ask only for what you need（只考虑你需要的东西）
+
+我们完成了对方法和接口的学习过程。Go语言对面向对象风格的编程支持良好，但这并不意味着你只能使用这一风格。不是任何事物都需要被当做一个对象；独立的函数有它们自己的用处，未封装的数据类型也是这样。观察一下，在本书前五章的例子中像`input.Scan`这样的方法被调用不超过二十次，与之相反的是普遍调用的函数如`fmt.Printf`。
 
 
 
+# [Goroutines和Channels](https://gopl-zh.github.io/ch8/ch8.html#第8章-goroutines和channels)
+
+## [Goroutines](https://gopl-zh.github.io/ch8/ch8-01.html#81-goroutines)
+
+在Go语言中，每一个并发的执行单元叫作一个goroutine。设想这里的一个程序有两个函数，一个函数做计算，另一个输出结果，假设两个函数没有相互之间的调用关系。一个线性的程序会先调用其中的一个函数，然后再调用另一个。如果程序中包含多个goroutine，对两个函数的调用则可能发生在同一时刻。
+
+如果你使用过操作系统或者其它语言提供的线程，那么你可以简单地把goroutine类比作一个线程，但它们是有很大差别的。
+
+**当一个程序启动时，其主函数即在一个单独的goroutine中运行，我们叫它main goroutine。新的goroutine会用go语句来创建。在语法上，go语句是一个普通的函数或方法调用前加上关键字go。go语句会使其语句中的函数在一个新创建的goroutine中运行。而go语句本身会迅速地完成。**
+
+```go
+f()    // call f(); wait for it to return
+go f() // create a new goroutine that calls f(); don't wait
+```
+
+下面的例子，main goroutine将计算菲波那契数列的第45个元素值。由于计算函数使用低效的递归，所以会运行相当长时间，在此期间我们想让用户看到一个可见的标识来表明程序依然在正常运行，所以来做一个动画的小图标：
+
+```go
+func main() {
+    go spinner(100 * time.Millisecond)
+    const n = 45
+    fibN := fib(n) // slow
+    fmt.Printf("\rFibonacci(%d) = %d\n", n, fibN)
+}
+
+func spinner(delay time.Duration) {
+    for {
+        for _, r := range `-\|/` {
+            fmt.Printf("\r%c", r)
+            time.Sleep(delay)
+        }
+    }
+}
+
+func fib(x int) int {
+    if x < 2 {
+        return x
+    }
+    return fib(x-1) + fib(x-2)
+}
+```
+
+动画显示了几秒之后，`fib(45)`的调用成功地返回，并且打印结果：
+
+```
+Fibonacci(45) = 1134903170
+```
+
+然后主函数返回。**主函数返回时，所有的goroutine都会被直接打断，程序退出。**除了从主函数退出或者直接终止程序之外，没有其它的编程方法能够让一个goroutine来打断另一个的执行，但是之后可以看到一种方式来实现这个目的，通过goroutine之间的通信来让一个goroutine请求其它的goroutine，并让被请求的goroutine自行结束执行。
+
+留意一下这里的两个独立的单元是如何进行组合的，spinning和菲波那契的计算。分别在独立的函数中，但两个函数会同时执行。
+
+## [示例: 并发的Clock服务](https://gopl-zh.github.io/ch8/ch8-02.html#82-示例-并发的clock服务)
+
+网络编程是并发大显身手的一个领域，由于服务器是最典型的需要同时处理很多连接的程序，这些连接一般来自于彼此独立的客户端。在本小节中，我们会讲解go语言的`net`包，这个包提供编写一个网络客户端或者服务器程序的基本组件，无论两者间通信是使用TCP、UDP或者Unix domain sockets。
+
+我们的第一个例子是一个顺序执行的时钟服务器，它会每隔一秒钟将当前时间写到客户端：
+
+```go
+// Clock1 is a TCP server that periodically writes the time.
+package main
+
+import (
+    "io"
+    "log"
+    "net"
+    "time"
+)
+
+func main() {
+    listener, err := net.Listen("tcp", "localhost:8000")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    for {
+        conn, err := listener.Accept()
+        if err != nil {
+            log.Print(err) // e.g., connection aborted
+            continue
+        }
+        handleConn(conn) // handle one connection at a time
+    }
+}
+
+func handleConn(c net.Conn) {
+    defer c.Close()
+    for {
+        _, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
+        if err != nil {
+            return // e.g., client disconnected
+        }
+        time.Sleep(1 * time.Second)
+    }
+}
+```
+
+`Listen`函数创建了一个`net.Listener`的对象，这个对象会监听一个网络端口上到来的连接，在这个例子里我们用的是TCP的`"localhost:8000"`端口。`listener`对象的`Accept`方法会直接阻塞，直到一个新的连接被创建，然后会返回一个`net.Conn`对象来表示这个连接。
+
+`handleConn`函数会处理一个完整的客户端连接。在一个for死循环中，用`time.Now()`获取当前时刻，然后写到客户端。由于`net.Conn`实现了`io.Writer`接口，我们可以直接向其写入内容。这个死循环会一直执行，直到写入失败。最可能的原因是客户端主动断开连接。这种情况下`handleConn`函数会用defer调用关闭服务器侧的连接，然后返回到主函数，继续等待下一个连接请求。
+
+`time.Time.Format`方法提供了一种格式化日期和时间信息的方式。它的参数是一个格式化模板，标识如何来格式化时间，而这个格式化模板限定为`Mon Jan 2 03:04:05PM 2006 UTC-0700`。有8个部分（周几、月份、一个月的第几天……）。可以以任意的形式来组合前面这个模板；出现在模板中的部分会作为参考来对时间格式进行输出。在上面的例子中我们只用到了小时、分钟和秒。`time`包里定义了很多标准时间格式，比如`time.RFC1123`。在进行格式化的逆向操作`time.Parse`时，也会用到同样的策略。（译注：这是go语言和其它语言相比比较奇葩的一个地方。你需要记住格式化字符串是`1月2日下午3点4分5秒零六年UTC-0700`，而不像其它语言那样`Y-m-d H:i:s`一样，当然了这里可以用1234567的方式来记忆，倒是也不麻烦。）
+
+为了连接例子里的服务器，我们需要一个客户端程序，比如netcat这个工具（`nc`命令），这个工具可以用来执行网络连接操作。
+
+```
+$ go build gopl.io/ch8/clock1
+$ ./clock1 &
+$ nc localhost 8000
+13:58:54
+13:58:55
+13:58:56
+13:58:57
+^C
+```
+
+客户端将服务器发来的时间显示了出来，我们用Control+C来中断客户端的执行，在Unix系统上，你会看到^C这样的响应。如果你的系统没有装nc这个工具，你可以用telnet来实现同样的效果，或者也可以用我们下面的这个用go写的简单的telnet程序，用`net.Dial`就可以简单地创建一个TCP连接：
+
+```go
+// Netcat1 is a read-only TCP client.
+package main
+
+import (
+    "io"
+    "log"
+    "net"
+    "os"
+)
+
+func main() {
+    conn, err := net.Dial("tcp", "localhost:8000")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer conn.Close()
+    mustCopy(os.Stdout, conn)
+}
+
+func mustCopy(dst io.Writer, src io.Reader) {
+    if _, err := io.Copy(dst, src); err != nil {
+        log.Fatal(err)
+    }
+}
+```
+
+这个程序会从连接中读取数据，并将读到的内容写到标准输出中，直到遇到end of file的条件或者发生错误。`mustCopy`这个函数我们在本节的几个例子中都会用到。让我们同时运行两个客户端来进行一个测试，这里可以开两个终端窗口，下面左边的是其中的一个的输出，右边的是另一个的输出：
+
+```
+$ go build gopl.io/ch8/netcat1
+$ ./netcat1
+13:58:54                               $ ./netcat1
+13:58:55
+13:58:56
+^C
+                                       13:58:57
+                                       13:58:58
+                                       13:58:59
+                                       ^C
+$ killall clock1
+```
+
+killall命令是一个Unix命令行工具，可以用给定的进程名来杀掉所有名字匹配的进程。
+
+第二个客户端必须等待第一个客户端完成工作，这样服务端才能继续向后执行；因为我们这里的服务器程序同一时间只能处理一个客户端连接。我们这里对服务端程序做一点小改动，使其支持并发：在`handleConn`函数调用的地方增加go关键字，让每一次`handleConn`的调用都进入一个独立的goroutine。
+
+```go
+for {
+    conn, err := listener.Accept()
+    if err != nil {
+        log.Print(err) // e.g., connection aborted
+        continue
+    }
+    go handleConn(conn) // handle connections concurrently
+}
+```
+
+现在多个客户端可以同时接收到时间了：
+
+```
+$ go build gopl.io/ch8/clock2
+$ ./clock2 &
+$ go build gopl.io/ch8/netcat1
+$ ./netcat1
+14:02:54                               $ ./netcat1
+14:02:55                               14:02:55
+14:02:56                               14:02:56
+14:02:57                               ^C
+14:02:58
+14:02:59                               $ ./netcat1
+14:03:00                               14:03:00
+14:03:01                               14:03:01
+^C                                     14:03:02
+                                       ^C
+$ killall clock2
+```
+
+
+
+## [示例: 并发的Echo服务](https://gopl-zh.github.io/ch8/ch8-03.html#83-示例-并发的echo服务)
+
+clock服务器每一个连接都会起一个goroutine。在本节中我们会创建一个echo服务器，这个服务在每个连接中会有多个goroutine。大多数echo服务仅仅会返回他们读取到的内容，就像下面这个简单的`handleConn`函数所做的一样：
+
+```go
+func handleConn(c net.Conn) {
+    io.Copy(c, c) // NOTE: ignoring errors
+    c.Close()
+}
+```
+
+一个更有意思的echo服务应该模拟一个实际的echo的“回响”，并且一开始要用大写HELLO来表示“声音很大”，之后经过一小段延迟返回一个有所缓和的Hello，然后一个全小写字母的hello表示声音渐渐变小直至消失，像下面这个版本的`handleConn`：
+
+```go
+func echo(c net.Conn, shout string, delay time.Duration) {
+    fmt.Fprintln(c, "\t", strings.ToUpper(shout))
+    time.Sleep(delay)
+    fmt.Fprintln(c, "\t", shout)
+    time.Sleep(delay)
+    fmt.Fprintln(c, "\t", strings.ToLower(shout))
+}
+
+func handleConn(c net.Conn) {
+    input := bufio.NewScanner(c)
+    for input.Scan() {
+        echo(c, input.Text(), 1*time.Second)
+    }
+    // NOTE: ignoring potential errors from input.Err()
+    c.Close()
+}
+```
+
+我们需要升级我们的客户端程序，这样它就可以发送终端的输入到服务器，并把服务端的返回输出到终端上，这使我们有了使用并发的另一个好机会：
+
+```go
+func main() {
+    conn, err := net.Dial("tcp", "localhost:8000")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer conn.Close()
+    go mustCopy(os.Stdout, conn)
+    mustCopy(conn, os.Stdin)
+}
+```
+
+当main goroutine从标准输入流中读取内容并将其发送给服务器时，另一个goroutine会读取并打印服务端的响应。当main goroutine碰到输入终止时，例如，用户在终端中按了Control-D(^D)，在windows上是Control-Z，这时程序就会被终止，尽管其它goroutine中还有进行中的任务。（在8.4.1中引入了channels后我们会明白如何让程序等待两边都结束。）
+
+下面这个会话中，客户端的输入是左对齐的，服务端的响应会用缩进来区别显示。 客户端会向服务器“喊三次话”：
+
+```
+$ go build gopl.io/ch8/reverb1
+$ ./reverb1 &
+$ go build gopl.io/ch8/netcat2
+$ ./netcat2
+Hello?
+    HELLO?
+    Hello?
+    hello?
+Is there anybody there?
+    IS THERE ANYBODY THERE?
+Yooo-hooo!
+    Is there anybody there?
+    is there anybody there?
+    YOOO-HOOO!
+    Yooo-hooo!
+    yooo-hooo!
+^D
+$ killall reverb1
+```
+
+注意客户端的第三次shout在前一个shout处理完成之前一直没有被处理，这貌似看起来不是特别“现实”。真实世界里的回响应该是会由三次shout的回声组合而成的。为了模拟真实世界的回响，我们需要更多的goroutine来做这件事情。这样我们就再一次地需要go这个关键词了，这次我们用它来调用echo：
+
+```go
+func handleConn(c net.Conn) {
+    input := bufio.NewScanner(c)
+    for input.Scan() {
+        go echo(c, input.Text(), 1*time.Second)
+    }
+    // NOTE: ignoring potential errors from input.Err()
+    c.Close()
+}
+```
+
+go后跟的函数的参数会在go语句自身执行时被求值；因此`input.Text()`会在main goroutine中被求值。 现在回响是并发并且会按时间来覆盖掉其它响应了：
+
+```
+$ go build gopl.io/ch8/reverb2
+$ ./reverb2 &
+$ ./netcat2
+Is there anybody there?
+    IS THERE ANYBODY THERE?
+Yooo-hooo!
+    Is there anybody there?
+    YOOO-HOOO!
+    is there anybody there?
+    Yooo-hooo!
+    yooo-hooo!
+^D
+$ killall reverb2
+```
+
+让服务使用并发不只是处理多个客户端的请求，甚至在处理单个连接时也可能会用到，就像我们上面的两个go关键词的用法。然而在我们使用go关键词的同时，需要慎重地考虑`net.Conn`中的方法在并发地调用时是否安全，事实上对于大多数类型来说也确实不安全。我们会在下一章中详细地探讨并发安全性。
+
+## [Channels](https://gopl-zh.github.io/ch8/ch8-04.html#84-channels)
+
+如果说goroutine是Go语言程序的并发体的话，那么channels则是它们之间的通信机制。一个channel是一个通信机制，它可以让一个goroutine通过它给另一个goroutine发送值信息。每个channel都有一个特殊的类型，也就是channels可发送数据的类型。一个可以发送int类型数据的channel一般写为`chan int`。
+
+使用内置的make函数，我们可以创建一个channel：
+
+```Go
+ch := make(chan int) // ch has type 'chan int'
+```
+
+和map类似，channel也对应一个make创建的底层数据结构的引用。当我们复制一个channel或用于函数参数传递时，我们只是拷贝了一个channel引用，因此调用者和被调用者将引用同一个channel对象。和其它的引用类型一样，channel的零值也是nil。
+
+两个相同类型的channel可以使用==运算符比较。如果两个channel引用的是相同的对象，那么比较的结果为真。一个channel也可以和nil进行比较。
+
+一个channel有发送和接受两个主要操作，都是通信行为。一个发送语句将一个值从一个goroutine通过channel发送到另一个执行接收操作的goroutine。发送和接收两个操作都使用`<-`运算符。在发送语句中，`<-`运算符分割channel和要发送的值。在接收语句中，`<-`运算符写在channel对象之前。一个不使用接收结果的接收操作也是合法的。
+
+```Go
+ch <- x  // a send statement
+x = <-ch // a receive expression in an assignment statement
+<-ch     // a receive statement; result is discarded
+```
+
+Channel还支持close操作，用于关闭channel，随后对基于该channel的任何发送操作都将导致panic异常。对一个已经被close过的channel进行接收操作依然可以接受到之前已经成功发送的数据；如果channel中已经没有数据的话将产生一个零值的数据。
+
+使用内置的close函数就可以关闭一个channel：
+
+```Go
+close(ch)
+```
+
+以最简单方式调用make函数创建的是一个无缓存的channel，但是我们也可以指定第二个整型参数，对应channel的容量。如果channel的容量大于零，那么该channel就是带缓存的channel。
+
+```Go
+ch = make(chan int)    // unbuffered channel
+ch = make(chan int, 0) // unbuffered channel
+ch = make(chan int, 3) // buffered channel with capacity 3
+```
+
+我们将先讨论无缓存的channel，然后在8.4.4节讨论带缓存的channel。
+
+### [不带缓存的Channels](https://gopl-zh.github.io/ch8/ch8-04.html#841-不带缓存的channels)
+
+一个基于无缓存Channels的发送操作将导致发送者goroutine阻塞，直到另一个goroutine在相同的Channels上执行接收操作，当发送的值通过Channels成功传输之后，两个goroutine可以继续执行后面的语句。反之，如果接收操作先发生，那么接收者goroutine也将阻塞，直到有另一个goroutine在相同的Channels上执行发送操作。
+
+基于无缓存Channels的发送和接收操作将导致两个goroutine做一次同步操作。因为这个原因，无缓存Channels有时候也被称为同步Channels。当通过一个无缓存Channels发送数据时，接收者收到数据发生在再次唤醒发送者goroutine之前（译注：*happens before*，这是Go语言并发内存模型的一个关键术语！）。
+
+在讨论并发编程时，当我们说x事件在y事件之前发生（*happens before*），我们并不是说x事件在时间上比y时间更早；我们要表达的意思是要保证在此之前的事件都已经完成了，例如在此之前的更新某些变量的操作已经完成，你可以放心依赖这些已完成的事件了。
+
+当我们说x事件既不是在y事件之前发生也不是在y事件之后发生，我们就说x事件和y事件是并发的。这并不是意味着x事件和y事件就一定是同时发生的，我们只是不能确定这两个事件发生的先后顺序。在下一章中我们将看到，当两个goroutine并发访问了相同的变量时，我们有必要保证某些事件的执行顺序，以避免出现某些并发问题。
+
+在8.3节的客户端程序，它在主goroutine中（译注：就是执行main函数的goroutine）将标准输入复制到server，因此当客户端程序关闭标准输入时，后台goroutine可能依然在工作。我们需要让主goroutine等待后台goroutine完成工作后再退出，我们使用了一个channel来同步两个goroutine：
+
+```Go
+func main() {
+    conn, err := net.Dial("tcp", "localhost:8000")
+    if err != nil {
+        log.Fatal(err)
+    }
+    done := make(chan struct{})
+    go func() {
+        io.Copy(os.Stdout, conn) // NOTE: ignoring errors
+        log.Println("done")
+        done <- struct{}{} // signal the main goroutine
+    }()
+    mustCopy(conn, os.Stdin)
+    conn.Close()
+    <-done // wait for background goroutine to finish
+}
+```
+
+当用户关闭了标准输入，主goroutine中的mustCopy函数调用将返回，然后调用conn.Close()关闭读和写方向的网络连接。关闭网络连接中的写方向的连接将导致server程序收到一个文件（end-of-file）结束的信号。关闭网络连接中读方向的连接将导致后台goroutine的io.Copy函数调用返回一个“read from closed connection”（“从关闭的连接读”）类似的错误，因此我们临时移除了错误日志语句；在练习8.3将会提供一个更好的解决方案。（需要注意的是go语句调用了一个函数字面量，这是Go语言中启动goroutine常用的形式。）
+
+在后台goroutine返回之前，它先打印一个日志信息，然后向done对应的channel发送一个值。主goroutine在退出前先等待从done对应的channel接收一个值。因此，总是可以在程序退出前正确输出“done”消息。
+
+基于channels发送消息有两个重要方面。首先每个消息都有一个值，但是有时候通讯的事实和发生的时刻也同样重要。当我们更希望强调通讯发生的时刻时，我们将它称为**消息事件**。有些消息事件并不携带额外的信息，它仅仅是用作两个goroutine之间的同步，这时候我们可以用`struct{}`空结构体作为channels元素的类型，虽然也可以使用bool或int类型实现同样的功能，`done <- 1`语句也比`done <- struct{}{}`更短。
+
+**练习 8.3：** 在netcat3例子中，conn虽然是一个interface类型的值，但是其底层真实类型是`*net.TCPConn`，代表一个TCP连接。一个TCP连接有读和写两个部分，可以使用CloseRead和CloseWrite方法分别关闭它们。修改netcat3的主goroutine代码，只关闭网络连接中写的部分，这样的话后台goroutine可以在标准输入被关闭后继续打印从reverb1服务器传回的数据。（要在reverb2服务器也完成同样的功能是比较困难的；参考**练习 8.4**。）
+
+### [串联的Channels（Pipeline）](https://gopl-zh.github.io/ch8/ch8-04.html#842-串联的channelspipeline)
+
+Channels也可以用于将多个goroutine连接在一起，一个Channel的输出作为下一个Channel的输入。这种串联的Channels就是所谓的管道（pipeline）。下面的程序用两个channels将三个goroutine串联起来，如图8.1所示。
+
+![img](notes-of-gopl/ch8-01.png)
+
+第一个goroutine是一个计数器，用于生成0、1、2、……形式的整数序列，然后通过channel将该整数序列发送给第二个goroutine；第二个goroutine是一个求平方的程序，对收到的每个整数求平方，然后将平方后的结果通过第二个channel发送给第三个goroutine；第三个goroutine是一个打印程序，打印收到的每个整数。为了保持例子清晰，我们有意选择了非常简单的函数，当然三个goroutine的计算很简单，在现实中确实没有必要为如此简单的运算构建三个goroutine。
+
+```Go
+func main() {
+    naturals := make(chan int)
+    squares := make(chan int)
+
+    // Counter
+    go func() {
+        for x := 0; ; x++ {
+            naturals <- x
+        }
+    }()
+
+    // Squarer
+    go func() {
+        for {
+            x := <-naturals
+            squares <- x * x
+        }
+    }()
+
+    // Printer (in main goroutine)
+    for {
+        fmt.Println(<-squares)
+    }
+}
+```
+
+如您所料，上面的程序将生成0、1、4、9、……形式的无穷数列。像这样的串联Channels的管道（Pipelines）可以用在需要长时间运行的服务中，每个长时间运行的goroutine可能会包含一个死循环，在不同goroutine的死循环内部使用串联的Channels来通信。但是，如果我们希望通过Channels只发送有限的数列该如何处理呢？
+
+如果发送者知道，没有更多的值需要发送到channel的话，那么让接收者也能及时知道没有多余的值可接收将是有用的，因为接收者可以停止不必要的接收等待。这可以通过内置的close函数来关闭channel实现：
+
+```Go
+close(naturals)
+```
+
+当一个channel被关闭后，再向该channel发送数据将导致panic异常。当一个被关闭的channel中已经发送的数据都被成功接收后，后续的接收操作将不再阻塞，它们会立即返回一个零值。关闭上面例子中的naturals变量对应的channel并不能终止循环，它依然会收到一个永无休止的零值序列，然后将它们发送给打印者goroutine。
+
+没有办法直接测试一个channel是否被关闭，但是接收操作有一个变体形式：它多接收一个结果，多接收的第二个结果是一个布尔值ok，ture表示成功从channels接收到值，false表示channels已经被关闭并且里面没有值可接收。使用这个特性，我们可以修改squarer函数中的循环代码，当naturals对应的channel被关闭并没有值可接收时跳出循环，并且也关闭squares对应的channel.
+
+```Go
+// Squarer
+go func() {
+    for {
+        x, ok := <-naturals
+        if !ok {
+            break // channel was closed and drained
+        }
+        squares <- x * x
+    }
+    close(squares)
+}()
+```
+
+因为上面的语法是笨拙的，而且这种处理模式很常见，因此Go语言的range循环可直接在channels上面迭代。使用range循环是上面处理模式的简洁语法，它依次从channel接收数据，当channel被关闭并且没有值可接收时跳出循环。
+
+在下面的改进中，我们的计数器goroutine只生成100个含数字的序列，然后关闭naturals对应的channel，这将导致计算平方数的squarer对应的goroutine可以正常终止循环并关闭squares对应的channel。（在一个更复杂的程序中，可以通过defer语句关闭对应的channel。）最后，主goroutine也可以正常终止循环并退出程序。
+
+*gopl.io/ch8/pipeline2*
+
+```Go
+func main() {
+    naturals := make(chan int)
+    squares := make(chan int)
+
+    // Counter
+    go func() {
+        for x := 0; x < 100; x++ {
+            naturals <- x
+        }
+        close(naturals)
+    }()
+
+    // Squarer
+    go func() {
+        for x := range naturals {
+            squares <- x * x
+        }
+        close(squares)
+    }()
+
+    // Printer (in main goroutine)
+    for x := range squares {
+        fmt.Println(x)
+    }
+}
+```
+
+其实你并不需要关闭每一个channel。只有当需要告诉接收者goroutine，所有的数据已经全部发送时才需要关闭channel。不管一个channel是否被关闭，当它没有被引用时将会被Go语言的垃圾自动回收器回收。（不要将关闭一个打开文件的操作和关闭一个channel操作混淆。对于每个打开的文件，都需要在不使用的时候调用对应的Close方法来关闭文件。）
+
+试图重复关闭一个channel将导致panic异常，试图关闭一个nil值的channel也将导致panic异常。关闭一个channels还会触发一个广播机制，我们将在8.9节讨论。
+
+### [单方向的Channel](https://gopl-zh.github.io/ch8/ch8-04.html#843-单方向的channel)
+
+随着程序的增长，人们习惯于将大的函数拆分为小的函数。我们前面的例子中使用了三个goroutine，然后用两个channels来连接它们，它们都是main函数的局部变量。将三个goroutine拆分为以下三个函数是自然的想法：
+
+```Go
+func counter(out chan int)
+func squarer(out, in chan int)
+func printer(in chan int)
+```
+
+其中计算平方的squarer函数在两个串联Channels的中间，因此拥有两个channel类型的参数，一个用于输入一个用于输出。两个channel都拥有相同的类型，但是它们的使用方式相反：一个只用于接收，另一个只用于发送。参数的名字in和out已经明确表示了这个意图，但是并无法保证squarer函数向一个in参数对应的channel发送数据或者从一个out参数对应的channel接收数据。
+
+这种场景是典型的。当一个channel作为一个函数参数时，它一般总是被专门用于只发送或者只接收。
+
+为了表明这种意图并防止被滥用，Go语言的类型系统提供了单方向的channel类型，分别用于只发送或只接收的channel。类型`chan<- int`表示一个只发送int的channel，只能发送不能接收。相反，类型`<-chan int`表示一个只接收int的channel，只能接收不能发送。（箭头`<-`和关键字chan的相对位置表明了channel的方向。）这种限制将在编译期检测。
+
+因为关闭操作只用于断言不再向channel发送新的数据，所以只有在发送者所在的goroutine才会调用close函数，因此对一个只接收的channel调用close将是一个编译错误。
+
+这是改进的版本，这一次参数使用了单方向channel类型：
+
+*gopl.io/ch8/pipeline3*
+
+```Go
+func counter(out chan<- int) {
+    for x := 0; x < 100; x++ {
+        out <- x
+    }
+    close(out)
+}
+
+func squarer(out chan<- int, in <-chan int) {
+    for v := range in {
+        out <- v * v
+    }
+    close(out)
+}
+
+func printer(in <-chan int) {
+    for v := range in {
+        fmt.Println(v)
+    }
+}
+
+func main() {
+    naturals := make(chan int)
+    squares := make(chan int)
+    go counter(naturals)
+    go squarer(squares, naturals)
+    printer(squares)
+}
+```
+
+调用counter（naturals）时，naturals的类型将隐式地从chan int转换成chan<- int。调用printer(squares)也会导致相似的隐式转换，这一次是转换为`<-chan int`类型只接收型的channel。任何双向channel向单向channel变量的赋值操作都将导致该隐式转换。这里并没有反向转换的语法：也就是不能将一个类似`chan<- int`类型的单向型的channel转换为`chan int`类型的双向型的channel。
+
+### [带缓存的Channels](https://gopl-zh.github.io/ch8/ch8-04.html#844-带缓存的channels)
+
+带缓存的Channel内部持有一个元素队列。队列的最大容量是在调用make函数创建channel时通过第二个参数指定的。下面的语句创建了一个可以持有三个字符串元素的带缓存Channel。图8.2是ch变量对应的channel的图形表示形式。
+
+```Go
+ch = make(chan string, 3)
+```
+
+![img](notes-of-gopl/ch8-02.png)
+
+向缓存Channel的发送操作就是向内部缓存队列的尾部插入元素，接收操作则是从队列的头部删除元素。如果内部缓存队列是满的，那么发送操作将阻塞直到因另一个goroutine执行接收操作而释放了新的队列空间。相反，如果channel是空的，接收操作将阻塞直到有另一个goroutine执行发送操作而向队列插入元素。
+
+我们可以在无阻塞的情况下连续向新创建的channel发送三个值：
+
+```Go
+ch <- "A"
+ch <- "B"
+ch <- "C"
+```
+
+此刻，channel的内部缓存队列将是满的（图8.3），如果有第四个发送操作将发生阻塞。
+
+![img](notes-of-gopl/ch8-03.png)
+
+如果我们接收一个值，
+
+```Go
+fmt.Println(<-ch) // "A"
+```
+
+那么channel的缓存队列将不是满的也不是空的（图8.4），因此对该channel执行的发送或接收操作都不会发生阻塞。通过这种方式，channel的缓存队列解耦了接收和发送的goroutine。
+
+![img](notes-of-gopl/ch8-04.png)
+
+在某些特殊情况下，程序可能需要知道channel内部缓存的容量，可以用内置的cap函数获取：
+
+```Go
+fmt.Println(cap(ch)) // "3"
+```
+
+同样，对于内置的len函数，如果传入的是channel，那么将返回channel内部缓存队列中有效元素的个数。因为在并发程序中该信息会随着接收操作而失效，但是它对某些故障诊断和性能优化会有帮助。
+
+```Go
+fmt.Println(len(ch)) // "2"
+```
+
+在继续执行两次接收操作后channel内部的缓存队列将又成为空的，如果有第四个接收操作将发生阻塞：
+
+```Go
+fmt.Println(<-ch) // "B"
+fmt.Println(<-ch) // "C"
+```
+
+在这个例子中，发送和接收操作都发生在同一个goroutine中，但是在真实的程序中它们一般由不同的goroutine执行。Go语言新手有时候会将一个带缓存的channel当作同一个goroutine中的队列使用，虽然语法看似简单，但实际上这是一个错误。Channel和goroutine的调度器机制是紧密相连的，如果没有其他goroutine从channel接收，发送者——或许是整个程序——将会面临永远阻塞的风险。如果你只是需要一个简单的队列，使用slice就可以了。
+
+下面的例子展示了一个使用了带缓存channel的应用。它并发地向三个镜像站点发出请求，三个镜像站点分散在不同的地理位置。它们分别将收到的响应发送到带缓存channel，最后接收者只接收第一个收到的响应，也就是最快的那个响应。因此mirroredQuery函数可能在另外两个响应慢的镜像站点响应之前就返回了结果。（顺便说一下，多个goroutines并发地向同一个channel发送数据，或从同一个channel接收数据都是常见的用法。）
+
+```Go
+func mirroredQuery() string {
+    responses := make(chan string, 3)
+    go func() { responses <- request("asia.gopl.io") }()
+    go func() { responses <- request("europe.gopl.io") }()
+    go func() { responses <- request("americas.gopl.io") }()
+    return <-responses // return the quickest response
+}
+
+func request(hostname string) (response string) { /* ... */ }
+```
+
+如果我们使用了无缓存的channel，那么两个慢的goroutines将会因为没有人接收而被永远卡住。这种情况，称为goroutines泄漏，这将是一个BUG。和垃圾变量不同，泄漏的goroutines并不会被自动回收，因此确保每个不再需要的goroutine能正常退出是重要的。
+
+关于无缓存或带缓存channels之间的选择，或者是带缓存channels的容量大小的选择，都可能影响程序的正确性。无缓存channel更强地保证了每个发送操作与相应的同步接收操作；但是对于带缓存channel，这些操作是解耦的。同样，即使我们知道将要发送到一个channel的信息的数量上限，创建一个对应容量大小的带缓存channel也是不现实的，因为这要求在执行任何接收操作之前缓存所有已经发送的值。如果未能分配足够的缓存将导致程序死锁。
+
+Channel的缓存也可能影响程序的性能。想象一家蛋糕店有三个厨师，一个烘焙，一个上糖衣，还有一个将每个蛋糕传递到它下一个厨师的生产线。在狭小的厨房空间环境，每个厨师在完成蛋糕后必须等待下一个厨师已经准备好接受它；这类似于在一个无缓存的channel上进行沟通。
+
+如果在每个厨师之间有一个放置一个蛋糕的额外空间，那么每个厨师就可以将一个完成的蛋糕临时放在那里而马上进入下一个蛋糕的制作中；这类似于将channel的缓存队列的容量设置为1。只要每个厨师的平均工作效率相近，那么其中大部分的传输工作将是迅速的，个体之间细小的效率差异将在交接过程中弥补。如果厨师之间有更大的额外空间——也是就更大容量的缓存队列——将可以在不停止生产线的前提下消除更大的效率波动，例如一个厨师可以短暂地休息，然后再加快赶上进度而不影响其他人。
+
+另一方面，如果生产线的前期阶段一直快于后续阶段，那么它们之间的缓存在大部分时间都将是满的。相反，如果后续阶段比前期阶段更快，那么它们之间的缓存在大部分时间都将是空的。对于这类场景，额外的缓存并没有带来任何好处。
+
+生产线的隐喻对于理解channels和goroutines的工作机制是很有帮助的。例如，如果第二阶段是需要精心制作的复杂操作，一个厨师可能无法跟上第一个厨师的进度，或者是无法满足第三阶段厨师的需求。要解决这个问题，我们可以再雇佣另一个厨师来帮助完成第二阶段的工作，他执行相同的任务但是独立工作。这类似于基于相同的channels创建另一个独立的goroutine。
+
+我们没有太多的空间展示全部细节，但是gopl.io/ch8/cake包模拟了这个蛋糕店，可以通过不同的参数调整。它还对上面提到的几种场景提供对应的基准测试（§11.4） 。
+
+## [并发的循环](https://gopl-zh.github.io/ch8/ch8-05.html#85-并发的循环)
+
+本节中，我们会探索一些用来在并行时循环迭代的常见并发模型。我们会探究从全尺寸图片生成一些缩略图的问题。gopl.io/ch8/thumbnail包提供了ImageFile函数来帮我们拉伸图片。我们不会说明这个函数的实现，只需要从gopl.io下载它。
+
+*gopl.io/ch8/thumbnail*
+
+```go
+package thumbnail
+
+// ImageFile reads an image from infile and writes
+// a thumbnail-size version of it in the same directory.
+// It returns the generated file name, e.g., "foo.thumb.jpg".
+func ImageFile(infile string) (string, error)
+```
+
+下面的程序会循环迭代一些图片文件名，并为每一张图片生成一个缩略图：
+
+*gopl.io/ch8/thumbnail*
+
+```go
+// makeThumbnails makes thumbnails of the specified files.
+func makeThumbnails(filenames []string) {
+    for _, f := range filenames {
+        if _, err := thumbnail.ImageFile(f); err != nil {
+            log.Println(err)
+        }
+    }
+}
+```
+
+显然我们处理文件的顺序无关紧要，因为每一个图片的拉伸操作和其它图片的处理操作都是彼此独立的。像这种子问题都是完全彼此独立的问题被叫做易并行问题（译注：embarrassingly parallel，直译的话更像是尴尬并行）。易并行问题是最容易被实现成并行的一类问题（废话），并且最能够享受到并发带来的好处，能够随着并行的规模线性地扩展。
+
+下面让我们并行地执行这些操作，从而将文件IO的延迟隐藏掉，并用上多核cpu的计算能力来拉伸图像。我们的第一个并发程序只是使用了一个go关键字。这里我们先忽略掉错误，之后再进行处理。
+
+```go
+// NOTE: incorrect!
+func makeThumbnails2(filenames []string) {
+    for _, f := range filenames {
+        go thumbnail.ImageFile(f) // NOTE: ignoring errors
+    }
+}
+```
+
+这个版本运行的实在有点太快，实际上，由于它比最早的版本使用的时间要短得多，即使当文件名的slice中只包含有一个元素。这就有点奇怪了，如果程序没有并发执行的话，那为什么一个并发的版本还是要快呢？答案其实是makeThumbnails在它还没有完成工作之前就已经返回了。它启动了所有的goroutine，每一个文件名对应一个，但没有等待它们一直到执行完毕。
+
+没有什么直接的办法能够等待goroutine完成，但是我们可以改变goroutine里的代码让其能够将完成情况报告给外部的goroutine知晓，使用的方式是向一个共享的channel中发送事件。因为我们已经确切地知道有len(filenames)个内部goroutine，所以外部的goroutine只需要在返回之前对这些事件计数。
+
+```go
+// makeThumbnails3 makes thumbnails of the specified files in parallel.
+func makeThumbnails3(filenames []string) {
+    ch := make(chan struct{})
+    for _, f := range filenames {
+        go func(f string) {
+            thumbnail.ImageFile(f) // NOTE: ignoring errors
+            ch <- struct{}{}
+        }(f)
+    }
+    // Wait for goroutines to complete.
+    for range filenames {
+        <-ch
+    }
+}
+```
+
+注意我们将f的值作为一个显式的变量传给了函数，而不是在循环的闭包中声明：
+
+```go
+for _, f := range filenames {
+    go func() {
+        thumbnail.ImageFile(f) // NOTE: incorrect!
+        // ...
+    }()
+}
+```
+
+回忆一下之前在5.6.1节中，匿名函数中的循环变量快照问题。上面这个单独的变量f是被所有的匿名函数值所共享，且会被连续的循环迭代所更新的。当新的goroutine开始执行字面函数时，for循环可能已经更新了f并且开始了另一轮的迭代或者（更有可能的）已经结束了整个循环，所以当这些goroutine开始读取f的值时，它们所看到的值已经是slice的最后一个元素了。显式地添加这个参数，我们能够确保使用的f是当go语句执行时的“当前”那个f。
+
+如果我们想要从每一个worker goroutine往主goroutine中返回值时该怎么办呢？当我们调用thumbnail.ImageFile创建文件失败的时候，它会返回一个错误。下一个版本的makeThumbnails会返回其在做拉伸操作时接收到的第一个错误：
+
+```go
+// makeThumbnails4 makes thumbnails for the specified files in parallel.
+// It returns an error if any step failed.
+func makeThumbnails4(filenames []string) error {
+    errors := make(chan error)
+
+    for _, f := range filenames {
+        go func(f string) {
+            _, err := thumbnail.ImageFile(f)
+            errors <- err
+        }(f)
+    }
+
+    for range filenames {
+        if err := <-errors; err != nil {
+            return err // NOTE: incorrect: goroutine leak!
+        }
+    }
+
+    return nil
+}
+```
+
+这个程序有一个微妙的bug。当它遇到第一个非nil的error时会直接将error返回到调用方，使得没有一个goroutine去排空errors channel。这样剩下的worker goroutine在向这个channel中发送值时，都会永远地阻塞下去，并且永远都不会退出。这种情况叫做goroutine泄露（§8.4.4），可能会导致整个程序卡住或者跑出out of memory的错误。
+
+最简单的解决办法就是用一个具有合适大小的buffered channel，这样这些worker goroutine向channel中发送错误时就不会被阻塞。（一个可选的解决办法是创建一个另外的goroutine，当main goroutine返回第一个错误的同时去排空channel。）
+
+下一个版本的makeThumbnails使用了一个buffered channel来返回生成的图片文件的名字，附带生成时的错误。
+
+```go
+// makeThumbnails5 makes thumbnails for the specified files in parallel.
+// It returns the generated file names in an arbitrary order,
+// or an error if any step failed.
+func makeThumbnails5(filenames []string) (thumbfiles []string, err error) {
+    type item struct {
+        thumbfile string
+        err       error
+    }
+
+    ch := make(chan item, len(filenames))
+    for _, f := range filenames {
+        go func(f string) {
+            var it item
+            it.thumbfile, it.err = thumbnail.ImageFile(f)
+            ch <- it
+        }(f)
+    }
+
+    for range filenames {
+        it := <-ch
+        if it.err != nil {
+            return nil, it.err
+        }
+        thumbfiles = append(thumbfiles, it.thumbfile)
+    }
+
+    return thumbfiles, nil
+}
+```
+
+我们最后一个版本的makeThumbnails返回了新文件们的大小总计数（bytes）。和前面的版本都不一样的一点是我们在这个版本里没有把文件名放在slice里，而是通过一个string的channel传过来，所以我们无法对循环的次数进行预测。
+
+为了知道最后一个goroutine什么时候结束（最后一个结束并不一定是最后一个开始），我们需要一个递增的计数器，在每一个goroutine启动时加一，在goroutine退出时减一。这需要一种特殊的计数器，这个计数器需要在多个goroutine操作时做到安全并且提供在其减为零之前一直等待的一种方法。这种计数类型被称为sync.WaitGroup，下面的代码就用到了这种方法：
+
+```go
+// makeThumbnails6 makes thumbnails for each file received from the channel.
+// It returns the number of bytes occupied by the files it creates.
+func makeThumbnails6(filenames <-chan string) int64 {
+    sizes := make(chan int64)
+    var wg sync.WaitGroup // number of working goroutines
+    for f := range filenames {
+        wg.Add(1)
+        // worker
+        go func(f string) {
+            defer wg.Done()
+            thumb, err := thumbnail.ImageFile(f)
+            if err != nil {
+                log.Println(err)
+                return
+            }
+            info, _ := os.Stat(thumb) // OK to ignore error
+            sizes <- info.Size()
+        }(f)
+    }
+
+    // closer
+    go func() {
+        wg.Wait()
+        close(sizes)
+    }()
+
+    var total int64
+    for size := range sizes {
+        total += size
+    }
+    return total
+}
+```
+
+注意Add和Done方法的不对称。Add是为计数器加一，必须在worker goroutine开始之前调用，而不是在goroutine中；否则的话我们没办法确定Add是在"closer" goroutine调用Wait之前被调用。并且Add还有一个参数，但Done却没有任何参数；其实它和Add(-1)是等价的。我们使用defer来确保计数器即使是在出错的情况下依然能够正确地被减掉。上面的程序代码结构是当我们使用并发循环，但又不知道迭代次数时很通常而且很地道的写法。
+
+sizes channel携带了每一个文件的大小到main goroutine，在main goroutine中使用了range loop来计算总和。观察一下我们是怎样创建一个closer goroutine，并让其在所有worker goroutine们结束之后再关闭sizes channel的。两步操作：wait和close，必须是基于sizes的循环的并发。考虑一下另一种方案：如果等待操作被放在了main goroutine中，在循环之前，这样的话就永远都不会结束了，如果在循环之后，那么又变成了不可达的部分，因为没有任何东西去关闭这个channel，这个循环就永远都不会终止。
+
+图8.5 表明了makethumbnails6函数中事件的序列。纵列表示goroutine。窄线段代表sleep，粗线段代表活动。斜线箭头代表用来同步两个goroutine的事件。时间向下流动。注意main goroutine是如何大部分的时间被唤醒执行其range循环，等待worker发送值或者closer来关闭channel的。
+
+![img](notes-of-gopl/ch8-05.png)
+
+## [示例: 并发的Web爬虫](https://gopl-zh.github.io/ch8/ch8-06.html#86-示例-并发的web爬虫)
+
+在5.6节中，我们做了一个简单的web爬虫，用bfs(广度优先)算法来抓取整个网站。在本节中，我们会让这个爬虫并行化，这样每一个彼此独立的抓取命令可以并行进行IO，最大化利用网络资源。crawl函数和gopl.io/ch5/findlinks3中的是一样的。
+
+*gopl.io/ch8/crawl1*
+
+```go
+func crawl(url string) []string {
+    fmt.Println(url)
+    list, err := links.Extract(url)
+    if err != nil {
+        log.Print(err)
+    }
+    return list
+}
+```
+
+主函数和5.6节中的breadthFirst(广度优先)类似。像之前一样，一个worklist是一个记录了需要处理的元素的队列，每一个元素都是一个需要抓取的URL列表，不过这一次我们用channel代替slice来做这个队列。每一个对crawl的调用都会在他们自己的goroutine中进行并且会把他们抓到的链接发送回worklist。
+
+```go
+func main() {
+    worklist := make(chan []string)
+
+    // Start with the command-line arguments.
+    go func() { worklist <- os.Args[1:] }()
+
+    // Crawl the web concurrently.
+    seen := make(map[string]bool)
+    for list := range worklist {
+        for _, link := range list {
+            if !seen[link] {
+                seen[link] = true
+                go func(link string) {
+                    worklist <- crawl(link)
+                }(link)
+            }
+        }
+    }
+}
+```
+
+注意这里的crawl所在的goroutine会将link作为一个显式的参数传入，来避免“循环变量快照”的问题（在5.6.1中有讲解）。另外注意这里将命令行参数传入worklist也是在一个另外的goroutine中进行的，这是为了避免channel两端的main goroutine与crawler goroutine都尝试向对方发送内容，却没有一端接收内容时发生死锁。当然，这里我们也可以用buffered channel来解决问题，这里不再赘述。
+
+现在爬虫可以高并发地运行起来，并且可以产生一大坨的URL了，不过还是会有俩问题。一个问题是在运行一段时间后可能会出现在log的错误信息里的：
+
+```
+$ go build gopl.io/ch8/crawl1
+$ ./crawl1 http://gopl.io/
+http://gopl.io/
+https://golang.org/help/
+https://golang.org/doc/
+https://golang.org/blog/
+...
+2015/07/15 18:22:12 Get ...: dial tcp: lookup blog.golang.org: no such host
+2015/07/15 18:22:12 Get ...: dial tcp 23.21.222.120:443: socket: too many open files
+...
+```
+
+最初的错误信息是一个让人莫名的DNS查找失败，即使这个域名是完全可靠的。而随后的错误信息揭示了原因：这个程序一次性创建了太多网络连接，超过了每一个进程的打开文件数限制，既而导致了在调用net.Dial像DNS查找失败这样的问题。
+
+这个程序实在是太他妈并行了。无穷无尽地并行化并不是什么好事情，因为不管怎么说，你的系统总是会有一些个限制因素，比如CPU核心数会限制你的计算负载，比如你的硬盘转轴和磁头数限制了你的本地磁盘IO操作频率，比如你的网络带宽限制了你的下载速度上限，或者是你的一个web服务的服务容量上限等等。为了解决这个问题，我们可以限制并发程序所使用的资源来使之适应自己的运行环境。对于我们的例子来说，最简单的方法就是限制对links.Extract在同一时间最多不会有超过n次调用，这里的n一般小于文件描述符的上限值，比如20。这和一个夜店里限制客人数目是一个道理，只有当有客人离开时，才会允许新的客人进入店内。
+
+我们可以用一个有容量限制的buffered channel来控制并发，这类似于操作系统里的计数信号量概念。从概念上讲，channel里的n个空槽代表n个可以处理内容的token（通行证），从channel里接收一个值会释放其中的一个token，并且生成一个新的空槽位。这样保证了在没有接收介入时最多有n个发送操作。（这里可能我们拿channel里填充的槽来做token更直观一些，不过还是这样吧。）由于channel里的元素类型并不重要，我们用一个零值的struct{}来作为其元素。
+
+让我们重写crawl函数，将对links.Extract的调用操作用获取、释放token的操作包裹起来，来确保同一时间对其只有20个调用。信号量数量和其能操作的IO资源数量应保持接近。
+
+*gopl.io/ch8/crawl2*
+
+```go
+// tokens is a counting semaphore used to
+// enforce a limit of 20 concurrent requests.
+var tokens = make(chan struct{}, 20)
+
+func crawl(url string) []string {
+    fmt.Println(url)
+    tokens <- struct{}{} // acquire a token
+    list, err := links.Extract(url)
+    <-tokens // release the token
+    if err != nil {
+        log.Print(err)
+    }
+    return list
+}
+```
+
+第二个问题是这个程序永远都不会终止，即使它已经爬到了所有初始链接衍生出的链接。（当然，除非你慎重地选择了合适的初始化URL或者已经实现了练习8.6中的深度限制，你应该还没有意识到这个问题。）为了使这个程序能够终止，我们需要在worklist为空或者没有crawl的goroutine在运行时退出主循环。
+
+```go
+func main() {
+    worklist := make(chan []string)
+    var n int // number of pending sends to worklist
+
+    // Start with the command-line arguments.
+    n++
+    go func() { worklist <- os.Args[1:] }()
+
+    // Crawl the web concurrently.
+    seen := make(map[string]bool)
+
+    for ; n > 0; n-- {
+        list := <-worklist
+        for _, link := range list {
+            if !seen[link] {
+                seen[link] = true
+                n++
+                go func(link string) {
+                    worklist <- crawl(link)
+                }(link)
+            }
+        }
+    }
+}
+```
+
+这个版本中，计数器n对worklist的发送操作数量进行了限制。每一次我们发现有元素需要被发送到worklist时，我们都会对n进行++操作，在向worklist中发送初始的命令行参数之前，我们也进行过一次++操作。这里的操作++是在每启动一个crawler的goroutine之前。主循环会在n减为0时终止，这时候说明没活可干了。
+
+现在这个并发爬虫会比5.6节中的深度优先搜索版快上20倍，而且不会出什么错，并且在其完成任务时也会正确地终止。
+
+下面的程序是避免过度并发的另一种思路。这个版本使用了原来的crawl函数，但没有使用计数信号量，取而代之用了20个常驻的crawler goroutine，这样来保证最多20个HTTP请求在并发。
+
+```go
+func main() {
+    worklist := make(chan []string)  // lists of URLs, may have duplicates
+    unseenLinks := make(chan string) // de-duplicated URLs
+
+    // Add command-line arguments to worklist.
+    go func() { worklist <- os.Args[1:] }()
+
+    // Create 20 crawler goroutines to fetch each unseen link.
+    for i := 0; i < 20; i++ {
+        go func() {
+            for link := range unseenLinks {
+                foundLinks := crawl(link)
+                go func() { worklist <- foundLinks }()
+            }
+        }()
+    }
+
+    // The main goroutine de-duplicates worklist items
+    // and sends the unseen ones to the crawlers.
+    seen := make(map[string]bool)
+    for list := range worklist {
+        for _, link := range list {
+            if !seen[link] {
+                seen[link] = true
+                unseenLinks <- link
+            }
+        }
+    }
+}
+```
+
+所有的爬虫goroutine现在都是被同一个channel - unseenLinks喂饱的了。主goroutine负责拆分它从worklist里拿到的元素，然后把没有抓过的经由unseenLinks channel发送给一个爬虫的goroutine。
+
+seen这个map被限定在main goroutine中；也就是说这个map只能在main goroutine中进行访问。类似于其它的信息隐藏方式，这样的约束可以让我们从一定程度上保证程序的正确性。例如，内部变量不能够在函数外部被访问到；变量（§2.3.4）在没有发生变量逃逸（译注：局部变量被全局变量引用地址导致变量被分配在堆上）的情况下是无法在函数外部访问的；一个对象的封装字段无法被该对象的方法以外的方法访问到。在所有的情况下，信息隐藏都可以帮助我们约束我们的程序，使其不发生意料之外的情况。
+
+crawl函数爬到的链接在一个专有的goroutine中被发送到worklist中来避免死锁。为了节省篇幅，这个例子的终止问题我们先不进行详细阐述了。
+
+## [基于select的多路复用](https://gopl-zh.github.io/ch8/ch8-07.html#87-基于select的多路复用)
+
+下面的程序会进行火箭发射的倒计时。time.Tick函数返回一个channel，程序会周期性地像一个节拍器一样向这个channel发送事件。每一个事件的值是一个时间戳，不过更有意思的是其传送方式。
+
+*gopl.io/ch8/countdown1*
+
+```go
+func main() {
+    fmt.Println("Commencing countdown.")
+    tick := time.Tick(1 * time.Second)
+    for countdown := 10; countdown > 0; countdown-- {
+        fmt.Println(countdown)
+        <-tick
+    }
+    launch()
+}
+```
+
+现在我们让这个程序支持在倒计时中，用户按下return键时直接中断发射流程。首先，我们启动一个goroutine，这个goroutine会尝试从标准输入中读入一个单独的byte并且，如果成功了，会向名为abort的channel发送一个值。
+
+*gopl.io/ch8/countdown2*
+
+```go
+abort := make(chan struct{})
+go func() {
+    os.Stdin.Read(make([]byte, 1)) // read a single byte
+    abort <- struct{}{}
+}()
+```
+
+现在每一次计数循环的迭代都需要等待两个channel中的其中一个返回事件了：当一切正常时的ticker channel（就像NASA jorgon的"nominal"，译注：这梗估计我们是不懂了）或者异常时返回的abort事件。我们无法做到从每一个channel中接收信息，如果我们这么做的话，如果第一个channel中没有事件发过来那么程序就会立刻被阻塞，这样我们就无法收到第二个channel中发过来的事件。这时候我们需要多路复用（multiplex）这些操作了，为了能够多路复用，我们使用了select语句。
+
+```go
+select {
+case <-ch1:
+    // ...
+case x := <-ch2:
+    // ...use x...
+case ch3 <- y:
+    // ...
+default:
+    // ...
+}
+```
+
+上面是select语句的一般形式。和switch语句稍微有点相似，也会有几个case和最后的default选择分支。每一个case代表一个通信操作（在某个channel上进行发送或者接收），并且会包含一些语句组成的一个语句块。一个接收表达式可能只包含接收表达式自身（译注：不把接收到的值赋值给变量什么的），就像上面的第一个case，或者包含在一个简短的变量声明中，像第二个case里一样；第二种形式让你能够引用接收到的值。
+
+select会等待case中有能够执行的case时去执行。当条件满足时，select才会去通信并执行case之后的语句；这时候其它通信是不会执行的。一个没有任何case的select语句写作select{}，会永远地等待下去。
+
+让我们回到我们的火箭发射程序。time.After函数会立即返回一个channel，并起一个新的goroutine在经过特定的时间后向该channel发送一个独立的值。下面的select语句会一直等待直到两个事件中的一个到达，无论是abort事件或者一个10秒经过的事件。如果10秒经过了还没有abort事件进入，那么火箭就会发射。
+
+```go
+func main() {
+    // ...create abort channel...
+
+    fmt.Println("Commencing countdown.  Press return to abort.")
+    select {
+    case <-time.After(10 * time.Second):
+        // Do nothing.
+    case <-abort:
+        fmt.Println("Launch aborted!")
+        return
+    }
+    launch()
+}
+```
+
+下面这个例子更微妙。ch这个channel的buffer大小是1，所以会交替的为空或为满，所以只有一个case可以进行下去，无论i是奇数或者偶数，它都会打印0 2 4 6 8。
+
+```go
+ch := make(chan int, 1)
+for i := 0; i < 10; i++ {
+    select {
+    case x := <-ch:
+        fmt.Println(x) // "0" "2" "4" "6" "8"
+    case ch <- i:
+    }
+}
+```
+
+如果多个case同时就绪时，select会随机地选择一个执行，这样来保证每一个channel都有平等的被select的机会。增加前一个例子的buffer大小会使其输出变得不确定，因为当buffer既不为满也不为空时，select语句的执行情况就像是抛硬币的行为一样是随机的。
+
+下面让我们的发射程序打印倒计时。这里的select语句会使每次循环迭代等待一秒来执行退出操作。
+
+*gopl.io/ch8/countdown3*
+
+```go
+func main() {
+    // ...create abort channel...
+
+    fmt.Println("Commencing countdown.  Press return to abort.")
+    tick := time.Tick(1 * time.Second)
+    for countdown := 10; countdown > 0; countdown-- {
+        fmt.Println(countdown)
+        select {
+        case <-tick:
+            // Do nothing.
+        case <-abort:
+            fmt.Println("Launch aborted!")
+            return
+        }
+    }
+    launch()
+}
+```
+
+time.Tick函数表现得好像它创建了一个在循环中调用time.Sleep的goroutine，每次被唤醒时发送一个事件。当countdown函数返回时，它会停止从tick中接收事件，但是ticker这个goroutine还依然存活，继续徒劳地尝试向channel中发送值，然而这时候已经没有其它的goroutine会从该channel中接收值了——这被称为goroutine泄露（§8.4.4）。
+
+Tick函数挺方便，但是只有当程序整个生命周期都需要这个时间时我们使用它才比较合适。否则的话，我们应该使用下面的这种模式：
+
+```go
+ticker := time.NewTicker(1 * time.Second)
+<-ticker.C    // receive from the ticker's channel
+ticker.Stop() // cause the ticker's goroutine to terminate
+```
+
+有时候我们希望能够从channel中发送或者接收值，并避免因为发送或者接收导致的阻塞，尤其是当channel没有准备好写或者读时。select语句就可以实现这样的功能。select会有一个default来设置当其它的操作都不能够马上被处理时程序需要执行哪些逻辑。
+
+下面的select语句会在abort channel中有值时，从其中接收值；无值时什么都不做。这是一个非阻塞的接收操作；反复地做这样的操作叫做“轮询channel”。
+
+```go
+select {
+case <-abort:
+    fmt.Printf("Launch aborted!\n")
+    return
+default:
+    // do nothing
+}
+```
+
+channel的零值是nil。也许会让你觉得比较奇怪，nil的channel有时候也是有一些用处的。因为对一个nil的channel发送和接收操作会永远阻塞，在select语句中操作nil的channel永远都不会被select到。
+
+这使得我们可以用nil来激活或者禁用case，来达成处理其它输入或输出事件时超时和取消的逻辑。我们会在下一节中看到一个例子。
+
+## [并发的退出](https://gopl-zh.github.io/ch8/ch8-09.html#89-并发的退出)
+
+有时候我们需要通知goroutine停止它正在干的事情，比如一个正在执行计算的web服务，然而它的客户端已经断开了和服务端的连接。
+
+Go语言并没有提供在一个goroutine中终止另一个goroutine的方法，由于这样会导致goroutine之间的共享变量落在未定义的状态上。在8.7节中的rocket launch程序中，我们往名字叫abort的channel里发送了一个简单的值，在countdown的goroutine中会把这个值理解为自己的退出信号。但是如果我们想要退出两个或者任意多个goroutine怎么办呢？
+
+一种可能的手段是向abort的channel里发送和goroutine数目一样多的事件来退出它们。如果这些goroutine中已经有一些自己退出了，那么会导致我们的channel里的事件数比goroutine还多，这样导致我们的发送直接被阻塞。另一方面，如果这些goroutine又生成了其它的goroutine，我们的channel里的数目又太少了，所以有些goroutine可能会无法接收到退出消息。一般情况下我们是很难知道在某一个时刻具体有多少个goroutine在运行着的。另外，当一个goroutine从abort channel中接收到一个值的时候，他会消费掉这个值，这样其它的goroutine就没法看到这条信息。为了能够达到我们退出goroutine的目的，我们需要更靠谱的策略，来通过一个channel把消息广播出去，这样goroutine们能够看到这条事件消息，并且在事件完成之后，可以知道这件事已经发生过了。
+
+回忆一下我们关闭了一个channel并且被消费掉了所有已发送的值，操作channel之后的代码可以立即被执行，并且会产生零值。我们可以将这个机制扩展一下，来作为我们的广播机制：不要向channel发送值，而是用关闭一个channel来进行广播。
+
+只要一些小修改，我们就可以把退出逻辑加入到前一节的du程序。首先，我们创建一个退出的channel，不需要向这个channel发送任何值，但其所在的闭包内要写明程序需要退出。我们同时还定义了一个工具函数，cancelled，这个函数在被调用的时候会轮询退出状态。
+
+*gopl.io/ch8/du4*
+
+```go
+var done = make(chan struct{})
+
+func cancelled() bool {
+    select {
+    case <-done:
+        return true
+    default:
+        return false
+    }
+}
+```
+
+下面我们创建一个从标准输入流中读取内容的goroutine，这是一个比较典型的连接到终端的程序。每当有输入被读到（比如用户按了回车键），这个goroutine就会把取消消息通过关闭done的channel广播出去。
+
+```go
+// Cancel traversal when input is detected.
+go func() {
+    os.Stdin.Read(make([]byte, 1)) // read a single byte
+    close(done)
+}()
+```
+
+现在我们需要使我们的goroutine来对取消进行响应。在main goroutine中，我们添加了select的第三个case语句，尝试从done channel中接收内容。如果这个case被满足的话，在select到的时候即会返回，但在结束之前我们需要把fileSizes channel中的内容“排”空，在channel被关闭之前，舍弃掉所有值。这样可以保证对walkDir的调用不要被向fileSizes发送信息阻塞住，可以正确地完成。
+
+```go
+for {
+    select {
+    case <-done:
+        // Drain fileSizes to allow existing goroutines to finish.
+        for range fileSizes {
+            // Do nothing.
+        }
+        return
+    case size, ok := <-fileSizes:
+        // ...
+    }
+}
+```
+
+walkDir这个goroutine一启动就会轮询取消状态，如果取消状态被设置的话会直接返回，并且不做额外的事情。这样我们将所有在取消事件之后创建的goroutine改变为无操作。
+
+```go
+func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
+    defer n.Done()
+    if cancelled() {
+        return
+    }
+    for _, entry := range dirents(dir) {
+        // ...
+    }
+}
+```
+
+在walkDir函数的循环中我们对取消状态进行轮询可以带来明显的益处，可以避免在取消事件发生时还去创建goroutine。取消本身是有一些代价的；想要快速的响应需要对程序逻辑进行侵入式的修改。确保在取消发生之后不要有代价太大的操作可能会需要修改你代码里的很多地方，但是在一些重要的地方去检查取消事件也确实能带来很大的好处。
+
+对这个程序的一个简单的性能分析可以揭示瓶颈在dirents函数中获取一个信号量。下面的select可以让这种操作可以被取消，并且可以将取消时的延迟从几百毫秒降低到几十毫秒。
+
+```go
+func dirents(dir string) []os.FileInfo {
+    select {
+    case sema <- struct{}{}: // acquire token
+    case <-done:
+        return nil // cancelled
+    }
+    defer func() { <-sema }() // release token
+    // ...read directory...
+}
+```
+
+现在当取消发生时，所有后台的goroutine都会迅速停止并且主函数会返回。当然，当主函数返回时，一个程序会退出，而我们又无法在主函数退出的时候确认其已经释放了所有的资源（译注：因为程序都退出了，你的代码都没法执行了）。这里有一个方便的窍门我们可以一用：取代掉直接从主函数返回，我们调用一个panic，然后runtime会把每一个goroutine的栈dump下来。如果main goroutine是唯一一个剩下的goroutine的话，他会清理掉自己的一切资源。但是如果还有其它的goroutine没有退出，他们可能没办法被正确地取消掉，也有可能被取消但是取消操作会很花时间；所以这里的一个调研还是很有必要的。我们用panic来获取到足够的信息来验证我们上面的判断，看看最终到底是什么样的情况。
+
+## [示例: 聊天服务](https://gopl-zh.github.io/ch8/ch8-10.html#810-示例-聊天服务)
+
+我们用一个聊天服务器来终结本章节的内容，这个程序可以让一些用户通过服务器向其它所有用户广播文本消息。这个程序中有四种goroutine。main和broadcaster各自是一个goroutine实例，每一个客户端的连接都会有一个handleConn和clientWriter的goroutine。broadcaster是select用法的不错的样例，因为它需要处理三种不同类型的消息。
+
+下面演示的main goroutine的工作，是listen和accept(译注：网络编程里的概念)从客户端过来的连接。对每一个连接，程序都会建立一个新的handleConn的goroutine，就像我们在本章开头的并发的echo服务器里所做的那样。
+
+*gopl.io/ch8/chat*
+
+```go
+func main() {
+    listener, err := net.Listen("tcp", "localhost:8000")
+    if err != nil {
+        log.Fatal(err)
+    }
+    go broadcaster()
+    for {
+        conn, err := listener.Accept()
+        if err != nil {
+            log.Print(err)
+            continue
+        }
+        go handleConn(conn)
+    }
+}
+```
+
+然后是broadcaster的goroutine。他的内部变量clients会记录当前建立连接的客户端集合。其记录的内容是每一个客户端的消息发出channel的“资格”信息。
+
+```go
+type client chan<- string // an outgoing message channel
+
+var (
+    entering = make(chan client)
+    leaving  = make(chan client)
+    messages = make(chan string) // all incoming client messages
+)
+
+func broadcaster() {
+    clients := make(map[client]bool) // all connected clients
+    for {
+        select {
+        case msg := <-messages:
+            // Broadcast incoming message to all
+            // clients' outgoing message channels.
+            for cli := range clients {
+                cli <- msg
+            }
+        case cli := <-entering:
+            clients[cli] = true
+
+        case cli := <-leaving:
+            delete(clients, cli)
+            close(cli)
+        }
+    }
+}
+```
+
+broadcaster监听来自全局的entering和leaving的channel来获知客户端的到来和离开事件。当其接收到其中的一个事件时，会更新clients集合，当该事件是离开行为时，它会关闭客户端的消息发送channel。broadcaster也会监听全局的消息channel，所有的客户端都会向这个channel中发送消息。当broadcaster接收到什么消息时，就会将其广播至所有连接到服务端的客户端。
+
+现在让我们看看每一个客户端的goroutine。handleConn函数会为它的客户端创建一个消息发送channel并通过entering channel来通知客户端的到来。然后它会读取客户端发来的每一行文本，并通过全局的消息channel来将这些文本发送出去，并为每条消息带上发送者的前缀来标明消息身份。当客户端发送完毕后，handleConn会通过leaving这个channel来通知客户端的离开并关闭连接。
+
+```go
+func handleConn(conn net.Conn) {
+    ch := make(chan string) // outgoing client messages
+    go clientWriter(conn, ch)
+
+    who := conn.RemoteAddr().String()
+    ch <- "You are " + who
+    messages <- who + " has arrived"
+    entering <- ch
+
+    input := bufio.NewScanner(conn)
+    for input.Scan() {
+        messages <- who + ": " + input.Text()
+    }
+    // NOTE: ignoring potential errors from input.Err()
+
+    leaving <- ch
+    messages <- who + " has left"
+    conn.Close()
+}
+
+func clientWriter(conn net.Conn, ch <-chan string) {
+    for msg := range ch {
+        fmt.Fprintln(conn, msg) // NOTE: ignoring network errors
+    }
+}
+```
+
+另外，handleConn为每一个客户端创建了一个clientWriter的goroutine，用来接收向客户端发送消息的channel中的广播消息，并将它们写入到客户端的网络连接。客户端的读取循环会在broadcaster接收到leaving通知并关闭了channel后终止。
+
+下面演示的是当服务器有两个活动的客户端连接，并且在两个窗口中运行的情况，使用netcat来聊天：
+
+```
+$ go build gopl.io/ch8/chat
+$ go build gopl.io/ch8/netcat3
+$ ./chat &
+$ ./netcat3
+You are 127.0.0.1:64208               $ ./netcat3
+127.0.0.1:64211 has arrived           You are 127.0.0.1:64211
+Hi!
+127.0.0.1:64208: Hi!                  127.0.0.1:64208: Hi!
+                                      Hi yourself.
+127.0.0.1:64211: Hi yourself.         127.0.0.1:64211: Hi yourself.
+^C
+                                      127.0.0.1:64208 has left
+$ ./netcat3
+You are 127.0.0.1:64216               127.0.0.1:64216 has arrived
+                                      Welcome.
+127.0.0.1:64211: Welcome.             127.0.0.1:64211: Welcome.
+                                      ^C
+127.0.0.1:64211 has left”
+```
+
+当与n个客户端保持聊天session时，这个程序会有2n+2个并发的goroutine，然而这个程序却并不需要显式的锁（§9.2）。clients这个map被限制在了一个独立的goroutine中，broadcaster，所以它不能被并发地访问。多个goroutine共享的变量只有这些channel和net.Conn的实例，两个东西都是并发安全的。我们会在下一章中更多地讲解约束，并发安全以及goroutine中共享变量的含义。
 
 
 
