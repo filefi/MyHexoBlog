@@ -6872,7 +6872,7 @@ fmt.Println(sort.IntsAreSorted(values)) // "false"
 
 为了使用方便，`sort`包为`[]int`、`[]string`和`[]float64`的正常排序提供了特定版本的函数和类型。对于其他类型，例如`[]int64`或者`[]uint`，尽管路径也很简单，还是依赖我们自己实现。
 
-## http.Handler接口
+## `http.Handler`接口
 
 在第一章中，我们粗略的了解了怎么用`net/http`包去实现网络客户端（§1.5）和服务器（§1.7）。在这个小节中，我们会对那些基于`http.Handler`接口的服务器API做更进一步的学习：
 
@@ -6888,7 +6888,7 @@ func ListenAndServe(address string, h Handler) error
 
 `ListenAndServe`函数需要一个例如`"localhost:8000"`的服务器地址，和一个所有请求都可以分派的Handler接口实例。它会一直运行，直到这个服务因为一个错误而失败（或者启动失败），它的返回值一定是一个非空的错误。
 
-想象一个电子商务网站，为了销售，将数据库中物品的价格映射成美元。下面这个程序可能是能想到的最简单的实现了。它将库存清单模型化为一个命名为database的map类型，我们给这个类型一个`ServeHttp`方法，这样它可以满足`http.Handler`接口。这个handler会遍历整个map并输出物品信息。
+想象一个电子商务网站，为了销售，将数据库中物品的价格映射成美元。下面这个程序可能是能想到的最简单的实现了。它将库存清单模型化为一个命名为`database`的`map`类型，我们给这个类型一个`ServeHttp`方法，这样它可以满足`http.Handler`接口。这个handler会遍历整个map并输出物品信息。
 
 ```go
 func main() {
@@ -6950,7 +6950,7 @@ func (db database) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 ```
 
-现在handler基于URL的路径部分（`req.URL.Path`）来决定执行什么逻辑。如果这个handler不能识别这个路径，它会通过调用`w.WriteHeader(http.StatusNotFound)`返回客户端一个HTTP错误；这个检查应该在向w写入任何值前完成。（顺便提一下，`http.ResponseWriter`是另一个接口。它在`io.Writer`上增加了发送HTTP相应头的方法。）等效地，我们可以使用实用的`http.Error`函数：
+现在handler基于URL的路径部分（`req.URL.Path`）来决定执行什么逻辑。如果这个handler不能识别这个路径，它会通过调用`w.WriteHeader(http.StatusNotFound)`返回客户端一个HTTP错误；这个检查应该在向`w`写入任何值前完成。（顺便提一下，`http.ResponseWriter`是另一个接口。它在`io.Writer`上增加了发送HTTP相应头的方法。）等效地，我们可以使用实用的`http.Error`函数：
 
 ```go
 msg := fmt.Sprintf("no such page: %s\n", req.URL)
@@ -7057,7 +7057,7 @@ func main() {
 }
 ```
 
-最后，一个重要的提示：就像我们在1.7节中提到的，web服务器在一个新的协程中调用每一个handler，所以当handler获取其它协程或者这个handler本身的其它请求也可以访问到变量时，一定要使用预防措施，比如锁机制。我们后面的两章中将讲到并发相关的知识。
+**最后，一个重要的提示：web服务器在一个新的协程中调用每一个handler，所以当handler获取其它协程或者这个handler本身的其它请求也可以访问到变量时，一定要使用预防措施，比如锁机制。**
 
 
 
