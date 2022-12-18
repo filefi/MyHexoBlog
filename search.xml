@@ -22072,7 +22072,7 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>sort<span class="token punctuation">.</span><span class="token function">IntsAreSorted</span><span class="token punctuation">(</span>values<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "false"</span></code></pre>
 
 <p>为了使用方便，<code>sort</code>包为<code>[]int</code>、<code>[]string</code>和<code>[]float64</code>的正常排序提供了特定版本的函数和类型。对于其他类型，例如<code>[]int64</code>或者<code>[]uint</code>，尽管路径也很简单，还是依赖我们自己实现。</p>
-<h2 id="http-Handler接口"><a href="#http-Handler接口" class="headerlink" title="http.Handler接口"></a>http.Handler接口</h2><p>在第一章中，我们粗略的了解了怎么用<code>net/http</code>包去实现网络客户端（§1.5）和服务器（§1.7）。在这个小节中，我们会对那些基于<code>http.Handler</code>接口的服务器API做更进一步的学习：</p>
+<h2 id="http-Handler接口"><a href="#http-Handler接口" class="headerlink" title="http.Handler接口"></a><code>http.Handler</code>接口</h2><p>在第一章中，我们粗略的了解了怎么用<code>net/http</code>包去实现网络客户端（§1.5）和服务器（§1.7）。在这个小节中，我们会对那些基于<code>http.Handler</code>接口的服务器API做更进一步的学习：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> http
 
 <span class="token keyword">type</span> Handler <span class="token keyword">interface</span> <span class="token punctuation">&#123;</span>
@@ -22082,7 +22082,7 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 <span class="token keyword">func</span> <span class="token function">ListenAndServe</span><span class="token punctuation">(</span>address <span class="token builtin">string</span><span class="token punctuation">,</span> h Handler<span class="token punctuation">)</span> <span class="token builtin">error</span></code></pre>
 
 <p><code>ListenAndServe</code>函数需要一个例如<code>&quot;localhost:8000&quot;</code>的服务器地址，和一个所有请求都可以分派的Handler接口实例。它会一直运行，直到这个服务因为一个错误而失败（或者启动失败），它的返回值一定是一个非空的错误。</p>
-<p>想象一个电子商务网站，为了销售，将数据库中物品的价格映射成美元。下面这个程序可能是能想到的最简单的实现了。它将库存清单模型化为一个命名为database的map类型，我们给这个类型一个<code>ServeHttp</code>方法，这样它可以满足<code>http.Handler</code>接口。这个handler会遍历整个map并输出物品信息。</p>
+<p>想象一个电子商务网站，为了销售，将数据库中物品的价格映射成美元。下面这个程序可能是能想到的最简单的实现了。它将库存清单模型化为一个命名为<code>database</code>的<code>map</code>类型，我们给这个类型一个<code>ServeHttp</code>方法，这样它可以满足<code>http.Handler</code>接口。这个handler会遍历整个map并输出物品信息。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     db <span class="token operator">:=</span> database<span class="token punctuation">&#123;</span><span class="token string">"shoes"</span><span class="token punctuation">:</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token string">"socks"</span><span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">&#125;</span>
     log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span><span class="token function">ListenAndServe</span><span class="token punctuation">(</span><span class="token string">"localhost:8000"</span><span class="token punctuation">,</span> db<span class="token punctuation">)</span><span class="token punctuation">)</span>
@@ -22132,7 +22132,7 @@ socks: $5.00</code></pre>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>现在handler基于URL的路径部分（<code>req.URL.Path</code>）来决定执行什么逻辑。如果这个handler不能识别这个路径，它会通过调用<code>w.WriteHeader(http.StatusNotFound)</code>返回客户端一个HTTP错误；这个检查应该在向w写入任何值前完成。（顺便提一下，<code>http.ResponseWriter</code>是另一个接口。它在<code>io.Writer</code>上增加了发送HTTP相应头的方法。）等效地，我们可以使用实用的<code>http.Error</code>函数：</p>
+<p>现在handler基于URL的路径部分（<code>req.URL.Path</code>）来决定执行什么逻辑。如果这个handler不能识别这个路径，它会通过调用<code>w.WriteHeader(http.StatusNotFound)</code>返回客户端一个HTTP错误；这个检查应该在向<code>w</code>写入任何值前完成。（顺便提一下，<code>http.ResponseWriter</code>是另一个接口。它在<code>io.Writer</code>上增加了发送HTTP相应头的方法。）等效地，我们可以使用实用的<code>http.Error</code>函数：</p>
 <pre class="language-go" data-language="go"><code class="language-go">msg <span class="token operator">:=</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"no such page: %s\n"</span><span class="token punctuation">,</span> req<span class="token punctuation">.</span>URL<span class="token punctuation">)</span>
 http<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>w<span class="token punctuation">,</span> msg<span class="token punctuation">,</span> http<span class="token punctuation">.</span>StatusNotFound<span class="token punctuation">)</span> <span class="token comment">// 404</span></code></pre>
 
@@ -22211,7 +22211,7 @@ mux<span class="token punctuation">.</span><span class="token function">HandleFu
     log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span><span class="token function">ListenAndServe</span><span class="token punctuation">(</span><span class="token string">"localhost:8000"</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>最后，一个重要的提示：就像我们在1.7节中提到的，web服务器在一个新的协程中调用每一个handler，所以当handler获取其它协程或者这个handler本身的其它请求也可以访问到变量时，一定要使用预防措施，比如锁机制。我们后面的两章中将讲到并发相关的知识。</p>
+<p><strong>最后，一个重要的提示：web服务器在一个新的协程中调用每一个handler，所以当handler获取其它协程或者这个handler本身的其它请求也可以访问到变量时，一定要使用预防措施，比如锁机制。</strong></p>
 ]]></content>
       <categories>
         <category>Golang</category>
