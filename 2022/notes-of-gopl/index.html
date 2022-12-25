@@ -42,11 +42,11 @@
 <meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch7-05.png">
 <meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch7-06.png">
 <meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch7-07.png">
-<meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch8-01.png">
-<meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch8-02.png">
-<meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch8-03.png">
-<meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch8-04.png">
-<meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch8-05.png">
+<meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch8-01.png">
+<meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch8-02.png">
+<meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch8-03.png">
+<meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch8-04.png">
+<meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch8-05.png">
 <meta property="article:published_time" content="2022-09-30T06:24:21.000Z">
 <meta property="article:modified_time" content="2022-09-30T06:24:21.000Z">
 <meta property="article:author" content="filefi">
@@ -6179,8 +6179,8 @@ Yooo-hooo!
 $ killall reverb2</code></pre>
 
 <p>让服务使用并发不只是处理多个客户端的请求，甚至在处理单个连接时也可能会用到，就像我们上面的两个go关键词的用法。然而在我们使用go关键词的同时，需要慎重地考虑<code>net.Conn</code>中的方法在并发地调用时是否安全，事实上对于大多数类型来说也确实不安全。我们会在下一章中详细地探讨并发安全性。</p>
-<h2 id="Channels"><a href="#Channels" class="headerlink" title="Channels"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#84-channels">Channels</a></h2><p>如果说goroutine是Go语言程序的并发体的话，那么channels则是它们之间的通信机制。一个channel是一个通信机制，它可以让一个goroutine通过它给另一个goroutine发送值信息。每个channel都有一个特殊的类型，也就是channels可发送数据的类型。一个可以发送int类型数据的channel一般写为<code>chan int</code>。</p>
-<p>使用内置的make函数，我们可以创建一个channel：</p>
+<h2 id="Channels"><a href="#Channels" class="headerlink" title="Channels"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#84-channels">Channels</a></h2><p><strong>如果说goroutine是Go语言程序的并发体的话，那么channels则是它们之间的通信机制。一个channel是一个通信机制，它可以让一个goroutine通过它给另一个goroutine发送值信息。每个channel都有一个特殊的类型，也就是channels可发送数据的类型。一个可以发送int类型数据的channel一般写为<code>chan int</code>。</strong></p>
+<p><strong>使用内置的make函数，我们可以创建一个channel：</strong></p>
 <pre class="language-go" data-language="go"><code class="language-go">ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token comment">// ch has type 'chan int'</span></code></pre>
 
 <p>和map类似，channel也对应一个make创建的底层数据结构的引用。<strong>当我们复制一个channel或用于函数参数传递时，我们只是拷贝了一个channel引用，因此调用者和被调用者将引用同一个channel对象。和其它的引用类型一样，channel的零值也是nil。</strong></p>
@@ -6203,195 +6203,195 @@ x <span class="token operator">=</span> <span class="token operator">&lt;-</span
 ch <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment">// unbuffered channel</span>
 ch <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token comment">// buffered channel with capacity 3</span></code></pre>
 
-<h3 id="不带缓存的Channels"><a href="#不带缓存的Channels" class="headerlink" title="不带缓存的Channels"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#841-%E4%B8%8D%E5%B8%A6%E7%BC%93%E5%AD%98%E7%9A%84channels">不带缓存的Channels</a></h3><p>一个基于无缓存Channels的发送操作将导致发送者goroutine阻塞，直到另一个goroutine在相同的Channels上执行接收操作，当发送的值通过Channels成功传输之后，两个goroutine可以继续执行后面的语句。反之，如果接收操作先发生，那么接收者goroutine也将阻塞，直到有另一个goroutine在相同的Channels上执行发送操作。</p>
-<p>基于无缓存Channels的发送和接收操作将导致两个goroutine做一次同步操作。因为这个原因，无缓存Channels有时候也被称为同步Channels。当通过一个无缓存Channels发送数据时，接收者收到数据发生在再次唤醒发送者goroutine之前（译注：<em>happens before</em>，这是Go语言并发内存模型的一个关键术语！）。</p>
-<p>在讨论并发编程时，当我们说x事件在y事件之前发生（<em>happens before</em>），我们并不是说x事件在时间上比y时间更早；我们要表达的意思是要保证在此之前的事件都已经完成了，例如在此之前的更新某些变量的操作已经完成，你可以放心依赖这些已完成的事件了。</p>
-<p>当我们说x事件既不是在y事件之前发生也不是在y事件之后发生，我们就说x事件和y事件是并发的。这并不是意味着x事件和y事件就一定是同时发生的，我们只是不能确定这两个事件发生的先后顺序。在下一章中我们将看到，当两个goroutine并发访问了相同的变量时，我们有必要保证某些事件的执行顺序，以避免出现某些并发问题。</p>
+<h3 id="不带缓存的Channels"><a href="#不带缓存的Channels" class="headerlink" title="不带缓存的Channels"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#841-%E4%B8%8D%E5%B8%A6%E7%BC%93%E5%AD%98%E7%9A%84channels">不带缓存的Channels</a></h3><p><strong>一个基于无缓存Channels的发送操作将导致发送者goroutine阻塞，直到另一个goroutine在相同的Channels上执行接收操作，当发送的值通过Channels成功传输之后，两个goroutine可以继续执行后面的语句。反之，如果接收操作先发生，那么接收者goroutine也将阻塞，直到有另一个goroutine在相同的Channels上执行发送操作。</strong></p>
+<p><strong>基于无缓存Channels的发送和接收操作将导致两个goroutine做一次同步操作。因为这个原因，无缓存Channels有时候也被称为<em>同步Channels</em>。</strong> 当通过一个无缓存Channels发送数据时，接收者收到数据发生在再次唤醒发送者goroutine之前（译注：<em>happens before</em>，这是Go语言并发内存模型的一个关键术语！）。</p>
+<p><strong>在讨论并发编程时，当我们说x事件在y事件之前发生（<em>happens before</em>），我们并不是说x事件在时间上比y时间更早；我们要表达的意思是要保证在此之前的事件都已经完成了，例如在此之前的更新某些变量的操作已经完成，你可以放心依赖这些已完成的事件了。</strong></p>
+<p><strong>当我们说x事件既不是在y事件之前发生也不是在y事件之后发生，我们就说x事件和y事件是并发的。这并不是意味着x事件和y事件就一定是同时发生的，我们只是不能确定这两个事件发生的先后顺序。</strong>在下一章中我们将看到，当两个goroutine并发访问了相同的变量时，我们有必要保证某些事件的执行顺序，以避免出现某些并发问题。</p>
 <p>在8.3节的客户端程序，它在主goroutine中（译注：就是执行main函数的goroutine）将标准输入复制到server，因此当客户端程序关闭标准输入时，后台goroutine可能依然在工作。我们需要让主goroutine等待后台goroutine完成工作后再退出，我们使用了一个channel来同步两个goroutine：</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">func main() &#123;
-    conn, err :&#x3D; net.Dial(&quot;tcp&quot;, &quot;localhost:8000&quot;)
-    if err !&#x3D; nil &#123;
-        log.Fatal(err)
-    &#125;
-    done :&#x3D; make(chan struct&#123;&#125;)
-    go func() &#123;
-        io.Copy(os.Stdout, conn) &#x2F;&#x2F; NOTE: ignoring errors
-        log.Println(&quot;done&quot;)
-        done &lt;- struct&#123;&#125;&#123;&#125; &#x2F;&#x2F; signal the main goroutine
-    &#125;()
-    mustCopy(conn, os.Stdin)
-    conn.Close()
-    &lt;-done &#x2F;&#x2F; wait for background goroutine to finish
-&#125;</code></pre>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Dial</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:8000"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// 空struct不占内存空间</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        io<span class="token punctuation">.</span><span class="token function">Copy</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">,</span> conn<span class="token punctuation">)</span> <span class="token comment">// NOTE: ignoring errors</span>
+        log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"done"</span><span class="token punctuation">)</span>
+        done <span class="token operator">&lt;-</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token comment">// signal the main goroutine</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">mustCopy</span><span class="token punctuation">(</span>conn<span class="token punctuation">,</span> os<span class="token punctuation">.</span>Stdin<span class="token punctuation">)</span>
+    conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token operator">&lt;-</span>done <span class="token comment">// wait for background goroutine to finish</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
-<p>当用户关闭了标准输入，主goroutine中的mustCopy函数调用将返回，然后调用conn.Close()关闭读和写方向的网络连接。关闭网络连接中的写方向的连接将导致server程序收到一个文件（end-of-file）结束的信号。关闭网络连接中读方向的连接将导致后台goroutine的io.Copy函数调用返回一个“read from closed connection”（“从关闭的连接读”）类似的错误，因此我们临时移除了错误日志语句；在练习8.3将会提供一个更好的解决方案。（需要注意的是go语句调用了一个函数字面量，这是Go语言中启动goroutine常用的形式。）</p>
-<p>在后台goroutine返回之前，它先打印一个日志信息，然后向done对应的channel发送一个值。主goroutine在退出前先等待从done对应的channel接收一个值。因此，总是可以在程序退出前正确输出“done”消息。</p>
+<p>当用户关闭了标准输入，主goroutine中的<code>mustCopy</code>函数调用将返回，然后调用<code>conn.Close()</code>关闭读和写方向的网络连接。关闭网络连接中的写方向的连接将导致server程序收到一个文件（end-of-file）结束的信号。关闭网络连接中读方向的连接将导致后台goroutine的<code>io.Copy</code>函数调用返回一个“read from closed connection”（“从关闭的连接读”）类似的错误，因此我们临时移除了错误日志语句；在练习8.3将会提供一个更好的解决方案。（需要注意的是go语句调用了一个函数字面量，这是Go语言中启动goroutine常用的形式。）</p>
+<p>在后台goroutine返回之前，它先打印一个日志信息，然后向<code>done</code>对应的channel发送一个值。主goroutine在退出前先等待从<code>done</code>对应的channel接收一个值。因此，总是可以在程序退出前正确输出“done”消息。</p>
 <p>基于channels发送消息有两个重要方面。首先每个消息都有一个值，但是有时候通讯的事实和发生的时刻也同样重要。当我们更希望强调通讯发生的时刻时，我们将它称为<strong>消息事件</strong>。有些消息事件并不携带额外的信息，它仅仅是用作两个goroutine之间的同步，这时候我们可以用<code>struct&#123;&#125;</code>空结构体作为channels元素的类型，虽然也可以使用bool或int类型实现同样的功能，<code>done &lt;- 1</code>语句也比<code>done &lt;- struct&#123;&#125;&#123;&#125;</code>更短。</p>
-<p><strong>练习 8.3：</strong> 在netcat3例子中，conn虽然是一个interface类型的值，但是其底层真实类型是<code>*net.TCPConn</code>，代表一个TCP连接。一个TCP连接有读和写两个部分，可以使用CloseRead和CloseWrite方法分别关闭它们。修改netcat3的主goroutine代码，只关闭网络连接中写的部分，这样的话后台goroutine可以在标准输入被关闭后继续打印从reverb1服务器传回的数据。（要在reverb2服务器也完成同样的功能是比较困难的；参考<strong>练习 8.4</strong>。）</p>
-<h3 id="串联的Channels（Pipeline）"><a href="#串联的Channels（Pipeline）" class="headerlink" title="串联的Channels（Pipeline）"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#842-%E4%B8%B2%E8%81%94%E7%9A%84channelspipeline">串联的Channels（Pipeline）</a></h3><p>Channels也可以用于将多个goroutine连接在一起，一个Channel的输出作为下一个Channel的输入。这种串联的Channels就是所谓的管道（pipeline）。下面的程序用两个channels将三个goroutine串联起来，如图8.1所示。</p>
-<p><img src="/notes-of-gopl/ch8-01.png" alt="img"></p>
+<p><strong>练习 8.3：</strong> 在netcat3例子中，conn虽然是一个interface类型的值，但是其底层真实类型是<code>*net.TCPConn</code>，代表一个TCP连接。一个TCP连接有读和写两个部分，可以使用<code>CloseRead</code>和<code>CloseWrite</code>方法分别关闭它们。修改netcat3的主goroutine代码，只关闭网络连接中写的部分，这样的话后台goroutine可以在标准输入被关闭后继续打印从reverb1服务器传回的数据。（要在reverb2服务器也完成同样的功能是比较困难的；参考<strong>练习 8.4</strong>。）</p>
+<h3 id="串联的Channels（Pipeline）"><a href="#串联的Channels（Pipeline）" class="headerlink" title="串联的Channels（Pipeline）"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#842-%E4%B8%B2%E8%81%94%E7%9A%84channelspipeline">串联的Channels（Pipeline）</a></h3><p>Channels也可以用于将多个goroutine连接在一起，一个Channel的输出作为下一个Channel的输入。这种串联的Channels就是所谓的<strong>管道（pipeline）</strong>。下面的程序用两个channels将三个goroutine串联起来，如图8.1所示。</p>
+<p><img src="/2022/notes-of-gopl/ch8-01.png" alt="img"></p>
 <p>第一个goroutine是一个计数器，用于生成0、1、2、……形式的整数序列，然后通过channel将该整数序列发送给第二个goroutine；第二个goroutine是一个求平方的程序，对收到的每个整数求平方，然后将平方后的结果通过第二个channel发送给第三个goroutine；第三个goroutine是一个打印程序，打印收到的每个整数。为了保持例子清晰，我们有意选择了非常简单的函数，当然三个goroutine的计算很简单，在现实中确实没有必要为如此简单的运算构建三个goroutine。</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">func main() &#123;
-    naturals :&#x3D; make(chan int)
-    squares :&#x3D; make(chan int)
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    naturals <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+    squares <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
 
-    &#x2F;&#x2F; Counter
-    go func() &#123;
-        for x :&#x3D; 0; ; x++ &#123;
-            naturals &lt;- x
-        &#125;
-    &#125;()
+    <span class="token comment">// Counter</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span> x <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token punctuation">;</span> x<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+            naturals <span class="token operator">&lt;-</span> x
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-    &#x2F;&#x2F; Squarer
-    go func() &#123;
-        for &#123;
-            x :&#x3D; &lt;-naturals
-            squares &lt;- x * x
-        &#125;
-    &#125;()
+    <span class="token comment">// Squarer</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+            x <span class="token operator">:=</span> <span class="token operator">&lt;-</span>naturals
+            squares <span class="token operator">&lt;-</span> x <span class="token operator">*</span> x
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-    &#x2F;&#x2F; Printer (in main goroutine)
-    for &#123;
-        fmt.Println(&lt;-squares)
-    &#125;
-&#125;</code></pre>
+    <span class="token comment">// Printer (in main goroutine)</span>
+    <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token operator">&lt;-</span>squares<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
 <p>如您所料，上面的程序将生成0、1、4、9、……形式的无穷数列。像这样的串联Channels的管道（Pipelines）可以用在需要长时间运行的服务中，每个长时间运行的goroutine可能会包含一个死循环，在不同goroutine的死循环内部使用串联的Channels来通信。但是，如果我们希望通过Channels只发送有限的数列该如何处理呢？</p>
-<p>如果发送者知道，没有更多的值需要发送到channel的话，那么让接收者也能及时知道没有多余的值可接收将是有用的，因为接收者可以停止不必要的接收等待。这可以通过内置的close函数来关闭channel实现：</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">close(naturals)</code></pre>
+<p><strong>如果发送者知道，没有更多的值需要发送到channel的话，那么让接收者也能及时知道没有多余的值可接收将是有用的，因为接收者可以停止不必要的接收等待。这可以通过内置的<code>close</code>函数来关闭channel实现：</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token function">close</span><span class="token punctuation">(</span>naturals<span class="token punctuation">)</span></code></pre>
 
-<p>当一个channel被关闭后，再向该channel发送数据将导致panic异常。当一个被关闭的channel中已经发送的数据都被成功接收后，后续的接收操作将不再阻塞，它们会立即返回一个零值。关闭上面例子中的naturals变量对应的channel并不能终止循环，它依然会收到一个永无休止的零值序列，然后将它们发送给打印者goroutine。</p>
-<p>没有办法直接测试一个channel是否被关闭，但是接收操作有一个变体形式：它多接收一个结果，多接收的第二个结果是一个布尔值ok，ture表示成功从channels接收到值，false表示channels已经被关闭并且里面没有值可接收。使用这个特性，我们可以修改squarer函数中的循环代码，当naturals对应的channel被关闭并没有值可接收时跳出循环，并且也关闭squares对应的channel.</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">&#x2F;&#x2F; Squarer
-go func() &#123;
-    for &#123;
-        x, ok :&#x3D; &lt;-naturals
-        if !ok &#123;
-            break &#x2F;&#x2F; channel was closed and drained
-        &#125;
-        squares &lt;- x * x
-    &#125;
-    close(squares)
-&#125;()</code></pre>
+<p><strong>当一个channel被关闭后，再向该channel发送数据将导致panic异常。当一个被关闭的channel中已经发送的数据都被成功接收后，后续的接收操作将不再阻塞，它们会立即返回一个零值。</strong>关闭上面例子中的naturals变量对应的channel并不能终止循环，它依然会收到一个永无休止的零值序列，然后将它们发送给打印者goroutine。</p>
+<p><strong>没有办法直接测试一个channel是否被关闭，但是接收操作有一个变体形式：它多接收一个结果，多接收的第二个结果是一个布尔值ok，ture表示成功从channels接收到值，false表示channels已经被关闭并且里面没有值可接收。</strong>使用这个特性，我们可以修改squarer函数中的循环代码，当naturals对应的channel被关闭并没有值可接收时跳出循环，并且也关闭squares对应的channel.</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// Squarer</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+        x<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>naturals
+        <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+            <span class="token keyword">break</span> <span class="token comment">// channel was closed and drained</span>
+        <span class="token punctuation">&#125;</span>
+        squares <span class="token operator">&lt;-</span> x <span class="token operator">*</span> x
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>squares<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
 
-<p>因为上面的语法是笨拙的，而且这种处理模式很常见，因此Go语言的range循环可直接在channels上面迭代。使用range循环是上面处理模式的简洁语法，它依次从channel接收数据，当channel被关闭并且没有值可接收时跳出循环。</p>
+<p><strong>因为上面的语法是笨拙的，而且这种处理模式很常见，因此Go语言的range循环可直接在channels上面迭代。使用range循环是上面处理模式的简洁语法，它依次从channel接收数据，当channel被关闭并且没有值可接收时跳出循环。</strong></p>
 <p>在下面的改进中，我们的计数器goroutine只生成100个含数字的序列，然后关闭naturals对应的channel，这将导致计算平方数的squarer对应的goroutine可以正常终止循环并关闭squares对应的channel。（在一个更复杂的程序中，可以通过defer语句关闭对应的channel。）最后，主goroutine也可以正常终止循环并退出程序。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;pipeline2</em></p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">func main() &#123;
-    naturals :&#x3D; make(chan int)
-    squares :&#x3D; make(chan int)
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    naturals <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+    squares <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
 
-    &#x2F;&#x2F; Counter
-    go func() &#123;
-        for x :&#x3D; 0; x &lt; 100; x++ &#123;
-            naturals &lt;- x
-        &#125;
-        close(naturals)
-    &#125;()
+    <span class="token comment">// Counter</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span> x <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> x <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> x<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+            naturals <span class="token operator">&lt;-</span> x
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">close</span><span class="token punctuation">(</span>naturals<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-    &#x2F;&#x2F; Squarer
-    go func() &#123;
-        for x :&#x3D; range naturals &#123;
-            squares &lt;- x * x
-        &#125;
-        close(squares)
-    &#125;()
+    <span class="token comment">// Squarer</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span> x <span class="token operator">:=</span> <span class="token keyword">range</span> naturals <span class="token punctuation">&#123;</span>
+            squares <span class="token operator">&lt;-</span> x <span class="token operator">*</span> x
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">close</span><span class="token punctuation">(</span>squares<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-    &#x2F;&#x2F; Printer (in main goroutine)
-    for x :&#x3D; range squares &#123;
-        fmt.Println(x)
-    &#125;
-&#125;</code></pre>
+    <span class="token comment">// Printer (in main goroutine)</span>
+    <span class="token keyword">for</span> x <span class="token operator">:=</span> <span class="token keyword">range</span> squares <span class="token punctuation">&#123;</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
 <p>其实你并不需要关闭每一个channel。只有当需要告诉接收者goroutine，所有的数据已经全部发送时才需要关闭channel。不管一个channel是否被关闭，当它没有被引用时将会被Go语言的垃圾自动回收器回收。（不要将关闭一个打开文件的操作和关闭一个channel操作混淆。对于每个打开的文件，都需要在不使用的时候调用对应的Close方法来关闭文件。）</p>
-<p>试图重复关闭一个channel将导致panic异常，试图关闭一个nil值的channel也将导致panic异常。关闭一个channels还会触发一个广播机制，我们将在8.9节讨论。</p>
+<p><strong>试图重复关闭一个channel将导致panic异常，试图关闭一个<code>nil</code>值的channel也将导致panic异常。</strong>关闭一个channels还会触发一个广播机制，我们将在8.9节讨论。</p>
 <h3 id="单方向的Channel"><a href="#单方向的Channel" class="headerlink" title="单方向的Channel"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#843-%E5%8D%95%E6%96%B9%E5%90%91%E7%9A%84channel">单方向的Channel</a></h3><p>随着程序的增长，人们习惯于将大的函数拆分为小的函数。我们前面的例子中使用了三个goroutine，然后用两个channels来连接它们，它们都是main函数的局部变量。将三个goroutine拆分为以下三个函数是自然的想法：</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">func counter(out chan int)
-func squarer(out, in chan int)
-func printer(in chan int)</code></pre>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">counter</span><span class="token punctuation">(</span>out <span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+<span class="token keyword">func</span> <span class="token function">squarer</span><span class="token punctuation">(</span>out<span class="token punctuation">,</span> in <span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+<span class="token keyword">func</span> <span class="token function">printer</span><span class="token punctuation">(</span>in <span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span></code></pre>
 
-<p>其中计算平方的squarer函数在两个串联Channels的中间，因此拥有两个channel类型的参数，一个用于输入一个用于输出。两个channel都拥有相同的类型，但是它们的使用方式相反：一个只用于接收，另一个只用于发送。参数的名字in和out已经明确表示了这个意图，但是并无法保证squarer函数向一个in参数对应的channel发送数据或者从一个out参数对应的channel接收数据。</p>
+<p>其中计算平方的<code>square</code>r函数在两个串联Channels的中间，因此拥有两个channel类型的参数，一个用于输入一个用于输出。两个channel都拥有相同的类型，但是它们的使用方式相反：一个只用于接收，另一个只用于发送。参数的名字<code>in</code>和<code>out</code>已经明确表示了这个意图，但是并无法保证<code>squarer</code>函数向一个<code>in</code>参数对应的channel发送数据或者从一个<code>out</code>参数对应的channel接收数据。</p>
 <p>这种场景是典型的。当一个channel作为一个函数参数时，它一般总是被专门用于只发送或者只接收。</p>
-<p>为了表明这种意图并防止被滥用，Go语言的类型系统提供了单方向的channel类型，分别用于只发送或只接收的channel。类型<code>chan&lt;- int</code>表示一个只发送int的channel，只能发送不能接收。相反，类型<code>&lt;-chan int</code>表示一个只接收int的channel，只能接收不能发送。（箭头<code>&lt;-</code>和关键字chan的相对位置表明了channel的方向。）这种限制将在编译期检测。</p>
-<p>因为关闭操作只用于断言不再向channel发送新的数据，所以只有在发送者所在的goroutine才会调用close函数，因此对一个只接收的channel调用close将是一个编译错误。</p>
+<p><strong>为了表明这种意图并防止被滥用，Go语言的类型系统提供了单方向的channel类型，分别用于只发送或只接收的channel。类型<code>chan&lt;- int</code>表示一个只发送int的channel，只能发送不能接收。相反，类型<code>&lt;-chan int</code>表示一个只接收int的channel，只能接收不能发送。（箭头<code>&lt;-</code>和关键字<code>chan</code>的相对位置表明了channel的方向。）这种限制将在编译期检测。</strong></p>
+<p><strong>因为关闭操作只用于断言不再向channel发送新的数据，所以只有在发送者所在的goroutine才会调用close函数，因此对一个只接收的channel调用close将是一个编译错误。</strong></p>
 <p>这是改进的版本，这一次参数使用了单方向channel类型：</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;pipeline3</em></p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">func counter(out chan&lt;- int) &#123;
-    for x :&#x3D; 0; x &lt; 100; x++ &#123;
-        out &lt;- x
-    &#125;
-    close(out)
-&#125;
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">counter</span><span class="token punctuation">(</span>out <span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> x <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> x <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> x<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+        out <span class="token operator">&lt;-</span> x
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>out<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
 
-func squarer(out chan&lt;- int, in &lt;-chan int) &#123;
-    for v :&#x3D; range in &#123;
-        out &lt;- v * v
-    &#125;
-    close(out)
-&#125;
+<span class="token keyword">func</span> <span class="token function">squarer</span><span class="token punctuation">(</span>out <span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token builtin">int</span><span class="token punctuation">,</span> in <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> in <span class="token punctuation">&#123;</span>
+        out <span class="token operator">&lt;-</span> v <span class="token operator">*</span> v
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>out<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
 
-func printer(in &lt;-chan int) &#123;
-    for v :&#x3D; range in &#123;
-        fmt.Println(v)
-    &#125;
-&#125;
+<span class="token keyword">func</span> <span class="token function">printer</span><span class="token punctuation">(</span>in <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> in <span class="token punctuation">&#123;</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
 
-func main() &#123;
-    naturals :&#x3D; make(chan int)
-    squares :&#x3D; make(chan int)
-    go counter(naturals)
-    go squarer(squares, naturals)
-    printer(squares)
-&#125;</code></pre>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    naturals <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+    squares <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token function">counter</span><span class="token punctuation">(</span>naturals<span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token function">squarer</span><span class="token punctuation">(</span>squares<span class="token punctuation">,</span> naturals<span class="token punctuation">)</span>
+    <span class="token function">printer</span><span class="token punctuation">(</span>squares<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
 
-<p>调用counter（naturals）时，naturals的类型将隐式地从chan int转换成chan&lt;- int。调用printer(squares)也会导致相似的隐式转换，这一次是转换为<code>&lt;-chan int</code>类型只接收型的channel。任何双向channel向单向channel变量的赋值操作都将导致该隐式转换。这里并没有反向转换的语法：也就是不能将一个类似<code>chan&lt;- int</code>类型的单向型的channel转换为<code>chan int</code>类型的双向型的channel。</p>
-<h3 id="带缓存的Channels"><a href="#带缓存的Channels" class="headerlink" title="带缓存的Channels"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#844-%E5%B8%A6%E7%BC%93%E5%AD%98%E7%9A%84channels">带缓存的Channels</a></h3><p>带缓存的Channel内部持有一个元素队列。队列的最大容量是在调用make函数创建channel时通过第二个参数指定的。下面的语句创建了一个可以持有三个字符串元素的带缓存Channel。图8.2是ch变量对应的channel的图形表示形式。</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">ch &#x3D; make(chan string, 3)</code></pre>
+<p><strong>调用<code>counter(naturals)</code>时，<code>naturals</code>的类型将隐式地从<code>chan int</code>转换成<code>chan&lt;- int</code>。调用<code>printer(squares)</code>也会导致相似的隐式转换，这一次是转换为<code>&lt;-chan int</code>类型只接收型的channel。任何双向channel向单向channel变量的赋值操作都将导致该隐式转换。这里并没有反向转换的语法：也就是不能将一个类似<code>chan&lt;- int</code>类型的单向型的channel转换为<code>chan int</code>类型的双向型的channel。</strong></p>
+<h3 id="带缓存的Channels"><a href="#带缓存的Channels" class="headerlink" title="带缓存的Channels"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-04.html#844-%E5%B8%A6%E7%BC%93%E5%AD%98%E7%9A%84channels">带缓存的Channels</a></h3><p><strong>带缓存的Channel内部持有一个元素队列。队列的最大容量是在调用<code>make</code>函数创建channel时通过第2个参数指定的。</strong>下面的语句创建了一个可以持有3个字符串元素的带缓存Channel。图8.2是<code>ch</code>变量对应的channel的图形表示形式。</p>
+<pre class="language-go" data-language="go"><code class="language-go">ch <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">string</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span></code></pre>
 
-<p><img src="/notes-of-gopl/ch8-02.png" alt="img"></p>
-<p>向缓存Channel的发送操作就是向内部缓存队列的尾部插入元素，接收操作则是从队列的头部删除元素。如果内部缓存队列是满的，那么发送操作将阻塞直到因另一个goroutine执行接收操作而释放了新的队列空间。相反，如果channel是空的，接收操作将阻塞直到有另一个goroutine执行发送操作而向队列插入元素。</p>
+<p><img src="/2022/notes-of-gopl/ch8-02.png" alt="img"></p>
+<p><strong>向缓存Channel的发送操作就是向内部缓存队列的尾部插入元素，接收操作则是从队列的头部删除元素。如果内部缓存队列是满的，那么发送操作将阻塞直到因另一个goroutine执行接收操作而释放了新的队列空间。相反，如果channel是空的，接收操作将阻塞直到有另一个goroutine执行发送操作而向队列插入元素。</strong></p>
 <p>我们可以在无阻塞的情况下连续向新创建的channel发送三个值：</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">ch &lt;- &quot;A&quot;
-ch &lt;- &quot;B&quot;
-ch &lt;- &quot;C&quot;</code></pre>
+<pre class="language-go" data-language="go"><code class="language-go">ch <span class="token operator">&lt;-</span> <span class="token string">"A"</span>
+ch <span class="token operator">&lt;-</span> <span class="token string">"B"</span>
+ch <span class="token operator">&lt;-</span> <span class="token string">"C"</span></code></pre>
 
-<p>此刻，channel的内部缓存队列将是满的（图8.3），如果有第四个发送操作将发生阻塞。</p>
-<p><img src="/notes-of-gopl/ch8-03.png" alt="img"></p>
+<p>此刻，channel的内部缓存队列将是满的（图8.3），如果有第4个发送操作将发生阻塞。</p>
+<p><img src="/2022/notes-of-gopl/ch8-03.png" alt="img"></p>
 <p>如果我们接收一个值，</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">fmt.Println(&lt;-ch) &#x2F;&#x2F; &quot;A&quot;</code></pre>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token operator">&lt;-</span>ch<span class="token punctuation">)</span> <span class="token comment">// "A"</span></code></pre>
 
 <p>那么channel的缓存队列将不是满的也不是空的（图8.4），因此对该channel执行的发送或接收操作都不会发生阻塞。通过这种方式，channel的缓存队列解耦了接收和发送的goroutine。</p>
-<p><img src="/notes-of-gopl/ch8-04.png" alt="img"></p>
-<p>在某些特殊情况下，程序可能需要知道channel内部缓存的容量，可以用内置的cap函数获取：</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">fmt.Println(cap(ch)) &#x2F;&#x2F; &quot;3&quot;</code></pre>
+<p><img src="/2022/notes-of-gopl/ch8-04.png" alt="img"></p>
+<p><strong>在某些特殊情况下，程序可能需要知道channel内部缓存的容量，可以用内置的<code>cap</code>函数获取：</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">cap</span><span class="token punctuation">(</span>ch<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "3"</span></code></pre>
 
-<p>同样，对于内置的len函数，如果传入的是channel，那么将返回channel内部缓存队列中有效元素的个数。因为在并发程序中该信息会随着接收操作而失效，但是它对某些故障诊断和性能优化会有帮助。</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">fmt.Println(len(ch)) &#x2F;&#x2F; &quot;2&quot;</code></pre>
+<p><strong>同样，对于内置的<code>len</code>函数，如果传入的是channel，那么将返回channel内部缓存队列中有效元素的个数。因为在并发程序中该信息会随着接收操作而失效，但是它对某些故障诊断和性能优化会有帮助。</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>ch<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "2"</span></code></pre>
 
-<p>在继续执行两次接收操作后channel内部的缓存队列将又成为空的，如果有第四个接收操作将发生阻塞：</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">fmt.Println(&lt;-ch) &#x2F;&#x2F; &quot;B&quot;
-fmt.Println(&lt;-ch) &#x2F;&#x2F; &quot;C&quot;</code></pre>
+<p>在继续执行2次接收操作后channel内部的缓存队列将又成为空的，如果有第4个接收操作将发生阻塞：</p>
+<pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token operator">&lt;-</span>ch<span class="token punctuation">)</span> <span class="token comment">// "B"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token operator">&lt;-</span>ch<span class="token punctuation">)</span> <span class="token comment">// "C"</span></code></pre>
 
-<p>在这个例子中，发送和接收操作都发生在同一个goroutine中，但是在真实的程序中它们一般由不同的goroutine执行。Go语言新手有时候会将一个带缓存的channel当作同一个goroutine中的队列使用，虽然语法看似简单，但实际上这是一个错误。Channel和goroutine的调度器机制是紧密相连的，如果没有其他goroutine从channel接收，发送者——或许是整个程序——将会面临永远阻塞的风险。如果你只是需要一个简单的队列，使用slice就可以了。</p>
-<p>下面的例子展示了一个使用了带缓存channel的应用。它并发地向三个镜像站点发出请求，三个镜像站点分散在不同的地理位置。它们分别将收到的响应发送到带缓存channel，最后接收者只接收第一个收到的响应，也就是最快的那个响应。因此mirroredQuery函数可能在另外两个响应慢的镜像站点响应之前就返回了结果。（顺便说一下，多个goroutines并发地向同一个channel发送数据，或从同一个channel接收数据都是常见的用法。）</p>
-<pre class="language-Go" data-language="Go"><code class="language-Go">func mirroredQuery() string &#123;
-    responses :&#x3D; make(chan string, 3)
-    go func() &#123; responses &lt;- request(&quot;asia.gopl.io&quot;) &#125;()
-    go func() &#123; responses &lt;- request(&quot;europe.gopl.io&quot;) &#125;()
-    go func() &#123; responses &lt;- request(&quot;americas.gopl.io&quot;) &#125;()
-    return &lt;-responses &#x2F;&#x2F; return the quickest response
-&#125;
+<p>在这个例子中，发送和接收操作都发生在同一个goroutine中，但是在真实的程序中它们一般由不同的goroutine执行。<strong>Go语言新手有时候会将一个带缓存的channel当作同一个goroutine中的队列使用，虽然语法看似简单，但实际上这是一个错误。Channel和goroutine的调度器机制是紧密相连的，如果没有其他goroutine从channel接收，发送者——或许是整个程序——将会面临永远阻塞的风险。如果你只是需要一个简单的队列，使用slice就可以了。</strong></p>
+<p>下面的例子展示了一个使用了带缓存channel的应用。它并发地向三个镜像站点发出请求，三个镜像站点分散在不同的地理位置。它们分别将收到的响应发送到带缓存channel，最后接收者只接收第一个收到的响应，也就是最快的那个响应。因此mirroredQuery函数可能在另外两个响应慢的镜像站点响应之前就返回了结果。（顺便说一下，<strong>多个goroutines并发地向同一个channel发送数据，或从同一个channel接收数据都是常见的用法。</strong>）</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">mirroredQuery</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+    responses <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">string</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> responses <span class="token operator">&lt;-</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token string">"asia.gopl.io"</span><span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> responses <span class="token operator">&lt;-</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token string">"europe.gopl.io"</span><span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> responses <span class="token operator">&lt;-</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token string">"americas.gopl.io"</span><span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token operator">&lt;-</span>responses <span class="token comment">// return the quickest response</span>
+<span class="token punctuation">&#125;</span>
 
-func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125;</code></pre>
+<span class="token keyword">func</span> <span class="token function">request</span><span class="token punctuation">(</span>hostname <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>response <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token comment">/* ... */</span> <span class="token punctuation">&#125;</span></code></pre>
 
-<p>如果我们使用了无缓存的channel，那么两个慢的goroutines将会因为没有人接收而被永远卡住。这种情况，称为goroutines泄漏，这将是一个BUG。和垃圾变量不同，泄漏的goroutines并不会被自动回收，因此确保每个不再需要的goroutine能正常退出是重要的。</p>
-<p>关于无缓存或带缓存channels之间的选择，或者是带缓存channels的容量大小的选择，都可能影响程序的正确性。无缓存channel更强地保证了每个发送操作与相应的同步接收操作；但是对于带缓存channel，这些操作是解耦的。同样，即使我们知道将要发送到一个channel的信息的数量上限，创建一个对应容量大小的带缓存channel也是不现实的，因为这要求在执行任何接收操作之前缓存所有已经发送的值。如果未能分配足够的缓存将导致程序死锁。</p>
+<p><strong>如果我们使用了无缓存的channel，那么两个慢的goroutines将会因为没有人接收而被永远卡住。这种情况，称为<em>goroutines泄漏</em>，这将是一个BUG。和垃圾变量不同，泄漏的goroutines并不会被自动回收，因此确保每个不再需要的goroutine能正常退出是重要的。</strong></p>
+<p><strong>关于无缓存或带缓存channels之间的选择，或者是带缓存channels的容量大小的选择，都可能影响程序的正确性。无缓存channel更强地保证了每个发送操作与相应的同步接收操作；但是对于带缓存channel，这些操作是解耦的。同样，即使我们知道将要发送到一个channel的信息的数量上限，创建一个对应容量大小的带缓存channel也是不现实的，因为这要求在执行任何接收操作之前缓存所有已经发送的值。如果未能分配足够的缓存将导致程序死锁。</strong></p>
 <p>Channel的缓存也可能影响程序的性能。想象一家蛋糕店有三个厨师，一个烘焙，一个上糖衣，还有一个将每个蛋糕传递到它下一个厨师的生产线。在狭小的厨房空间环境，每个厨师在完成蛋糕后必须等待下一个厨师已经准备好接受它；这类似于在一个无缓存的channel上进行沟通。</p>
 <p>如果在每个厨师之间有一个放置一个蛋糕的额外空间，那么每个厨师就可以将一个完成的蛋糕临时放在那里而马上进入下一个蛋糕的制作中；这类似于将channel的缓存队列的容量设置为1。只要每个厨师的平均工作效率相近，那么其中大部分的传输工作将是迅速的，个体之间细小的效率差异将在交接过程中弥补。如果厨师之间有更大的额外空间——也是就更大容量的缓存队列——将可以在不停止生产线的前提下消除更大的效率波动，例如一个厨师可以短暂地休息，然后再加快赶上进度而不影响其他人。</p>
 <p>另一方面，如果生产线的前期阶段一直快于后续阶段，那么它们之间的缓存在大部分时间都将是满的。相反，如果后续阶段比前期阶段更快，那么它们之间的缓存在大部分时间都将是空的。对于这类场景，额外的缓存并没有带来任何好处。</p>
 <p>生产线的隐喻对于理解channels和goroutines的工作机制是很有帮助的。例如，如果第二阶段是需要精心制作的复杂操作，一个厨师可能无法跟上第一个厨师的进度，或者是无法满足第三阶段厨师的需求。要解决这个问题，我们可以再雇佣另一个厨师来帮助完成第二阶段的工作，他执行相同的任务但是独立工作。这类似于基于相同的channels创建另一个独立的goroutine。</p>
 <p>我们没有太多的空间展示全部细节，但是gopl.io&#x2F;ch8&#x2F;cake包模拟了这个蛋糕店，可以通过不同的参数调整。它还对上面提到的几种场景提供对应的基准测试（§11.4） 。</p>
-<h2 id="并发的循环"><a href="#并发的循环" class="headerlink" title="并发的循环"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-05.html#85-%E5%B9%B6%E5%8F%91%E7%9A%84%E5%BE%AA%E7%8E%AF">并发的循环</a></h2><p>本节中，我们会探索一些用来在并行时循环迭代的常见并发模型。我们会探究从全尺寸图片生成一些缩略图的问题。gopl.io&#x2F;ch8&#x2F;thumbnail包提供了ImageFile函数来帮我们拉伸图片。我们不会说明这个函数的实现，只需要从gopl.io下载它。</p>
+<h2 id="并发的循环"><a href="#并发的循环" class="headerlink" title="并发的循环"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-05.html#85-%E5%B9%B6%E5%8F%91%E7%9A%84%E5%BE%AA%E7%8E%AF">并发的循环</a></h2><p>本节中，我们会探索一些用来在并行时循环迭代的常见并发模型。我们会探究从全尺寸图片生成一些缩略图的问题。gopl.io&#x2F;ch8&#x2F;thumbnail包提供了<code>ImageFile</code>函数来帮我们拉伸图片。我们不会说明这个函数的实现，只需要从gopl.io下载它。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;thumbnail</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> thumbnail
 
@@ -6411,8 +6411,8 @@ func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>显然我们处理文件的顺序无关紧要，因为每一个图片的拉伸操作和其它图片的处理操作都是彼此独立的。像这种子问题都是完全彼此独立的问题被叫做易并行问题（译注：embarrassingly parallel，直译的话更像是尴尬并行）。易并行问题是最容易被实现成并行的一类问题（废话），并且最能够享受到并发带来的好处，能够随着并行的规模线性地扩展。</p>
-<p>下面让我们并行地执行这些操作，从而将文件IO的延迟隐藏掉，并用上多核cpu的计算能力来拉伸图像。我们的第一个并发程序只是使用了一个go关键字。这里我们先忽略掉错误，之后再进行处理。</p>
+<p>显然我们处理文件的顺序无关紧要，因为每一个图片的拉伸操作和其它图片的处理操作都是彼此独立的。像这种子问题都是完全彼此独立的问题被叫做易并行问题（译注：embarrassingly parallel，直译的话更像是尴尬并行）。易并行问题是最容易被实现成并行的一类问题，并且最能够享受到并发带来的好处，能够随着并行的规模线性地扩展。</p>
+<p>下面让我们并行地执行这些操作，从而将文件IO的延迟隐藏掉，并用上多核cpu的计算能力来拉伸图像。我们的第一个并发程序只是使用了一个<code>go</code>关键字。这里我们先忽略掉错误，之后再进行处理。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// NOTE: incorrect!</span>
 <span class="token keyword">func</span> <span class="token function">makeThumbnails2</span><span class="token punctuation">(</span>filenames <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> f <span class="token operator">:=</span> <span class="token keyword">range</span> filenames <span class="token punctuation">&#123;</span>
@@ -6421,7 +6421,7 @@ func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>这个版本运行的实在有点太快，实际上，由于它比最早的版本使用的时间要短得多，即使当文件名的slice中只包含有一个元素。这就有点奇怪了，如果程序没有并发执行的话，那为什么一个并发的版本还是要快呢？答案其实是makeThumbnails在它还没有完成工作之前就已经返回了。它启动了所有的goroutine，每一个文件名对应一个，但没有等待它们一直到执行完毕。</p>
-<p>没有什么直接的办法能够等待goroutine完成，但是我们可以改变goroutine里的代码让其能够将完成情况报告给外部的goroutine知晓，使用的方式是向一个共享的channel中发送事件。因为我们已经确切地知道有len(filenames)个内部goroutine，所以外部的goroutine只需要在返回之前对这些事件计数。</p>
+<p>没有什么直接的办法能够等待goroutine完成，但是我们可以改变goroutine里的代码让其能够将完成情况报告给外部的goroutine知晓，使用的方式是向一个共享的channel中发送事件。因为我们已经确切地知道有<code>len(filenames)</code>个内部goroutine，所以外部的goroutine只需要在返回之前对这些事件计数。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// makeThumbnails3 makes thumbnails of the specified files in parallel.</span>
 <span class="token keyword">func</span> <span class="token function">makeThumbnails3</span><span class="token punctuation">(</span>filenames <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
@@ -6437,7 +6437,7 @@ func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>注意我们将f的值作为一个显式的变量传给了函数，而不是在循环的闭包中声明：</p>
+<p><strong>注意我们将<code>f</code>的值作为一个显式的变量传给了函数，而不是在循环的闭包中声明：</strong></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> f <span class="token operator">:=</span> <span class="token keyword">range</span> filenames <span class="token punctuation">&#123;</span>
     <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
         thumbnail<span class="token punctuation">.</span><span class="token function">ImageFile</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span> <span class="token comment">// NOTE: incorrect!</span>
@@ -6445,8 +6445,8 @@ func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125
     <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>回忆一下之前在5.6.1节中，匿名函数中的循环变量快照问题。上面这个单独的变量f是被所有的匿名函数值所共享，且会被连续的循环迭代所更新的。当新的goroutine开始执行字面函数时，for循环可能已经更新了f并且开始了另一轮的迭代或者（更有可能的）已经结束了整个循环，所以当这些goroutine开始读取f的值时，它们所看到的值已经是slice的最后一个元素了。显式地添加这个参数，我们能够确保使用的f是当go语句执行时的“当前”那个f。</p>
-<p>如果我们想要从每一个worker goroutine往主goroutine中返回值时该怎么办呢？当我们调用thumbnail.ImageFile创建文件失败的时候，它会返回一个错误。下一个版本的makeThumbnails会返回其在做拉伸操作时接收到的第一个错误：</p>
+<p>回忆一下之前在5.6.1节中，匿名函数中的循环变量快照问题。上面这个单独的变量<code>f</code>是被所有的匿名函数值所共享，且会被连续的循环迭代所更新的。当新的goroutine开始执行字面函数时，for循环可能已经更新了<code>f</code>并且开始了另一轮的迭代或者（更有可能的）已经结束了整个循环，所以当这些goroutine开始读取f的值时，它们所看到的值已经是slice的最后一个元素了。显式地添加这个参数，我们能够确保使用的f是当go语句执行时的“当前”那个<code>f</code>。</p>
+<p>如果我们想要从每一个worker goroutine往主goroutine中返回值时该怎么办呢？当我们调用<code>thumbnail.ImageFile</code>创建文件失败的时候，它会返回一个错误。下一个版本的<code>makeThumbnails</code>会返回其在做拉伸操作时接收到的第一个错误：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// makeThumbnails4 makes thumbnails for the specified files in parallel.</span>
 <span class="token comment">// It returns an error if any step failed.</span>
 <span class="token keyword">func</span> <span class="token function">makeThumbnails4</span><span class="token punctuation">(</span>filenames <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
@@ -6468,9 +6468,9 @@ func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125
     <span class="token keyword">return</span> <span class="token boolean">nil</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>这个程序有一个微妙的bug。当它遇到第一个非nil的error时会直接将error返回到调用方，使得没有一个goroutine去排空errors channel。这样剩下的worker goroutine在向这个channel中发送值时，都会永远地阻塞下去，并且永远都不会退出。这种情况叫做goroutine泄露（§8.4.4），可能会导致整个程序卡住或者跑出out of memory的错误。</p>
+<p><strong>这个程序有一个微妙的bug。当它遇到第一个非nil的error时会直接将error返回到调用方，使得没有一个goroutine去排空errors channel。这样剩下的worker goroutine在向这个channel中发送值时，都会永远地阻塞下去，并且永远都不会退出。这种情况叫做<em>goroutine泄露</em>（§8.4.4），可能会导致整个程序卡住或者跑出out of memory的错误。</strong></p>
 <p>最简单的解决办法就是用一个具有合适大小的buffered channel，这样这些worker goroutine向channel中发送错误时就不会被阻塞。（一个可选的解决办法是创建一个另外的goroutine，当main goroutine返回第一个错误的同时去排空channel。）</p>
-<p>下一个版本的makeThumbnails使用了一个buffered channel来返回生成的图片文件的名字，附带生成时的错误。</p>
+<p>下一个版本的<code>makeThumbnails</code>使用了一个buffered channel来返回生成的图片文件的名字，附带生成时的错误。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// makeThumbnails5 makes thumbnails for the specified files in parallel.</span>
 <span class="token comment">// It returns the generated file names in an arbitrary order,</span>
 <span class="token comment">// or an error if any step failed.</span>
@@ -6500,8 +6500,8 @@ func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125
     <span class="token keyword">return</span> thumbfiles<span class="token punctuation">,</span> <span class="token boolean">nil</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>我们最后一个版本的makeThumbnails返回了新文件们的大小总计数（bytes）。和前面的版本都不一样的一点是我们在这个版本里没有把文件名放在slice里，而是通过一个string的channel传过来，所以我们无法对循环的次数进行预测。</p>
-<p>为了知道最后一个goroutine什么时候结束（最后一个结束并不一定是最后一个开始），我们需要一个递增的计数器，在每一个goroutine启动时加一，在goroutine退出时减一。这需要一种特殊的计数器，这个计数器需要在多个goroutine操作时做到安全并且提供在其减为零之前一直等待的一种方法。这种计数类型被称为sync.WaitGroup，下面的代码就用到了这种方法：</p>
+<p>我们最后一个版本的<code>makeThumbnails</code>返回了新文件们的大小总计数（bytes）。和前面的版本都不一样的一点是我们在这个版本里没有把文件名放在slice里，而是通过一个string的channel传过来，所以我们无法对循环的次数进行预测。</p>
+<p>为了知道最后一个goroutine什么时候结束（最后一个结束并不一定是最后一个开始），我们需要一个递增的计数器，在每一个goroutine启动时加一，在goroutine退出时减一。这需要一种特殊的计数器，这个计数器需要在多个goroutine操作时做到安全并且提供在其减为零之前一直等待的一种方法。这种计数类型被称为<code>sync.WaitGroup</code>，下面的代码就用到了这种方法：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// makeThumbnails6 makes thumbnails for each file received from the channel.</span>
 <span class="token comment">// It returns the number of bytes occupied by the files it creates.</span>
 <span class="token keyword">func</span> <span class="token function">makeThumbnails6</span><span class="token punctuation">(</span>filenames <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">int64</span> <span class="token punctuation">&#123;</span>
@@ -6535,10 +6535,42 @@ func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125
     <span class="token keyword">return</span> total
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>注意Add和Done方法的不对称。Add是为计数器加一，必须在worker goroutine开始之前调用，而不是在goroutine中；否则的话我们没办法确定Add是在”closer” goroutine调用Wait之前被调用。并且Add还有一个参数，但Done却没有任何参数；其实它和Add(-1)是等价的。我们使用defer来确保计数器即使是在出错的情况下依然能够正确地被减掉。上面的程序代码结构是当我们使用并发循环，但又不知道迭代次数时很通常而且很地道的写法。</p>
-<p>sizes channel携带了每一个文件的大小到main goroutine，在main goroutine中使用了range loop来计算总和。观察一下我们是怎样创建一个closer goroutine，并让其在所有worker goroutine们结束之后再关闭sizes channel的。两步操作：wait和close，必须是基于sizes的循环的并发。考虑一下另一种方案：如果等待操作被放在了main goroutine中，在循环之前，这样的话就永远都不会结束了，如果在循环之后，那么又变成了不可达的部分，因为没有任何东西去关闭这个channel，这个循环就永远都不会终止。</p>
-<p>图8.5 表明了makethumbnails6函数中事件的序列。纵列表示goroutine。窄线段代表sleep，粗线段代表活动。斜线箭头代表用来同步两个goroutine的事件。时间向下流动。注意main goroutine是如何大部分的时间被唤醒执行其range循环，等待worker发送值或者closer来关闭channel的。</p>
-<p><img src="/notes-of-gopl/ch8-05.png" alt="img"></p>
+<p>注意<code>Add</code>和<code>Done</code>方法的不对称。<code>Add</code>是为计数器加一，必须在worker goroutine开始之前调用，而不是在worker goroutine中；否则的话我们没办法确定<code>Add</code>是在”closer” goroutine调用<code>Wait</code>之前被调用。并且<code>Add</code>还有一个参数，但<code>Done</code>却没有任何参数；其实<code>Done()</code>和<code>Add(-1)</code>是等价的。我们使用defer来确保计数器即使是在出错的情况下依然能够正确地被减掉。上面的程序代码结构是当我们使用并发循环，但又不知道迭代次数时很通常而且很地道的写法。</p>
+<p>sizes channel携带了每一个文件的大小到main goroutine，在main goroutine中使用了range loop来计算总和。观察一下我们是怎样创建一个closer goroutine，并让其在所有worker goroutine们结束之后再关闭sizes channel的。两步操作：wait和close，必须是基于sizes的循环的并发。</p>
+<p>考虑一下另一种方案：如果等待操作被放在了main goroutine中，在循环之前，这样的话就永远都不会结束了，如果在循环之后，那么又变成了不可达的部分，因为没有任何东西去关闭这个channel，这个循环就永远都不会终止。</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// makeThumbnails6 makes thumbnails for each file received from the channel.</span>
+<span class="token comment">// It returns the number of bytes occupied by the files it creates.</span>
+<span class="token keyword">func</span> <span class="token function">makeThumbnails6</span><span class="token punctuation">(</span>filenames <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">int64</span> <span class="token punctuation">&#123;</span>
+    sizes <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int64</span><span class="token punctuation">)</span>
+    <span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup <span class="token comment">// number of working goroutines</span>
+    <span class="token keyword">for</span> f <span class="token operator">:=</span> <span class="token keyword">range</span> filenames <span class="token punctuation">&#123;</span>
+        wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+        <span class="token comment">// worker</span>
+        <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span>f <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            thumb<span class="token punctuation">,</span> err <span class="token operator">:=</span> thumbnail<span class="token punctuation">.</span><span class="token function">ImageFile</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+            <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+                log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+                <span class="token keyword">return</span>
+            <span class="token punctuation">&#125;</span>
+            info<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>thumb<span class="token punctuation">)</span> <span class="token comment">// OK to ignore error</span>
+            sizes <span class="token operator">&lt;-</span> info<span class="token punctuation">.</span><span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// closer</span>
+    wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment">// 会等待所有goroutine结束，但同时又没有消耗channel size中的数据，不消耗，则wg就没法归零，所以会卡死。</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>sizes<span class="token punctuation">)</span>
+
+    <span class="token keyword">var</span> total <span class="token builtin">int64</span>
+  <span class="token keyword">for</span> size <span class="token operator">:=</span> <span class="token keyword">range</span> sizes <span class="token punctuation">&#123;</span>  <span class="token comment">// 由于前面的 wg.Wait()，这里无法消耗 channel sizes中的数据</span>
+        total <span class="token operator">+=</span> size
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> total
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>图8.5 表明了<code>makethumbnails6</code>函数中事件的序列。纵列表示goroutine。窄线段代表sleep，粗线段代表活动。斜线箭头代表用来同步两个goroutine的事件。时间向下流动。注意main goroutine是如何大部分的时间被唤醒执行其range循环，等待worker发送值或者closer来关闭channel的。</p>
+<p><img src="/2022/notes-of-gopl/ch8-05.png" alt="img"></p>
 <h2 id="示例-并发的Web爬虫"><a href="#示例-并发的Web爬虫" class="headerlink" title="示例: 并发的Web爬虫"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-06.html#86-%E7%A4%BA%E4%BE%8B-%E5%B9%B6%E5%8F%91%E7%9A%84web%E7%88%AC%E8%99%AB">示例: 并发的Web爬虫</a></h2><p>在5.6节中，我们做了一个简单的web爬虫，用bfs(广度优先)算法来抓取整个网站。在本节中，我们会让这个爬虫并行化，这样每一个彼此独立的抓取命令可以并行进行IO，最大化利用网络资源。crawl函数和gopl.io&#x2F;ch5&#x2F;findlinks3中的是一样的。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;crawl1</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">crawl</span><span class="token punctuation">(</span>url <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
@@ -6571,7 +6603,7 @@ func request(hostname string) (response string) &#123; &#x2F;* ... *&#x2F; &#125
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>注意这里的crawl所在的goroutine会将link作为一个显式的参数传入，来避免“循环变量快照”的问题（在5.6.1中有讲解）。另外注意这里将命令行参数传入worklist也是在一个另外的goroutine中进行的，这是为了避免channel两端的main goroutine与crawler goroutine都尝试向对方发送内容，却没有一端接收内容时发生死锁。当然，这里我们也可以用buffered channel来解决问题，这里不再赘述。</p>
+<p>注意这里的crawl所在的goroutine会将link作为一个显式的参数传入，来避免“循环变量快照”的问题（在5.6.1中有讲解）。<strong>另外注意这里将命令行参数传入worklist也是在一个另外的goroutine中进行的，这是为了避免channel两端的main goroutine与crawler goroutine都尝试向对方发送内容，却没有一端接收内容时发生死锁。当然，这里我们也可以用buffered channel来解决问题，这里不再赘述。</strong></p>
 <p>现在爬虫可以高并发地运行起来，并且可以产生一大坨的URL了，不过还是会有俩问题。一个问题是在运行一段时间后可能会出现在log的错误信息里的：</p>
 <pre class="language-none"><code class="language-none">$ go build gopl.io&#x2F;ch8&#x2F;crawl1
 $ .&#x2F;crawl1 http:&#x2F;&#x2F;gopl.io&#x2F;
@@ -6584,10 +6616,10 @@ https:&#x2F;&#x2F;golang.org&#x2F;blog&#x2F;
 2015&#x2F;07&#x2F;15 18:22:12 Get ...: dial tcp 23.21.222.120:443: socket: too many open files
 ...</code></pre>
 
-<p>最初的错误信息是一个让人莫名的DNS查找失败，即使这个域名是完全可靠的。而随后的错误信息揭示了原因：这个程序一次性创建了太多网络连接，超过了每一个进程的打开文件数限制，既而导致了在调用net.Dial像DNS查找失败这样的问题。</p>
-<p>这个程序实在是太他妈并行了。无穷无尽地并行化并不是什么好事情，因为不管怎么说，你的系统总是会有一些个限制因素，比如CPU核心数会限制你的计算负载，比如你的硬盘转轴和磁头数限制了你的本地磁盘IO操作频率，比如你的网络带宽限制了你的下载速度上限，或者是你的一个web服务的服务容量上限等等。为了解决这个问题，我们可以限制并发程序所使用的资源来使之适应自己的运行环境。对于我们的例子来说，最简单的方法就是限制对links.Extract在同一时间最多不会有超过n次调用，这里的n一般小于文件描述符的上限值，比如20。这和一个夜店里限制客人数目是一个道理，只有当有客人离开时，才会允许新的客人进入店内。</p>
-<p>我们可以用一个有容量限制的buffered channel来控制并发，这类似于操作系统里的计数信号量概念。从概念上讲，channel里的n个空槽代表n个可以处理内容的token（通行证），从channel里接收一个值会释放其中的一个token，并且生成一个新的空槽位。这样保证了在没有接收介入时最多有n个发送操作。（这里可能我们拿channel里填充的槽来做token更直观一些，不过还是这样吧。）由于channel里的元素类型并不重要，我们用一个零值的struct{}来作为其元素。</p>
-<p>让我们重写crawl函数，将对links.Extract的调用操作用获取、释放token的操作包裹起来，来确保同一时间对其只有20个调用。信号量数量和其能操作的IO资源数量应保持接近。</p>
+<p>最初的错误信息是一个让人莫名的DNS查找失败，即使这个域名是完全可靠的。而随后的错误信息揭示了原因：这个程序一次性创建了太多网络连接，超过了每一个进程的打开文件数限制，既而导致了在调用<code>net.Dial</code>像DNS查找失败这样的问题。</p>
+<p>这个程序实在是太他妈并行了。无穷无尽地并行化并不是什么好事情，因为不管怎么说，你的系统总是会有一些个限制因素，比如CPU核心数会限制你的计算负载，比如你的硬盘转轴和磁头数限制了你的本地磁盘IO操作频率，比如你的网络带宽限制了你的下载速度上限，或者是你的一个web服务的服务容量上限等等。为了解决这个问题，我们可以限制并发程序所使用的资源来使之适应自己的运行环境。对于我们的例子来说，最简单的方法就是限制对<code>links.Extract</code>在同一时间最多不会有超过n次调用，这里的n一般小于文件描述符的上限值，比如20。这和一个夜店里限制客人数目是一个道理，只有当有客人离开时，才会允许新的客人进入店内。</p>
+<p><strong>我们可以用一个有容量限制的buffered channel来控制并发，这类似于操作系统里的计数信号量概念。</strong>从概念上讲，channel里的n个空槽代表n个可以处理内容的token（令牌），从channel里接收一个值会释放其中的一个token，并且生成一个新的空槽位。这样保证了在没有接收介入时最多有n个发送操作。（这里可能我们拿channel里填充的槽来做token更直观一些，不过还是这样吧。）由于channel里的元素类型并不重要，我们用一个零值的<code>struct&#123;&#125;</code>来作为其元素。</p>
+<p>让我们重写<code>crawl</code>函数，将对<code>links.Extract</code>的调用操作用获取、释放token的操作包裹起来，来确保同一时间对其只有20个调用。信号量数量和其能操作的IO资源数量应保持接近。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;crawl2</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// tokens is a counting semaphore used to</span>
 <span class="token comment">// enforce a limit of 20 concurrent requests.</span>
@@ -6604,6 +6636,59 @@ https:&#x2F;&#x2F;golang.org&#x2F;blog&#x2F;
     <span class="token keyword">return</span> list
 <span class="token punctuation">&#125;</span></code></pre>
 
+<p><strong>可以写一个程序来验证一下上面用有缓冲的channel来实现对goroutine并发数量限制的思路：</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+	<span class="token keyword">var</span> tokens <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+	<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"len=%d\n"</span><span class="token punctuation">,</span> <span class="token function">len</span><span class="token punctuation">(</span>tokens<span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"before acquiring a token n=%d\n"</span><span class="token punctuation">,</span> n<span class="token punctuation">)</span>
+			tokens <span class="token operator">&lt;-</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token comment">// 取得令牌</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"after acquiring a token n=%d\n"</span><span class="token punctuation">,</span> n<span class="token punctuation">)</span>
+			time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second <span class="token operator">*</span> <span class="token number">5</span><span class="token punctuation">)</span> <span class="token comment">// 模拟耗时任务</span>
+			<span class="token operator">&lt;-</span>tokens <span class="token comment">// 释放令牌</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+		time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Millisecond <span class="token operator">*</span> <span class="token number">100</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>输出为：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token builtin">len</span><span class="token operator">=</span><span class="token number">0</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">1</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">1</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">1</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">2</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">2</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">2</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">3</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">3</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">3</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">4</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">4</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">4</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">5</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">5</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">5</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">6</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">5</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">7</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">5</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">8</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">5</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">9</span>
+<span class="token builtin">len</span><span class="token operator">=</span><span class="token number">5</span>
+before acquiring a token n<span class="token operator">=</span><span class="token number">10</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">6</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">7</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">8</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">9</span>
+after acquiring a token n<span class="token operator">=</span><span class="token number">10</span></code></pre>
+
+<p>可以看到，有缓冲channel并不能限制goroutine被创建的数量，只能让没有取得令牌的goroutine阻塞在领取令牌的位置。如果必须先取得令牌才能发送网络请求或打开文件，确实可以起到限制同时发起网络请求和打开文件的数量。但没法限制goroutine被创建的数量。</p>
 <p>第二个问题是这个程序永远都不会终止，即使它已经爬到了所有初始链接衍生出的链接。（当然，除非你慎重地选择了合适的初始化URL或者已经实现了练习8.6中的深度限制，你应该还没有意识到这个问题。）为了使这个程序能够终止，我们需要在worklist为空或者没有crawl的goroutine在运行时退出主循环。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     worklist <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span>
@@ -6630,9 +6715,9 @@ https:&#x2F;&#x2F;golang.org&#x2F;blog&#x2F;
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>这个版本中，计数器n对worklist的发送操作数量进行了限制。每一次我们发现有元素需要被发送到worklist时，我们都会对n进行++操作，在向worklist中发送初始的命令行参数之前，我们也进行过一次++操作。这里的操作++是在每启动一个crawler的goroutine之前。主循环会在n减为0时终止，这时候说明没活可干了。</p>
+<p>这个版本中，计数器n对worklist的发送操作数量进行了限制。每一次我们发现有元素需要被发送到worklist时，我们都会进行<code>n++</code>操作，在向worklist中发送初始的命令行参数之前，我们也进行过一次<code>n++</code>操作。这里的操作<code>n++</code>是在每启动一个crawler的goroutine之前。主循环会在n减为0时终止，这时候说明没活可干了。</p>
 <p>现在这个并发爬虫会比5.6节中的深度优先搜索版快上20倍，而且不会出什么错，并且在其完成任务时也会正确地终止。</p>
-<p>下面的程序是避免过度并发的另一种思路。这个版本使用了原来的crawl函数，但没有使用计数信号量，取而代之用了20个常驻的crawler goroutine，这样来保证最多20个HTTP请求在并发。</p>
+<p><strong>下面的程序是避免过度并发的另一种思路。</strong>这个版本使用了原来的crawl函数，但没有使用计数信号量，取而代之用了20个常驻的crawler goroutine，这样来保证最多20个HTTP请求在并发。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     worklist <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span>  <span class="token comment">// lists of URLs, may have duplicates</span>
     unseenLinks <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token comment">// de-duplicated URLs</span>
@@ -6645,7 +6730,7 @@ https:&#x2F;&#x2F;golang.org&#x2F;blog&#x2F;
         <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
             <span class="token keyword">for</span> link <span class="token operator">:=</span> <span class="token keyword">range</span> unseenLinks <span class="token punctuation">&#123;</span>
                 foundLinks <span class="token operator">:=</span> <span class="token function">crawl</span><span class="token punctuation">(</span>link<span class="token punctuation">)</span>
-                <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> worklist <span class="token operator">&lt;-</span> foundLinks <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> worklist <span class="token operator">&lt;-</span> foundLinks <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 猜测：因为worklist无缓冲，所以必须在另一个goroutine中避免死锁</span>
             <span class="token punctuation">&#125;</span>
         <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     <span class="token punctuation">&#125;</span>
@@ -6657,7 +6742,7 @@ https:&#x2F;&#x2F;golang.org&#x2F;blog&#x2F;
         <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> link <span class="token operator">:=</span> <span class="token keyword">range</span> list <span class="token punctuation">&#123;</span>
             <span class="token keyword">if</span> <span class="token operator">!</span>seen<span class="token punctuation">[</span>link<span class="token punctuation">]</span> <span class="token punctuation">&#123;</span>
                 seen<span class="token punctuation">[</span>link<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token boolean">true</span>
-                unseenLinks <span class="token operator">&lt;-</span> link
+                unseenLinks <span class="token operator">&lt;-</span> link <span class="token comment">//没有爬过的链接传给 unseenLinks</span>
             <span class="token punctuation">&#125;</span>
         <span class="token punctuation">&#125;</span>
     <span class="token punctuation">&#125;</span>
@@ -6665,7 +6750,42 @@ https:&#x2F;&#x2F;golang.org&#x2F;blog&#x2F;
 
 <p>所有的爬虫goroutine现在都是被同一个channel - unseenLinks喂饱的了。主goroutine负责拆分它从worklist里拿到的元素，然后把没有抓过的经由unseenLinks channel发送给一个爬虫的goroutine。</p>
 <p>seen这个map被限定在main goroutine中；也就是说这个map只能在main goroutine中进行访问。类似于其它的信息隐藏方式，这样的约束可以让我们从一定程度上保证程序的正确性。例如，内部变量不能够在函数外部被访问到；变量（§2.3.4）在没有发生变量逃逸（译注：局部变量被全局变量引用地址导致变量被分配在堆上）的情况下是无法在函数外部访问的；一个对象的封装字段无法被该对象的方法以外的方法访问到。在所有的情况下，信息隐藏都可以帮助我们约束我们的程序，使其不发生意料之外的情况。</p>
-<p>crawl函数爬到的链接在一个专有的goroutine中被发送到worklist中来避免死锁。为了节省篇幅，这个例子的终止问题我们先不进行详细阐述了。</p>
+<p><strong>crawl函数爬到的链接在一个专有的goroutine中被发送到<code>worklist</code>中来避免死锁。（因为<code>worklist</code>无缓冲？）</strong>为了节省篇幅，这个例子的终止问题我们先不进行详细阐述了。</p>
+<p><strong>可以写一个程序来验证一下上面用固定数量常驻goroutine来实现对并发数量限制的思路：</strong></p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  	<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+	ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+	un <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">&#125;</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">5</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+		<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token keyword">for</span> n <span class="token operator">:=</span> <span class="token keyword">range</span> ch <span class="token punctuation">&#123;</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span>
+				time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second <span class="token operator">*</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token comment">//模拟1秒耗时任务</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token keyword">range</span> un <span class="token punctuation">&#123;</span>
+		ch <span class="token operator">&lt;-</span> i
+	<span class="token punctuation">&#125;</span>
+	<span class="token function">close</span><span class="token punctuation">(</span>ch<span class="token punctuation">)</span> <span class="token comment">// 关闭channel，否则goroutine无法退出</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>输出为：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token number">0</span>
+<span class="token number">3</span>
+<span class="token number">1</span>
+<span class="token number">2</span>
+<span class="token number">4</span> <span class="token comment">// 输出此行后会停顿1秒钟</span>
+<span class="token number">5</span>
+<span class="token number">8</span>
+<span class="token number">6</span>
+<span class="token number">7</span>
+<span class="token number">9</span></code></pre>
+
+<p>可以观察到，当5个goroutine都在处理耗时任务时，输出会停顿1秒钟，之后才会继续处理后5个耗时任务。</p>
 <h2 id="基于select的多路复用"><a href="#基于select的多路复用" class="headerlink" title="基于select的多路复用"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-07.html#87-%E5%9F%BA%E4%BA%8Eselect%E7%9A%84%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8">基于select的多路复用</a></h2><p>下面的程序会进行火箭发射的倒计时。time.Tick函数返回一个channel，程序会周期性地像一个节拍器一样向这个channel发送事件。每一个事件的值是一个时间戳，不过更有意思的是其传送方式。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;countdown1</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
