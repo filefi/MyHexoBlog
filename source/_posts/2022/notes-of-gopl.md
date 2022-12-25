@@ -8175,9 +8175,9 @@ $ killall reverb2
 
 ## [Channels](https://gopl-zh.github.io/ch8/ch8-04.html#84-channels)
 
-如果说goroutine是Go语言程序的并发体的话，那么channels则是它们之间的通信机制。一个channel是一个通信机制，它可以让一个goroutine通过它给另一个goroutine发送值信息。每个channel都有一个特殊的类型，也就是channels可发送数据的类型。一个可以发送int类型数据的channel一般写为`chan int`。
+**如果说goroutine是Go语言程序的并发体的话，那么channels则是它们之间的通信机制。一个channel是一个通信机制，它可以让一个goroutine通过它给另一个goroutine发送值信息。每个channel都有一个特殊的类型，也就是channels可发送数据的类型。一个可以发送int类型数据的channel一般写为`chan int`。**
 
-使用内置的make函数，我们可以创建一个channel：
+**使用内置的make函数，我们可以创建一个channel：**
 
 ```go
 ch := make(chan int) // ch has type 'chan int'
@@ -8216,23 +8216,23 @@ ch = make(chan int, 3) // buffered channel with capacity 3
 
 ### [不带缓存的Channels](https://gopl-zh.github.io/ch8/ch8-04.html#841-不带缓存的channels)
 
-一个基于无缓存Channels的发送操作将导致发送者goroutine阻塞，直到另一个goroutine在相同的Channels上执行接收操作，当发送的值通过Channels成功传输之后，两个goroutine可以继续执行后面的语句。反之，如果接收操作先发生，那么接收者goroutine也将阻塞，直到有另一个goroutine在相同的Channels上执行发送操作。
+**一个基于无缓存Channels的发送操作将导致发送者goroutine阻塞，直到另一个goroutine在相同的Channels上执行接收操作，当发送的值通过Channels成功传输之后，两个goroutine可以继续执行后面的语句。反之，如果接收操作先发生，那么接收者goroutine也将阻塞，直到有另一个goroutine在相同的Channels上执行发送操作。**
 
-基于无缓存Channels的发送和接收操作将导致两个goroutine做一次同步操作。因为这个原因，无缓存Channels有时候也被称为同步Channels。当通过一个无缓存Channels发送数据时，接收者收到数据发生在再次唤醒发送者goroutine之前（译注：*happens before*，这是Go语言并发内存模型的一个关键术语！）。
+**基于无缓存Channels的发送和接收操作将导致两个goroutine做一次同步操作。因为这个原因，无缓存Channels有时候也被称为*同步Channels*。** 当通过一个无缓存Channels发送数据时，接收者收到数据发生在再次唤醒发送者goroutine之前（译注：*happens before*，这是Go语言并发内存模型的一个关键术语！）。
 
-在讨论并发编程时，当我们说x事件在y事件之前发生（*happens before*），我们并不是说x事件在时间上比y时间更早；我们要表达的意思是要保证在此之前的事件都已经完成了，例如在此之前的更新某些变量的操作已经完成，你可以放心依赖这些已完成的事件了。
+**在讨论并发编程时，当我们说x事件在y事件之前发生（*happens before*），我们并不是说x事件在时间上比y时间更早；我们要表达的意思是要保证在此之前的事件都已经完成了，例如在此之前的更新某些变量的操作已经完成，你可以放心依赖这些已完成的事件了。**
 
-当我们说x事件既不是在y事件之前发生也不是在y事件之后发生，我们就说x事件和y事件是并发的。这并不是意味着x事件和y事件就一定是同时发生的，我们只是不能确定这两个事件发生的先后顺序。在下一章中我们将看到，当两个goroutine并发访问了相同的变量时，我们有必要保证某些事件的执行顺序，以避免出现某些并发问题。
+**当我们说x事件既不是在y事件之前发生也不是在y事件之后发生，我们就说x事件和y事件是并发的。这并不是意味着x事件和y事件就一定是同时发生的，我们只是不能确定这两个事件发生的先后顺序。**在下一章中我们将看到，当两个goroutine并发访问了相同的变量时，我们有必要保证某些事件的执行顺序，以避免出现某些并发问题。
 
 在8.3节的客户端程序，它在主goroutine中（译注：就是执行main函数的goroutine）将标准输入复制到server，因此当客户端程序关闭标准输入时，后台goroutine可能依然在工作。我们需要让主goroutine等待后台goroutine完成工作后再退出，我们使用了一个channel来同步两个goroutine：
 
-```Go
+```go
 func main() {
     conn, err := net.Dial("tcp", "localhost:8000")
     if err != nil {
         log.Fatal(err)
     }
-    done := make(chan struct{})
+    done := make(chan struct{}) // 空struct不占内存空间
     go func() {
         io.Copy(os.Stdout, conn) // NOTE: ignoring errors
         log.Println("done")
@@ -8244,23 +8244,23 @@ func main() {
 }
 ```
 
-当用户关闭了标准输入，主goroutine中的mustCopy函数调用将返回，然后调用conn.Close()关闭读和写方向的网络连接。关闭网络连接中的写方向的连接将导致server程序收到一个文件（end-of-file）结束的信号。关闭网络连接中读方向的连接将导致后台goroutine的io.Copy函数调用返回一个“read from closed connection”（“从关闭的连接读”）类似的错误，因此我们临时移除了错误日志语句；在练习8.3将会提供一个更好的解决方案。（需要注意的是go语句调用了一个函数字面量，这是Go语言中启动goroutine常用的形式。）
+当用户关闭了标准输入，主goroutine中的`mustCopy`函数调用将返回，然后调用`conn.Close()`关闭读和写方向的网络连接。关闭网络连接中的写方向的连接将导致server程序收到一个文件（end-of-file）结束的信号。关闭网络连接中读方向的连接将导致后台goroutine的`io.Copy`函数调用返回一个“read from closed connection”（“从关闭的连接读”）类似的错误，因此我们临时移除了错误日志语句；在练习8.3将会提供一个更好的解决方案。（需要注意的是go语句调用了一个函数字面量，这是Go语言中启动goroutine常用的形式。）
 
-在后台goroutine返回之前，它先打印一个日志信息，然后向done对应的channel发送一个值。主goroutine在退出前先等待从done对应的channel接收一个值。因此，总是可以在程序退出前正确输出“done”消息。
+在后台goroutine返回之前，它先打印一个日志信息，然后向`done`对应的channel发送一个值。主goroutine在退出前先等待从`done`对应的channel接收一个值。因此，总是可以在程序退出前正确输出“done”消息。
 
 基于channels发送消息有两个重要方面。首先每个消息都有一个值，但是有时候通讯的事实和发生的时刻也同样重要。当我们更希望强调通讯发生的时刻时，我们将它称为**消息事件**。有些消息事件并不携带额外的信息，它仅仅是用作两个goroutine之间的同步，这时候我们可以用`struct{}`空结构体作为channels元素的类型，虽然也可以使用bool或int类型实现同样的功能，`done <- 1`语句也比`done <- struct{}{}`更短。
 
-**练习 8.3：** 在netcat3例子中，conn虽然是一个interface类型的值，但是其底层真实类型是`*net.TCPConn`，代表一个TCP连接。一个TCP连接有读和写两个部分，可以使用CloseRead和CloseWrite方法分别关闭它们。修改netcat3的主goroutine代码，只关闭网络连接中写的部分，这样的话后台goroutine可以在标准输入被关闭后继续打印从reverb1服务器传回的数据。（要在reverb2服务器也完成同样的功能是比较困难的；参考**练习 8.4**。）
+**练习 8.3：** 在netcat3例子中，conn虽然是一个interface类型的值，但是其底层真实类型是`*net.TCPConn`，代表一个TCP连接。一个TCP连接有读和写两个部分，可以使用`CloseRead`和`CloseWrite`方法分别关闭它们。修改netcat3的主goroutine代码，只关闭网络连接中写的部分，这样的话后台goroutine可以在标准输入被关闭后继续打印从reverb1服务器传回的数据。（要在reverb2服务器也完成同样的功能是比较困难的；参考**练习 8.4**。）
 
 ### [串联的Channels（Pipeline）](https://gopl-zh.github.io/ch8/ch8-04.html#842-串联的channelspipeline)
 
-Channels也可以用于将多个goroutine连接在一起，一个Channel的输出作为下一个Channel的输入。这种串联的Channels就是所谓的管道（pipeline）。下面的程序用两个channels将三个goroutine串联起来，如图8.1所示。
+Channels也可以用于将多个goroutine连接在一起，一个Channel的输出作为下一个Channel的输入。这种串联的Channels就是所谓的**管道（pipeline）**。下面的程序用两个channels将三个goroutine串联起来，如图8.1所示。
 
-![img](notes-of-gopl/ch8-01.png)
+![img](ch8-01.png)
 
 第一个goroutine是一个计数器，用于生成0、1、2、……形式的整数序列，然后通过channel将该整数序列发送给第二个goroutine；第二个goroutine是一个求平方的程序，对收到的每个整数求平方，然后将平方后的结果通过第二个channel发送给第三个goroutine；第三个goroutine是一个打印程序，打印收到的每个整数。为了保持例子清晰，我们有意选择了非常简单的函数，当然三个goroutine的计算很简单，在现实中确实没有必要为如此简单的运算构建三个goroutine。
 
-```Go
+```go
 func main() {
     naturals := make(chan int)
     squares := make(chan int)
@@ -8289,17 +8289,17 @@ func main() {
 
 如您所料，上面的程序将生成0、1、4、9、……形式的无穷数列。像这样的串联Channels的管道（Pipelines）可以用在需要长时间运行的服务中，每个长时间运行的goroutine可能会包含一个死循环，在不同goroutine的死循环内部使用串联的Channels来通信。但是，如果我们希望通过Channels只发送有限的数列该如何处理呢？
 
-如果发送者知道，没有更多的值需要发送到channel的话，那么让接收者也能及时知道没有多余的值可接收将是有用的，因为接收者可以停止不必要的接收等待。这可以通过内置的close函数来关闭channel实现：
+**如果发送者知道，没有更多的值需要发送到channel的话，那么让接收者也能及时知道没有多余的值可接收将是有用的，因为接收者可以停止不必要的接收等待。这可以通过内置的`close`函数来关闭channel实现：**
 
-```Go
+```go
 close(naturals)
 ```
 
-当一个channel被关闭后，再向该channel发送数据将导致panic异常。当一个被关闭的channel中已经发送的数据都被成功接收后，后续的接收操作将不再阻塞，它们会立即返回一个零值。关闭上面例子中的naturals变量对应的channel并不能终止循环，它依然会收到一个永无休止的零值序列，然后将它们发送给打印者goroutine。
+**当一个channel被关闭后，再向该channel发送数据将导致panic异常。当一个被关闭的channel中已经发送的数据都被成功接收后，后续的接收操作将不再阻塞，它们会立即返回一个零值。**关闭上面例子中的naturals变量对应的channel并不能终止循环，它依然会收到一个永无休止的零值序列，然后将它们发送给打印者goroutine。
 
-没有办法直接测试一个channel是否被关闭，但是接收操作有一个变体形式：它多接收一个结果，多接收的第二个结果是一个布尔值ok，ture表示成功从channels接收到值，false表示channels已经被关闭并且里面没有值可接收。使用这个特性，我们可以修改squarer函数中的循环代码，当naturals对应的channel被关闭并没有值可接收时跳出循环，并且也关闭squares对应的channel.
+**没有办法直接测试一个channel是否被关闭，但是接收操作有一个变体形式：它多接收一个结果，多接收的第二个结果是一个布尔值ok，ture表示成功从channels接收到值，false表示channels已经被关闭并且里面没有值可接收。**使用这个特性，我们可以修改squarer函数中的循环代码，当naturals对应的channel被关闭并没有值可接收时跳出循环，并且也关闭squares对应的channel.
 
-```Go
+```go
 // Squarer
 go func() {
     for {
@@ -8313,13 +8313,13 @@ go func() {
 }()
 ```
 
-因为上面的语法是笨拙的，而且这种处理模式很常见，因此Go语言的range循环可直接在channels上面迭代。使用range循环是上面处理模式的简洁语法，它依次从channel接收数据，当channel被关闭并且没有值可接收时跳出循环。
+**因为上面的语法是笨拙的，而且这种处理模式很常见，因此Go语言的range循环可直接在channels上面迭代。使用range循环是上面处理模式的简洁语法，它依次从channel接收数据，当channel被关闭并且没有值可接收时跳出循环。**
 
 在下面的改进中，我们的计数器goroutine只生成100个含数字的序列，然后关闭naturals对应的channel，这将导致计算平方数的squarer对应的goroutine可以正常终止循环并关闭squares对应的channel。（在一个更复杂的程序中，可以通过defer语句关闭对应的channel。）最后，主goroutine也可以正常终止循环并退出程序。
 
 *gopl.io/ch8/pipeline2*
 
-```Go
+```go
 func main() {
     naturals := make(chan int)
     squares := make(chan int)
@@ -8349,31 +8349,31 @@ func main() {
 
 其实你并不需要关闭每一个channel。只有当需要告诉接收者goroutine，所有的数据已经全部发送时才需要关闭channel。不管一个channel是否被关闭，当它没有被引用时将会被Go语言的垃圾自动回收器回收。（不要将关闭一个打开文件的操作和关闭一个channel操作混淆。对于每个打开的文件，都需要在不使用的时候调用对应的Close方法来关闭文件。）
 
-试图重复关闭一个channel将导致panic异常，试图关闭一个nil值的channel也将导致panic异常。关闭一个channels还会触发一个广播机制，我们将在8.9节讨论。
+**试图重复关闭一个channel将导致panic异常，试图关闭一个`nil`值的channel也将导致panic异常。**关闭一个channels还会触发一个广播机制，我们将在8.9节讨论。
 
 ### [单方向的Channel](https://gopl-zh.github.io/ch8/ch8-04.html#843-单方向的channel)
 
 随着程序的增长，人们习惯于将大的函数拆分为小的函数。我们前面的例子中使用了三个goroutine，然后用两个channels来连接它们，它们都是main函数的局部变量。将三个goroutine拆分为以下三个函数是自然的想法：
 
-```Go
+```go
 func counter(out chan int)
 func squarer(out, in chan int)
 func printer(in chan int)
 ```
 
-其中计算平方的squarer函数在两个串联Channels的中间，因此拥有两个channel类型的参数，一个用于输入一个用于输出。两个channel都拥有相同的类型，但是它们的使用方式相反：一个只用于接收，另一个只用于发送。参数的名字in和out已经明确表示了这个意图，但是并无法保证squarer函数向一个in参数对应的channel发送数据或者从一个out参数对应的channel接收数据。
+其中计算平方的`square`r函数在两个串联Channels的中间，因此拥有两个channel类型的参数，一个用于输入一个用于输出。两个channel都拥有相同的类型，但是它们的使用方式相反：一个只用于接收，另一个只用于发送。参数的名字`in`和`out`已经明确表示了这个意图，但是并无法保证`squarer`函数向一个`in`参数对应的channel发送数据或者从一个`out`参数对应的channel接收数据。
 
 这种场景是典型的。当一个channel作为一个函数参数时，它一般总是被专门用于只发送或者只接收。
 
-为了表明这种意图并防止被滥用，Go语言的类型系统提供了单方向的channel类型，分别用于只发送或只接收的channel。类型`chan<- int`表示一个只发送int的channel，只能发送不能接收。相反，类型`<-chan int`表示一个只接收int的channel，只能接收不能发送。（箭头`<-`和关键字chan的相对位置表明了channel的方向。）这种限制将在编译期检测。
+**为了表明这种意图并防止被滥用，Go语言的类型系统提供了单方向的channel类型，分别用于只发送或只接收的channel。类型`chan<- int`表示一个只发送int的channel，只能发送不能接收。相反，类型`<-chan int`表示一个只接收int的channel，只能接收不能发送。（箭头`<-`和关键字`chan`的相对位置表明了channel的方向。）这种限制将在编译期检测。**
 
-因为关闭操作只用于断言不再向channel发送新的数据，所以只有在发送者所在的goroutine才会调用close函数，因此对一个只接收的channel调用close将是一个编译错误。
+**因为关闭操作只用于断言不再向channel发送新的数据，所以只有在发送者所在的goroutine才会调用close函数，因此对一个只接收的channel调用close将是一个编译错误。**
 
 这是改进的版本，这一次参数使用了单方向channel类型：
 
 *gopl.io/ch8/pipeline3*
 
-```Go
+```go
 func counter(out chan<- int) {
     for x := 0; x < 100; x++ {
         out <- x
@@ -8403,66 +8403,66 @@ func main() {
 }
 ```
 
-调用counter（naturals）时，naturals的类型将隐式地从chan int转换成chan<- int。调用printer(squares)也会导致相似的隐式转换，这一次是转换为`<-chan int`类型只接收型的channel。任何双向channel向单向channel变量的赋值操作都将导致该隐式转换。这里并没有反向转换的语法：也就是不能将一个类似`chan<- int`类型的单向型的channel转换为`chan int`类型的双向型的channel。
+**调用`counter(naturals)`时，`naturals`的类型将隐式地从`chan int`转换成`chan<- int`。调用`printer(squares)`也会导致相似的隐式转换，这一次是转换为`<-chan int`类型只接收型的channel。任何双向channel向单向channel变量的赋值操作都将导致该隐式转换。这里并没有反向转换的语法：也就是不能将一个类似`chan<- int`类型的单向型的channel转换为`chan int`类型的双向型的channel。**
 
 ### [带缓存的Channels](https://gopl-zh.github.io/ch8/ch8-04.html#844-带缓存的channels)
 
-带缓存的Channel内部持有一个元素队列。队列的最大容量是在调用make函数创建channel时通过第二个参数指定的。下面的语句创建了一个可以持有三个字符串元素的带缓存Channel。图8.2是ch变量对应的channel的图形表示形式。
+**带缓存的Channel内部持有一个元素队列。队列的最大容量是在调用`make`函数创建channel时通过第2个参数指定的。**下面的语句创建了一个可以持有3个字符串元素的带缓存Channel。图8.2是`ch`变量对应的channel的图形表示形式。
 
-```Go
+```go
 ch = make(chan string, 3)
 ```
 
-![img](notes-of-gopl/ch8-02.png)
+![img](ch8-02.png)
 
-向缓存Channel的发送操作就是向内部缓存队列的尾部插入元素，接收操作则是从队列的头部删除元素。如果内部缓存队列是满的，那么发送操作将阻塞直到因另一个goroutine执行接收操作而释放了新的队列空间。相反，如果channel是空的，接收操作将阻塞直到有另一个goroutine执行发送操作而向队列插入元素。
+**向缓存Channel的发送操作就是向内部缓存队列的尾部插入元素，接收操作则是从队列的头部删除元素。如果内部缓存队列是满的，那么发送操作将阻塞直到因另一个goroutine执行接收操作而释放了新的队列空间。相反，如果channel是空的，接收操作将阻塞直到有另一个goroutine执行发送操作而向队列插入元素。**
 
 我们可以在无阻塞的情况下连续向新创建的channel发送三个值：
 
-```Go
+```go
 ch <- "A"
 ch <- "B"
 ch <- "C"
 ```
 
-此刻，channel的内部缓存队列将是满的（图8.3），如果有第四个发送操作将发生阻塞。
+此刻，channel的内部缓存队列将是满的（图8.3），如果有第4个发送操作将发生阻塞。
 
-![img](notes-of-gopl/ch8-03.png)
+![img](ch8-03.png)
 
 如果我们接收一个值，
 
-```Go
+```go
 fmt.Println(<-ch) // "A"
 ```
 
 那么channel的缓存队列将不是满的也不是空的（图8.4），因此对该channel执行的发送或接收操作都不会发生阻塞。通过这种方式，channel的缓存队列解耦了接收和发送的goroutine。
 
-![img](notes-of-gopl/ch8-04.png)
+![img](ch8-04.png)
 
-在某些特殊情况下，程序可能需要知道channel内部缓存的容量，可以用内置的cap函数获取：
+**在某些特殊情况下，程序可能需要知道channel内部缓存的容量，可以用内置的`cap`函数获取：**
 
-```Go
+```go
 fmt.Println(cap(ch)) // "3"
 ```
 
-同样，对于内置的len函数，如果传入的是channel，那么将返回channel内部缓存队列中有效元素的个数。因为在并发程序中该信息会随着接收操作而失效，但是它对某些故障诊断和性能优化会有帮助。
+**同样，对于内置的`len`函数，如果传入的是channel，那么将返回channel内部缓存队列中有效元素的个数。因为在并发程序中该信息会随着接收操作而失效，但是它对某些故障诊断和性能优化会有帮助。**
 
-```Go
+```go
 fmt.Println(len(ch)) // "2"
 ```
 
-在继续执行两次接收操作后channel内部的缓存队列将又成为空的，如果有第四个接收操作将发生阻塞：
+在继续执行2次接收操作后channel内部的缓存队列将又成为空的，如果有第4个接收操作将发生阻塞：
 
-```Go
+```go
 fmt.Println(<-ch) // "B"
 fmt.Println(<-ch) // "C"
 ```
 
-在这个例子中，发送和接收操作都发生在同一个goroutine中，但是在真实的程序中它们一般由不同的goroutine执行。Go语言新手有时候会将一个带缓存的channel当作同一个goroutine中的队列使用，虽然语法看似简单，但实际上这是一个错误。Channel和goroutine的调度器机制是紧密相连的，如果没有其他goroutine从channel接收，发送者——或许是整个程序——将会面临永远阻塞的风险。如果你只是需要一个简单的队列，使用slice就可以了。
+在这个例子中，发送和接收操作都发生在同一个goroutine中，但是在真实的程序中它们一般由不同的goroutine执行。**Go语言新手有时候会将一个带缓存的channel当作同一个goroutine中的队列使用，虽然语法看似简单，但实际上这是一个错误。Channel和goroutine的调度器机制是紧密相连的，如果没有其他goroutine从channel接收，发送者——或许是整个程序——将会面临永远阻塞的风险。如果你只是需要一个简单的队列，使用slice就可以了。**
 
-下面的例子展示了一个使用了带缓存channel的应用。它并发地向三个镜像站点发出请求，三个镜像站点分散在不同的地理位置。它们分别将收到的响应发送到带缓存channel，最后接收者只接收第一个收到的响应，也就是最快的那个响应。因此mirroredQuery函数可能在另外两个响应慢的镜像站点响应之前就返回了结果。（顺便说一下，多个goroutines并发地向同一个channel发送数据，或从同一个channel接收数据都是常见的用法。）
+下面的例子展示了一个使用了带缓存channel的应用。它并发地向三个镜像站点发出请求，三个镜像站点分散在不同的地理位置。它们分别将收到的响应发送到带缓存channel，最后接收者只接收第一个收到的响应，也就是最快的那个响应。因此mirroredQuery函数可能在另外两个响应慢的镜像站点响应之前就返回了结果。（顺便说一下，**多个goroutines并发地向同一个channel发送数据，或从同一个channel接收数据都是常见的用法。**）
 
-```Go
+```go
 func mirroredQuery() string {
     responses := make(chan string, 3)
     go func() { responses <- request("asia.gopl.io") }()
@@ -8474,9 +8474,9 @@ func mirroredQuery() string {
 func request(hostname string) (response string) { /* ... */ }
 ```
 
-如果我们使用了无缓存的channel，那么两个慢的goroutines将会因为没有人接收而被永远卡住。这种情况，称为goroutines泄漏，这将是一个BUG。和垃圾变量不同，泄漏的goroutines并不会被自动回收，因此确保每个不再需要的goroutine能正常退出是重要的。
+**如果我们使用了无缓存的channel，那么两个慢的goroutines将会因为没有人接收而被永远卡住。这种情况，称为*goroutines泄漏*，这将是一个BUG。和垃圾变量不同，泄漏的goroutines并不会被自动回收，因此确保每个不再需要的goroutine能正常退出是重要的。**
 
-关于无缓存或带缓存channels之间的选择，或者是带缓存channels的容量大小的选择，都可能影响程序的正确性。无缓存channel更强地保证了每个发送操作与相应的同步接收操作；但是对于带缓存channel，这些操作是解耦的。同样，即使我们知道将要发送到一个channel的信息的数量上限，创建一个对应容量大小的带缓存channel也是不现实的，因为这要求在执行任何接收操作之前缓存所有已经发送的值。如果未能分配足够的缓存将导致程序死锁。
+**关于无缓存或带缓存channels之间的选择，或者是带缓存channels的容量大小的选择，都可能影响程序的正确性。无缓存channel更强地保证了每个发送操作与相应的同步接收操作；但是对于带缓存channel，这些操作是解耦的。同样，即使我们知道将要发送到一个channel的信息的数量上限，创建一个对应容量大小的带缓存channel也是不现实的，因为这要求在执行任何接收操作之前缓存所有已经发送的值。如果未能分配足够的缓存将导致程序死锁。**
 
 Channel的缓存也可能影响程序的性能。想象一家蛋糕店有三个厨师，一个烘焙，一个上糖衣，还有一个将每个蛋糕传递到它下一个厨师的生产线。在狭小的厨房空间环境，每个厨师在完成蛋糕后必须等待下一个厨师已经准备好接受它；这类似于在一个无缓存的channel上进行沟通。
 
@@ -8490,7 +8490,7 @@ Channel的缓存也可能影响程序的性能。想象一家蛋糕店有三个�
 
 ## [并发的循环](https://gopl-zh.github.io/ch8/ch8-05.html#85-并发的循环)
 
-本节中，我们会探索一些用来在并行时循环迭代的常见并发模型。我们会探究从全尺寸图片生成一些缩略图的问题。gopl.io/ch8/thumbnail包提供了ImageFile函数来帮我们拉伸图片。我们不会说明这个函数的实现，只需要从gopl.io下载它。
+本节中，我们会探索一些用来在并行时循环迭代的常见并发模型。我们会探究从全尺寸图片生成一些缩略图的问题。gopl.io/ch8/thumbnail包提供了`ImageFile`函数来帮我们拉伸图片。我们不会说明这个函数的实现，只需要从gopl.io下载它。
 
 *gopl.io/ch8/thumbnail*
 
@@ -8518,9 +8518,9 @@ func makeThumbnails(filenames []string) {
 }
 ```
 
-显然我们处理文件的顺序无关紧要，因为每一个图片的拉伸操作和其它图片的处理操作都是彼此独立的。像这种子问题都是完全彼此独立的问题被叫做易并行问题（译注：embarrassingly parallel，直译的话更像是尴尬并行）。易并行问题是最容易被实现成并行的一类问题（废话），并且最能够享受到并发带来的好处，能够随着并行的规模线性地扩展。
+显然我们处理文件的顺序无关紧要，因为每一个图片的拉伸操作和其它图片的处理操作都是彼此独立的。像这种子问题都是完全彼此独立的问题被叫做易并行问题（译注：embarrassingly parallel，直译的话更像是尴尬并行）。易并行问题是最容易被实现成并行的一类问题，并且最能够享受到并发带来的好处，能够随着并行的规模线性地扩展。
 
-下面让我们并行地执行这些操作，从而将文件IO的延迟隐藏掉，并用上多核cpu的计算能力来拉伸图像。我们的第一个并发程序只是使用了一个go关键字。这里我们先忽略掉错误，之后再进行处理。
+下面让我们并行地执行这些操作，从而将文件IO的延迟隐藏掉，并用上多核cpu的计算能力来拉伸图像。我们的第一个并发程序只是使用了一个`go`关键字。这里我们先忽略掉错误，之后再进行处理。
 
 ```go
 // NOTE: incorrect!
@@ -8533,7 +8533,7 @@ func makeThumbnails2(filenames []string) {
 
 这个版本运行的实在有点太快，实际上，由于它比最早的版本使用的时间要短得多，即使当文件名的slice中只包含有一个元素。这就有点奇怪了，如果程序没有并发执行的话，那为什么一个并发的版本还是要快呢？答案其实是makeThumbnails在它还没有完成工作之前就已经返回了。它启动了所有的goroutine，每一个文件名对应一个，但没有等待它们一直到执行完毕。
 
-没有什么直接的办法能够等待goroutine完成，但是我们可以改变goroutine里的代码让其能够将完成情况报告给外部的goroutine知晓，使用的方式是向一个共享的channel中发送事件。因为我们已经确切地知道有len(filenames)个内部goroutine，所以外部的goroutine只需要在返回之前对这些事件计数。
+没有什么直接的办法能够等待goroutine完成，但是我们可以改变goroutine里的代码让其能够将完成情况报告给外部的goroutine知晓，使用的方式是向一个共享的channel中发送事件。因为我们已经确切地知道有`len(filenames)`个内部goroutine，所以外部的goroutine只需要在返回之前对这些事件计数。
 
 ```go
 // makeThumbnails3 makes thumbnails of the specified files in parallel.
@@ -8552,7 +8552,7 @@ func makeThumbnails3(filenames []string) {
 }
 ```
 
-注意我们将f的值作为一个显式的变量传给了函数，而不是在循环的闭包中声明：
+**注意我们将`f`的值作为一个显式的变量传给了函数，而不是在循环的闭包中声明：**
 
 ```go
 for _, f := range filenames {
@@ -8563,9 +8563,9 @@ for _, f := range filenames {
 }
 ```
 
-回忆一下之前在5.6.1节中，匿名函数中的循环变量快照问题。上面这个单独的变量f是被所有的匿名函数值所共享，且会被连续的循环迭代所更新的。当新的goroutine开始执行字面函数时，for循环可能已经更新了f并且开始了另一轮的迭代或者（更有可能的）已经结束了整个循环，所以当这些goroutine开始读取f的值时，它们所看到的值已经是slice的最后一个元素了。显式地添加这个参数，我们能够确保使用的f是当go语句执行时的“当前”那个f。
+回忆一下之前在5.6.1节中，匿名函数中的循环变量快照问题。上面这个单独的变量`f`是被所有的匿名函数值所共享，且会被连续的循环迭代所更新的。当新的goroutine开始执行字面函数时，for循环可能已经更新了`f`并且开始了另一轮的迭代或者（更有可能的）已经结束了整个循环，所以当这些goroutine开始读取f的值时，它们所看到的值已经是slice的最后一个元素了。显式地添加这个参数，我们能够确保使用的f是当go语句执行时的“当前”那个`f`。
 
-如果我们想要从每一个worker goroutine往主goroutine中返回值时该怎么办呢？当我们调用thumbnail.ImageFile创建文件失败的时候，它会返回一个错误。下一个版本的makeThumbnails会返回其在做拉伸操作时接收到的第一个错误：
+如果我们想要从每一个worker goroutine往主goroutine中返回值时该怎么办呢？当我们调用`thumbnail.ImageFile`创建文件失败的时候，它会返回一个错误。下一个版本的`makeThumbnails`会返回其在做拉伸操作时接收到的第一个错误：
 
 ```go
 // makeThumbnails4 makes thumbnails for the specified files in parallel.
@@ -8590,11 +8590,11 @@ func makeThumbnails4(filenames []string) error {
 }
 ```
 
-这个程序有一个微妙的bug。当它遇到第一个非nil的error时会直接将error返回到调用方，使得没有一个goroutine去排空errors channel。这样剩下的worker goroutine在向这个channel中发送值时，都会永远地阻塞下去，并且永远都不会退出。这种情况叫做goroutine泄露（§8.4.4），可能会导致整个程序卡住或者跑出out of memory的错误。
+**这个程序有一个微妙的bug。当它遇到第一个非nil的error时会直接将error返回到调用方，使得没有一个goroutine去排空errors channel。这样剩下的worker goroutine在向这个channel中发送值时，都会永远地阻塞下去，并且永远都不会退出。这种情况叫做*goroutine泄露*（§8.4.4），可能会导致整个程序卡住或者跑出out of memory的错误。**
 
 最简单的解决办法就是用一个具有合适大小的buffered channel，这样这些worker goroutine向channel中发送错误时就不会被阻塞。（一个可选的解决办法是创建一个另外的goroutine，当main goroutine返回第一个错误的同时去排空channel。）
 
-下一个版本的makeThumbnails使用了一个buffered channel来返回生成的图片文件的名字，附带生成时的错误。
+下一个版本的`makeThumbnails`使用了一个buffered channel来返回生成的图片文件的名字，附带生成时的错误。
 
 ```go
 // makeThumbnails5 makes thumbnails for the specified files in parallel.
@@ -8627,9 +8627,9 @@ func makeThumbnails5(filenames []string) (thumbfiles []string, err error) {
 }
 ```
 
-我们最后一个版本的makeThumbnails返回了新文件们的大小总计数（bytes）。和前面的版本都不一样的一点是我们在这个版本里没有把文件名放在slice里，而是通过一个string的channel传过来，所以我们无法对循环的次数进行预测。
+我们最后一个版本的`makeThumbnails`返回了新文件们的大小总计数（bytes）。和前面的版本都不一样的一点是我们在这个版本里没有把文件名放在slice里，而是通过一个string的channel传过来，所以我们无法对循环的次数进行预测。
 
-为了知道最后一个goroutine什么时候结束（最后一个结束并不一定是最后一个开始），我们需要一个递增的计数器，在每一个goroutine启动时加一，在goroutine退出时减一。这需要一种特殊的计数器，这个计数器需要在多个goroutine操作时做到安全并且提供在其减为零之前一直等待的一种方法。这种计数类型被称为sync.WaitGroup，下面的代码就用到了这种方法：
+为了知道最后一个goroutine什么时候结束（最后一个结束并不一定是最后一个开始），我们需要一个递增的计数器，在每一个goroutine启动时加一，在goroutine退出时减一。这需要一种特殊的计数器，这个计数器需要在多个goroutine操作时做到安全并且提供在其减为零之前一直等待的一种方法。这种计数类型被称为`sync.WaitGroup`，下面的代码就用到了这种方法：
 
 ```go
 // makeThumbnails6 makes thumbnails for each file received from the channel.
@@ -8666,13 +8666,48 @@ func makeThumbnails6(filenames <-chan string) int64 {
 }
 ```
 
-注意Add和Done方法的不对称。Add是为计数器加一，必须在worker goroutine开始之前调用，而不是在goroutine中；否则的话我们没办法确定Add是在"closer" goroutine调用Wait之前被调用。并且Add还有一个参数，但Done却没有任何参数；其实它和Add(-1)是等价的。我们使用defer来确保计数器即使是在出错的情况下依然能够正确地被减掉。上面的程序代码结构是当我们使用并发循环，但又不知道迭代次数时很通常而且很地道的写法。
+注意`Add`和`Done`方法的不对称。`Add`是为计数器加一，必须在worker goroutine开始之前调用，而不是在worker goroutine中；否则的话我们没办法确定`Add`是在"closer" goroutine调用`Wait`之前被调用。并且`Add`还有一个参数，但`Done`却没有任何参数；其实`Done()`和`Add(-1)`是等价的。我们使用defer来确保计数器即使是在出错的情况下依然能够正确地被减掉。上面的程序代码结构是当我们使用并发循环，但又不知道迭代次数时很通常而且很地道的写法。
 
-sizes channel携带了每一个文件的大小到main goroutine，在main goroutine中使用了range loop来计算总和。观察一下我们是怎样创建一个closer goroutine，并让其在所有worker goroutine们结束之后再关闭sizes channel的。两步操作：wait和close，必须是基于sizes的循环的并发。考虑一下另一种方案：如果等待操作被放在了main goroutine中，在循环之前，这样的话就永远都不会结束了，如果在循环之后，那么又变成了不可达的部分，因为没有任何东西去关闭这个channel，这个循环就永远都不会终止。
+sizes channel携带了每一个文件的大小到main goroutine，在main goroutine中使用了range loop来计算总和。观察一下我们是怎样创建一个closer goroutine，并让其在所有worker goroutine们结束之后再关闭sizes channel的。两步操作：wait和close，必须是基于sizes的循环的并发。
 
-图8.5 表明了makethumbnails6函数中事件的序列。纵列表示goroutine。窄线段代表sleep，粗线段代表活动。斜线箭头代表用来同步两个goroutine的事件。时间向下流动。注意main goroutine是如何大部分的时间被唤醒执行其range循环，等待worker发送值或者closer来关闭channel的。
+考虑一下另一种方案：如果等待操作被放在了main goroutine中，在循环之前，这样的话就永远都不会结束了，如果在循环之后，那么又变成了不可达的部分，因为没有任何东西去关闭这个channel，这个循环就永远都不会终止。
 
-![img](notes-of-gopl/ch8-05.png)
+```go
+// makeThumbnails6 makes thumbnails for each file received from the channel.
+// It returns the number of bytes occupied by the files it creates.
+func makeThumbnails6(filenames <-chan string) int64 {
+    sizes := make(chan int64)
+    var wg sync.WaitGroup // number of working goroutines
+    for f := range filenames {
+        wg.Add(1)
+        // worker
+        go func(f string) {
+            defer wg.Done()
+            thumb, err := thumbnail.ImageFile(f)
+            if err != nil {
+                log.Println(err)
+                return
+            }
+            info, _ := os.Stat(thumb) // OK to ignore error
+            sizes <- info.Size()
+        }(f)
+    }
+
+    // closer
+    wg.Wait()  // 会等待所有goroutine结束，但同时又没有消耗channel size中的数据，不消耗，则wg就没法归零，所以会卡死。
+    close(sizes)
+
+    var total int64
+  for size := range sizes {  // 由于前面的 wg.Wait()，这里无法消耗 channel sizes中的数据
+        total += size
+    }
+    return total
+}
+```
+
+图8.5 表明了`makethumbnails6`函数中事件的序列。纵列表示goroutine。窄线段代表sleep，粗线段代表活动。斜线箭头代表用来同步两个goroutine的事件。时间向下流动。注意main goroutine是如何大部分的时间被唤醒执行其range循环，等待worker发送值或者closer来关闭channel的。
+
+![img](ch8-05.png)
 
 ## [示例: 并发的Web爬虫](https://gopl-zh.github.io/ch8/ch8-06.html#86-示例-并发的web爬虫)
 
@@ -8715,7 +8750,7 @@ func main() {
 }
 ```
 
-注意这里的crawl所在的goroutine会将link作为一个显式的参数传入，来避免“循环变量快照”的问题（在5.6.1中有讲解）。另外注意这里将命令行参数传入worklist也是在一个另外的goroutine中进行的，这是为了避免channel两端的main goroutine与crawler goroutine都尝试向对方发送内容，却没有一端接收内容时发生死锁。当然，这里我们也可以用buffered channel来解决问题，这里不再赘述。
+注意这里的crawl所在的goroutine会将link作为一个显式的参数传入，来避免“循环变量快照”的问题（在5.6.1中有讲解）。**另外注意这里将命令行参数传入worklist也是在一个另外的goroutine中进行的，这是为了避免channel两端的main goroutine与crawler goroutine都尝试向对方发送内容，却没有一端接收内容时发生死锁。当然，这里我们也可以用buffered channel来解决问题，这里不再赘述。**
 
 现在爬虫可以高并发地运行起来，并且可以产生一大坨的URL了，不过还是会有俩问题。一个问题是在运行一段时间后可能会出现在log的错误信息里的：
 
@@ -8732,13 +8767,13 @@ https://golang.org/blog/
 ...
 ```
 
-最初的错误信息是一个让人莫名的DNS查找失败，即使这个域名是完全可靠的。而随后的错误信息揭示了原因：这个程序一次性创建了太多网络连接，超过了每一个进程的打开文件数限制，既而导致了在调用net.Dial像DNS查找失败这样的问题。
+最初的错误信息是一个让人莫名的DNS查找失败，即使这个域名是完全可靠的。而随后的错误信息揭示了原因：这个程序一次性创建了太多网络连接，超过了每一个进程的打开文件数限制，既而导致了在调用`net.Dial`像DNS查找失败这样的问题。
 
-这个程序实在是太他妈并行了。无穷无尽地并行化并不是什么好事情，因为不管怎么说，你的系统总是会有一些个限制因素，比如CPU核心数会限制你的计算负载，比如你的硬盘转轴和磁头数限制了你的本地磁盘IO操作频率，比如你的网络带宽限制了你的下载速度上限，或者是你的一个web服务的服务容量上限等等。为了解决这个问题，我们可以限制并发程序所使用的资源来使之适应自己的运行环境。对于我们的例子来说，最简单的方法就是限制对links.Extract在同一时间最多不会有超过n次调用，这里的n一般小于文件描述符的上限值，比如20。这和一个夜店里限制客人数目是一个道理，只有当有客人离开时，才会允许新的客人进入店内。
+这个程序实在是太他妈并行了。无穷无尽地并行化并不是什么好事情，因为不管怎么说，你的系统总是会有一些个限制因素，比如CPU核心数会限制你的计算负载，比如你的硬盘转轴和磁头数限制了你的本地磁盘IO操作频率，比如你的网络带宽限制了你的下载速度上限，或者是你的一个web服务的服务容量上限等等。为了解决这个问题，我们可以限制并发程序所使用的资源来使之适应自己的运行环境。对于我们的例子来说，最简单的方法就是限制对`links.Extract`在同一时间最多不会有超过n次调用，这里的n一般小于文件描述符的上限值，比如20。这和一个夜店里限制客人数目是一个道理，只有当有客人离开时，才会允许新的客人进入店内。
 
-我们可以用一个有容量限制的buffered channel来控制并发，这类似于操作系统里的计数信号量概念。从概念上讲，channel里的n个空槽代表n个可以处理内容的token（通行证），从channel里接收一个值会释放其中的一个token，并且生成一个新的空槽位。这样保证了在没有接收介入时最多有n个发送操作。（这里可能我们拿channel里填充的槽来做token更直观一些，不过还是这样吧。）由于channel里的元素类型并不重要，我们用一个零值的struct{}来作为其元素。
+**我们可以用一个有容量限制的buffered channel来控制并发，这类似于操作系统里的计数信号量概念。**从概念上讲，channel里的n个空槽代表n个可以处理内容的token（令牌），从channel里接收一个值会释放其中的一个token，并且生成一个新的空槽位。这样保证了在没有接收介入时最多有n个发送操作。（这里可能我们拿channel里填充的槽来做token更直观一些，不过还是这样吧。）由于channel里的元素类型并不重要，我们用一个零值的`struct{}`来作为其元素。
 
-让我们重写crawl函数，将对links.Extract的调用操作用获取、释放token的操作包裹起来，来确保同一时间对其只有20个调用。信号量数量和其能操作的IO资源数量应保持接近。
+让我们重写`crawl`函数，将对`links.Extract`的调用操作用获取、释放token的操作包裹起来，来确保同一时间对其只有20个调用。信号量数量和其能操作的IO资源数量应保持接近。
 
 *gopl.io/ch8/crawl2*
 
@@ -8758,6 +8793,66 @@ func crawl(url string) []string {
     return list
 }
 ```
+
+**可以写一个程序来验证一下上面用有缓冲的channel来实现对goroutine并发数量限制的思路：**
+
+```go
+func main(){
+	var tokens = make(chan struct{}, 5)
+	var wg sync.WaitGroup
+	for i := 1; i <= 10; i++ {
+		wg.Add(1)
+		fmt.Printf("len=%d\n", len(tokens))
+		go func(n int) {
+			defer wg.Done()
+			fmt.Printf("before acquiring a token n=%d\n", n)
+			tokens <- struct{}{} // 取得令牌
+			fmt.Printf("after acquiring a token n=%d\n", n)
+			time.Sleep(time.Second * 5) // 模拟耗时任务
+			<-tokens // 释放令牌
+		}(i)
+		time.Sleep(time.Millisecond * 100)
+	}
+	wg.Wait()
+}
+```
+
+输出为：
+
+```go
+len=0
+before acquiring a token n=1
+after acquiring a token n=1
+len=1
+before acquiring a token n=2
+after acquiring a token n=2
+len=2
+before acquiring a token n=3
+after acquiring a token n=3
+len=3
+before acquiring a token n=4
+after acquiring a token n=4
+len=4
+before acquiring a token n=5
+after acquiring a token n=5
+len=5
+before acquiring a token n=6
+len=5
+before acquiring a token n=7
+len=5
+before acquiring a token n=8
+len=5
+before acquiring a token n=9
+len=5
+before acquiring a token n=10
+after acquiring a token n=6
+after acquiring a token n=7
+after acquiring a token n=8
+after acquiring a token n=9
+after acquiring a token n=10
+```
+
+可以看到，有缓冲channel并不能限制goroutine被创建的数量，只能让没有取得令牌的goroutine阻塞在领取令牌的位置。如果必须先取得令牌才能发送网络请求或打开文件，确实可以起到限制同时发起网络请求和打开文件的数量。但没法限制goroutine被创建的数量。
 
 第二个问题是这个程序永远都不会终止，即使它已经爬到了所有初始链接衍生出的链接。（当然，除非你慎重地选择了合适的初始化URL或者已经实现了练习8.6中的深度限制，你应该还没有意识到这个问题。）为了使这个程序能够终止，我们需要在worklist为空或者没有crawl的goroutine在运行时退出主循环。
 
@@ -8788,11 +8883,11 @@ func main() {
 }
 ```
 
-这个版本中，计数器n对worklist的发送操作数量进行了限制。每一次我们发现有元素需要被发送到worklist时，我们都会对n进行++操作，在向worklist中发送初始的命令行参数之前，我们也进行过一次++操作。这里的操作++是在每启动一个crawler的goroutine之前。主循环会在n减为0时终止，这时候说明没活可干了。
+这个版本中，计数器n对worklist的发送操作数量进行了限制。每一次我们发现有元素需要被发送到worklist时，我们都会进行`n++`操作，在向worklist中发送初始的命令行参数之前，我们也进行过一次`n++`操作。这里的操作`n++`是在每启动一个crawler的goroutine之前。主循环会在n减为0时终止，这时候说明没活可干了。
 
 现在这个并发爬虫会比5.6节中的深度优先搜索版快上20倍，而且不会出什么错，并且在其完成任务时也会正确地终止。
 
-下面的程序是避免过度并发的另一种思路。这个版本使用了原来的crawl函数，但没有使用计数信号量，取而代之用了20个常驻的crawler goroutine，这样来保证最多20个HTTP请求在并发。
+**下面的程序是避免过度并发的另一种思路。**这个版本使用了原来的crawl函数，但没有使用计数信号量，取而代之用了20个常驻的crawler goroutine，这样来保证最多20个HTTP请求在并发。
 
 ```go
 func main() {
@@ -8807,7 +8902,7 @@ func main() {
         go func() {
             for link := range unseenLinks {
                 foundLinks := crawl(link)
-                go func() { worklist <- foundLinks }()
+                go func() { worklist <- foundLinks }() // 猜测：因为worklist无缓冲，所以必须在另一个goroutine中避免死锁
             }
         }()
     }
@@ -8819,7 +8914,7 @@ func main() {
         for _, link := range list {
             if !seen[link] {
                 seen[link] = true
-                unseenLinks <- link
+                unseenLinks <- link //没有爬过的链接传给 unseenLinks
             }
         }
     }
@@ -8830,7 +8925,51 @@ func main() {
 
 seen这个map被限定在main goroutine中；也就是说这个map只能在main goroutine中进行访问。类似于其它的信息隐藏方式，这样的约束可以让我们从一定程度上保证程序的正确性。例如，内部变量不能够在函数外部被访问到；变量（§2.3.4）在没有发生变量逃逸（译注：局部变量被全局变量引用地址导致变量被分配在堆上）的情况下是无法在函数外部访问的；一个对象的封装字段无法被该对象的方法以外的方法访问到。在所有的情况下，信息隐藏都可以帮助我们约束我们的程序，使其不发生意料之外的情况。
 
-crawl函数爬到的链接在一个专有的goroutine中被发送到worklist中来避免死锁。为了节省篇幅，这个例子的终止问题我们先不进行详细阐述了。
+**crawl函数爬到的链接在一个专有的goroutine中被发送到`worklist`中来避免死锁。（因为`worklist`无缓冲？）**为了节省篇幅，这个例子的终止问题我们先不进行详细阐述了。
+
+**可以写一个程序来验证一下上面用固定数量常驻goroutine来实现对并发数量限制的思路：**
+
+```go
+func main(){
+  	var wg sync.WaitGroup
+	ch := make(chan int)
+	un := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for n := range ch {
+				fmt.Println(n)
+				time.Sleep(time.Second * 1) //模拟1秒耗时任务
+			}
+		}()
+	}
+	for i := range un {
+		ch <- i
+	}
+	close(ch) // 关闭channel，否则goroutine无法退出
+	wg.Wait()
+}
+```
+
+输出为：
+
+```go
+0
+3
+1
+2
+4 // 输出此行后会停顿1秒钟
+5
+8
+6
+7
+9
+```
+
+可以观察到，当5个goroutine都在处理耗时任务时，输出会停顿1秒钟，之后才会继续处理后5个耗时任务。
+
+
 
 ## [基于select的多路复用](https://gopl-zh.github.io/ch8/ch8-07.html#87-基于select的多路复用)
 
