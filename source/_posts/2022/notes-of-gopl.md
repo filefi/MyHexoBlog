@@ -8971,7 +8971,7 @@ func main(){
 
 ## [基于select的多路复用](https://gopl-zh.github.io/ch8/ch8-07.html#87-基于select的多路复用)
 
-下面的程序会进行火箭发射的倒计时。time.Tick函数返回一个channel，程序会周期性地像一个节拍器一样向这个channel发送事件。每一个事件的值是一个时间戳，不过更有意思的是其传送方式。
+下面的程序会进行火箭发射的倒计时。`time.Tick`函数返回一个channel，程序会周期性地像一个节拍器一样向这个channel发送事件。每一个事件的值是一个时间戳，不过更有意思的是其传送方式。
 
 *gopl.io/ch8/countdown1*
 
@@ -8987,7 +8987,7 @@ func main() {
 }
 ```
 
-现在我们让这个程序支持在倒计时中，用户按下return键时直接中断发射流程。首先，我们启动一个goroutine，这个goroutine会尝试从标准输入中读入一个单独的byte并且，如果成功了，会向名为abort的channel发送一个值。
+现在我们让这个程序支持在倒计时中，用户按下return键时直接中断发射流程。首先，我们启动一个goroutine，这个goroutine会尝试从标准输入中读入一个单独的byte并且，如果成功了，会向名为`abort`的channel发送一个值。
 
 *gopl.io/ch8/countdown2*
 
@@ -8999,7 +8999,7 @@ go func() {
 }()
 ```
 
-现在每一次计数循环的迭代都需要等待两个channel中的其中一个返回事件了：当一切正常时的ticker channel（就像NASA jorgon的"nominal"，译注：这梗估计我们是不懂了）或者异常时返回的abort事件。我们无法做到从每一个channel中接收信息，如果我们这么做的话，如果第一个channel中没有事件发过来那么程序就会立刻被阻塞，这样我们就无法收到第二个channel中发过来的事件。这时候我们需要多路复用（multiplex）这些操作了，为了能够多路复用，我们使用了select语句。
+现在每一次计数循环的迭代都需要等待两个channel中的其中一个返回事件了：当一切正常时的ticker channel或者异常时返回的`abort`事件。我们无法做到从每一个channel中接收信息，如果我们这么做的话，如果第一个channel中没有事件发过来那么程序就会立刻被阻塞，这样我们就无法收到第二个channel中发过来的事件。这时候我们需要多路复用（multiplex）这些操作了，为了能够多路复用，我们使用了select语句。
 
 ```go
 select {
@@ -9014,11 +9014,11 @@ default:
 }
 ```
 
-上面是select语句的一般形式。和switch语句稍微有点相似，也会有几个case和最后的default选择分支。每一个case代表一个通信操作（在某个channel上进行发送或者接收），并且会包含一些语句组成的一个语句块。一个接收表达式可能只包含接收表达式自身（译注：不把接收到的值赋值给变量什么的），就像上面的第一个case，或者包含在一个简短的变量声明中，像第二个case里一样；第二种形式让你能够引用接收到的值。
+**上面是select语句的一般形式。和switch语句稍微有点相似，也会有几个case和最后的default选择分支。每一个case代表一个通信操作（在某个channel上进行发送或者接收），并且会包含一些语句组成的一个语句块。一个接收表达式可能只包含接收表达式自身（不把接收到的值赋值给变量什么的），就像上面的第一个case，或者包含在一个简短的变量声明中，像第二个case里一样；第二种形式让你能够引用接收到的值。**
 
-select会等待case中有能够执行的case时去执行。当条件满足时，select才会去通信并执行case之后的语句；这时候其它通信是不会执行的。一个没有任何case的select语句写作select{}，会永远地等待下去。
+**select会等待case中有能够执行的case时去执行。当条件满足时，select才会去通信并执行case之后的语句；这时候其它通信是不会执行的。一个没有任何case的select语句写作`select{}`，会永远地等待下去。**
 
-让我们回到我们的火箭发射程序。time.After函数会立即返回一个channel，并起一个新的goroutine在经过特定的时间后向该channel发送一个独立的值。下面的select语句会一直等待直到两个事件中的一个到达，无论是abort事件或者一个10秒经过的事件。如果10秒经过了还没有abort事件进入，那么火箭就会发射。
+让我们回到我们的火箭发射程序。`time.After`函数会立即返回一个channel，并起一个新的goroutine在经过特定的时间后向该channel发送一个独立的值。下面的select语句会一直等待直到两个事件中的一个到达，无论是`abort`事件或者一个10秒经过的事件。如果10秒经过了还没有`abort`事件进入，那么火箭就会发射。
 
 ```go
 func main() {
@@ -9036,7 +9036,7 @@ func main() {
 }
 ```
 
-下面这个例子更微妙。ch这个channel的buffer大小是1，所以会交替的为空或为满，所以只有一个case可以进行下去，无论i是奇数或者偶数，它都会打印0 2 4 6 8。
+下面这个例子更微妙。`ch`这个channel的buffer大小是1，所以会交替的为空或为满，所以只有一个case可以进行下去，无论`i`是奇数或者偶数，它都会打印0 2 4 6 8。
 
 ```go
 ch := make(chan int, 1)
@@ -9049,7 +9049,38 @@ for i := 0; i < 10; i++ {
 }
 ```
 
-如果多个case同时就绪时，select会随机地选择一个执行，这样来保证每一个channel都有平等的被select的机会。增加前一个例子的buffer大小会使其输出变得不确定，因为当buffer既不为满也不为空时，select语句的执行情况就像是抛硬币的行为一样是随机的。
+为方便理解，对上面代码进行一些修改：
+
+```go
+ch := make(chan int, 1) // 注意buffer为1
+for i := 0; i < 10; i++ {
+  select {
+  case x := <-ch:
+		fmt.Println("<-ch", x) // "0" "2" "4" "6" "8"
+  case ch <- i:
+		fmt.Println("ch<-", i) // "0" "2" "4" "6" "8"
+  }
+}
+```
+
+输出为：
+
+```
+ch<- 0
+<-ch 0
+ch<- 2
+<-ch 2
+ch<- 4
+<-ch 4
+ch<- 6
+<-ch 6
+ch<- 8
+<-ch 8
+```
+
+当第一趟循环开始，`i`为0，由于`ch`为空，所以只能匹配select语句的`case ch <- i`，则输出`ch<- 0`；当第二趟循环开始，`i`为1，由于`ch`缓冲满了，继续向`ch`传递消息会被阻塞，所以只能匹配`case x := <-ch`，则输出`<-ch 0`。依次类推，输出为0,2,4,6,8，跳过所有`i`为奇数的趟。
+
+**如果多个case同时就绪时，select会随机地选择一个执行，这样来保证每一个channel都有平等的被select的机会。**增加前一个例子的buffer大小会使其输出变得不确定，因为当buffer既不为满也不为空时，select语句的执行情况就像是抛硬币的行为一样是随机的。
 
 下面让我们的发射程序打印倒计时。这里的select语句会使每次循环迭代等待一秒来执行退出操作。
 
@@ -9075,9 +9106,9 @@ func main() {
 }
 ```
 
-time.Tick函数表现得好像它创建了一个在循环中调用time.Sleep的goroutine，每次被唤醒时发送一个事件。当countdown函数返回时，它会停止从tick中接收事件，但是ticker这个goroutine还依然存活，继续徒劳地尝试向channel中发送值，然而这时候已经没有其它的goroutine会从该channel中接收值了——这被称为goroutine泄露（§8.4.4）。
+`time.Tick`函数表现得好像它创建了一个在循环中调用`time.Sleep`的goroutine，每次被唤醒时发送一个事件。当countdown函数返回时，它会停止从tick中接收事件，但是ticker这个goroutine还依然存活，继续徒劳地尝试向channel中发送值，然而这时候已经没有其它的goroutine会从该channel中接收值了——这被称为goroutine泄露（§8.4.4）。
 
-Tick函数挺方便，但是只有当程序整个生命周期都需要这个时间时我们使用它才比较合适。否则的话，我们应该使用下面的这种模式：
+`Tick`函数挺方便，但是只有当程序整个生命周期都需要这个时间时我们使用它才比较合适。否则的话，我们应该使用下面的这种模式：
 
 ```go
 ticker := time.NewTicker(1 * time.Second)
@@ -9099,9 +9130,7 @@ default:
 }
 ```
 
-channel的零值是nil。也许会让你觉得比较奇怪，nil的channel有时候也是有一些用处的。因为对一个nil的channel发送和接收操作会永远阻塞，在select语句中操作nil的channel永远都不会被select到。
-
-这使得我们可以用nil来激活或者禁用case，来达成处理其它输入或输出事件时超时和取消的逻辑。我们会在下一节中看到一个例子。
+**channel的零值是`nil`。**也许会让你觉得比较奇怪，`nil`的channel有时候也是有一些用处的。**因为对一个`nil`的channel发送和接收操作会永远阻塞，在select语句中操作nil的channel永远都不会被select到。这使得我们可以用nil来激活或者禁用case，来达成处理其它输入或输出事件时超时和取消的逻辑。**我们会在下一节中看到一个例子。
 
 ## [并发的退出](https://gopl-zh.github.io/ch8/ch8-09.html#89-并发的退出)
 
