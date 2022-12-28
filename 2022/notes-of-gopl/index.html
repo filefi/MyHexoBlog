@@ -6786,7 +6786,7 @@ after acquiring a token n<span class="token operator">=</span><span class="token
 <span class="token number">9</span></code></pre>
 
 <p>可以观察到，当5个goroutine都在处理耗时任务时，输出会停顿1秒钟，之后才会继续处理后5个耗时任务。</p>
-<h2 id="基于select的多路复用"><a href="#基于select的多路复用" class="headerlink" title="基于select的多路复用"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-07.html#87-%E5%9F%BA%E4%BA%8Eselect%E7%9A%84%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8">基于select的多路复用</a></h2><p>下面的程序会进行火箭发射的倒计时。time.Tick函数返回一个channel，程序会周期性地像一个节拍器一样向这个channel发送事件。每一个事件的值是一个时间戳，不过更有意思的是其传送方式。</p>
+<h2 id="基于select的多路复用"><a href="#基于select的多路复用" class="headerlink" title="基于select的多路复用"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-07.html#87-%E5%9F%BA%E4%BA%8Eselect%E7%9A%84%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8">基于select的多路复用</a></h2><p>下面的程序会进行火箭发射的倒计时。<code>time.Tick</code>函数返回一个channel，程序会周期性地像一个节拍器一样向这个channel发送事件。每一个事件的值是一个时间戳，不过更有意思的是其传送方式。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;countdown1</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Commencing countdown."</span><span class="token punctuation">)</span>
@@ -6798,7 +6798,7 @@ after acquiring a token n<span class="token operator">=</span><span class="token
     <span class="token function">launch</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>现在我们让这个程序支持在倒计时中，用户按下return键时直接中断发射流程。首先，我们启动一个goroutine，这个goroutine会尝试从标准输入中读入一个单独的byte并且，如果成功了，会向名为abort的channel发送一个值。</p>
+<p>现在我们让这个程序支持在倒计时中，用户按下return键时直接中断发射流程。首先，我们启动一个goroutine，这个goroutine会尝试从标准输入中读入一个单独的byte并且，如果成功了，会向名为<code>abort</code>的channel发送一个值。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;countdown2</em></p>
 <pre class="language-go" data-language="go"><code class="language-go">abort <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
 <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -6806,7 +6806,7 @@ after acquiring a token n<span class="token operator">=</span><span class="token
     abort <span class="token operator">&lt;-</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
 
-<p>现在每一次计数循环的迭代都需要等待两个channel中的其中一个返回事件了：当一切正常时的ticker channel（就像NASA jorgon的”nominal”，译注：这梗估计我们是不懂了）或者异常时返回的abort事件。我们无法做到从每一个channel中接收信息，如果我们这么做的话，如果第一个channel中没有事件发过来那么程序就会立刻被阻塞，这样我们就无法收到第二个channel中发过来的事件。这时候我们需要多路复用（multiplex）这些操作了，为了能够多路复用，我们使用了select语句。</p>
+<p>现在每一次计数循环的迭代都需要等待两个channel中的其中一个返回事件了：当一切正常时的ticker channel或者异常时返回的<code>abort</code>事件。我们无法做到从每一个channel中接收信息，如果我们这么做的话，如果第一个channel中没有事件发过来那么程序就会立刻被阻塞，这样我们就无法收到第二个channel中发过来的事件。这时候我们需要多路复用（multiplex）这些操作了，为了能够多路复用，我们使用了select语句。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
 <span class="token keyword">case</span> <span class="token operator">&lt;-</span>ch1<span class="token punctuation">:</span>
     <span class="token comment">// ...</span>
@@ -6818,9 +6818,9 @@ after acquiring a token n<span class="token operator">=</span><span class="token
     <span class="token comment">// ...</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>上面是select语句的一般形式。和switch语句稍微有点相似，也会有几个case和最后的default选择分支。每一个case代表一个通信操作（在某个channel上进行发送或者接收），并且会包含一些语句组成的一个语句块。一个接收表达式可能只包含接收表达式自身（译注：不把接收到的值赋值给变量什么的），就像上面的第一个case，或者包含在一个简短的变量声明中，像第二个case里一样；第二种形式让你能够引用接收到的值。</p>
-<p>select会等待case中有能够执行的case时去执行。当条件满足时，select才会去通信并执行case之后的语句；这时候其它通信是不会执行的。一个没有任何case的select语句写作select{}，会永远地等待下去。</p>
-<p>让我们回到我们的火箭发射程序。time.After函数会立即返回一个channel，并起一个新的goroutine在经过特定的时间后向该channel发送一个独立的值。下面的select语句会一直等待直到两个事件中的一个到达，无论是abort事件或者一个10秒经过的事件。如果10秒经过了还没有abort事件进入，那么火箭就会发射。</p>
+<p><strong>上面是select语句的一般形式。和switch语句稍微有点相似，也会有几个case和最后的default选择分支。每一个case代表一个通信操作（在某个channel上进行发送或者接收），并且会包含一些语句组成的一个语句块。一个接收表达式可能只包含接收表达式自身（不把接收到的值赋值给变量什么的），就像上面的第一个case，或者包含在一个简短的变量声明中，像第二个case里一样；第二种形式让你能够引用接收到的值。</strong></p>
+<p><strong>select会等待case中有能够执行的case时去执行。当条件满足时，select才会去通信并执行case之后的语句；这时候其它通信是不会执行的。一个没有任何case的select语句写作<code>select&#123;&#125;</code>，会永远地等待下去。</strong></p>
+<p>让我们回到我们的火箭发射程序。<code>time.After</code>函数会立即返回一个channel，并起一个新的goroutine在经过特定的时间后向该channel发送一个独立的值。下面的select语句会一直等待直到两个事件中的一个到达，无论是<code>abort</code>事件或者一个10秒经过的事件。如果10秒经过了还没有<code>abort</code>事件进入，那么火箭就会发射。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token comment">// ...create abort channel...</span>
 
@@ -6835,7 +6835,7 @@ after acquiring a token n<span class="token operator">=</span><span class="token
     <span class="token function">launch</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>下面这个例子更微妙。ch这个channel的buffer大小是1，所以会交替的为空或为满，所以只有一个case可以进行下去，无论i是奇数或者偶数，它都会打印0 2 4 6 8。</p>
+<p>下面这个例子更微妙。<code>ch</code>这个channel的buffer大小是1，所以会交替的为空或为满，所以只有一个case可以进行下去，无论<code>i</code>是奇数或者偶数，它都会打印0 2 4 6 8。</p>
 <pre class="language-go" data-language="go"><code class="language-go">ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
 <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
@@ -6845,7 +6845,31 @@ after acquiring a token n<span class="token operator">=</span><span class="token
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>如果多个case同时就绪时，select会随机地选择一个执行，这样来保证每一个channel都有平等的被select的机会。增加前一个例子的buffer大小会使其输出变得不确定，因为当buffer既不为满也不为空时，select语句的执行情况就像是抛硬币的行为一样是随机的。</p>
+<p>为方便理解，对上面代码进行一些修改：</p>
+<pre class="language-go" data-language="go"><code class="language-go">ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token comment">// 注意buffer为1</span>
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> x <span class="token operator">:=</span> <span class="token operator">&lt;-</span>ch<span class="token punctuation">:</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"&lt;-ch"</span><span class="token punctuation">,</span> x<span class="token punctuation">)</span> <span class="token comment">// "0" "2" "4" "6" "8"</span>
+  <span class="token keyword">case</span> ch <span class="token operator">&lt;-</span> i<span class="token punctuation">:</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"ch&lt;-"</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span> <span class="token comment">// "0" "2" "4" "6" "8"</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>输出为：</p>
+<pre class="language-none"><code class="language-none">ch&lt;- 0
+&lt;-ch 0
+ch&lt;- 2
+&lt;-ch 2
+ch&lt;- 4
+&lt;-ch 4
+ch&lt;- 6
+&lt;-ch 6
+ch&lt;- 8
+&lt;-ch 8</code></pre>
+
+<p>当第一趟循环开始，<code>i</code>为0，由于<code>ch</code>为空，所以只能匹配select语句的<code>case ch &lt;- i</code>，则输出<code>ch&lt;- 0</code>；当第二趟循环开始，<code>i</code>为1，由于<code>ch</code>缓冲满了，继续向<code>ch</code>传递消息会被阻塞，所以只能匹配<code>case x := &lt;-ch</code>，则输出<code>&lt;-ch 0</code>。依次类推，输出为0,2,4,6,8，跳过所有<code>i</code>为奇数的趟。</p>
+<p><strong>如果多个case同时就绪时，select会随机地选择一个执行，这样来保证每一个channel都有平等的被select的机会。</strong>增加前一个例子的buffer大小会使其输出变得不确定，因为当buffer既不为满也不为空时，select语句的执行情况就像是抛硬币的行为一样是随机的。</p>
 <p>下面让我们的发射程序打印倒计时。这里的select语句会使每次循环迭代等待一秒来执行退出操作。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;countdown3</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -6866,8 +6890,8 @@ after acquiring a token n<span class="token operator">=</span><span class="token
     <span class="token function">launch</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>time.Tick函数表现得好像它创建了一个在循环中调用time.Sleep的goroutine，每次被唤醒时发送一个事件。当countdown函数返回时，它会停止从tick中接收事件，但是ticker这个goroutine还依然存活，继续徒劳地尝试向channel中发送值，然而这时候已经没有其它的goroutine会从该channel中接收值了——这被称为goroutine泄露（§8.4.4）。</p>
-<p>Tick函数挺方便，但是只有当程序整个生命周期都需要这个时间时我们使用它才比较合适。否则的话，我们应该使用下面的这种模式：</p>
+<p><code>time.Tick</code>函数表现得好像它创建了一个在循环中调用<code>time.Sleep</code>的goroutine，每次被唤醒时发送一个事件。当countdown函数返回时，它会停止从tick中接收事件，但是ticker这个goroutine还依然存活，继续徒劳地尝试向channel中发送值，然而这时候已经没有其它的goroutine会从该channel中接收值了——这被称为goroutine泄露（§8.4.4）。</p>
+<p><code>Tick</code>函数挺方便，但是只有当程序整个生命周期都需要这个时间时我们使用它才比较合适。否则的话，我们应该使用下面的这种模式：</p>
 <pre class="language-go" data-language="go"><code class="language-go">ticker <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">NewTicker</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
 <span class="token operator">&lt;-</span>ticker<span class="token punctuation">.</span>C    <span class="token comment">// receive from the ticker's channel</span>
 ticker<span class="token punctuation">.</span><span class="token function">Stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// cause the ticker's goroutine to terminate</span></code></pre>
@@ -6882,12 +6906,11 @@ ticker<span class="token punctuation">.</span><span class="token function">Stop<
     <span class="token comment">// do nothing</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>channel的零值是nil。也许会让你觉得比较奇怪，nil的channel有时候也是有一些用处的。因为对一个nil的channel发送和接收操作会永远阻塞，在select语句中操作nil的channel永远都不会被select到。</p>
-<p>这使得我们可以用nil来激活或者禁用case，来达成处理其它输入或输出事件时超时和取消的逻辑。我们会在下一节中看到一个例子。</p>
+<p><strong>channel的零值是<code>nil</code>。</strong>也许会让你觉得比较奇怪，<code>nil</code>的channel有时候也是有一些用处的。<strong>因为对一个<code>nil</code>的channel发送和接收操作会永远阻塞，在select语句中操作nil的channel永远都不会被select到。这使得我们可以用nil来激活或者禁用case，来达成处理其它输入或输出事件时超时和取消的逻辑。</strong>我们会在下一节中看到一个例子。</p>
 <h2 id="并发的退出"><a href="#并发的退出" class="headerlink" title="并发的退出"></a><a target="_blank" rel="noopener" href="https://gopl-zh.github.io/ch8/ch8-09.html#89-%E5%B9%B6%E5%8F%91%E7%9A%84%E9%80%80%E5%87%BA">并发的退出</a></h2><p>有时候我们需要通知goroutine停止它正在干的事情，比如一个正在执行计算的web服务，然而它的客户端已经断开了和服务端的连接。</p>
-<p>Go语言并没有提供在一个goroutine中终止另一个goroutine的方法，由于这样会导致goroutine之间的共享变量落在未定义的状态上。在8.7节中的rocket launch程序中，我们往名字叫abort的channel里发送了一个简单的值，在countdown的goroutine中会把这个值理解为自己的退出信号。但是如果我们想要退出两个或者任意多个goroutine怎么办呢？</p>
+<p>Go语言并没有提供在一个goroutine中终止另一个goroutine的方法，由于这样会导致goroutine之间的共享变量落在未定义的状态上。在8.7节中的rocket launch程序中，我们往名字叫<code>abort</code>的channel里发送了一个简单的值，在countdown的goroutine中会把这个值理解为自己的退出信号。但是如果我们想要退出两个或者任意多个goroutine怎么办呢？</p>
 <p>一种可能的手段是向abort的channel里发送和goroutine数目一样多的事件来退出它们。如果这些goroutine中已经有一些自己退出了，那么会导致我们的channel里的事件数比goroutine还多，这样导致我们的发送直接被阻塞。另一方面，如果这些goroutine又生成了其它的goroutine，我们的channel里的数目又太少了，所以有些goroutine可能会无法接收到退出消息。一般情况下我们是很难知道在某一个时刻具体有多少个goroutine在运行着的。另外，当一个goroutine从abort channel中接收到一个值的时候，他会消费掉这个值，这样其它的goroutine就没法看到这条信息。为了能够达到我们退出goroutine的目的，我们需要更靠谱的策略，来通过一个channel把消息广播出去，这样goroutine们能够看到这条事件消息，并且在事件完成之后，可以知道这件事已经发生过了。</p>
-<p>回忆一下我们关闭了一个channel并且被消费掉了所有已发送的值，操作channel之后的代码可以立即被执行，并且会产生零值。我们可以将这个机制扩展一下，来作为我们的广播机制：不要向channel发送值，而是用关闭一个channel来进行广播。</p>
+<p><strong>回忆一下我们关闭了一个channel并且被消费掉了所有已发送的值，操作channel之后的代码可以立即被执行，并且会产生零值。我们可以将这个机制扩展一下，来作为我们的广播机制：不要向channel发送值，而是用关闭一个channel来进行广播。</strong></p>
 <p>只要一些小修改，我们就可以把退出逻辑加入到前一节的du程序。首先，我们创建一个退出的channel，不需要向这个channel发送任何值，但其所在的闭包内要写明程序需要退出。我们同时还定义了一个工具函数，cancelled，这个函数在被调用的时候会轮询退出状态。</p>
 <p><em>gopl.io&#x2F;ch8&#x2F;du4</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> done <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
@@ -6901,7 +6924,7 @@ ticker<span class="token punctuation">.</span><span class="token function">Stop<
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>下面我们创建一个从标准输入流中读取内容的goroutine，这是一个比较典型的连接到终端的程序。每当有输入被读到（比如用户按了回车键），这个goroutine就会把取消消息通过关闭done的channel广播出去。</p>
+<p>下面我们创建一个从标准输入流中读取内容的goroutine，这是一个比较典型的连接到终端的程序。每当有输入被读到（比如用户按了回车键），这个goroutine就会把取消消息通过关闭<code>done</code>的channel广播出去。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// Cancel traversal when input is detected.</span>
 <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     os<span class="token punctuation">.</span>Stdin<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span><span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// read a single byte</span>
@@ -6922,7 +6945,7 @@ ticker<span class="token punctuation">.</span><span class="token function">Stop<
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>walkDir这个goroutine一启动就会轮询取消状态，如果取消状态被设置的话会直接返回，并且不做额外的事情。这样我们将所有在取消事件之后创建的goroutine改变为无操作。</p>
+<p><code>walkDir</code>这个goroutine一启动就会轮询取消状态，如果取消状态被设置的话会直接返回，并且不做额外的事情。这样我们将所有在取消事件之后创建的goroutine改变为无操作。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">walkDir</span><span class="token punctuation">(</span>dir <span class="token builtin">string</span><span class="token punctuation">,</span> n <span class="token operator">*</span>sync<span class="token punctuation">.</span>WaitGroup<span class="token punctuation">,</span> fileSizes <span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token builtin">int64</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">defer</span> n<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     <span class="token keyword">if</span> <span class="token function">cancelled</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -6933,7 +6956,7 @@ ticker<span class="token punctuation">.</span><span class="token function">Stop<
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>在walkDir函数的循环中我们对取消状态进行轮询可以带来明显的益处，可以避免在取消事件发生时还去创建goroutine。取消本身是有一些代价的；想要快速的响应需要对程序逻辑进行侵入式的修改。确保在取消发生之后不要有代价太大的操作可能会需要修改你代码里的很多地方，但是在一些重要的地方去检查取消事件也确实能带来很大的好处。</p>
+<p>在<code>walkDir</code>函数的循环中我们对取消状态进行轮询可以带来明显的益处，可以避免在取消事件发生时还去创建goroutine。取消本身是有一些代价的；想要快速的响应需要对程序逻辑进行侵入式的修改。确保在取消发生之后不要有代价太大的操作可能会需要修改你代码里的很多地方，但是在一些重要的地方去检查取消事件也确实能带来很大的好处。</p>
 <p>对这个程序的一个简单的性能分析可以揭示瓶颈在dirents函数中获取一个信号量。下面的select可以让这种操作可以被取消，并且可以将取消时的延迟从几百毫秒降低到几十毫秒。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">dirents</span><span class="token punctuation">(</span>dir <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>os<span class="token punctuation">.</span>FileInfo <span class="token punctuation">&#123;</span>
     <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
