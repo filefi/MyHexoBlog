@@ -48,8 +48,8 @@
 <meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch8-04.png">
 <meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch8-05.png">
 <meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch10-01.png">
-<meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch11-01.png">
-<meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch11-02.png">
+<meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch11-01.png">
+<meta property="og:image" content="https://ifelif.cn/2022/notes-of-gopl/ch11-02.png">
 <meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch11-03.png">
 <meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch11-04.png">
 <meta property="og:image" content="https://ifelif.cn/notes-of-gopl/ch13-01.png">
@@ -8501,10 +8501,10 @@ FAIL        gopl.io&#x2F;ch11&#x2F;echo         0.006s</code></pre>
 
 <p>错误信息描述了尝试的操作（使用Go类似语法），实际的结果和期望的结果。通过这样的错误信息，你可以在检视代码之前就很容易定位错误的原因。</p>
 <p><strong>要注意的是在测试代码中并没有调用<code>log.Fatal</code>或<code>os.Exit</code>，因为调用这类函数会导致程序提前退出；调用这些函数的特权应该放在main函数中。如果真的有意外的事情导致函数发生panic异常，测试驱动应该尝试用recover捕获异常，然后将当前测试当作失败处理。如果是可预期的错误，例如非法的用户输入、找不到文件或配置文件不当等应该通过返回一个非空的error的方式处理。</strong>幸运的是（上面的意外只是一个插曲），我们的echo示例是比较简单的也没有需要返回非空error的情况。</p>
-<h3 id="白盒测试"><a href="#白盒测试" class="headerlink" title="白盒测试"></a>白盒测试</h3><p>一种测试分类的方法是基于测试者是否需要了解被测试对象的内部工作原理。黑盒测试只需要测试包公开的文档和API行为，内部实现对测试代码是透明的。相反，白盒测试有访问包内部函数和数据结构的权限，因此可以做到一些普通客户端无法实现的测试。例如，一个白盒测试可以在每个操作之后检测不变量的数据类型。（白盒测试只是一个传统的名称，其实称为clear box测试会更准确。）</p>
+<h3 id="白盒测试"><a href="#白盒测试" class="headerlink" title="白盒测试"></a>白盒测试</h3><p>一种测试分类的方法是基于测试者是否需要了解被测试对象的内部工作原理。<strong>黑盒测试</strong>只需要测试包公开的文档和API行为，内部实现对测试代码是透明的。相反，<strong>白盒测试</strong>有访问包内部函数和数据结构的权限，因此可以做到一些普通客户端无法实现的测试。例如，一个白盒测试可以在每个操作之后检测不变量的数据类型。（白盒测试只是一个传统的名称，其实称为clear box测试会更准确。）</p>
 <p>黑盒和白盒这两种测试方法是互补的。黑盒测试一般更健壮，随着软件实现的完善测试代码很少需要更新。它们可以帮助测试者了解真实客户的需求，也可以帮助发现API设计的一些不足之处。相反，白盒测试则可以对内部一些棘手的实现提供更多的测试覆盖。</p>
-<p>我们已经看到两种测试的例子。TestIsPalindrome测试仅仅使用导出的IsPalindrome函数，因此这是一个黑盒测试。TestEcho测试则调用了内部的echo函数，并且更新了内部的out包级变量，这两个都是未导出的，因此这是白盒测试。</p>
-<p>当我们准备TestEcho测试的时候，我们修改了echo函数使用包级的out变量作为输出对象，因此测试代码可以用另一个实现代替标准输出，这样可以方便对比echo输出的数据。使用类似的技术，我们可以将产品代码的其他部分也替换为一个容易测试的伪对象。使用伪对象的好处是我们可以方便配置，容易预测，更可靠，也更容易观察。同时也可以避免一些不良的副作用，例如更新生产数据库或信用卡消费行为。</p>
+<p>我们已经看到两种测试的例子。<code>TestIsPalindrome</code>测试仅仅使用导出的<code>IsPalindrome</code>函数，因此这是一个黑盒测试。<code>TestEcho</code>测试则调用了内部的<code>echo</code>函数，并且更新了内部的<code>out</code>包级变量，这两个都是未导出的，因此这是白盒测试。</p>
+<p>当我们准备<code>TestEcho</code>测试的时候，我们修改了<code>echo</code>函数使用包级的<code>out</code>变量作为输出对象，因此测试代码可以用另一个实现代替标准输出，这样可以方便对比<code>echo</code>输出的数据。使用类似的技术，我们可以将产品代码的其他部分也替换为一个容易测试的伪对象。使用伪对象的好处是我们可以方便配置，容易预测，更可靠，也更容易观察。同时也可以避免一些不良的副作用，例如更新生产数据库或信用卡消费行为。</p>
 <p>下面的代码演示了为用户提供网络存储的web服务中的配额检测逻辑。当用户使用了超过90%的存储配额之后将发送提醒邮件。（译注：一般在实现业务机器监控，包括磁盘、cpu、网络等的时候，需要类似的到达阈值&#x3D;&gt;触发报警的逻辑，所以是很实用的案例。）</p>
 <p><em>gopl.io&#x2F;ch11&#x2F;storage1</em></p>
 <pre class="language-Go" data-language="Go"><code class="language-Go">package storage
@@ -8542,7 +8542,7 @@ func CheckQuota(username string) &#123;
     &#125;
 &#125;</code></pre>
 
-<p>我们想测试这段代码，但是我们并不希望发送真实的邮件。因此我们将邮件处理逻辑放到一个私有的notifyUser函数中。</p>
+<p>我们想测试这段代码，但是我们并不希望发送真实的邮件。因此我们将邮件处理逻辑放到一个私有的<code>notifyUser</code>函数中。</p>
 <p><em>gopl.io&#x2F;ch11&#x2F;storage2</em></p>
 <pre class="language-Go" data-language="Go"><code class="language-Go">var notifyUser &#x3D; func(username, msg string) &#123;
     auth :&#x3D; smtp.PlainAuth(&quot;&quot;, sender, password, hostname)
@@ -8595,7 +8595,7 @@ func TestCheckQuotaNotifiesUser(t *testing.T) &#123;
     &#125;
 &#125;</code></pre>
 
-<p>这里有一个问题：当测试函数返回后，CheckQuota将不能正常工作，因为notifyUsers依然使用的是测试函数的伪发送邮件函数（当更新全局对象的时候总会有这种风险）。 我们必须修改测试代码恢复notifyUsers原先的状态以便后续其他的测试没有影响，要确保所有的执行路径后都能恢复，包括测试失败或panic异常的情形。在这种情况下，我们建议使用defer语句来延后执行处理恢复的代码。</p>
+<p>这里有一个问题：当测试函数返回后，<code>CheckQuota</code>将不能正常工作，因为<code>notifyUsers</code>依然使用的是测试函数的伪发送邮件函数（当更新全局对象的时候总会有这种风险）。 我们必须修改测试代码恢复<code>notifyUsers</code>原先的状态以便后续其他的测试没有影响，要确保所有的执行路径后都能恢复，包括测试失败或panic异常的情形。在这种情况下，我们建议使用defer语句来延后执行处理恢复的代码。</p>
 <pre class="language-Go" data-language="Go"><code class="language-Go">func TestCheckQuotaNotifiesUser(t *testing.T) &#123;
     &#x2F;&#x2F; Save and restore original notifyUser.
     saved :&#x3D; notifyUser
@@ -8610,35 +8610,35 @@ func TestCheckQuotaNotifiesUser(t *testing.T) &#123;
 &#125;</code></pre>
 
 <p>这种处理模式可以用来暂时保存和恢复所有的全局变量，包括命令行标志参数、调试选项和优化参数；安装和移除导致生产代码产生一些调试信息的钩子函数；还有有些诱导生产代码进入某些重要状态的改变，比如超时、错误，甚至是一些刻意制造的并发行为等因素。</p>
-<p>以这种方式使用全局变量是安全的，因为go test命令并不会同时并发地执行多个测试。</p>
-<h3 id="外部测试包"><a href="#外部测试包" class="headerlink" title="外部测试包"></a>外部测试包</h3><p>考虑下这两个包：net&#x2F;url包，提供了URL解析的功能；net&#x2F;http包，提供了web服务和HTTP客户端的功能。如我们所料，上层的net&#x2F;http包依赖下层的net&#x2F;url包。然后，net&#x2F;url包中的一个测试是演示不同URL和HTTP客户端的交互行为。也就是说，一个下层包的测试代码导入了上层的包。</p>
-<p><img src="/notes-of-gopl/ch11-01.png" alt="img"></p>
+<p>以这种方式使用全局变量是安全的，因为<code>go test</code>命令并不会同时并发地执行多个测试。</p>
+<h3 id="外部测试包"><a href="#外部测试包" class="headerlink" title="外部测试包"></a>外部测试包</h3><p>考虑下这两个包：<code>net/url</code>包，提供了URL解析的功能；<code>net/http</code>包，提供了web服务和HTTP客户端的功能。如我们所料，上层的<code>net/http</code>包依赖下层的<code>net/url</code>包。然后，<code>net/url</code>包中的一个测试是演示不同URL和HTTP客户端的交互行为。也就是说，一个下层包的测试代码导入了上层的包。</p>
+<p><img src="/2022/notes-of-gopl/ch11-01.png" alt="img"></p>
 <p>这样的行为在<code>net/url</code>包的测试代码中会导致包的循环依赖，正如图11.1中向上箭头所示，同时正如我们在10.1节所讲的，Go语言规范是禁止包的循环依赖的。</p>
 <p>不过我们可以通过外部测试包的方式解决循环依赖的问题，也就是在<code>net/url</code>包所在的目录声明一个独立的<code>url_test</code>测试包。其中包名的<code>_test</code>后缀告诉<code>go test</code>工具它应该建立一个额外的包来运行测试。我们将这个外部测试包的导入路径视作是<code>net/url_test</code>会更容易理解，但实际上它并不能被其他任何包导入。</p>
-<p>因为外部测试包是一个独立的包，所以能够导入那些<code>依赖待测代码本身</code>的其他辅助包；包内的测试代码就无法做到这点。在设计层面，外部测试包是在所有它依赖的包的上层，正如图11.2所示。</p>
-<p><img src="/notes-of-gopl/ch11-02.png" alt="img"></p>
+<p>因为外部测试包是一个独立的包，所以能够导入那些依赖待测代码本身的其他辅助包；包内的测试代码就无法做到这点。在设计层面，外部测试包是在所有它依赖的包的上层，正如图11.2所示。</p>
+<p><img src="/2022/notes-of-gopl/ch11-02.png" alt="img"></p>
 <p>通过避免循环的导入依赖，外部测试包可以更灵活地编写测试，特别是集成测试（需要测试多个组件之间的交互），可以像普通应用程序那样自由地导入其他包。</p>
 <p>我们可以用<code>go list</code>命令查看包对应目录中哪些Go源文件是产品代码，哪些是包内测试，还有哪些是外部测试包。我们以<code>fmt</code>包作为一个例子：<code>GoFiles</code>表示产品代码对应的Go源文件列表；也就是<code>go build</code>命令要编译的部分。</p>
 <pre class="language-none"><code class="language-none">$ go list -f&#x3D;&#123;&#123;.GoFiles&#125;&#125; fmt
 [doc.go format.go print.go scan.go]</code></pre>
 
-<p>TestGoFiles表示的是fmt包内部测试代码，以_test.go为后缀文件名，不过只在测试时被构建：</p>
+<p><code>TestGoFiles</code>表示的是<code>fmt</code>包内部测试代码，以<code>_test.go</code>为后缀文件名，不过只在测试时被构建：</p>
 <pre class="language-none"><code class="language-none">$ go list -f&#x3D;&#123;&#123;.TestGoFiles&#125;&#125; fmt
 [export_test.go]</code></pre>
 
-<p>包的测试代码通常都在这些文件中，不过fmt包并非如此；稍后我们再解释export_test.go文件的作用。</p>
-<p>XTestGoFiles表示的是属于外部测试包的测试代码，也就是fmt_test包，因此它们必须先导入fmt包。同样，这些文件也只是在测试时被构建运行：</p>
+<p>包的测试代码通常都在这些文件中，不过<code>fmt</code>包并非如此；稍后我们再解释<code>export_test.go</code>文件的作用。</p>
+<p><code>XTestGoFiles</code>表示的是属于外部测试包的测试代码，也就是<code>fmt_test</code>包，因此它们必须先导入<code>fmt</code>包。同样，这些文件也只是在测试时被构建运行：</p>
 <pre class="language-none"><code class="language-none">$ go list -f&#x3D;&#123;&#123;.XTestGoFiles&#125;&#125; fmt
 [fmt_test.go scan_test.go stringer_test.go]</code></pre>
 
-<p>有时候外部测试包也需要访问被测试包内部的代码，例如在一个为了避免循环导入而被独立到外部测试包的白盒测试。在这种情况下，我们可以通过一些技巧解决：我们在包内的一个_test.go文件中导出一个内部的实现给外部测试包。因为这些代码只有在测试时才需要，因此一般会放在export_test.go文件中。</p>
-<p>例如，fmt包的fmt.Scanf函数需要unicode.IsSpace函数提供的功能。但是为了避免太多的依赖，fmt包并没有导入包含巨大表格数据的unicode包；相反fmt包有一个叫isSpace内部的简易实现。</p>
-<p>为了确保fmt.isSpace和unicode.IsSpace函数的行为保持一致，fmt包谨慎地包含了一个测试。一个在外部测试包内的白盒测试，是无法直接访问到isSpace内部函数的，因此fmt通过一个后门导出了isSpace函数。export_test.go文件就是专门用于外部测试包的后门。</p>
+<p>有时候外部测试包也需要访问被测试包内部的代码，例如在一个为了避免循环导入而被独立到外部测试包的白盒测试。在这种情况下，我们可以通过一些技巧解决：我们在包内的一个<code>_test.go</code>文件中导出一个内部的实现给外部测试包。因为这些代码只有在测试时才需要，因此一般会放在<code>export_test.go</code>文件中。</p>
+<p>例如，<code>fmt</code>包的<code>fmt.Scanf</code>函数需要<code>unicode.IsSpace</code>函数提供的功能。但是为了避免太多的依赖，<code>fmt</code>包并没有导入包含巨大表格数据的<code>unicode</code>包；相反<code>fmt</code>包有一个叫<code>isSpace</code>内部的简易实现。</p>
+<p>为了确保<code>fmt.isSpace</code>和<code>unicode.IsSpace</code>函数的行为保持一致，<code>fmt</code>包谨慎地包含了一个测试。一个在外部测试包内的白盒测试，是无法直接访问到<code>isSpace</code>内部函数的，因此<code>fmt</code>通过一个后门导出了<code>isSpace</code>函数。<code>export_test.go</code>文件就是专门用于外部测试包的后门。</p>
 <pre class="language-Go" data-language="Go"><code class="language-Go">package fmt
 
 var IsSpace &#x3D; isSpace</code></pre>
 
-<p>这个测试文件并没有定义测试代码；它只是通过fmt.IsSpace简单导出了内部的isSpace函数，提供给外部测试包使用。这个技巧可以广泛用于位于外部测试包的白盒测试。</p>
+<p>这个测试文件并没有定义测试代码；它只是通过<code>fmt.IsSpace</code>简单导出了内部的<code>isSpace</code>函数，提供给外部测试包使用。这个技巧可以广泛用于位于外部测试包的白盒测试。</p>
 <h3 id="编写有效的测试"><a href="#编写有效的测试" class="headerlink" title="编写有效的测试"></a>编写有效的测试</h3><p>许多Go语言新人会惊异于Go语言极简的测试框架。很多其它语言的测试框架都提供了识别测试函数的机制（通常使用反射或元数据），通过设置一些“setup”和“teardown”的钩子函数来执行测试用例运行的初始化和之后的清理操作，同时测试工具箱还提供了很多类似assert断言、值比较函数、格式化输出错误信息和停止一个失败的测试等辅助函数（通常使用异常机制）。虽然这些机制可以使得测试非常简洁，但是测试输出的日志却会像火星文一般难以理解。此外，虽然测试最终也会输出PASS或FAIL的报告，但是它们提供的信息格式却非常不利于代码维护者快速定位问题，因为失败信息的具体含义非常隐晦，比如“assert: 0 &#x3D;&#x3D; 1”或成页的海量跟踪日志。</p>
 <p>Go语言的测试风格则形成鲜明对比。它期望测试者自己完成大部分的工作，定义函数避免重复，就像普通编程那样。编写测试并不是一个机械的填空过程；一个测试也有自己的接口，尽管它的维护者也是测试仅有的一个用户。一个好的测试不应该引发其他无关的错误信息，它只要清晰简洁地描述问题的症状即可，有时候可能还需要一些上下文信息。在理想情况下，维护者可以在不看代码的情况下就能根据错误信息定位错误产生的原因。一个好的测试不应该在遇到一点小错误时就立刻退出测试，它应该尝试报告更多的相关的错误信息，因为我们可能从多个失败测试的模式中发现错误产生的规律。</p>
 <p>下面的断言函数比较两个值，然后生成一个通用的错误信息，并停止程序。它很好用也确实有效，但是当测试失败的时候，打印的错误信息却几乎是没有价值的。它并没有为快速解决问题提供一个很好的入口。</p>
@@ -8670,9 +8670,9 @@ func TestSplit(t *testing.T) &#123;
     &#x2F;&#x2F; ...
 &#125;</code></pre>
 
-<p>现在的测试不仅报告了调用的具体函数、它的输入和结果的意义；并且打印的真实返回的值和期望返回的值；并且即使断言失败依然会继续尝试运行更多的测试。一旦我们写了这样结构的测试，下一步自然不是用更多的if语句来扩展测试用例，我们可以用像IsPalindrome的表驱动测试那样来准备更多的s和sep测试用例。</p>
-<p>前面的例子并不需要额外的辅助函数，如果有可以使测试代码更简单的方法我们也乐意接受。（我们将在13.3节看到一个类似reflect.DeepEqual辅助函数。）一个好的测试的关键是首先实现你期望的具体行为，然后才是考虑简化测试代码、避免重复。如果直接从抽象、通用的测试库着手，很难取得良好结果。</p>
-<p><strong>练习11.5:</strong> 用表格驱动的技术扩展TestSplit测试，并打印期望的输出结果。</p>
+<p>现在的测试不仅报告了调用的具体函数、它的输入和结果的意义；并且打印的真实返回的值和期望返回的值；并且即使断言失败依然会继续尝试运行更多的测试。一旦我们写了这样结构的测试，下一步自然不是用更多的if语句来扩展测试用例，我们可以用像<code>IsPalindrome</code>的表驱动测试那样来准备更多的<code>s</code>和<code>sep</code>测试用例。</p>
+<p>前面的例子并不需要额外的辅助函数，如果有可以使测试代码更简单的方法我们也乐意接受。（我们将在13.3节看到一个类似<code>reflect.DeepEqual</code>辅助函数。）一个好的测试的关键是首先实现你期望的具体行为，然后才是考虑简化测试代码、避免重复。如果直接从抽象、通用的测试库着手，很难取得良好结果。</p>
+<p><strong>练习11.5:</strong> 用表格驱动的技术扩展<code>TestSplit</code>测试，并打印期望的输出结果。</p>
 <h3 id="避免脆弱的测试"><a href="#避免脆弱的测试" class="headerlink" title="避免脆弱的测试"></a>避免脆弱的测试</h3><p>如果一个应用程序对于新出现的但有效的输入经常失败说明程序容易出bug（不够稳健）；同样，如果一个测试仅仅对程序做了微小变化就失败则称为脆弱。就像一个不够稳健的程序会挫败它的用户一样，一个脆弱的测试同样会激怒它的维护者。最脆弱的测试代码会在程序没有任何变化的时候产生不同的结果，时好时坏，处理它们会耗费大量的时间但是并不会得到任何好处。</p>
 <p>当一个测试函数会产生一个复杂的输出如一个很长的字符串、一个精心设计的数据结构或一个文件时，人们很容易想预先写下一系列固定的用于对比的标杆数据。但是随着项目的发展，有些输出可能会发生变化，尽管很可能是一个改进的实现导致的。而且不仅仅是输出部分，函数复杂的输入部分可能也跟着变化了，因此测试使用的输入也就不再有效了。</p>
 <p>避免脆弱测试代码的方法是只检测你真正关心的属性。保持测试代码的简洁和内部结构的稳定。特别是对断言部分要有所选择。不要对字符串进行全字匹配，而是针对那些在项目的发展中是比较稳定不变的子串。很多时候值得花力气来编写一个从复杂输出中提取用于断言的必要信息的函数，虽然这可能会带来很多前期的工作，但是它可以帮助迅速及时修复因为项目演化而导致的不合逻辑的失败测试。</p>
