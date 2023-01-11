@@ -1099,7 +1099,7 @@ fmt.Println(&x == &x, &x == &y, &x == nil) // "true false false"
 
 在Go语言中，返回函数中局部变量的地址也是安全的。例如下面的代码，调用f函数时创建局部变量v，在局部变量地址被返回之后依然有效，因为指针p依然引用这个变量。
 
-```Go
+```go
 var p = f()
 
 func f() *int {
@@ -1199,7 +1199,7 @@ func newInt() *int {
 
 每次调用new函数都是返回一个新的变量的地址，因此下面两个地址是不同的：
 
-```Go
+```go
 p := new(int)
 q := new(int)
 fmt.Println(p == q) // "false"
@@ -1211,7 +1211,7 @@ new函数使用通常相对比较少，因为对于结构体来说，直接用�
 
 由于new只是一个预定义的函数，它并不是一个关键字，因此我们可以将new名字重新定义为别的类型。例如下面的例子：
 
-```Go
+```go
 func delta(old, new int) int { return new - old }
 ```
 
@@ -1369,7 +1369,7 @@ type 类型名字 底层类型
 
 为了说明类型声明，我们将不同温度单位分别定义为不同的类型：
 
-```Go
+```go
 // Package tempconv performs Celsius and Fahrenheit temperature computations.
 package tempconv
 
@@ -1437,7 +1437,7 @@ Go语言中的包和其他语言的库或模块的概念类似，目的都是为
 
 让我们创建一个名为`gopl.io/ch2/tempconv`的包，包代码存储在两个源文件中，用来演示如何在一个源文件声明然后在其他的源文件访问。我们把变量的声明、对应的常量，还有方法都放到tempconv.go源文件中：
 
-```Go
+```go
 // Package tempconv performs Celsius and Fahrenheit conversions.
 package tempconv
 
@@ -1515,7 +1515,7 @@ func main() {
 
 包的初始化首先是解决包级变量的依赖顺序，然后按照包级变量声明出现的顺序依次初始化：
 
-```Go
+```go
 var a = b + c // a 第三个初始化, 为 3
 var b = f()   // b 第二个初始化, 为 2, 通过调用 f (依赖c)
 var c = 1     // c 第一个初始化, 为 1
@@ -1527,7 +1527,7 @@ func f() int { return c + 1 }
 
 对于在包级别声明的变量，如果有初始化表达式则用表达式初始化，还有一些没有初始化表达式的，例如某些表格数据初始化并不是一个简单的赋值过程。在这种情况下，我们可以用一个特殊的init初始化函数来简化初始化工作。每个文件都可以包含多个init初始化函数
 
-```Go
+```go
 func init() { /* ... */ }
 ```
 
@@ -1613,7 +1613,7 @@ func main() {
 
 在函数中词法域可以深度嵌套，因此内部的一个声明可能屏蔽外部的声明。还有许多语法块是if或for等控制流语句构造的。下面的代码有三个不同的变量x，因为它们是定义在不同的词法域（这个例子只是为了演示作用域规则，但不是好的编程风格）。
 
-```Go
+```go
 func main() {
     x := "hello!"
     for i := 0; i < len(x); i++ {
@@ -1632,7 +1632,7 @@ func main() {
 
 下面的例子同样有三个不同的x变量，每个声明在不同的词法域，一个在函数体词法域，一个在for隐式的初始化词法域，一个在for循环体词法域；只有两个块是显式创建的：
 
-```Go
+```go
 func main() {
     x := "hello"
     for _, x := range x {
@@ -1644,7 +1644,7 @@ func main() {
 
 和for循环类似，if和switch语句也会在条件部分创建隐式词法域，还有它们对应的执行体词法域。下面的if-else测试链演示了x和y的有效作用域范围：
 
-```Go
+```go
 if x := f(); x == 0 {
     fmt.Println(x)
 } else if y := g(x); x == y {
@@ -1661,7 +1661,7 @@ fmt.Println(x, y) // compile error: x and y are not visible here
 
 在这个程序中：
 
-```Go
+```go
 if f, err := os.Open(fname); err != nil { // compile error: unused: f
     return err
 }
@@ -1673,7 +1673,7 @@ f.Close()    // compile error: undefined f
 
 通常需要在if之前声明变量，这样可以确保后面的语句依然可以访问变量：
 
-```Go
+```go
 f, err := os.Open(fname)
 if err != nil {
     return err
@@ -1684,7 +1684,7 @@ f.Close()
 
 你可能会考虑通过将ReadByte和Close移动到if的else块来解决这个问题：
 
-```Go
+```go
 if f, err := os.Open(fname); err != nil {
     return err
 } else {
@@ -1698,7 +1698,7 @@ if f, err := os.Open(fname); err != nil {
 
 要特别注意短变量声明语句的作用域范围，考虑下面的程序，它的目的是获取当前的工作目录然后保存到一个包级的变量中。这本来可以通过直接调用`os.Getwd`完成，但是将这个从主逻辑中分离出来可能会更好，特别是在需要处理错误的时候。函数`log.Fatalf`用于打印日志信息，然后调用`os.Exit(1)`终止程序。
 
-```Go
+```go
 var cwd string
 
 func init() {
@@ -1713,7 +1713,7 @@ func init() {
 
 由于当前的编译器会检测到局部声明的cwd并没有使用，然后报告这可能是一个错误，但是这种检测并不可靠。因为一些小的代码变更，例如增加一个局部cwd的打印语句，就可能导致这种检测失效。
 
-```Go
+```go
 var cwd string
 
 func init() {
@@ -1729,7 +1729,7 @@ func init() {
 
 **有许多方式可以避免出现类似潜在的问题。最直接的方法是通过单独声明err变量，来避免使用`:=`的简短声明方式：**
 
-```Go
+```go
 var cwd string
 
 func init() {
@@ -1893,7 +1893,7 @@ func compute() (value float64, ok bool) {
 
 Go语言提供了两种精度的复数类型：complex64和complex128，分别对应float32和float64两种浮点数精度。内置的complex函数用于构建复数，内建的real和imag函数分别返回复数的实部和虚部：
 
-```Go
+```go
 var x complex128 = complex(1, 2) // 1+2i
 var y complex128 = complex(3, 4) // 3+4i
 fmt.Println(x*y)                 // "(-5+10i)"
@@ -1903,13 +1903,13 @@ fmt.Println(imag(x*y))           // "10"
 
 如果一个浮点数面值或一个十进制整数面值后面跟着一个i，例如3.141592i或2i，它将构成一个复数的虚部，复数的实部是0：
 
-```Go
+```go
 fmt.Println(1i * 1i) // "(-1+0i)", i^2 = -1
 ```
 
 在常量算术规则下，一个复数常量可以加到另一个普通数值常量（整数或浮点数、实部或虚部），我们可以用自然的方式书写复数，就像`1+2i`或与之等价的写法`2i+1`。上面x和y的声明语句还可以简化：
 
-```Go
+```go
 x := 1 + 2i
 y := 3 + 4i
 ```
@@ -1918,7 +1918,7 @@ y := 3 + 4i
 
 `math/cmplx`包提供了复数处理的许多函数，例如求复数的平方根函数和求幂函数。
 
-```Go
+```go
 fmt.Println(cmplx.Sqrt(-1)) // "(0+1i)"
 ```
 
@@ -1930,7 +1930,7 @@ fmt.Println(cmplx.Sqrt(-1)) // "(0+1i)"
 
 布尔值可以和&&（AND）和||（OR）操作符结合，并且有短路行为：如果运算符左边值已经可以确定整个布尔表达式的值，那么运算符右边的值将不再被求值，因此下面的表达式总是安全的：
 
-```Go
+```go
 s != "" && s[0] == 'x'
 ```
 
@@ -2190,7 +2190,7 @@ for i, r := range "Hello, 世界" {
 
 我们可以使用一个简单的循环来统计字符串中字符的数目，像这样：
 
-```Go
+```go
 n := 0
 for _, _ = range s {
     n++
@@ -2199,7 +2199,7 @@ for _, _ = range s {
 
 像其它形式的循环那样，我们也可以忽略不需要的变量：
 
-```Go
+```go
 n := 0
 for range s {
     n++
@@ -2259,7 +2259,7 @@ fmt.Println(string(1234567)) // "⶧"
 
 下面例子的basename函数灵感源于Unix shell的同名工具。在我们实现的版本中，`basename(s)`将看起来像是系统路径的前缀删除，同时将看似文件类型的后缀名部分删除：
 
-```Go
+```go
 fmt.Println(basename("a/b/c.go")) // "c"
 fmt.Println(basename("c.d.go"))   // "c.d"
 fmt.Println(basename("abc"))      // "abc"
@@ -2267,7 +2267,7 @@ fmt.Println(basename("abc"))      // "abc"
 
 第一个版本并没有使用任何库，全部手工硬编码实现：
 
-```Go
+```go
 // basename removes directory components and a .suffix.
 // e.g., a => a, a.go => a, a/b/c.go => c, a/b.c.go => b.c
 func basename(s string) string {
@@ -2291,7 +2291,7 @@ func basename(s string) string {
 
 这个简化版本使用了`strings.LastIndex`库函数：
 
-```Go
+```go
 func basename(s string) string {
     slash := strings.LastIndex(s, "/") // -1 if "/" not found
     s = s[slash+1:]
@@ -2306,7 +2306,7 @@ func basename(s string) string {
 
 让我们继续另一个字符串的例子。函数的功能是将一个表示整数值的字符串，每隔三个字符插入一个逗号分隔符，例如“12345”处理后成为“12,345”。这个版本只适用于整数类型。
 
-```Go
+```go
 // comma inserts commas in a non-negative decimal integer string.
 func comma(s string) string {
     n := len(s)
@@ -2323,7 +2323,7 @@ func comma(s string) string {
 
 **字符串和字节slice之间可以相互转换：**
 
-```Go
+```go
 s := "abc"
 b := []byte(s)
 s2 := string(b)
@@ -2333,7 +2333,7 @@ s2 := string(b)
 
 **为了避免转换中不必要的内存分配，`bytes`包和`strings`同时提供了许多实用函数。下面是`strings`包中的六个函数：**
 
-```Go
+```go
 func Contains(s, substr string) bool
 func Count(s, sep string) int
 func Fields(s string) []string
@@ -2344,7 +2344,7 @@ func Join(a []string, sep string) string
 
 **`bytes`包中也对应的六个函数：**
 
-```Go
+```go
 func Contains(b, subslice []byte) bool
 func Count(s, sep []byte) int
 func Fields(s []byte) [][]byte
@@ -2357,7 +2357,7 @@ func Join(s [][]byte, sep []byte) []byte
 
 `bytes`包还提供了`Buffer`类型用于字节slice的缓存。一个`Buffer`开始是空的，但是随着`string`、`byte`或`[]byte`等类型数据的写入可以动态增长，一个`bytes.Buffer`变量并不需要初始化，因为零值也是有效的：
 
-```Go
+```go
 // intsToString is like fmt.Sprint(values) but adds commas.
 func intsToString(values []int) string {
     var buf bytes.Buffer
@@ -2387,7 +2387,7 @@ func main() {
 
 将一个整数转为字符串，一种方法是用`fmt.Sprintf`返回一个格式化的字符串；另一个方法是用`strconv.Itoa("整数到ASCII")`：
 
-```Go
+```go
 x := 123
 y := fmt.Sprintf("%d", x)
 fmt.Println(y, strconv.Itoa(x)) // "123 123"
@@ -2395,19 +2395,19 @@ fmt.Println(y, strconv.Itoa(x)) // "123 123"
 
 `FormatInt`和`FormatUint`函数可以用不同的进制来格式化数字：
 
-```Go
+```go
 fmt.Println(strconv.FormatInt(int64(x), 2)) // "1111011"
 ```
 
 `fmt.Printf`函数的`%b`、`%d`、`%o`和`%x`等参数提供功能往往比`strconv`包的`Format`函数方便很多，特别是在需要包含有附加额外信息的时候：
 
-```Go
+```go
 s := fmt.Sprintf("x=%b", x) // "x=1111011"
 ```
 
 如果要将一个字符串解析为整数，可以使用`strconv`包的`Atoi`或`ParseInt`函数，还有用于解析无符号整数的`ParseUint`函数：
 
-```Go
+```go
 x, err := strconv.Atoi("123")             // x is an int
 y, err := strconv.ParseInt("123", 10, 64) // base 10, up to 64 bits
 ```
@@ -3091,14 +3091,14 @@ ages["charlie"] = 34
 
 Map中的元素通过key对应的下标语法访问：
 
-```Go
+```go
 ages["alice"] = 32
 fmt.Println(ages["alice"]) // "32"
 ```
 
 使用内置的delete函数可以删除元素：
 
-```Go
+```go
 delete(ages, "alice") // remove element ages["alice"]
 ```
 
@@ -3153,7 +3153,7 @@ for _, name := range names {
 
 因为我们一开始就知道names的最终大小，因此给slice分配一个合适的大小将会更有效。下面的代码创建了一个空的slice，但是slice的容量刚好可以放下map中全部的key：
 
-```Go
+```go
 names := make([]string, 0, len(ages))
 ```
 
@@ -3161,7 +3161,7 @@ names := make([]string, 0, len(ages))
 
 map类型的零值是nil，也就是没有引用任何哈希表。
 
-```Go
+```go
 var ages map[string]int
 fmt.Println(ages == nil)    // "true"
 fmt.Println(len(ages) == 0) // "true"
@@ -3206,14 +3206,14 @@ func equal(x, y map[string]int) bool {
 
 从例子中可以看到如何用`!ok`来区分元素不存在，与元素存在但为0的。我们不能简单地用`xv != y[k]`判断，那样会导致在判断下面两个map时产生错误的结果：
 
-```Go
+```go
 // True if equal is written incorrectly.
 equal(map[string]int{"A": 0}, map[string]int{"B": 42})
 ```
 
 Go语言中并没有提供一个set类型，但是map中的key也是不相同的，可以用map实现类似set的功能。为了说明这一点，下面的dedup程序读取多行输入，但是只打印第一次出现的行。（它是1.3节中出现的dup程序的变体。）dedup程序通过map来表示所有的输入行所对应的set集合，以确保已经在集合存在的行不会被重复打印。
 
-```Go
+```go
 func main() {
     seen := make(map[string]bool) // a set of strings
     input := bufio.NewScanner(os.Stdin)
@@ -3238,7 +3238,7 @@ Go程序员将这种忽略value的map当作一个字符串集合，并非所有`
 
 下面的例子演示了如何使用map来记录提交相同的字符串列表的次数。它使用了fmt.Sprintf函数将字符串列表转换为一个字符串以用于map的key，通过%q参数忠实地记录每个字符串元素的信息：
 
-```Go
+```go
 var m = make(map[string]int)
 
 func k(list []string) string { return fmt.Sprintf("%q", list) }
@@ -3251,7 +3251,7 @@ func Count(list []string) int { return m[k(list)] }
 
 这是map的另一个例子，下面的程序用于统计输入中每个Unicode码点出现的次数。虽然Unicode全部码点的数量巨大，但是出现在特定文档中的字符种类并没有多少，使用map可以用比较自然的方式来跟踪那些出现过的字符的次数。
 
-```Go
+```go
 // Charcount computes counts of Unicode characters.
 package main
 
@@ -3308,7 +3308,7 @@ charcount程序同时打印不同UTF-8编码长度的字符数目。对此，map
 
 Map的value类型也可以是一个聚合类型，比如是一个map或slice。在下面的代码中，图graph的key类型是一个字符串，value类型`map[string]bool`代表一个字符串集合。从概念上讲，graph将一个字符串类型的key映射到一组相关的字符串集合，它们指向新的graph的key。
 
-```Go
+```go
 var graph = make(map[string]map[string]bool)
 
 func addEdge(from, to string) {
@@ -3740,7 +3740,7 @@ var movies = []Movie{
 
 这样的数据结构特别适合JSON格式，并且在两者之间相互转换也很容易。将一个Go语言中类似movies的结构体slice转为JSON的过程叫编组（marshaling）。编组通过调用`json.Marshal`函数完成：
 
-```Go
+```go
 data, err := json.Marshal(movies)
 if err != nil {
     log.Fatalf("JSON marshaling failed: %s", err)
@@ -3759,7 +3759,7 @@ Actors":["Steve McQueen","Jacqueline Bisset"]}]
 
 这种紧凑的表示形式虽然包含了全部的信息，但是很难阅读。为了生成便于阅读的格式，另一个json.MarshalIndent函数将产生整齐缩进的输出。该函数有两个额外的字符串参数用于表示每一行输出的前缀和每一个层级的缩进：
 
-```Go
+```go
 data, err := json.MarshalIndent(movies, "", "    ")
 if err != nil {
     log.Fatalf("JSON marshaling failed: %s", err)
@@ -3822,7 +3822,7 @@ fmt.Println(titles) // "[{Casablanca} {Cool Hand Luke} {Bullitt}]"
 
 许多web服务都提供JSON接口，通过HTTP接口发送JSON格式请求并返回JSON格式的信息。为了说明这一点，我们通过Github的issue查询服务来演示类似的用法。首先，我们要定义合适的类型和常量：
 
-```Go
+```go
 // Package github provides a Go API for the GitHub issue tracker.
 // See https://developer.github.com/v3/search/#search-issues.
 package github
@@ -3856,7 +3856,7 @@ type User struct {
 
 `SearchIssues`函数发出一个HTTP请求，然后解码返回的JSON格式的结果。因为用户提供的查询条件可能包含类似`?`和`&`之类的特殊字符，为了避免对URL造成冲突，我们用`url.QueryEscape`来对查询中的特殊字符进行转义操作。
 
-```Go
+```go
 package github
 
 import (
@@ -3896,7 +3896,7 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 
 我们调用Decode方法来填充变量。这里有多种方法可以格式化结构。下面是最简单的一种，以一个固定宽度打印每个issue，但是在下一节我们将看到如何利用模板来输出复杂的格式。
 
-```Go
+```go
 // Issues prints a table of GitHub issues matching the search terms.
 package main
 
@@ -3964,7 +3964,7 @@ Age:    {{.CreatedAt | daysAgo}} days
 
 在一个action中，`|`操作符表示将前一个表达式的结果作为后一个函数的输入，类似于UNIX中管道的概念。在`Title`这一行的`action`中，第二个操作是一个`printf`函数，是一个基于`fmt.Sprintf`实现的内置函数，所有模板都可以直接使用。对于`Age`部分，第二个动作是一个叫`daysAgo`的函数，通过`time.Since`函数将`CreatedAt`成员转换为过去的时间长度：
 
-```Go
+```go
 func daysAgo(t time.Time) int {
     return int(time.Since(t).Hours() / 24)
 }
@@ -3974,7 +3974,7 @@ func daysAgo(t time.Time) int {
 
 生成模板的输出需要两个处理步骤。第一步是要分析模板并转为内部表示，然后基于指定的输入执行模板。分析模板部分一般只需要执行一次。下面的代码创建并分析上面定义的模板`templ`。注意方法调用链的顺序：`template.New`先创建并返回一个模板；`Funcs`方法将`daysAgo`等自定义函数注册到模板中，并返回模板；最后调用`Parse`函数分析模板。
 
-```Go
+```go
 report, err := template.New("report").
     Funcs(template.FuncMap{"daysAgo": daysAgo}).
     Parse(templ)
@@ -3987,7 +3987,7 @@ if err != nil {
 
 一旦模板已经创建、注册了`daysAgo`函数、并通过分析和检测，我们就可以使用`github.IssuesSearchResult`作为输入源、`os.Stdout`作为输出源来执行模板：
 
-```Go
+```go
 var report = template.Must(template.New("issuelist").
     Funcs(template.FuncMap{"daysAgo": daysAgo}).
     Parse(templ))
@@ -4379,7 +4379,7 @@ log.Println(links, err)
 
 **准确的变量名可以传达函数返回值的含义。尤其在返回值的类型都相同时，就像下面这样：**
 
-```Go
+```go
 func Size(rect image.Rectangle) (width, height int)
 func Split(path string) (dir, file string)
 func HourMinSec(t time.Time) (hour, minute, second int)
@@ -4389,7 +4389,7 @@ func HourMinSec(t time.Time) (hour, minute, second int)
 
 **如果一个函数所有的返回值都有显式的变量名，那么该函数的return语句可以省略操作数。这称之为bare return。**
 
-```Go
+```go
 // CountWordsAndImages does an HTTP GET request for the HTML
 // document url and returns the number of words and images in it.
 func CountWordsAndImages(url string) (words, images int, err error) {
@@ -4411,7 +4411,7 @@ func countWordsAndImages(n *html.Node) (words, images int) { /* ... */ }
 
 按照返回值列表的次序，返回所有的返回值，在上面的例子中，每一个return语句等价于：
 
-```Go
+```go
 return words, images, err
 ```
 
@@ -4429,7 +4429,7 @@ return words, images, err
 
 **对于那些将运行失败看作是预期结果的函数，它们会返回一个额外的返回值，通常是最后一个，来传递错误信息。如果导致失败的原因只有一个，额外的返回值可以是一个布尔值，通常被命名为ok。**比如，`cache.Lookup`失败的唯一原因是key不存在，那么代码可以按照下面的方式组织：
 
-```Go
+```go
 value, ok := cache.Lookup(key)
 if !ok {
     // ...cache[key] does not exist…
@@ -4440,7 +4440,7 @@ if !ok {
 
 内置的error是接口类型。我们将在第七章了解接口类型的含义，以及它对错误处理的影响。现在我们只需要明白error类型可能是nil或者non-nil。nil意味着函数运行成功，non-nil表示失败。对于non-nil的error类型，我们可以通过调用error的Error函数或者输出函数获得字符串类型的错误信息。
 
-```Go
+```go
 fmt.Println(err)
 fmt.Printf("%v", err)
 ```
@@ -4459,7 +4459,7 @@ Go这样设计的原因是由于对于某个应该在控制流程中处理的错
 
 **第1种错误处理策略：最常用的方式是传播错误。这意味着函数中某个子程序的失败，会变成该函数的失败。** 下面，我们以5.3节的findLinks函数作为例子。如果findLinks对`http.Get`的调用失败，findLinks会直接将这个HTTP错误返回给调用者：
 
-```Go
+```go
 resp, err := http.Get(url)
 if err != nil{
     return nil, err
@@ -4468,7 +4468,7 @@ if err != nil{
 
 当对`html.Parse`的调用失败时，findLinks不会直接返回`html.Parse`的错误，因为缺少两条重要信息：1、发生错误时的解析器（html parser）；2、发生错误的url。因此，findLinks构造了一个新的错误信息，既包含了这两项，也包括了底层的解析出错的信息。
 
-```Go
+```go
 doc, err := html.Parse(resp.Body)
 resp.Body.Close()
 if err != nil {
@@ -4492,7 +4492,7 @@ genesis: crashed: no parachute: G-switch failed: bad relay orientation
 
 **第2种错误处理策略：如果错误的发生是偶然性的，或由不可预知的问题导致的。一个明智的选择是重新尝试失败的操作。在重试时，我们需要限制重试的时间间隔或重试的次数，防止无限制的重试。** 
 
-```Go
+```go
 // WaitForServer attempts to contact the server of a URL.
 // It tries for one minute using exponential back-off.
 // It reports an error if all attempts fail.
@@ -4513,7 +4513,7 @@ func WaitForServer(url string) error {
 
 **第3种错误处理策略： 如果错误发生后，程序无法继续运行，则输出错误信息并结束程序。需要注意的是，这种策略只应在main中执行。对库函数而言，应仅向上传播错误，除非该错误意味着程序内部包含不一致性，即遇到了bug，才能在库函数中结束程序。**
 
-```Go
+```go
 // (In function main.)
 if err := WaitForServer(url); err != nil {
     fmt.Fprintf(os.Stderr, "Site is down: %v\n", err)
@@ -4523,7 +4523,7 @@ if err := WaitForServer(url); err != nil {
 
 调用`log.Fatalf`可以更简洁的代码达到与上文相同的效果。log中的所有函数，都默认会在错误信息之前输出时间信息。
 
-```Go
+```go
 if err := WaitForServer(url); err != nil {
     log.Fatalf("Site is down: %v\n", err)
 }
@@ -4538,14 +4538,14 @@ bad.gopl.io
 
 我们可以设置log的前缀信息屏蔽时间信息，一般而言，前缀信息会被设置成命令名。
 
-```Go
+```go
 log.SetPrefix("wait: ")
 log.SetFlags(0)
 ```
 
 **第4种错误处理策略：有时，我们只需要输出错误信息就足够了，不需要中断程序的运行。** 我们可以通过log包提供函数
 
-```Go
+```go
 if err := Ping(); err != nil {
     log.Printf("ping failed: %v; networking disabled",err)
 }
@@ -4553,7 +4553,7 @@ if err := Ping(); err != nil {
 
 或者标准错误流输出错误信息。
 
-```Go
+```go
 if err := Ping(); err != nil {
     fmt.Fprintf(os.Stderr, "ping failed: %v; networking disabled\n", err)
 }
@@ -4563,7 +4563,7 @@ log包中的所有函数会为没有换行符的字符串增加换行符。
 
 **第5种错误处理策略：我们可以直接忽略掉错误。**
 
-```Go
+```go
 dir, err := ioutil.TempDir("", "scratch")
 if err != nil {
     return fmt.Errorf("failed to create temp dir: %v",err)
@@ -4580,7 +4580,7 @@ os.RemoveAll(dir) // ignore errors; $TMPDIR is cleaned periodically
 
 函数经常会返回多种错误，这对终端用户来说可能会很有趣，但对程序而言，这使得情况变得复杂。很多时候，程序必须根据错误类型，作出不同的响应。让我们考虑这样一个例子：从文件中读取n个字节。如果n等于文件的长度，读取过程的任何错误都表示失败。如果n小于文件的长度，调用者会重复的读取固定大小的数据直到文件结束。这会导致调用者必须分别处理由文件结束引起的各种错误。基于这样的原因，`io`包保证任何由文件结束引起的读取失败都返回同一个错误——`io.EOF`，该错误在`io`包中定义：
 
-```Go
+```go
 package io
 
 import "errors"
@@ -4591,7 +4591,7 @@ var EOF = errors.New("EOF")
 
 调用者只需通过简单的比较，就可以检测出这个错误。下面的例子展示了如何从标准输入中读取字符，以及判断文件结束。（4.3的chartcount程序展示了更加复杂的代码）
 
-```Go
+```go
 in := bufio.NewReader(os.Stdin)
 for {
     r, _, err := in.ReadRune()
@@ -5166,7 +5166,7 @@ func Reset(x *Buffer) {
 
 在程序源码中，大多数正则表达式是字符串字面值（string literals），因此`regexp`包提供了包装函数`regexp.MustCompile`检查输入的合法性。
 
-```Go
+```go
 package regexp
 func Compile(expr string) (*Regexp, error) { /* ... */ }
 func MustCompile(expr string) *Regexp {
@@ -5180,13 +5180,13 @@ func MustCompile(expr string) *Regexp {
 
 包装函数使得调用者可以便捷的用一个编译后的正则表达式为包级别的变量赋值：
 
-```Go
+```go
 var httpSchemeRE = regexp.MustCompile(`^https?:`) //"http:" or "https:"
 ```
 
 显然，`MustCompile`不能接收不合法的输入。函数名中的Must前缀是一种针对此类函数的命名约定，比如`template.Must`。
 
-```Go
+```go
 func main() {
     f(3)
 }
@@ -5228,7 +5228,7 @@ src/gopl.io/ch5/defer1/defer.go:10
 
 为了方便诊断问题，runtime包允许程序员输出堆栈信息。在下面的例子中，我们通过在`main`函数中延迟调用`printStack`输出堆栈信息。
 
-```Go
+```go
 func main() {
     defer printStack()
     f(3)
@@ -10480,7 +10480,7 @@ func NewReader(s string) *Reader
 
 其它一些包，可能只描述了单一的数据类型，例如`html/template`和`math/rand`等，只暴露一个主要的数据结构和与它相关的方法，还有一个以`New`命名的函数用于创建实例。
 
-```Go
+```go
 package rand // "math/rand"
 
 type Rand struct{ /* ... */ }
@@ -10690,7 +10690,7 @@ $ go run quoteargs.go one "two three" four\ five
 
 *gopl.io/ch10/cross*
 
-```Go
+```go
 func main() {
     fmt.Println(runtime.GOOS, runtime.GOARCH)
 }
@@ -10709,13 +10709,13 @@ darwin 386
 
 有些包可能需要针对不同平台和处理器类型使用不同版本的代码文件，以便于处理底层的可移植性问题或为一些特定代码提供优化。如果一个文件名包含了一个操作系统或处理器类型名字，例如net_linux.go或asm_amd64.s，Go语言的构建工具将只在对应的平台编译这些文件。还有一个特别的构建注释参数可以提供更多的构建过程控制。例如，文件中可能包含下面的注释：
 
-```Go
+```go
 // +build linux darwin
 ```
 
 在包声明和包注释的前面，该构建注释参数告诉`go build`只在编译程序对应的目标操作系统是Linux或Mac OS X时才编译这个文件。下面的构建注释则表示不编译这个文件：
 
-```Go
+```go
 // +build ignore
 ```
 
@@ -10731,7 +10731,7 @@ Go语言的编码风格鼓励为每个包提供良好的文档。包中每个导
 
 Go语言中的文档注释一般是完整的句子，第一行通常是摘要说明，以被注释者的名字开头。注释中函数的参数或其它的标识符并不需要额外的引号或其它标记注明。例如，下面是`fmt.Fprintf`的文档注释。
 
-```Go
+```go
 // Fprintf formats according to a format specifier and writes to w.
 // It returns the number of bytes written and any write error encountered.
 func Fprintf(w io.Writer, format string, a ...interface{}) (int, error)
@@ -10942,7 +10942,7 @@ $ go list -f "{{.ImportPath}} -> {{join .Imports \" \"}}" compress/...
 
 每个测试函数必须导入`testing`包。测试函数有如下的签名：
 
-```Go
+```go
 func TestName(t *testing.T) {
     // ...
 }
@@ -10950,7 +10950,7 @@ func TestName(t *testing.T) {
 
 测试函数的名字必须以`Test`开头，可选的后缀名必须以大写字母开头：
 
-```Go
+```go
 func TestSin(t *testing.T) { /* ... */ }
 func TestCos(t *testing.T) { /* ... */ }
 func TestLog(t *testing.T) { /* ... */ }
@@ -10960,7 +10960,7 @@ func TestLog(t *testing.T) { /* ... */ }
 
 *gopl.io/ch11/word1*
 
-```Go
+```go
 // Package word provides utilities for word games.
 package word
 
@@ -10978,7 +10978,7 @@ func IsPalindrome(s string) bool {
 
 在相同的目录下，`word_test.go`测试文件中包含了`TestPalindrome`和`TestNonPalindrome`两个测试函数。每一个都是测试`IsPalindrome`是否给出正确的结果，并使用`t.Error`报告失败信息：
 
-```Go
+```go
 package word
 
 import "testing"
@@ -11009,7 +11009,7 @@ ok   gopl.io/ch11/word1  0.008s
 
 结果还比较满意，我们运行了这个程序， 不过没有提前退出是因为还没有遇到BUG报告。不过一个法国名为“Noelle Eve Elleon”的用户会抱怨`IsPalindrome`函数不能识别`"été"`。另外一个来自美国中部用户的抱怨则是不能识别“A man, a plan, a canal: Panama.”。执行特殊和小的BUG报告为我们提供了新的更自然的测试用例。
 
-```Go
+```go
 func TestFrenchPalindrome(t *testing.T) {
     if !IsPalindrome("été") {
         t.Error(`IsPalindrome("été") = false`)
@@ -11084,7 +11084,7 @@ FAIL    gopl.io/ch11/word1  0.014s
 
 *gopl.io/ch11/word2*
 
-```Go
+```go
 // Package word provides utilities for word games.
 package word
 
@@ -11110,7 +11110,7 @@ func IsPalindrome(s string) bool {
 
 同时我们也将之前的所有测试数据合并到了一个测试中的表格中。
 
-```Go
+```go
 func TestIsPalindrome(t *testing.T) {
     var tests = []struct {
         input string
@@ -11165,7 +11165,7 @@ ok      gopl.io/ch11/word2      0.015s
 
 下面的例子使用的是第二种方法：`randomPalindrome`函数用于随机生成回文字符串。
 
-```Go
+```go
 import "math/rand"
 
 // randomPalindrome returns a palindrome whose length and contents
@@ -11214,7 +11214,7 @@ func TestRandomPalindromes(t *testing.T) {
 
 *gopl.io/ch11/echo*
 
-```Go
+```go
 // Echo prints its command-line arguments.
 package main
 
@@ -11252,7 +11252,7 @@ func echo(newline bool, sep string, args []string) error {
 
 在测试中我们可以用各种参数和标志调用echo函数，然后检测它的输出是否正确，我们通过增加参数来减少echo函数对全局变量的依赖。我们还增加了一个全局名为`out`的变量来替代直接使用`os.Stdout`，这样测试代码可以根据需要将`out`修改为不同的对象以便于检查。下面就是echo_test.go文件中的测试代码：
 
-```Go
+```go
 package main
 
 import (
@@ -11295,7 +11295,7 @@ func TestEcho(t *testing.T) {
 
 通过将测试放到表格中，我们很容易添加新的测试用例。让我通过增加下面的测试用例来看看失败的情况是怎么样的：
 
-```Go
+```go
 {true, ",", []string{"a", "b", "c"}, "a b c\n"}, // NOTE: wrong expectation!
 ```
 
@@ -11327,7 +11327,7 @@ FAIL        gopl.io/ch11/echo         0.006s
 
 *gopl.io/ch11/storage1*
 
-```Go
+```go
 package storage
 
 import (
@@ -11368,7 +11368,7 @@ func CheckQuota(username string) {
 
 *gopl.io/ch11/storage2*
 
-```Go
+```go
 var notifyUser = func(username, msg string) {
     auth := smtp.PlainAuth("", sender, password, hostname)
     err := smtp.SendMail(hostname+":587", auth, sender,
@@ -11392,7 +11392,7 @@ func CheckQuota(username string) {
 
 现在我们可以在测试中用伪邮件发送函数替代真实的邮件发送函数。它只是简单记录要通知的用户和邮件的内容。
 
-```Go
+```go
 package storage
 
 import (
@@ -11426,7 +11426,7 @@ func TestCheckQuotaNotifiesUser(t *testing.T) {
 
 这里有一个问题：当测试函数返回后，`CheckQuota`将不能正常工作，因为`notifyUsers`依然使用的是测试函数的伪发送邮件函数（当更新全局对象的时候总会有这种风险）。 我们必须修改测试代码恢复`notifyUsers`原先的状态以便后续其他的测试没有影响，要确保所有的执行路径后都能恢复，包括测试失败或panic异常的情形。在这种情况下，我们建议使用defer语句来延后执行处理恢复的代码。
 
-```Go
+```go
 func TestCheckQuotaNotifiesUser(t *testing.T) {
     // Save and restore original notifyUser.
     saved := notifyUser
@@ -11490,7 +11490,7 @@ $ go list -f={{.XTestGoFiles}} fmt
 
 为了确保`fmt.isSpace`和`unicode.IsSpace`函数的行为保持一致，`fmt`包谨慎地包含了一个测试。一个在外部测试包内的白盒测试，是无法直接访问到`isSpace`内部函数的，因此`fmt`通过一个后门导出了`isSpace`函数。`export_test.go`文件就是专门用于外部测试包的后门。
 
-```Go
+```go
 package fmt
 
 var IsSpace = isSpace
@@ -11506,7 +11506,7 @@ Go语言的测试风格则形成鲜明对比。它期望测试者自己完成大
 
 下面的断言函数比较两个值，然后生成一个通用的错误信息，并停止程序。它很好用也确实有效，但是当测试失败的时候，打印的错误信息却几乎是没有价值的。它并没有为快速解决问题提供一个很好的入口。
 
-```Go
+```go
 import (
     "fmt"
     "strings"
@@ -11527,7 +11527,7 @@ func TestSplit(t *testing.T) {
 
 从这个意义上说，断言函数犯了过早抽象的错误：仅仅测试两个整数是否相同，而没能根据上下文提供更有意义的错误信息。我们可以根据具体的错误打印一个更有价值的错误信息，就像下面例子那样。只有在测试中出现重复模式时才采用抽象。
 
-```Go
+```go
 func TestSplit(t *testing.T) {
     s, sep := "a:b:c", ":"
     words := strings.Split(s, sep)
@@ -11565,7 +11565,7 @@ func TestSplit(t *testing.T) {
 
 *gopl.io/ch7/eval*
 
-```Go
+```go
 func TestCoverage(t *testing.T) {
     var tests = []struct {
         input string
@@ -11661,7 +11661,7 @@ $ go tool cover -html=c.out
 
 下面是`IsPalindrome`函数的基准测试，其中循环将执行`N`次。
 
-```Go
+```go
 import "testing"
 
 func BenchmarkIsPalindrome(b *testing.B) {
@@ -11689,7 +11689,7 @@ ok      gopl.io/ch11/word2      2.179s
 
 现在我们有了一个基准测试和普通测试，我们可以很容易测试改进程序运行速度的想法。也许最明显的优化是在`IsPalindrome`函数中第二个循环的停止检查，这样可以避免每个比较都做两次：
 
-```Go
+```go
 n := len(letters)/2
 for i := 0; i < n; i++ {
     if letters[i] != letters[len(letters)-1-i] {
@@ -11710,7 +11710,7 @@ ok      gopl.io/ch11/word2      2.093s
 
 另一个改进想法是在开始为每个字符预先分配一个足够大的数组，这样就可以避免在`append`调用时可能会导致内存的多次重新分配。声明一个`letters`数组变量，并指定合适的大小，像下面这样，
 
-```Go
+```go
 letters := make([]rune, 0, len(s))
 for _, r := range s {
     if unicode.IsLetter(r) {
@@ -11750,7 +11750,7 @@ BenchmarkIsPalindrome    2000000    807 ns/op    128 B/op  1 allocs/op
 
 比较型的基准测试就是普通程序代码。它们通常是单参数的函数，由几个不同数量级的基准测试函数调用，就像这样：
 
-```Go
+```go
 func benchmark(b *testing.B, size int) { /* ... */ }
 func Benchmark10(b *testing.B)         { benchmark(b, 10) }
 func Benchmark100(b *testing.B)        { benchmark(b, 100) }
@@ -11836,7 +11836,7 @@ Showing top 10 nodes out of 166 (cum >= 60ms)
 
 第三种被`go test`特别对待的函数是示例函数，以Example为函数名开头。示例函数没有函数参数和返回值。下面是`IsPalindrome`函数对应的示例函数：
 
-```Go
+```go
 func ExampleIsPalindrome() {
     fmt.Println(IsPalindrome("A man, a plan, a canal: Panama"))
     fmt.Println(IsPalindrome("palindrome"))
@@ -11872,7 +11872,7 @@ Go语言提供了一种机制，能够在运行时更新变量和检查它们的
 
 我们首先用switch类型分支来测试输入参数是否实现了`String`方法，如果是的话就调用该方法。然后继续增加类型测试分支，检查这个值的动态类型是否是string、int、bool等基础类型，并在每种情况下执行相应的格式化操作。
 
-```Go
+```go
 func Sprint(x interface{}) string {
     type stringer interface {
         String() string
@@ -11905,65 +11905,65 @@ func Sprint(x interface{}) string {
 
 ## `reflect.Type` 和 `reflect.Value`
 
-反射是由 `reflect` 包提供的。它定义了两个重要的类型，`Type` 和 `Value`。一个 `Type` 表示一个Go类型。它是一个接口，有许多方法来区分类型以及检查它们的组成部分，例如一个结构体的成员或一个函数的参数等。唯一能反映 `reflect.Type` 实现的是接口的类型描述信息（§7.5），也正是这个实体标识了接口值的动态类型。
+**反射是由 `reflect` 包提供的。它定义了两个重要的类型，`Type` 和 `Value`。一个 `Type` 表示一个Go类型。它是一个接口，有许多方法来区分类型以及检查它们的组成部分，例如一个结构体的成员或一个函数的参数等。唯一能反映 `reflect.Type` 实现的是接口的类型描述信息（§7.5），也正是这个实体标识了接口值的动态类型。**
 
-函数 `reflect.TypeOf` 接受任意的 `interface{}` 类型，并以 `reflect.Type` 形式返回其动态类型：
+**函数 `reflect.TypeOf` 接受任意的 `interface{}` 类型，并以 `reflect.Type` 形式返回其动态类型：**
 
-```Go
+```go
 t := reflect.TypeOf(3)  // a reflect.Type
 fmt.Println(t.String()) // "int"
 fmt.Println(t)          // "int"
 ```
 
-其中 `TypeOf(3)` 调用将值 `3` 传给 `interface{}` 参数。回到 7.5节 的将一个具体的值转为接口类型会有一个隐式的接口转换操作，它会创建一个包含两个信息的接口值：操作数的动态类型（这里是 int）和它的动态的值（这里是 3）。
+**其中 `TypeOf(3)` 调用将值 `3` 传给 `interface{}` 参数。回到 7.5节 的将一个具体的值转为接口类型会有一个隐式的接口转换操作，它会创建一个包含两个信息的接口值：操作数的动态类型（这里是 int）和它的动态的值（这里是 3）。**
 
 因为 `reflect.TypeOf` 返回的是一个动态类型的接口值，它总是返回具体的类型。因此，下面的代码将打印 `"*os.File"` 而不是 `"io.Writer"`。稍后，我们将看到能够表达接口类型的 `reflect.Type`。
 
-```Go
+```go
 var w io.Writer = os.Stdout
 fmt.Println(reflect.TypeOf(w)) // "*os.File"
 ```
 
-要注意的是 `reflect.Type` 接口是满足 `fmt.Stringer` 接口的。因为打印一个接口的动态类型对于调试和日志是有帮助的， `fmt.Printf` 提供了一个缩写 `%T` 参数，内部使用 `reflect.TypeOf` 来输出：
+**要注意的是 `reflect.Type` 接口是满足 `fmt.Stringer` 接口的。因为打印一个接口的动态类型对于调试和日志是有帮助的， `fmt.Printf` 提供了一个缩写 `%T` 参数，内部使用 `reflect.TypeOf` 来输出：**
 
-```Go
+```go
 fmt.Printf("%T\n", 3) // "int"
 ```
 
-reflect 包中另一个重要的类型是 Value。一个 reflect.Value 可以装载任意类型的值。函数 reflect.ValueOf 接受任意的 interface{} 类型，并返回一个装载着其动态值的 reflect.Value。和 reflect.TypeOf 类似，reflect.ValueOf 返回的结果也是具体的类型，但是 reflect.Value 也可以持有一个接口值。
+**`reflect` 包中另一个重要的类型是 `Value`。一个 `reflect.Value` 可以装载任意类型的值。函数 `reflect.ValueOf` 接受任意的 `interface{}` 类型，并返回一个装载着其动态值的 `reflect.Value`。和 `reflect.TypeOf` 类似，`reflect.ValueOf` 返回的结果也是具体的类型，但是 `reflect.Value` 也可以持有一个接口值。**
 
-```Go
+```go
 v := reflect.ValueOf(3) // a reflect.Value
 fmt.Println(v)          // "3"
 fmt.Printf("%v\n", v)   // "3"
 fmt.Println(v.String()) // NOTE: "<int Value>"
 ```
 
-和 reflect.Type 类似，reflect.Value 也满足 fmt.Stringer 接口，但是除非 Value 持有的是字符串，否则 String 方法只返回其类型。而使用 fmt 包的 %v 标志参数会对 reflect.Values 特殊处理。
+**和 `reflect.Type` 类似，`reflect.Value` 也满足 `fmt.Stringer` 接口，但是除非 `Value` 持有的是字符串，否则 `String` 方法只返回其类型。而使用 `fmt` 包的 `%v` 标志参数会对 `reflect.Values` 特殊处理。**
 
-对 Value 调用 Type 方法将返回具体类型所对应的 reflect.Type：
+**对 `Value` 调用 `Type` 方法将返回具体类型所对应的 `reflect.Type`：**
 
-```Go
+```go
 t := v.Type()           // a reflect.Type
 fmt.Println(t.String()) // "int"
 ```
 
-reflect.ValueOf 的逆操作是 reflect.Value.Interface 方法。它返回一个 interface{} 类型，装载着与 reflect.Value 相同的具体值：
+**`reflect.ValueOf` 的逆操作是 `reflect.Value.Interface` 方法。它返回一个 `interface{}` 类型，装载着与 `reflect.Value` 相同的具体值：**
 
-```Go
+```go
 v := reflect.ValueOf(3) // a reflect.Value
 x := v.Interface()      // an interface{}
 i := x.(int)            // an int
 fmt.Printf("%d\n", i)   // "3"
 ```
 
-reflect.Value 和 interface{} 都能装载任意的值。所不同的是，一个空的接口隐藏了值内部的表示方式和所有方法，因此只有我们知道具体的动态类型才能使用类型断言来访问内部的值（就像上面那样），内部值我们没法访问。相比之下，一个 Value 则有很多方法来检查其内容，无论它的具体类型是什么。让我们再次尝试实现我们的格式化函数 format.Any。
+**`reflect.Value` 和 `interface{}` 都可以包含任意的值。二者的区别是空接口 （`interface{}`）隐藏了值的布局信息、内置操作和相关方法，所以除非我们知道它的动态类型，并用一个类型断言来渗透进去（上面的代码就用了类型断言），否则我们对所包含值能做的事情很少。作为对比，`Value` 有很多方法可以用来分析所包含的值，而不用知道它的类型。**使用这些技术，我们可以第二次尝试写一个通用的格式化函数，它称为 `format.Any`。
 
-我们使用 reflect.Value 的 Kind 方法来替代之前的类型 switch。虽然还是有无穷多的类型，但是它们的 kinds 类型却是有限的：Bool、String 和 所有数字类型的基础类型；Array 和 Struct 对应的聚合类型；Chan、Func、Ptr、Slice 和 Map 对应的引用类型；interface 类型；还有表示空值的 Invalid 类型。（空的 reflect.Value 的 kind 即为 Invalid。）
+**不用类型分支，我们用 `reflect.Value` 的 `Kind` 方法来区分不同的类型。尽管有无限种类型，但类型的分类（kind）只有少数几种：基础类型 `Bool`、`String` 以及各种数字类型；聚合类型 `Array` 和 `Struct`； 引用类型 `Chan`、`Func`、`Ptr`、`Slice` 和 `Map`、接口类型`Interface`；最后还有 `Invalid` 类型，表示它们还没有任何值。（`reflect.Value` 的零值就属于 `Invalid` 类型。）**
 
 *gopl.io/ch12/format*
 
-```Go
+```go
 package format
 
 import (
@@ -12001,9 +12001,9 @@ func formatAtom(v reflect.Value) string {
 }
 ```
 
-到目前为止，我们的函数将每个值视作一个不可分割没有内部结构的物品，因此它叫 formatAtom。对于聚合类型（结构体和数组）和接口，只是打印值的类型，对于引用类型（channels、functions、pointers、slices 和 maps），打印类型和十六进制的引用地址。虽然还不够理想，但是依然是一个重大的进步，并且 Kind 只关心底层表示，format.Any 也支持具名类型。例如：
+到现在为止，该函数把每个值当做一个没有内部结构且不可分割的物体（所以才叫`formatAtom`）。对于聚合类型（结构体和数组）以及接口，它只输出了值的类型；对于引用类型（通道、函数、指针、slice 和 map），它输出了类型和以十六进制表示的引用地址。这个结果仍然不够理想，但确实是一个很大的进步。因为 `Kind` 只关心底层实现，所以 `format.Any` 对命名类型的效果也很好。比如:
 
-```Go
+```go
 var x int64 = 1
 var d time.Duration = 1 * time.Nanosecond
 fmt.Println(format.Any(x))                  // "1"
@@ -12014,16 +12014,16 @@ fmt.Println(format.Any([]time.Duration{d})) // "[]time.Duration 0x8202b87e0"
 
 ## Display，一个递归的值打印器
 
-接下来，让我们看看如何改善聚合数据类型的显示。我们并不想完全克隆一个fmt.Sprint函数，我们只是构建一个用于调试用的Display函数：给定任意一个复杂类型 x，打印这个值对应的完整结构，同时标记每个元素的发现路径。让我们从一个例子开始。
+接下来，让我们看看如何改善聚合数据类型的显示。我们并不想完全克隆一个`fmt.Sprint`函数，我们只是构建一个用于调试用的`Display`函数：给定任意一个复杂类型 `x`，打印这个值对应的完整结构，同时标记每个元素的发现路径。让我们从一个例子开始。
 
-```Go
+```go
 e, _ := eval.Parse("sqrt(A / pi)")
 Display("e", e)
 ```
 
 在上面的调用中，传入Display函数的参数是在7.9节一个表达式求值函数返回的语法树。Display函数的输出如下：
 
-```Go
+```go
 Display e (eval.call):
 e.fn = "sqrt"
 e.args[0].type = eval.binary
@@ -12038,7 +12038,7 @@ e.args[0].value.y.value = "pi"
 
 *gopl.io/ch12/display*
 
-```Go
+```go
 func Display(name string, x interface{}) {
     fmt.Printf("Display %s (%T):\n", name, x)
     display(name, reflect.ValueOf(x))
@@ -12049,7 +12049,7 @@ func Display(name string, x interface{}) {
 
 因为我们不再模拟fmt.Sprint函数，我们将直接使用fmt包来简化我们的例子实现。
 
-```Go
+```go
 func display(path string, v reflect.Value) {
     switch v.Kind() {
     case reflect.Invalid:
@@ -12103,7 +12103,7 @@ func display(path string, v reflect.Value) {
 
 现在我们的Display函数总算完工了，让我们看看它的表现吧。下面的Movie类型是在4.5节的电影类型上演变来的：
 
-```Go
+```go
 type Movie struct {
     Title, Subtitle string
     Year            int
@@ -12116,7 +12116,7 @@ type Movie struct {
 
 让我们声明一个该类型的变量，然后看看Display函数如何显示它：
 
-```Go
+```go
 strangelove := Movie{
     Title:    "Dr. Strangelove",
     Subtitle: "How I Learned to Stop Worrying and Love the Bomb",
@@ -12142,7 +12142,7 @@ strangelove := Movie{
 
 `Display("strangelove", strangelove)`调用将显示（strangelove电影对应的中文名是《奇爱博士》）：
 
-```Go
+```go
 Display strangelove (display.Movie):
 strangelove.Title = "Dr. Strangelove"
 strangelove.Subtitle = "How I Learned to Stop Worrying and Love the Bomb"
@@ -12163,7 +12163,7 @@ strangelove.Sequel = nil
 
 我们也可以使用Display函数来显示标准库中类型的内部结构，例如`*os.File`类型：
 
-```Go
+```go
 Display("os.Stderr", os.Stderr)
 // Output:
 // Display os.Stderr (*os.File):
@@ -12174,7 +12174,7 @@ Display("os.Stderr", os.Stderr)
 
 可以看出，反射能够访问到结构体中未导出的成员。需要当心的是这个例子的输出在不同操作系统上可能是不同的，并且随着标准库的发展也可能导致结果不同。（这也是将这些成员定义为私有成员的原因之一！）我们甚至可以用Display函数来显示reflect.Value 的内部构造（在这里设置为`*os.File`的类型描述体）。`Display("rV", reflect.ValueOf(os.Stderr))`调用的输出如下，当然不同环境得到的结果可能有差异：
 
-```Go
+```go
 Display rV (reflect.Value):
 (*rV.typ).size = 8
 (*rV.typ).hash = 871609668
@@ -12191,7 +12191,7 @@ Display rV (reflect.Value):
 
 观察下面两个例子的区别：
 
-```Go
+```go
 var i interface{} = 3
 
 Display("i", i)
@@ -12212,7 +12212,7 @@ Display("&i", &i)
 
 对于目前的实现，如果遇到对象图中含有回环，Display将会陷入死循环，例如下面这个首尾相连的链表：
 
-```Go
+```go
 // a struct that points to itself
 type Cycle struct{ Value int; Tail *Cycle }
 var c Cycle
@@ -12222,7 +12222,7 @@ Display("c", c)
 
 Display会永远不停地进行深度递归打印：
 
-```Go
+```go
 Display c (display.Cycle):
 c.Value = 42
 (*c.Tail).Value = 42
@@ -12260,7 +12260,7 @@ foo         symbol（未用引号括起来的名字）
 
 *gopl.io/ch12/sexpr*
 
-```Go
+```go
 func encode(buf *bytes.Buffer, v reflect.Value) error {
     switch v.Kind() {
     case reflect.Invalid:
@@ -12333,7 +12333,7 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 
 Marshal函数是对encode的包装，以保持和encoding/...下其它包有着相似的API：
 
-```Go
+```go
 // Marshal encodes a Go value in S-expression form.
 func Marshal(v interface{}) ([]byte, error) {
     var buf bytes.Buffer
@@ -12389,7 +12389,7 @@ omin.)" "Best Picture (Nomin.)")) (Sequel nil))
 
 对于reflect.Values也有类似的区别。有一些reflect.Values是可取地址的；其它一些则不可以。考虑以下的声明语句：
 
-```Go
+```go
 x := 2                   // value   type    variable?
 a := reflect.ValueOf(2)  // 2       int     no
 b := reflect.ValueOf(x)  // 2       int     no
@@ -12401,7 +12401,7 @@ d := c.Elem()            // 2       int     yes (x)
 
 我们可以通过调用reflect.Value的CanAddr方法来判断其是否可以被取地址：
 
-```Go
+```go
 fmt.Println(a.CanAddr()) // "false"
 fmt.Println(b.CanAddr()) // "false"
 fmt.Println(c.CanAddr()) // "false"
@@ -12412,7 +12412,7 @@ fmt.Println(d.CanAddr()) // "true"
 
 要从变量对应的可取地址的reflect.Value来访问变量需要三个步骤。第一步是调用Addr()方法，它返回一个Value，里面保存了指向变量的指针。然后是在Value上调用Interface()方法，也就是返回一个interface{}，里面包含指向变量的指针。最后，如果我们知道变量的类型，我们可以使用类型的断言机制将得到的interface{}类型的接口强制转为普通的类型指针。这样我们就可以通过这个普通指针来更新变量了：
 
-```Go
+```go
 x := 2
 d := reflect.ValueOf(&x).Elem()   // d refers to the variable x
 px := d.Addr().Interface().(*int) // px := &x
@@ -12422,20 +12422,20 @@ fmt.Println(x)                    // "3"
 
 或者，不使用指针，而是通过调用可取地址的reflect.Value的reflect.Value.Set方法来更新对应的值：
 
-```Go
+```go
 d.Set(reflect.ValueOf(4))
 fmt.Println(x) // "4"
 ```
 
 Set方法将在运行时执行和编译时进行类似的可赋值性约束的检查。以上代码，变量和值都是int类型，但是如果变量是int64类型，那么程序将抛出一个panic异常，所以关键问题是要确保改类型的变量可以接受对应的值：
 
-```Go
+```go
 d.Set(reflect.ValueOf(int64(5))) // panic: int64 is not assignable to int
 ```
 
 同样，对一个不可取地址的reflect.Value调用Set方法也会导致panic异常：
 
-```Go
+```go
 x := 2
 b := reflect.ValueOf(x)
 b.Set(reflect.ValueOf(3)) // panic: Set using unaddressable value
@@ -12443,7 +12443,7 @@ b.Set(reflect.ValueOf(3)) // panic: Set using unaddressable value
 
 这里有很多用于基本数据类型的Set方法：SetInt、SetUint、SetString和SetFloat等。
 
-```Go
+```go
 d := reflect.ValueOf(&x).Elem()
 d.SetInt(3)
 fmt.Println(x) // "3"
@@ -12451,7 +12451,7 @@ fmt.Println(x) // "3"
 
 从某种程度上说，这些Set方法总是尽可能地完成任务。以SetInt为例，只要变量是某种类型的有符号整数就可以工作，即使是一些命名的类型、甚至只要底层数据类型是有符号整数就可以，而且如果对于变量类型值太大的话会被自动截断。但需要谨慎的是：对于一个引用interface{}类型的reflect.Value调用SetInt会导致panic异常，即使那个interface{}变量对于整数类型也不行。
 
-```Go
+```go
 x := 1
 rx := reflect.ValueOf(&x).Elem()
 rx.SetInt(2)                     // OK, x = 2
@@ -12469,7 +12469,7 @@ ry.Set(reflect.ValueOf("hello")) // OK, y = "hello"
 
 当我们用Display显示os.Stdout结构时，我们发现反射可以越过Go语言的导出规则的限制读取结构体中未导出的成员，比如在类Unix系统上os.File结构体中的fd int成员。然而，利用反射机制并不能修改这些未导出的成员：
 
-```Go
+```go
 stdout := reflect.ValueOf(os.Stdout).Elem() // *os.Stdout, an os.File var
 fmt.Println(stdout.Type())                  // "os.File"
 fd := stdout.FieldByName("fd")
@@ -12479,7 +12479,7 @@ fd.SetInt(2)          // panic: unexported field
 
 一个可取地址的reflect.Value会记录一个结构体成员是否是未导出成员，如果是的话则拒绝修改操作。因此，CanAddr方法并不能正确反映一个变量是否是可以被修改的。另一个相关的方法CanSet是用于检查对应的reflect.Value是否是可取地址并可被修改的：
 
-```Go
+```go
 fmt.Println(fd.CanAddr(), fd.CanSet()) // "true false"
 ```
 
@@ -12489,7 +12489,7 @@ fmt.Println(fd.CanAddr(), fd.CanSet()) // "true false"
 
 标准库中encoding/...下每个包中提供的Marshal编码函数都有一个对应的Unmarshal函数用于解码。例如，我们在4.5节中看到的，要将包含JSON编码格式的字节slice数据解码为我们自己的Movie类型（§12.3），我们可以这样做：
 
-```Go
+```go
 data := []byte{/* ... */}
 var movie Movie
 err := json.Unmarshal(data, &movie)
@@ -12505,7 +12505,7 @@ Unmarshal函数使用了反射机制类修改movie变量的每个成员，根据
 
 *gopl.io/ch12/sexpr*
 
-```Go
+```go
 type lexer struct {
     scan  scanner.Scanner
     token rune // the current token
@@ -12524,7 +12524,7 @@ func (lex *lexer) consume(want rune) {
 
 现在让我们转到语法解析器。它主要包含两个功能。第一个是read函数，用于读取S表达式的当前标记，然后根据S表达式的当前标记更新可取地址的reflect.Value对应的变量v。
 
-```Go
+```go
 func read(lex *lexer, v reflect.Value) {
     switch lex.token {
     case scanner.Ident:
@@ -12563,7 +12563,7 @@ func read(lex *lexer, v reflect.Value) {
 
 在循环处理结构体和map每个元素时必须解码一个(key value)格式的对应子列表。对于结构体，key部分对于成员的名字。和数组类似，我们使用FieldByName找到结构体对应成员的变量，然后递归调用read函数处理。对于map，key可能是任意类型，对元素的处理方式和slice类似，我们创建一个新的变量，然后递归填充它，最后将新解析到的key/value对添加到map。
 
-```Go
+```go
 func readList(lex *lexer, v reflect.Value) {
     switch v.Kind() {
     case reflect.Array: // (item ...)
@@ -12620,7 +12620,7 @@ func endList(lex *lexer) bool {
 
 最后，我们将解析器包装为导出的Unmarshal解码函数，隐藏了一些初始化和清理等边缘处理。内部解析器以panic的方式抛出错误，但是Unmarshal函数通过在defer语句调用recover函数来捕获内部panic（§5.10），然后返回一个对panic对应的错误信息。
 
-```Go
+```go
 // Unmarshal parses S-expression data and populates the variable
 // whose address is in the non-nil pointer out.
 func Unmarshal(data []byte, out interface{}) (err error) {
@@ -12652,7 +12652,7 @@ func Unmarshal(data []byte, out interface{}) (err error) {
 
 *gopl.io/ch12/search*
 
-```Go
+```go
 import "gopl.io/ch12/params"
 
 // search implements the /search URL endpoint.
@@ -12679,7 +12679,7 @@ func search(resp http.ResponseWriter, req *http.Request) {
 
 *gopl.io/ch12/params*
 
-```Go
+```go
 // Unpack populates the fields of the struct pointed to by ptr
 // from the HTTP request parameters in req.
 func Unpack(req *http.Request, ptr interface{}) error {
@@ -12728,7 +12728,7 @@ func Unpack(req *http.Request, ptr interface{}) error {
 
 populate函数小心用请求的字符串类型参数值来填充单一的成员v（或者是slice类型成员中的单一的元素）。目前，它仅支持字符串、有符号整数和布尔型。其中其它的类型将留做练习任务。
 
-```Go
+```go
 func populate(v reflect.Value, value string) error {
     switch v.Kind() {
     case reflect.String:
@@ -12782,7 +12782,7 @@ max: strconv.ParseInt: parsing "lots": invalid syntax
 
 *gopl.io/ch12/methods*
 
-```Go
+```go
 // Print prints the method set of the value x.
 func Print(x interface{}) {
     v := reflect.ValueOf(x)
@@ -12801,7 +12801,7 @@ reflect.Type和reflect.Value都提供了一个Method方法。每次t.Method(i)�
 
 这是属于time.Duration和`*strings.Replacer`两个类型的方法：
 
-```Go
+```go
 methods.Print(time.Hour)
 // Output:
 // type time.Duration
@@ -12830,7 +12830,7 @@ methods.Print(new(strings.Replacer))
 
 避免这种因反射而导致的脆弱性的问题的最好方法，是将所有的反射相关的使用控制在包的内部，如果可能的话避免在包的API中直接暴露reflect.Value类型，这样可以限制一些非法输入。如果无法做到这一点，在每个有风险的操作前指向额外的类型检查。以标准库中的代码为例，当fmt.Printf收到一个非法的操作数时，它并不会抛出panic异常，而是打印相关的错误信息。程序虽然还有BUG，但是会更加容易诊断。
 
-```Go
+```go
 fmt.Printf("%d %s\n", "hello", 42) // "%!d(string=hello) %!s(int=42)"
 ```
 
@@ -12868,7 +12868,7 @@ Go语言的实现刻意隐藏了很多底层细节。我们无法知道一个结
 
 unsafe.Sizeof函数返回操作数在内存中的字节大小，参数可以是任意类型的表达式，但是它并不会对表达式进行求值。一个Sizeof函数调用是一个对应uintptr类型的常量表达式，因此返回的结果可以用作数组类型的长度大小，或者用作计算其他的常量。
 
-```Go
+```go
 import "unsafe"
 fmt.Println(unsafe.Sizeof(float64(0))) // "8"
 ```
@@ -12894,7 +12894,7 @@ Sizeof函数返回的大小只包括数据结构中固定的部分，例如字�
 
 Go语言的规范并没有要求一个字段的声明顺序和内存中的顺序是一致的，所以理论上一个编译器可以随意地重新排列每个字段的内存位置，虽然在写作本书的时候编译器还没有这么做。下面的三个结构体虽然有着相同的字段，但是第一种写法比另外的两个需要多50%的内存。
 
-```Go
+```go
                                // 64-bit  32-bit
 struct{ bool; float64; int16 } // 3 words 4words
 struct{ float64; int16; bool } // 2 words 3words
@@ -12909,7 +12909,7 @@ struct{ bool; int16; float64 } // 2 words 3words
 
 图 13.1 显示了一个结构体变量 x 以及其在32位和64位机器上的典型的内存。灰色区域是空洞。
 
-```Go
+```go
 var x struct {
     a bool
     b int16
@@ -12949,7 +12949,7 @@ Sizeof(x.c) = 24  Alignof(x.c) = 8 Offsetof(x.c) = 8
 
 一个普通的`*T`类型指针可以被转化为unsafe.Pointer类型指针，并且一个unsafe.Pointer类型指针也可以被转回普通的指针，被转回普通的指针类型并不需要和原始的`*T`类型相同。通过将`*float64`类型指针转化为`*uint64`类型指针，我们可以查看一个浮点数变量的位模式。
 
-```Go
+```go
 package math
 
 func Float64bits(f float64) uint64 { return *(*uint64)(unsafe.Pointer(&f)) }
@@ -12965,7 +12965,7 @@ fmt.Printf("%#016x\n", Float64bits(1.0)) // "0x3ff0000000000000"
 
 *gopl.io/ch13/unsafeptr*
 
-```Go
+```go
 var x struct {
     a bool
     b int16
@@ -12981,7 +12981,7 @@ fmt.Println(x.b) // "42"
 
 上面的写法尽管很繁琐，但在这里并不是一件坏事，因为这些功能应该很谨慎地使用。不要试图引入一个uintptr类型的临时变量，因为它可能会破坏代码的安全性（译注：这是真正可以体会unsafe包为何不安全的例子）。下面段代码是错误的：
 
-```Go
+```go
 // NOTE: subtly incorrect!
 tmp := uintptr(unsafe.Pointer(&x)) + unsafe.Offsetof(x.b)
 pb := (*int16)(unsafe.Pointer(tmp))
@@ -12992,7 +12992,7 @@ pb := (*int16)(unsafe.Pointer(tmp))
 
 还有很多类似原因导致的错误。例如这条语句：
 
-```Go
+```go
 pT := uintptr(unsafe.Pointer(new(T))) // 提示: 错误!
 ```
 
@@ -13004,7 +13004,7 @@ pT := uintptr(unsafe.Pointer(new(T))) // 提示: 错误!
 
 当调用一个库函数，并且返回的是uintptr类型地址时（译注：普通方法实现的函数尽量不要返回该类型。下面例子是reflect包的函数，reflect包和unsafe包一样都是采用特殊技术实现的，编译器可能给它们开了后门），比如下面反射包中的相关函数，返回的结果应该立即转换为unsafe.Pointer以确保指针指向的是相同的变量。
 
-```Go
+```go
 package reflect
 
 func (Value) Pointer() uintptr
@@ -13018,7 +13018,7 @@ func (Value) InterfaceData() [2]uintptr // (index 1)
 
 来自`reflect`包的`DeepEqual`函数可以对两个值进行深度相等判断。`DeepEqual`函数使用内建的`==`比较操作符对基础类型进行相等判断，对于复合类型则递归该变量的每个基础类型然后做类似的比较判断。因为它可以工作在任意的类型上，甚至对于一些不支持`==`操作运算符的类型也可以工作，因此在一些测试代码中广泛地使用该函数。比如下面的代码是用`DeepEqual`函数比较两个字符串slice是否相等。
 
-```Go
+```go
 func TestSplit(t *testing.T) {
     got := strings.Split("a:b:c", ":")
     want := []string{"a", "b", "c"};
@@ -13028,7 +13028,7 @@ func TestSplit(t *testing.T) {
 
 尽管`DeepEqual`函数很方便，而且可以支持任意的数据类型，但是它也有不足之处。例如，它将一个`nil`值的map和非`nil`值但是空的map视作不相等，同样nil值的slice 和非nil但是空的slice也视作不相等。
 
-```Go
+```go
 var a, b []string = nil, []string{}
 fmt.Println(reflect.DeepEqual(a, b)) // "false"
 
@@ -13040,7 +13040,7 @@ fmt.Println(reflect.DeepEqual(c, d)) // "false"
 
 *gopl.io/ch13/equal*
 
-```Go
+```go
 func equal(x, y reflect.Value, seen map[comparison]bool) bool {
     if !x.IsValid() || !y.IsValid() {
         return x.IsValid() == y.IsValid()
@@ -13082,7 +13082,7 @@ func equal(x, y reflect.Value, seen map[comparison]bool) bool {
 
 和前面的建议一样，我们并不公开reflect包相关的接口，所以导出的函数需要在内部自己将变量转为reflect.Value类型。
 
-```Go
+```go
 // Equal reports whether x and y are deeply equal.
 func Equal(x, y interface{}) bool {
     seen := make(map[comparison]bool)
@@ -13097,7 +13097,7 @@ type comparison struct {
 
 为了确保算法对于有环的数据结构也能正常退出，我们必须记录每次已经比较的变量，从而避免进入第二次的比较。Equal函数分配了一组用于比较的结构体，包含每对比较对象的地址（unsafe.Pointer形式保存）和类型。我们要记录类型的原因是，有些不同的变量可能对应相同的地址。例如，如果x和y都是数组类型，那么x和x[0]将对应相同的地址，y和y[0]也是对应相同的地址，这可以用于区分x与y之间的比较或x[0]与y[0]之间的比较是否进行过了。
 
-```Go
+```go
 // cycle check
 if x.CanAddr() && y.CanAddr() {
     xptr := unsafe.Pointer(x.UnsafeAddr())
@@ -13115,7 +13115,7 @@ if x.CanAddr() && y.CanAddr() {
 
 这是Equal函数用法的例子:
 
-```Go
+```go
 fmt.Println(Equal([]int{1, 2, 3}, []int{1, 2, 3}))        // "true"
 fmt.Println(Equal([]string{"foo"}, []string{"bar"}))      // "false"
 fmt.Println(Equal([]string(nil), []string{}))             // "true"
@@ -13124,7 +13124,7 @@ fmt.Println(Equal(map[string]int(nil), map[string]int{})) // "true"
 
 Equal函数甚至可以处理类似12.3章中导致Display陷入死循环的带有环的数据。
 
-```Go
+```go
 // Circular linked lists a -> b -> a and c -> c.
 type link struct {
     value string
@@ -13149,7 +13149,7 @@ Go程序可能会遇到要访问C语言的某些硬件驱动函数的场景，�
 
 在标准库的`compress/...`子包有很多流行的压缩算法的编码和解码实现，包括流行的LZW压缩算法（Unix的compress命令用的算法）和DEFLATE压缩算法（GNU gzip命令用的算法）。这些包的API的细节虽然有些差异，但是它们都提供了针对 io.Writer类型输出的压缩接口和提供了针对io.Reader类型输入的解压缩接口。例如：
 
-```Go
+```go
 package gzip // compress/gzip
 func NewWriter(w io.Writer) io.WriteCloser
 func NewReader(r io.Reader) (io.ReadCloser, error)
@@ -13161,7 +13161,7 @@ bzip2压缩算法，是基于优雅的Burrows-Wheeler变换算法，运行速度
 
 译注：本章采用的代码都是最新的。因为之前已经出版的书中包含的代码只能在Go1.5之前使用。从Go1.6开始，Go语言已经明确规定了哪些Go语言指针可以直接传入C语言函数。新代码重点是增加了bz2alloc和bz2free的两个函数，用于bz_stream对象空间的申请和释放操作。下面是新代码中增加的注释，说明这个问题：
 
-```Go
+```go
 // The version of this program that appeared in the first and second
 // printings did not comply with the proposed rules for passing
 // pointers between Go and C, described here:
@@ -13207,7 +13207,7 @@ int bz2compress(bz_stream *s, int action,
 
 现在让我们转到Go语言部分，第一部分如下所示。其中`import "C"`的语句是比较特别的。其实并没有一个叫C的包，但是这行语句会让Go编译程序在编译之前先运行cgo工具。
 
-```Go
+```go
 // Package bzip provides a writer that uses bzip2 compression (bzip.org).
 package bzip
 
@@ -13253,7 +13253,7 @@ NewWriter函数通过调用C语言的BZ2_bzCompressInit函数来初始化stream�
 
 下面是Write方法的实现，返回成功压缩数据的大小，主体是一个循环中调用C语言的bz2compress函数实现的。从代码可以看到，Go程序可以访问C语言的bz_stream、char和uint类型，还可以访问bz2compress等函数，甚至可以访问C语言中像BZ_RUN那样的宏定义，全部都是以C.x语法访问。其中C.uint类型和Go语言的uint类型并不相同，即使它们具有相同的大小也是不同的类型。
 
-```Go
+```go
 func (w *writer) Write(data []byte) (int, error) {
     if w.stream == nil {
         panic("closed")
@@ -13279,7 +13279,7 @@ func (w *writer) Write(data []byte) (int, error) {
 
 Close方法和Write方法有着类似的结构，通过一个循环将剩余的压缩数据刷新到输出缓存。
 
-```Go
+```go
 // Close flushes the compressed data and closes the stream.
 // It does not close the underlying io.Writer.
 func (w *writer) Close() error {
@@ -13313,7 +13313,7 @@ func (w *writer) Close() error {
 
 *gopl.io/ch13/bzipper*
 
-```Go
+```go
 // Bzipper reads input, bzip2-compresses it, and writes it out.
 package main
 
