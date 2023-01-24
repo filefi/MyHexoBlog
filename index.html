@@ -154,7 +154,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -202,6 +202,92 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2023/How-does-Windows-decide-whether-your-computer-has-limited-or-full-Internet-access/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="filefi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/How-does-Windows-decide-whether-your-computer-has-limited-or-full-Internet-access/" class="post-title-link" itemprop="url">How does Windows decide whether your computer has limited or full Internet access</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-24 20:52:23" itemprop="dateCreated datePublished" datetime="2023-01-24T20:52:23+08:00">2023-01-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Windows/" itemprop="url" rel="index"><span itemprop="name">Windows</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>reference <a target="_blank" rel="noopener" href="https://devblogs.microsoft.com/oldnewthing/20221115-00/?p=107399">How does Windows decide whether your computer has limited or full Internet<br>  access?</a></p>
+</blockquote>
+<p>Windows lets you know when your computer’s Internet connection is limited or absent entirely. What is this sorcery?</p>
+<p>Windows attempts to download a file from a dedicated Web server. Depending on which version of Windows, it’s <a target="_blank" rel="noopener" href="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</a> or <a target="_blank" rel="noopener" href="http://www.msftconnecttest.com/connecttest.txt">http://www.msftconnecttest.com/connecttest.txt</a>. If the download is successful and contains the correct contents, then Windows concludes that you have full Internet access.</p>
+<p>If something goes wrong, Windows will report either limited or no Internet access, depending on what exactly went wrong.</p>
+<p>You can <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/troubleshoot/windows-client/networking/internet-explorer-edge-open-connect-corporate-public-network">read more details on docs.microsoft.com</a>.</p>
+<p>Linux distros do something similar… e.g. on a current Fedora version, it’s <a target="_blank" rel="noopener" href="http://fedoraproject.org/static/hotspot.txt">http://fedoraproject.org/static/hotspot.txt</a>.</p>
+<p>Note that as with the Windows version, the protocol is HTTP, not HTTPS – because captive portals completely break TLS, but plaintext HTTP will result in a clean redirect to the portal, allowing the network service to detect the presence of the portal and to bring up a browser window to let the user authenticate.</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1252,7 +1338,7 @@ haystack <span class="token operator">=</span> <span class="token function">move
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-01-14 22:09:45" itemprop="dateModified" datetime="2023-01-14T22:09:45+08:00">2023-01-14</time>
+      <time title="修改时间：2023-01-24 21:06:46" itemprop="dateModified" datetime="2023-01-24T21:06:46+08:00">2023-01-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1278,118 +1364,6 @@ haystack <span class="token operator">=</span> <span class="token function">move
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2022/batch_modify_bilibili_follow_group/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/learn_gobyexample/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/learn_gobyexample/" class="post-title-link" itemprop="url">gobyexample 学习笔记</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-05-29 00:10:21" itemprop="dateCreated datePublished" datetime="2022-05-29T00:10:21+08:00">2022-05-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-01-14 22:09:45" itemprop="dateModified" datetime="2023-01-14T22:09:45+08:00">2023-01-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h1><p>我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。</p>
-<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
-
-<span class="token keyword">import</span> <span class="token string">"fmt"</span>
-
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"hello world"</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>要运行这个程序，将这些代码放到 <code>hello-world.go</code> 中并且使用 <code>go run</code> 命令。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ go run hello-world.go
-hello world</code></pre>
-
-<p>有时候我们想将我们的程序编译成二进制文件。我们可以通过 go build 命来达到目的。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ go build hello-world.go
-$ <span class="token function">ls</span>
-hello-world	hello-world.go</code></pre>
-
-<p>然后我们可以直接运行这个二进制文件。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ ./hello-world
-hello world</code></pre>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/learn_gobyexample/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
