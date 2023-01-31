@@ -12014,6 +12014,17 @@ fmt.Println(format.Any(struct {
 		Name string
 		Age  int
 }{"Peter", 12})) // "struct { Name string; Age int } value"
+fmt.Println(Any(struct {
+		Name string
+		Age  int
+		Pet  struct {
+			Name string
+			Age  int
+		}
+	}{"Peter", 12, struct {
+		Name string
+		Age  int
+	}{"wangcai", 2}})) // "struct { Name string; Age int; Pet struct { Name string; Age int } } value"
 ```
 
 ## Display，一个递归的值打印器
