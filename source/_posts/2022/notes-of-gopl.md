@@ -12062,6 +12062,8 @@ func Display(name string, x interface{}) {
 
 在`display`函数中，我们使用了前面定义的打印基础类型——基本类型、函数和`chan`等——元素值的`formatAtom`函数，但是我们会使用`reflect.Value`的方法来递归显示复杂类型的每一个成员。在递归下降过程中，`path`字符串，从最开始传入的起始值（这里是`e`），将逐步增长来表示是如何达到当前值（例如`e.args[0].value`）的。
 
+在 `display` 函数中，我们使用之前定义的 `formatAtom` 函数来输出基础值（基础类型、函数和通道），使用 `reflect.value` 的一些方法来递归展示复杂类型的每个组成部分。当递归深入时，`path` 字符串（之前用来表示起始值，比如`e`）会增长，以表示如何找到当前值（比如`e.args[@].value`）
+
 因为我们不再模拟`fmt.Sprint`函数，我们将直接使用`fmt`包来简化我们的例子实现。
 
 ```go
@@ -12104,11 +12106,11 @@ func display(path string, v reflect.Value) {
 
 让我们针对不同类型分别讨论。
 
-**Slice和数组：** 两种的处理逻辑是一样的。`Len`方法返回slice或数组值中的元素个数，`Index(i)`获得索引`i`对应的元素，返回的也是一个`reflect.Value`；如果索引i超出范围的话将导致panic异常，这与数组或slice类型内建的`len(a)`和`a[i]`操作类似。`display`针对序列中的每个元素递归调用自身处理，我们通过在递归处理时向`path`附加`[i]`来表示访问路径。
+**Slice和数组：** 两种的处理逻辑是一样的。`Len`方法返回slice或数组值中的元素个数，`Index(i)`获得索引`i`对应的元素，返回的也是一个`reflect.Value`；如果索引`i`超出范围的话将导致panic异常，这与数组或slice类型内建的`len(a)`和`a[i]`操作类似。`display`针对序列中的每个元素递归调用自身处理，我们通过在递归处理时向`path`附加`[i]`来表示访问路径。
 
 虽然`reflect.Value`类型带有很多方法，但是只有少数的方法能对任意值都安全调用。例如，`Index`方法只能对Slice、数组或字符串类型的值调用，如果对其它类型调用则会导致panic异常。
 
-**结构体：** `NumField`方法报告结构体中成员的数量，`Field(i)`以`reflect.Value`类型返回第i个成员的值。成员列表也包括通过匿名字段提升上来的成员。为了在`path`添加`.f`来表示成员路径，我们必须获得结构体对应的`reflect.Type`类型信息，然后访问结构体第i个成员的名字。
+**结构体：** `NumField` 方法可以报告结构体中的字段数量，`Field(i)` 会返回第`i`个字段，返回的字段类型为 `reflect.Value`。字段列表包括了从匿名字段中做了类型提升的字段。要追加一个类似`.f`的字段选择标记到路径中，我们必须先获得结构体的 `reflect.Type` 才能获到第`i`个字段的名称。
 
 **Maps:** `MapKeys`方法返回一个`reflect.Value`类型的slice，每一个元素对应map的一个key。和往常一样，遍历map时顺序是随机的。`MapIndex(key)`返回map中key对应的value。我们向path添加“[key]”来表示访问路径。（我们这里有一个未完成的工作。其实map的key的类型并不局限于`formatAtom`能完美处理的类型；数组、结构体和接口都可以作为map的key。针对这种类型，完善key的显示信息是练习12.1的任务。）
 
