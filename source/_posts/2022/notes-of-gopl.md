@@ -11905,7 +11905,7 @@ func Sprint(x interface{}) string {
 
 ## `reflect.Type` 和 `reflect.Value`
 
-**反射是由 `reflect` 包提供的。它定义了两个重要的类型，`Type` 和 `Value`。一个 `Type` 表示一个Go类型。它是一个接口，有许多方法来区分类型以及检查它们的组成部分，例如一个结构体的成员或一个函数的参数等。唯一能反映 `reflect.Type` 实现的是接口的类型描述信息（§7.5），也正是这个实体标识了接口值的动态类型。**
+**反射是由 `reflect` 包提供的。它定义了两个重要的类型，`Type` 和 `Value`。一个 `Type` 表示一个Go类型。它是一个接口，有许多方法来区分类型以及检查它们的组成部分，例如一个结构体的成员或一个函数的参数等。 `reflect.Type` 实现的是接口的类型描述信息（§7.5），也正是这个实体标识了接口值的动态类型。`reflect.Type` 接口只有一个实现，即类型描述符（见7.5 节），也正是类型描述符标识了接口值的动态类型。**
 
 **函数 `reflect.TypeOf` 接受任意的 `interface{}` 类型，并以 `reflect.Type` 形式返回其动态类型：**
 
@@ -11939,9 +11939,9 @@ fmt.Printf("%v\n", v)   // "3"
 fmt.Println(v.String()) // NOTE: "<int Value>"
 ```
 
-**和 `reflect.Type` 类似，`reflect.Value` 也满足 `fmt.Stringer` 接口，但是除非 `Value` 持有的是字符串，否则 `String` 方法只返回其类型。而使用 `fmt` 包的 `%v` 标志参数会对 `reflect.Values` 特殊处理。**
+**和 `reflect.Type` 类似，`reflect.Value` 也满足 `fmt.Stringer` 接口，但是除非 `Value` 持有的是字符串，否则 `String` 方法只返回其类型。而使用 `fmt` 包的 `%v` 标志参数会对 `reflect.Value` 进行特殊处理。**
 
-**对 `Value` 调用 `Type` 方法将返回具体类型所对应的 `reflect.Type`：**
+**调用 `Value` 的 `Type` 方法会把它的类型以 `reflect.Type` 方式返回：**
 
 ```go
 t := v.Type()           // a reflect.Type
@@ -12010,6 +12010,10 @@ fmt.Println(format.Any(x))                  // "1"
 fmt.Println(format.Any(d))                  // "1"
 fmt.Println(format.Any([]int64{x}))         // "[]int64 0x8202b87b0"
 fmt.Println(format.Any([]time.Duration{d})) // "[]time.Duration 0x8202b87e0"
+fmt.Println(format.Any(struct {
+		Name string
+		Age  int
+}{"Peter", 12})) // "struct { Name string; Age int } value"
 ```
 
 ## Display，一个递归的值打印器
@@ -12021,7 +12025,7 @@ e, _ := eval.Parse("sqrt(A / pi)")
 Display("e", e)
 ```
 
-在上面的调用中，传入Display函数的参数是在7.9节一个表达式求值函数返回的语法树。Display函数的输出如下：
+在上面的调用中，传入`Display`函数的参数是在7.9节一个表达式求值函数返回的语法树。`Display`函数的输出如下：
 
 ```go
 Display e (eval.call):
@@ -12034,7 +12038,7 @@ e.args[0].value.y.type = eval.Var
 e.args[0].value.y.value = "pi"
 ```
 
-你应该尽量避免在一个包的API中暴露涉及反射的接口。我们将定义一个未导出的display函数用于递归处理工作，导出的是Display函数，它只是display函数简单的包装以接受interface{}类型的参数：
+你应该尽量避免在一个包的API中暴露涉及反射的接口。我们将定义一个未导出的`display`函数用于递归处理工作，导出的是`Display`函数，它只是`display`函数简单的包装以接受`interface{}`类型的参数：
 
 *gopl.io/ch12/display*
 
@@ -12045,9 +12049,9 @@ func Display(name string, x interface{}) {
 }
 ```
 
-在display函数中，我们使用了前面定义的打印基础类型——基本类型、函数和chan等——元素值的formatAtom函数，但是我们会使用reflect.Value的方法来递归显示复杂类型的每一个成员。在递归下降过程中，path字符串，从最开始传入的起始值（这里是“e”），将逐步增长来表示是如何达到当前值（例如“e.args[0].value”）的。
+在`display`函数中，我们使用了前面定义的打印基础类型——基本类型、函数和`chan`等——元素值的`formatAtom`函数，但是我们会使用`reflect.Value`的方法来递归显示复杂类型的每一个成员。在递归下降过程中，`path`字符串，从最开始传入的起始值（这里是`e`），将逐步增长来表示是如何达到当前值（例如`e.args[0].value`）的。
 
-因为我们不再模拟fmt.Sprint函数，我们将直接使用fmt包来简化我们的例子实现。
+因为我们不再模拟`fmt.Sprint`函数，我们将直接使用`fmt`包来简化我们的例子实现。
 
 ```go
 func display(path string, v reflect.Value) {
@@ -12089,19 +12093,19 @@ func display(path string, v reflect.Value) {
 
 让我们针对不同类型分别讨论。
 
-**Slice和数组：** 两种的处理逻辑是一样的。Len方法返回slice或数组值中的元素个数，Index(i)获得索引i对应的元素，返回的也是一个reflect.Value；如果索引i超出范围的话将导致panic异常，这与数组或slice类型内建的len(a)和a[i]操作类似。display针对序列中的每个元素递归调用自身处理，我们通过在递归处理时向path附加“[i]”来表示访问路径。
+**Slice和数组：** 两种的处理逻辑是一样的。`Len`方法返回slice或数组值中的元素个数，`Index(i)`获得索引`i`对应的元素，返回的也是一个`reflect.Value`；如果索引i超出范围的话将导致panic异常，这与数组或slice类型内建的`len(a)`和`a[i]`操作类似。`display`针对序列中的每个元素递归调用自身处理，我们通过在递归处理时向`path`附加`[i]`来表示访问路径。
 
-虽然reflect.Value类型带有很多方法，但是只有少数的方法能对任意值都安全调用。例如，Index方法只能对Slice、数组或字符串类型的值调用，如果对其它类型调用则会导致panic异常。
+虽然`reflect.Value`类型带有很多方法，但是只有少数的方法能对任意值都安全调用。例如，`Index`方法只能对Slice、数组或字符串类型的值调用，如果对其它类型调用则会导致panic异常。
 
-**结构体：** NumField方法报告结构体中成员的数量，Field(i)以reflect.Value类型返回第i个成员的值。成员列表也包括通过匿名字段提升上来的成员。为了在path添加“.f”来表示成员路径，我们必须获得结构体对应的reflect.Type类型信息，然后访问结构体第i个成员的名字。
+**结构体：** `NumField`方法报告结构体中成员的数量，`Field(i)`以`reflect.Value`类型返回第i个成员的值。成员列表也包括通过匿名字段提升上来的成员。为了在`path`添加`.f`来表示成员路径，我们必须获得结构体对应的`reflect.Type`类型信息，然后访问结构体第i个成员的名字。
 
-**Maps:** MapKeys方法返回一个reflect.Value类型的slice，每一个元素对应map的一个key。和往常一样，遍历map时顺序是随机的。MapIndex(key)返回map中key对应的value。我们向path添加“[key]”来表示访问路径。（我们这里有一个未完成的工作。其实map的key的类型并不局限于formatAtom能完美处理的类型；数组、结构体和接口都可以作为map的key。针对这种类型，完善key的显示信息是练习12.1的任务。）
+**Maps:** `MapKeys`方法返回一个`reflect.Value`类型的slice，每一个元素对应map的一个key。和往常一样，遍历map时顺序是随机的。`MapIndex(key)`返回map中key对应的value。我们向path添加“[key]”来表示访问路径。（我们这里有一个未完成的工作。其实map的key的类型并不局限于`formatAtom`能完美处理的类型；数组、结构体和接口都可以作为map的key。针对这种类型，完善key的显示信息是练习12.1的任务。）
 
-**指针：** Elem方法返回指针指向的变量，依然是reflect.Value类型。即使指针是nil，这个操作也是安全的，在这种情况下指针是Invalid类型，但是我们可以用IsNil方法来显式地测试一个空指针，这样我们可以打印更合适的信息。我们在path前面添加“*”，并用括弧包含以避免歧义。
+**指针：** `Elem`方法返回指针指向的变量，依然是`reflect.Value`类型。即使指针是nil，这个操作也是安全的，在这种情况下指针是`Invalid`类型，但是我们可以用`IsNil`方法来显式地测试一个空指针，这样我们可以打印更合适的信息。我们在`path`前面添加`*`，并用括弧包含以避免歧义。
 
-**接口：** 再一次，我们使用IsNil方法来测试接口是否是nil，如果不是，我们可以调用v.Elem()来获取接口对应的动态值，并且打印对应的类型和值。
+**接口：** 再一次，我们使用`IsNil`方法来测试接口是否是nil，如果不是，我们可以调用`v.Elem()`来获取接口对应的动态值，并且打印对应的类型和值。
 
-现在我们的Display函数总算完工了，让我们看看它的表现吧。下面的Movie类型是在4.5节的电影类型上演变来的：
+现在我们的`Display`函数总算完工了，让我们看看它的表现吧。下面的`Movie`类型是在4.5节的电影类型上演变来的：
 
 ```go
 type Movie struct {
@@ -12114,7 +12118,7 @@ type Movie struct {
 }
 ```
 
-让我们声明一个该类型的变量，然后看看Display函数如何显示它：
+让我们声明一个该类型的变量，然后看看`Display`函数如何显示它：
 
 ```go
 strangelove := Movie{
@@ -12140,7 +12144,7 @@ strangelove := Movie{
 }
 ```
 
-`Display("strangelove", strangelove)`调用将显示（strangelove电影对应的中文名是《奇爱博士》）：
+`Display("strangelove", strangelove)`调用将显示（`strangelove`电影对应的中文名是《奇爱博士》）：
 
 ```go
 Display strangelove (display.Movie):
@@ -12161,7 +12165,7 @@ strangelove.Oscars[3] = "Best Picture (Nomin.)"
 strangelove.Sequel = nil
 ```
 
-我们也可以使用Display函数来显示标准库中类型的内部结构，例如`*os.File`类型：
+我们也可以使用`Display`函数来显示标准库中类型的内部结构，例如`*os.File`类型：
 
 ```go
 Display("os.Stderr", os.Stderr)
@@ -12172,7 +12176,7 @@ Display("os.Stderr", os.Stderr)
 // (*(*os.Stderr).file).nepipe = 0
 ```
 
-可以看出，反射能够访问到结构体中未导出的成员。需要当心的是这个例子的输出在不同操作系统上可能是不同的，并且随着标准库的发展也可能导致结果不同。（这也是将这些成员定义为私有成员的原因之一！）我们甚至可以用Display函数来显示reflect.Value 的内部构造（在这里设置为`*os.File`的类型描述体）。`Display("rV", reflect.ValueOf(os.Stderr))`调用的输出如下，当然不同环境得到的结果可能有差异：
+可以看出，反射能够访问到结构体中未导出的成员。需要当心的是这个例子的输出在不同操作系统上可能是不同的，并且随着标准库的发展也可能导致结果不同。（这也是将这些成员定义为私有成员的原因之一！）我们甚至可以用`Display`函数来显示`reflect.Value`的内部构造（在这里设置为`*os.File`的类型描述体）。`Display("rV", reflect.ValueOf(os.Stderr))`调用的输出如下，当然不同环境得到的结果可能有差异：
 
 ```go
 Display rV (reflect.Value):
@@ -12206,11 +12210,11 @@ Display("&i", &i)
 // (*&i).value = 3
 ```
 
-在第一个例子中，Display函数调用reflect.ValueOf(i)，它返回一个Int类型的值。正如我们在12.2节中提到的，reflect.ValueOf总是返回一个具体类型的 Value，因为它是从一个接口值提取的内容。
+在第一个例子中，`Display`函数调用`reflect.ValueOf(i)`，它返回一个`Int`类型的值。正如我们在12.2节中提到的，`reflect.ValueOf`总是返回一个具体类型的 `Value`，因为它是从一个接口值提取的内容。
 
-在第二个例子中，Display函数调用的是reflect.ValueOf(&i)，它返回一个指向i的指针，对应Ptr类型。在switch的Ptr分支中，对这个值调用 Elem 方法，返回一个Value来表示变量 i 本身，对应Interface类型。像这样一个间接获得的Value，可能代表任意类型的值，包括接口类型。display函数递归调用自身，这次它分别打印了这个接口的动态类型和值。
+在第二个例子中，`Display`函数调用的是`reflect.ValueOf(&i)`，它返回一个指向i的指针，对应`Ptr`类型。在switch的`Ptr`分支中，对这个值调用 `Elem` 方法，返回一个`Value`来表示变量 `i` 本身，对应`Interface`类型。像这样一个间接获得的`Value`，可能代表任意类型的值，包括接口类型。`display`函数递归调用自身，这次它分别打印了这个接口的动态类型和值。
 
-对于目前的实现，如果遇到对象图中含有回环，Display将会陷入死循环，例如下面这个首尾相连的链表：
+对于目前的实现，如果遇到对象图中含有回环，`Display`将会陷入死循环，例如下面这个首尾相连的链表：
 
 ```go
 // a struct that points to itself
@@ -12220,7 +12224,7 @@ c = Cycle{42, &c}
 Display("c", c)
 ```
 
-Display会永远不停地进行深度递归打印：
+`Display`会永远不停地进行深度递归打印：
 
 ```go
 Display c (display.Cycle):
@@ -12231,13 +12235,13 @@ c.Value = 42
 ...ad infinitum...
 ```
 
-许多Go语言程序都包含了一些循环的数据。让Display支持这类带环的数据结构需要些技巧，需要额外记录迄今访问的路径；相应会带来成本。通用的解决方案是采用 unsafe 的语言特性，我们将在13.3节看到具体的解决方案。
+许多Go语言程序都包含了一些循环的数据。让`Display`支持这类带环的数据结构需要些技巧，需要额外记录迄今访问的路径；相应会带来成本。通用的解决方案是采用 unsafe 的语言特性，我们将在13.3节看到具体的解决方案。
 
 带环的数据结构很少会对`fmt.Sprint`函数造成问题，因为它很少尝试打印完整的数据结构。例如，当它遇到一个指针的时候，它只是简单地打印指针的数字值。在打印包含自身的slice或map时可能卡住，但是这种情况很罕见，不值得付出为了处理回环所需的开销。
 
 ## 示例: 编码为S表达式
 
-Display是一个用于显示结构化数据的调试工具，但是它并不能将任意的Go语言对象编码为通用消息然后用于进程间通信。
+`Display`是一个用于显示结构化数据的调试工具，但是它并不能将任意的Go语言对象编码为通用消息然后用于进程间通信。
 
 正如我们在4.5节中中看到的，Go语言的标准库支持了包括JSON、XML和ASN.1等多种编码格式。还有另一种依然被广泛使用的格式是S表达式格式，采用Lisp语言的语法。但是和其他编码格式不同的是，Go语言自带的标准库并不支持S表达式，主要是因为它没有一个公认的标准规范。
 
@@ -12250,13 +12254,13 @@ foo         symbol（未用引号括起来的名字）
 (1 2 3)     list  （括号包起来的0个或多个元素）
 ```
 
-布尔型习惯上使用t符号表示true，空列表或nil符号表示false，但是为了简单起见，我们暂时忽略布尔类型。同时忽略的还有chan管道和函数，因为通过反射并无法知道它们的确切状态。我们忽略的还有浮点数、复数和interface。支持它们是练习12.3的任务。
+布尔型习惯上使用t符号表示`true`，空列表或`nil`符号表示`false`，但是为了简单起见，我们暂时忽略布尔类型。同时忽略的还有chan管道和函数，因为通过反射并无法知道它们的确切状态。我们忽略的还有浮点数、复数和interface。支持它们是练习12.3的任务。
 
 我们将Go语言的类型编码为S表达式的方法如下。整数和字符串以显而易见的方式编码。空值编码为nil符号。数组和slice被编码为列表。
 
 结构体被编码为成员对象的列表，每个成员对象对应一个有两个元素的子列表，子列表的第一个元素是成员的名字，第二个元素是成员的值。Map被编码为键值对的列表。传统上，S表达式使用点状符号列表(key . value)结构来表示key/value对，而不是用一个含双元素的列表，不过为了简单我们忽略了点状符号列表。
 
-编码是由一个encode递归函数完成，如下所示。它的结构本质上和前面的Display函数类似：
+编码是由一个`encode`递归函数完成，如下所示。它的结构本质上和前面的`Display`函数类似：
 
 *gopl.io/ch12/sexpr*
 
@@ -12331,7 +12335,7 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 }
 ```
 
-Marshal函数是对encode的包装，以保持和encoding/...下其它包有着相似的API：
+`Marshal`函数是对`encode`的包装，以保持和 `encoding/...` 下其它包有着相似的API：
 
 ```go
 // Marshal encodes a Go value in S-expression form.
@@ -12375,7 +12379,7 @@ omin.)" "Best Picture (Nomin.)")) (Sequel nil))
  (Sequel nil))
 ```
 
-和fmt.Print、json.Marshal、Display函数类似，sexpr.Marshal函数处理带环的数据结构也会陷入死循环。
+和`fmt.Print`、`json.Marshal`、`Display`函数类似，`sexpr.Marshal`函数处理带环的数据结构也会陷入死循环。
 
 在12.6节中，我们将给出S表达式解码器的实现步骤，但是在那之前，我们还需要先了解如何通过反射技术来更新程序的变量。
 
