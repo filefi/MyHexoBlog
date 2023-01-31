@@ -9068,11 +9068,11 @@ e<span class="token punctuation">.</span>args<span class="token punctuation">[</
 <p>让我们针对不同类型分别讨论。</p>
 <p><strong>Slice和数组：</strong> 两种的处理逻辑是一样的。<code>Len</code>方法返回slice或数组值中的元素个数，<code>Index(i)</code>获得索引<code>i</code>对应的元素，返回的也是一个<code>reflect.Value</code>；如果索引<code>i</code>超出范围的话将导致panic异常，这与数组或slice类型内建的<code>len(a)</code>和<code>a[i]</code>操作类似。<code>display</code>针对序列中的每个元素递归调用自身处理，我们通过在递归处理时向<code>path</code>附加<code>[i]</code>来表示访问路径。</p>
 <p>虽然<code>reflect.Value</code>类型带有很多方法，但是只有少数的方法能对任意值都安全调用。例如，<code>Index</code>方法只能对Slice、数组或字符串类型的值调用，如果对其它类型调用则会导致panic异常。</p>
-<p><strong>结构体：</strong> <code>NumField</code> 方法可以报告结构体中的字段数量，<code>Field(i)</code> 会返回第<code>i</code>个字段，返回的字段类型为 <code>reflect.Value</code>。字段列表包括了从匿名字段中做了类型提升的字段。要追加一个类似<code>.f</code>的字段选择标记到路径中，我们必须先获得结构体的 <code>reflect.Type</code> 才能获到第<code>i</code>个字段的名称。</p>
-<p><strong>Maps:</strong> <code>MapKeys</code>方法返回一个<code>reflect.Value</code>类型的slice，每一个元素对应map的一个key。和往常一样，遍历map时顺序是随机的。<code>MapIndex(key)</code>返回map中key对应的value。我们向path添加“[key]”来表示访问路径。（我们这里有一个未完成的工作。其实map的key的类型并不局限于<code>formatAtom</code>能完美处理的类型；数组、结构体和接口都可以作为map的key。针对这种类型，完善key的显示信息是练习12.1的任务。）</p>
-<p><strong>指针：</strong> <code>Elem</code>方法返回指针指向的变量，依然是<code>reflect.Value</code>类型。即使指针是nil，这个操作也是安全的，在这种情况下指针是<code>Invalid</code>类型，但是我们可以用<code>IsNil</code>方法来显式地测试一个空指针，这样我们可以打印更合适的信息。我们在<code>path</code>前面添加<code>*</code>，并用括弧包含以避免歧义。</p>
-<p><strong>接口：</strong> 再一次，我们使用<code>IsNil</code>方法来测试接口是否是nil，如果不是，我们可以调用<code>v.Elem()</code>来获取接口对应的动态值，并且打印对应的类型和值。</p>
-<p>现在我们的<code>Display</code>函数总算完工了，让我们看看它的表现吧。下面的<code>Movie</code>类型是在4.5节的电影类型上演变来的：</p>
+<p><strong>结构体：</strong> <code>NumField</code> 方法返回结构体中的字段数量，<code>Field(i)</code> 会返回第<code>i</code>个字段，返回的字段类型为 <code>reflect.Value</code>。字段列表包括了从匿名字段中做了类型提升的字段。要追加一个类似<code>.f</code>的字段选择标记到路径中，我们必须先获得结构体的 <code>reflect.Type</code> 才能获到第<code>i</code>个字段的名称。</p>
+<p><strong>map：</strong> <code>MapKeys</code>方法返回一个元素类型为 <code>reflect.Value</code> 的slice，每个元素都是一个map的键。与平常遍历 map 的结果类似，顺序是不固定的。<code>MapIndex(key)</code> 返回 key 对应的值。我们追加下标记号<code>[key]</code>到路径中。（此处忽略了一些情形。map 的键类型有可能超出<code>formatAtom</code> 能处理好的类型，比如数组、结构体、接口都可以是合法的字典键。在练习12.1中会有输出完整键的内容。）</p>
+<p><strong>指针：</strong> <code>Elem</code> 方法返回指针指向的变量，同样也是以<code>reflect.Value</code> 类型返回。这个方法在指针是<code>nil</code> 时也能正确处理，但返回的结果属于 <code>Invalid</code> 类型，所以我们用<code>IsNil</code> 来显式检测空指针，方便输出一条更合适的消息。为了避免二义性，在路径前加了一个<code>&quot;*&quot;</code>，外边再加上一对圆括号。</p>
+<p><strong>接口：</strong>我们再次使用 <code>IsNil</code> 来判断接口是否为空，如果非空，我们通过 <code>v.Elem()</code> 来获取动态值，进一步输出它的类型和值。</p>
+<p>既然 <code>Display</code> 函数完成了，接下来我们就实际使用一下。下面的 <code>Movie</code> 类型引自4.5节但略有修改：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Movie <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
     Title<span class="token punctuation">,</span> Subtitle <span class="token builtin">string</span>
     Year            <span class="token builtin">int</span>
