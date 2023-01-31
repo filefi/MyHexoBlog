@@ -2843,7 +2843,7 @@ mark.search-keyword {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #e74993;
+  background: #39d70e;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
