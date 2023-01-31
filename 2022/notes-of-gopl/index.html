@@ -8912,7 +8912,7 @@ Showing top 10 nodes out of 166 (cum &gt;&#x3D; 60ms)
 
 <p>但是我们如何处理其它类似<code>[]float64</code>、<code>map[string][]string</code>等类型呢？我们当然可以添加更多的测试分支，但是这些组合类型的数目基本是无穷的。还有如何处理类似<code>url.Values</code>这样的具名类型呢？即使类型分支可以识别出底层的基础类型是<code>map[string][]string</code>，但是它并不匹配<code>url.Values</code>类型，因为它们是两种不同的类型，而且switch类型分支也不可能包含每个类似<code>url.Values</code>的类型，这会导致对这些库的依赖。</p>
 <p>没有办法来检查未知类型的表示方式，我们被卡住了。这就是我们为何需要反射的原因。</p>
-<h2 id="reflect-Type-和-reflect-Value"><a href="#reflect-Type-和-reflect-Value" class="headerlink" title="reflect.Type 和 reflect.Value"></a><code>reflect.Type</code> 和 <code>reflect.Value</code></h2><p><strong>反射是由 <code>reflect</code> 包提供的。它定义了两个重要的类型，<code>Type</code> 和 <code>Value</code>。一个 <code>Type</code> 表示一个Go类型。它是一个接口，有许多方法来区分类型以及检查它们的组成部分，例如一个结构体的成员或一个函数的参数等。唯一能反映 <code>reflect.Type</code> 实现的是接口的类型描述信息（§7.5），也正是这个实体标识了接口值的动态类型。</strong></p>
+<h2 id="reflect-Type-和-reflect-Value"><a href="#reflect-Type-和-reflect-Value" class="headerlink" title="reflect.Type 和 reflect.Value"></a><code>reflect.Type</code> 和 <code>reflect.Value</code></h2><p><strong>反射是由 <code>reflect</code> 包提供的。它定义了两个重要的类型，<code>Type</code> 和 <code>Value</code>。一个 <code>Type</code> 表示一个Go类型。它是一个接口，有许多方法来区分类型以及检查它们的组成部分，例如一个结构体的成员或一个函数的参数等。 <code>reflect.Type</code> 实现的是接口的类型描述信息（§7.5），也正是这个实体标识了接口值的动态类型。<code>reflect.Type</code> 接口只有一个实现，即类型描述符（见7.5 节），也正是类型描述符标识了接口值的动态类型。</strong></p>
 <p><strong>函数 <code>reflect.TypeOf</code> 接受任意的 <code>interface&#123;&#125;</code> 类型，并以 <code>reflect.Type</code> 形式返回其动态类型：</strong></p>
 <pre class="language-go" data-language="go"><code class="language-go">t <span class="token operator">:=</span> reflect<span class="token punctuation">.</span><span class="token function">TypeOf</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>  <span class="token comment">// a reflect.Type</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>t<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "int"</span>
@@ -8932,8 +8932,8 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v\n"</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span>   <span class="token comment">// "3"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>v<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// NOTE: "&lt;int Value>"</span></code></pre>
 
-<p><strong>和 <code>reflect.Type</code> 类似，<code>reflect.Value</code> 也满足 <code>fmt.Stringer</code> 接口，但是除非 <code>Value</code> 持有的是字符串，否则 <code>String</code> 方法只返回其类型。而使用 <code>fmt</code> 包的 <code>%v</code> 标志参数会对 <code>reflect.Values</code> 特殊处理。</strong></p>
-<p><strong>对 <code>Value</code> 调用 <code>Type</code> 方法将返回具体类型所对应的 <code>reflect.Type</code>：</strong></p>
+<p><strong>和 <code>reflect.Type</code> 类似，<code>reflect.Value</code> 也满足 <code>fmt.Stringer</code> 接口，但是除非 <code>Value</code> 持有的是字符串，否则 <code>String</code> 方法只返回其类型。而使用 <code>fmt</code> 包的 <code>%v</code> 标志参数会对 <code>reflect.Value</code> 进行特殊处理。</strong></p>
+<p><strong>调用 <code>Value</code> 的 <code>Type</code> 方法会把它的类型以 <code>reflect.Type</code> 方式返回：</strong></p>
 <pre class="language-go" data-language="go"><code class="language-go">t <span class="token operator">:=</span> v<span class="token punctuation">.</span><span class="token function">Type</span><span class="token punctuation">(</span><span class="token punctuation">)</span>           <span class="token comment">// a reflect.Type</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>t<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "int"</span></code></pre>
 
@@ -8988,13 +8988,17 @@ fmt<span class="token punctuation">.</span><span class="token function">Printf</
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>format<span class="token punctuation">.</span><span class="token function">Any</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span>                  <span class="token comment">// "1"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>format<span class="token punctuation">.</span><span class="token function">Any</span><span class="token punctuation">(</span>d<span class="token punctuation">)</span><span class="token punctuation">)</span>                  <span class="token comment">// "1"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>format<span class="token punctuation">.</span><span class="token function">Any</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int64</span><span class="token punctuation">&#123;</span>x<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>         <span class="token comment">// "[]int64 0x8202b87b0"</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>format<span class="token punctuation">.</span><span class="token function">Any</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span>time<span class="token punctuation">.</span>Duration<span class="token punctuation">&#123;</span>d<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "[]time.Duration 0x8202b87e0"</span></code></pre>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>format<span class="token punctuation">.</span><span class="token function">Any</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span>time<span class="token punctuation">.</span>Duration<span class="token punctuation">&#123;</span>d<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "[]time.Duration 0x8202b87e0"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>format<span class="token punctuation">.</span><span class="token function">Any</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+		Name <span class="token builtin">string</span>
+		Age  <span class="token builtin">int</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token string">"Peter"</span><span class="token punctuation">,</span> <span class="token number">12</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "struct &#123; Name string; Age int &#125; value"</span></code></pre>
 
 <h2 id="Display，一个递归的值打印器"><a href="#Display，一个递归的值打印器" class="headerlink" title="Display，一个递归的值打印器"></a>Display，一个递归的值打印器</h2><p>接下来，让我们看看如何改善聚合数据类型的显示。我们并不想完全克隆一个<code>fmt.Sprint</code>函数，我们只是构建一个用于调试用的<code>Display</code>函数：给定任意一个复杂类型 <code>x</code>，打印这个值对应的完整结构，同时标记每个元素的发现路径。让我们从一个例子开始。</p>
 <pre class="language-go" data-language="go"><code class="language-go">e<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> eval<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span><span class="token string">"sqrt(A / pi)"</span><span class="token punctuation">)</span>
 <span class="token function">Display</span><span class="token punctuation">(</span><span class="token string">"e"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span></code></pre>
 
-<p>在上面的调用中，传入Display函数的参数是在7.9节一个表达式求值函数返回的语法树。Display函数的输出如下：</p>
+<p>在上面的调用中，传入<code>Display</code>函数的参数是在7.9节一个表达式求值函数返回的语法树。<code>Display</code>函数的输出如下：</p>
 <pre class="language-go" data-language="go"><code class="language-go">Display e <span class="token punctuation">(</span>eval<span class="token punctuation">.</span>call<span class="token punctuation">)</span><span class="token punctuation">:</span>
 e<span class="token punctuation">.</span>fn <span class="token operator">=</span> <span class="token string">"sqrt"</span>
 e<span class="token punctuation">.</span>args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token keyword">type</span> <span class="token operator">=</span> eval<span class="token punctuation">.</span>binary
@@ -9004,15 +9008,15 @@ e<span class="token punctuation">.</span>args<span class="token punctuation">[</
 e<span class="token punctuation">.</span>args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>value<span class="token punctuation">.</span>y<span class="token punctuation">.</span><span class="token keyword">type</span> <span class="token operator">=</span> eval<span class="token punctuation">.</span>Var
 e<span class="token punctuation">.</span>args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>value<span class="token punctuation">.</span>y<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token string">"pi"</span></code></pre>
 
-<p>你应该尽量避免在一个包的API中暴露涉及反射的接口。我们将定义一个未导出的display函数用于递归处理工作，导出的是Display函数，它只是display函数简单的包装以接受interface{}类型的参数：</p>
+<p>你应该尽量避免在一个包的API中暴露涉及反射的接口。我们将定义一个未导出的<code>display</code>函数用于递归处理工作，导出的是<code>Display</code>函数，它只是<code>display</code>函数简单的包装以接受<code>interface&#123;&#125;</code>类型的参数：</p>
 <p><em>gopl.io&#x2F;ch12&#x2F;display</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Display</span><span class="token punctuation">(</span>name <span class="token builtin">string</span><span class="token punctuation">,</span> x <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Display %s (%T):\n"</span><span class="token punctuation">,</span> name<span class="token punctuation">,</span> x<span class="token punctuation">)</span>
     <span class="token function">display</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> reflect<span class="token punctuation">.</span><span class="token function">ValueOf</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>在display函数中，我们使用了前面定义的打印基础类型——基本类型、函数和chan等——元素值的formatAtom函数，但是我们会使用reflect.Value的方法来递归显示复杂类型的每一个成员。在递归下降过程中，path字符串，从最开始传入的起始值（这里是“e”），将逐步增长来表示是如何达到当前值（例如“e.args[0].value”）的。</p>
-<p>因为我们不再模拟fmt.Sprint函数，我们将直接使用fmt包来简化我们的例子实现。</p>
+<p>在<code>display</code>函数中，我们使用了前面定义的打印基础类型——基本类型、函数和<code>chan</code>等——元素值的<code>formatAtom</code>函数，但是我们会使用<code>reflect.Value</code>的方法来递归显示复杂类型的每一个成员。在递归下降过程中，<code>path</code>字符串，从最开始传入的起始值（这里是<code>e</code>），将逐步增长来表示是如何达到当前值（例如<code>e.args[0].value</code>）的。</p>
+<p>因为我们不再模拟<code>fmt.Sprint</code>函数，我们将直接使用<code>fmt</code>包来简化我们的例子实现。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">display</span><span class="token punctuation">(</span>path <span class="token builtin">string</span><span class="token punctuation">,</span> v reflect<span class="token punctuation">.</span>Value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">switch</span> v<span class="token punctuation">.</span><span class="token function">Kind</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">case</span> reflect<span class="token punctuation">.</span>Invalid<span class="token punctuation">:</span>
@@ -9050,13 +9054,13 @@ e<span class="token punctuation">.</span>args<span class="token punctuation">[</
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>让我们针对不同类型分别讨论。</p>
-<p><strong>Slice和数组：</strong> 两种的处理逻辑是一样的。Len方法返回slice或数组值中的元素个数，Index(i)获得索引i对应的元素，返回的也是一个reflect.Value；如果索引i超出范围的话将导致panic异常，这与数组或slice类型内建的len(a)和a[i]操作类似。display针对序列中的每个元素递归调用自身处理，我们通过在递归处理时向path附加“[i]”来表示访问路径。</p>
-<p>虽然reflect.Value类型带有很多方法，但是只有少数的方法能对任意值都安全调用。例如，Index方法只能对Slice、数组或字符串类型的值调用，如果对其它类型调用则会导致panic异常。</p>
-<p><strong>结构体：</strong> NumField方法报告结构体中成员的数量，Field(i)以reflect.Value类型返回第i个成员的值。成员列表也包括通过匿名字段提升上来的成员。为了在path添加“.f”来表示成员路径，我们必须获得结构体对应的reflect.Type类型信息，然后访问结构体第i个成员的名字。</p>
-<p><strong>Maps:</strong> MapKeys方法返回一个reflect.Value类型的slice，每一个元素对应map的一个key。和往常一样，遍历map时顺序是随机的。MapIndex(key)返回map中key对应的value。我们向path添加“[key]”来表示访问路径。（我们这里有一个未完成的工作。其实map的key的类型并不局限于formatAtom能完美处理的类型；数组、结构体和接口都可以作为map的key。针对这种类型，完善key的显示信息是练习12.1的任务。）</p>
-<p><strong>指针：</strong> Elem方法返回指针指向的变量，依然是reflect.Value类型。即使指针是nil，这个操作也是安全的，在这种情况下指针是Invalid类型，但是我们可以用IsNil方法来显式地测试一个空指针，这样我们可以打印更合适的信息。我们在path前面添加“*”，并用括弧包含以避免歧义。</p>
-<p><strong>接口：</strong> 再一次，我们使用IsNil方法来测试接口是否是nil，如果不是，我们可以调用v.Elem()来获取接口对应的动态值，并且打印对应的类型和值。</p>
-<p>现在我们的Display函数总算完工了，让我们看看它的表现吧。下面的Movie类型是在4.5节的电影类型上演变来的：</p>
+<p><strong>Slice和数组：</strong> 两种的处理逻辑是一样的。<code>Len</code>方法返回slice或数组值中的元素个数，<code>Index(i)</code>获得索引<code>i</code>对应的元素，返回的也是一个<code>reflect.Value</code>；如果索引i超出范围的话将导致panic异常，这与数组或slice类型内建的<code>len(a)</code>和<code>a[i]</code>操作类似。<code>display</code>针对序列中的每个元素递归调用自身处理，我们通过在递归处理时向<code>path</code>附加<code>[i]</code>来表示访问路径。</p>
+<p>虽然<code>reflect.Value</code>类型带有很多方法，但是只有少数的方法能对任意值都安全调用。例如，<code>Index</code>方法只能对Slice、数组或字符串类型的值调用，如果对其它类型调用则会导致panic异常。</p>
+<p><strong>结构体：</strong> <code>NumField</code>方法报告结构体中成员的数量，<code>Field(i)</code>以<code>reflect.Value</code>类型返回第i个成员的值。成员列表也包括通过匿名字段提升上来的成员。为了在<code>path</code>添加<code>.f</code>来表示成员路径，我们必须获得结构体对应的<code>reflect.Type</code>类型信息，然后访问结构体第i个成员的名字。</p>
+<p><strong>Maps:</strong> <code>MapKeys</code>方法返回一个<code>reflect.Value</code>类型的slice，每一个元素对应map的一个key。和往常一样，遍历map时顺序是随机的。<code>MapIndex(key)</code>返回map中key对应的value。我们向path添加“[key]”来表示访问路径。（我们这里有一个未完成的工作。其实map的key的类型并不局限于<code>formatAtom</code>能完美处理的类型；数组、结构体和接口都可以作为map的key。针对这种类型，完善key的显示信息是练习12.1的任务。）</p>
+<p><strong>指针：</strong> <code>Elem</code>方法返回指针指向的变量，依然是<code>reflect.Value</code>类型。即使指针是nil，这个操作也是安全的，在这种情况下指针是<code>Invalid</code>类型，但是我们可以用<code>IsNil</code>方法来显式地测试一个空指针，这样我们可以打印更合适的信息。我们在<code>path</code>前面添加<code>*</code>，并用括弧包含以避免歧义。</p>
+<p><strong>接口：</strong> 再一次，我们使用<code>IsNil</code>方法来测试接口是否是nil，如果不是，我们可以调用<code>v.Elem()</code>来获取接口对应的动态值，并且打印对应的类型和值。</p>
+<p>现在我们的<code>Display</code>函数总算完工了，让我们看看它的表现吧。下面的<code>Movie</code>类型是在4.5节的电影类型上演变来的：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Movie <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
     Title<span class="token punctuation">,</span> Subtitle <span class="token builtin">string</span>
     Year            <span class="token builtin">int</span>
@@ -9066,7 +9070,7 @@ e<span class="token punctuation">.</span>args<span class="token punctuation">[</
     Sequel          <span class="token operator">*</span><span class="token builtin">string</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>让我们声明一个该类型的变量，然后看看Display函数如何显示它：</p>
+<p>让我们声明一个该类型的变量，然后看看<code>Display</code>函数如何显示它：</p>
 <pre class="language-go" data-language="go"><code class="language-go">strangelove <span class="token operator">:=</span> Movie<span class="token punctuation">&#123;</span>
     Title<span class="token punctuation">:</span>    <span class="token string">"Dr. Strangelove"</span><span class="token punctuation">,</span>
     Subtitle<span class="token punctuation">:</span> <span class="token string">"How I Learned to Stop Worrying and Love the Bomb"</span><span class="token punctuation">,</span>
@@ -9089,7 +9093,7 @@ e<span class="token punctuation">.</span>args<span class="token punctuation">[</
     <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p><code>Display(&quot;strangelove&quot;, strangelove)</code>调用将显示（strangelove电影对应的中文名是《奇爱博士》）：</p>
+<p><code>Display(&quot;strangelove&quot;, strangelove)</code>调用将显示（<code>strangelove</code>电影对应的中文名是《奇爱博士》）：</p>
 <pre class="language-go" data-language="go"><code class="language-go">Display strangelove <span class="token punctuation">(</span>display<span class="token punctuation">.</span>Movie<span class="token punctuation">)</span><span class="token punctuation">:</span>
 strangelove<span class="token punctuation">.</span>Title <span class="token operator">=</span> <span class="token string">"Dr. Strangelove"</span>
 strangelove<span class="token punctuation">.</span>Subtitle <span class="token operator">=</span> <span class="token string">"How I Learned to Stop Worrying and Love the Bomb"</span>
@@ -9107,7 +9111,7 @@ strangelove<span class="token punctuation">.</span>Oscars<span class="token punc
 strangelove<span class="token punctuation">.</span>Oscars<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"Best Picture (Nomin.)"</span>
 strangelove<span class="token punctuation">.</span>Sequel <span class="token operator">=</span> <span class="token boolean">nil</span></code></pre>
 
-<p>我们也可以使用Display函数来显示标准库中类型的内部结构，例如<code>*os.File</code>类型：</p>
+<p>我们也可以使用<code>Display</code>函数来显示标准库中类型的内部结构，例如<code>*os.File</code>类型：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token function">Display</span><span class="token punctuation">(</span><span class="token string">"os.Stderr"</span><span class="token punctuation">,</span> os<span class="token punctuation">.</span>Stderr<span class="token punctuation">)</span>
 <span class="token comment">// Output:</span>
 <span class="token comment">// Display os.Stderr (*os.File):</span>
@@ -9115,7 +9119,7 @@ strangelove<span class="token punctuation">.</span>Sequel <span class="token ope
 <span class="token comment">// (*(*os.Stderr).file).name = "/dev/stderr"</span>
 <span class="token comment">// (*(*os.Stderr).file).nepipe = 0</span></code></pre>
 
-<p>可以看出，反射能够访问到结构体中未导出的成员。需要当心的是这个例子的输出在不同操作系统上可能是不同的，并且随着标准库的发展也可能导致结果不同。（这也是将这些成员定义为私有成员的原因之一！）我们甚至可以用Display函数来显示reflect.Value 的内部构造（在这里设置为<code>*os.File</code>的类型描述体）。<code>Display(&quot;rV&quot;, reflect.ValueOf(os.Stderr))</code>调用的输出如下，当然不同环境得到的结果可能有差异：</p>
+<p>可以看出，反射能够访问到结构体中未导出的成员。需要当心的是这个例子的输出在不同操作系统上可能是不同的，并且随着标准库的发展也可能导致结果不同。（这也是将这些成员定义为私有成员的原因之一！）我们甚至可以用<code>Display</code>函数来显示<code>reflect.Value</code>的内部构造（在这里设置为<code>*os.File</code>的类型描述体）。<code>Display(&quot;rV&quot;, reflect.ValueOf(os.Stderr))</code>调用的输出如下，当然不同环境得到的结果可能有差异：</p>
 <pre class="language-go" data-language="go"><code class="language-go">Display rV <span class="token punctuation">(</span>reflect<span class="token punctuation">.</span>Value<span class="token punctuation">)</span><span class="token punctuation">:</span>
 <span class="token punctuation">(</span><span class="token operator">*</span>rV<span class="token punctuation">.</span>typ<span class="token punctuation">)</span><span class="token punctuation">.</span>size <span class="token operator">=</span> <span class="token number">8</span>
 <span class="token punctuation">(</span><span class="token operator">*</span>rV<span class="token punctuation">.</span>typ<span class="token punctuation">)</span><span class="token punctuation">.</span>hash <span class="token operator">=</span> <span class="token number">871609668</span>
@@ -9143,16 +9147,16 @@ strangelove<span class="token punctuation">.</span>Sequel <span class="token ope
 <span class="token comment">// (*&amp;i).type = int</span>
 <span class="token comment">// (*&amp;i).value = 3</span></code></pre>
 
-<p>在第一个例子中，Display函数调用reflect.ValueOf(i)，它返回一个Int类型的值。正如我们在12.2节中提到的，reflect.ValueOf总是返回一个具体类型的 Value，因为它是从一个接口值提取的内容。</p>
-<p>在第二个例子中，Display函数调用的是reflect.ValueOf(&amp;i)，它返回一个指向i的指针，对应Ptr类型。在switch的Ptr分支中，对这个值调用 Elem 方法，返回一个Value来表示变量 i 本身，对应Interface类型。像这样一个间接获得的Value，可能代表任意类型的值，包括接口类型。display函数递归调用自身，这次它分别打印了这个接口的动态类型和值。</p>
-<p>对于目前的实现，如果遇到对象图中含有回环，Display将会陷入死循环，例如下面这个首尾相连的链表：</p>
+<p>在第一个例子中，<code>Display</code>函数调用<code>reflect.ValueOf(i)</code>，它返回一个<code>Int</code>类型的值。正如我们在12.2节中提到的，<code>reflect.ValueOf</code>总是返回一个具体类型的 <code>Value</code>，因为它是从一个接口值提取的内容。</p>
+<p>在第二个例子中，<code>Display</code>函数调用的是<code>reflect.ValueOf(&amp;i)</code>，它返回一个指向i的指针，对应<code>Ptr</code>类型。在switch的<code>Ptr</code>分支中，对这个值调用 <code>Elem</code> 方法，返回一个<code>Value</code>来表示变量 <code>i</code> 本身，对应<code>Interface</code>类型。像这样一个间接获得的<code>Value</code>，可能代表任意类型的值，包括接口类型。<code>display</code>函数递归调用自身，这次它分别打印了这个接口的动态类型和值。</p>
+<p>对于目前的实现，如果遇到对象图中含有回环，<code>Display</code>将会陷入死循环，例如下面这个首尾相连的链表：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// a struct that points to itself</span>
 <span class="token keyword">type</span> Cycle <span class="token keyword">struct</span><span class="token punctuation">&#123;</span> Value <span class="token builtin">int</span><span class="token punctuation">;</span> Tail <span class="token operator">*</span>Cycle <span class="token punctuation">&#125;</span>
 <span class="token keyword">var</span> c Cycle
 c <span class="token operator">=</span> Cycle<span class="token punctuation">&#123;</span><span class="token number">42</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>c<span class="token punctuation">&#125;</span>
 <span class="token function">Display</span><span class="token punctuation">(</span><span class="token string">"c"</span><span class="token punctuation">,</span> c<span class="token punctuation">)</span></code></pre>
 
-<p>Display会永远不停地进行深度递归打印：</p>
+<p><code>Display</code>会永远不停地进行深度递归打印：</p>
 <pre class="language-go" data-language="go"><code class="language-go">Display c <span class="token punctuation">(</span>display<span class="token punctuation">.</span>Cycle<span class="token punctuation">)</span><span class="token punctuation">:</span>
 c<span class="token punctuation">.</span>Value <span class="token operator">=</span> <span class="token number">42</span>
 <span class="token punctuation">(</span><span class="token operator">*</span>c<span class="token punctuation">.</span>Tail<span class="token punctuation">)</span><span class="token punctuation">.</span>Value <span class="token operator">=</span> <span class="token number">42</span>
@@ -9160,9 +9164,9 @@ c<span class="token punctuation">.</span>Value <span class="token operator">=</s
 <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token operator">*</span>c<span class="token punctuation">.</span>Tail<span class="token punctuation">)</span><span class="token punctuation">.</span>Tail<span class="token punctuation">)</span><span class="token punctuation">.</span>Tail<span class="token punctuation">)</span><span class="token punctuation">.</span>Value <span class="token operator">=</span> <span class="token number">42</span>
 <span class="token operator">...</span>ad infinitum<span class="token operator">...</span></code></pre>
 
-<p>许多Go语言程序都包含了一些循环的数据。让Display支持这类带环的数据结构需要些技巧，需要额外记录迄今访问的路径；相应会带来成本。通用的解决方案是采用 unsafe 的语言特性，我们将在13.3节看到具体的解决方案。</p>
+<p>许多Go语言程序都包含了一些循环的数据。让<code>Display</code>支持这类带环的数据结构需要些技巧，需要额外记录迄今访问的路径；相应会带来成本。通用的解决方案是采用 unsafe 的语言特性，我们将在13.3节看到具体的解决方案。</p>
 <p>带环的数据结构很少会对<code>fmt.Sprint</code>函数造成问题，因为它很少尝试打印完整的数据结构。例如，当它遇到一个指针的时候，它只是简单地打印指针的数字值。在打印包含自身的slice或map时可能卡住，但是这种情况很罕见，不值得付出为了处理回环所需的开销。</p>
-<h2 id="示例-编码为S表达式"><a href="#示例-编码为S表达式" class="headerlink" title="示例: 编码为S表达式"></a>示例: 编码为S表达式</h2><p>Display是一个用于显示结构化数据的调试工具，但是它并不能将任意的Go语言对象编码为通用消息然后用于进程间通信。</p>
+<h2 id="示例-编码为S表达式"><a href="#示例-编码为S表达式" class="headerlink" title="示例: 编码为S表达式"></a>示例: 编码为S表达式</h2><p><code>Display</code>是一个用于显示结构化数据的调试工具，但是它并不能将任意的Go语言对象编码为通用消息然后用于进程间通信。</p>
 <p>正如我们在4.5节中中看到的，Go语言的标准库支持了包括JSON、XML和ASN.1等多种编码格式。还有另一种依然被广泛使用的格式是S表达式格式，采用Lisp语言的语法。但是和其他编码格式不同的是，Go语言自带的标准库并不支持S表达式，主要是因为它没有一个公认的标准规范。</p>
 <p>在本节中，我们将定义一个包用于将任意的Go语言对象编码为S表达式格式，它支持以下结构：</p>
 <pre class="language-none"><code class="language-none">42          integer
@@ -9170,10 +9174,10 @@ c<span class="token punctuation">.</span>Value <span class="token operator">=</s
 foo         symbol（未用引号括起来的名字）
 (1 2 3)     list  （括号包起来的0个或多个元素）</code></pre>
 
-<p>布尔型习惯上使用t符号表示true，空列表或nil符号表示false，但是为了简单起见，我们暂时忽略布尔类型。同时忽略的还有chan管道和函数，因为通过反射并无法知道它们的确切状态。我们忽略的还有浮点数、复数和interface。支持它们是练习12.3的任务。</p>
+<p>布尔型习惯上使用t符号表示<code>true</code>，空列表或<code>nil</code>符号表示<code>false</code>，但是为了简单起见，我们暂时忽略布尔类型。同时忽略的还有chan管道和函数，因为通过反射并无法知道它们的确切状态。我们忽略的还有浮点数、复数和interface。支持它们是练习12.3的任务。</p>
 <p>我们将Go语言的类型编码为S表达式的方法如下。整数和字符串以显而易见的方式编码。空值编码为nil符号。数组和slice被编码为列表。</p>
 <p>结构体被编码为成员对象的列表，每个成员对象对应一个有两个元素的子列表，子列表的第一个元素是成员的名字，第二个元素是成员的值。Map被编码为键值对的列表。传统上，S表达式使用点状符号列表(key . value)结构来表示key&#x2F;value对，而不是用一个含双元素的列表，不过为了简单我们忽略了点状符号列表。</p>
-<p>编码是由一个encode递归函数完成，如下所示。它的结构本质上和前面的Display函数类似：</p>
+<p>编码是由一个<code>encode</code>递归函数完成，如下所示。它的结构本质上和前面的<code>Display</code>函数类似：</p>
 <p><em>gopl.io&#x2F;ch12&#x2F;sexpr</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">encode</span><span class="token punctuation">(</span>buf <span class="token operator">*</span>bytes<span class="token punctuation">.</span>Buffer<span class="token punctuation">,</span> v reflect<span class="token punctuation">.</span>Value<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">switch</span> v<span class="token punctuation">.</span><span class="token function">Kind</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -9244,7 +9248,7 @@ foo         symbol（未用引号括起来的名字）
     <span class="token keyword">return</span> <span class="token boolean">nil</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>Marshal函数是对encode的包装，以保持和encoding&#x2F;…下其它包有着相似的API：</p>
+<p><code>Marshal</code>函数是对<code>encode</code>的包装，以保持和 <code>encoding/...</code> 下其它包有着相似的API：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// Marshal encodes a Go value in S-expression form.</span>
 <span class="token keyword">func</span> <span class="token function">Marshal</span><span class="token punctuation">(</span>v <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">var</span> buf bytes<span class="token punctuation">.</span>Buffer
@@ -9279,7 +9283,7 @@ omin.)&quot; &quot;Best Picture (Nomin.)&quot;)) (Sequel nil))</code></pre>
           &quot;Best Picture (Nomin.)&quot;))
  (Sequel nil))</code></pre>
 
-<p>和fmt.Print、json.Marshal、Display函数类似，sexpr.Marshal函数处理带环的数据结构也会陷入死循环。</p>
+<p>和<code>fmt.Print</code>、<code>json.Marshal</code>、<code>Display</code>函数类似，<code>sexpr.Marshal</code>函数处理带环的数据结构也会陷入死循环。</p>
 <p>在12.6节中，我们将给出S表达式解码器的实现步骤，但是在那之前，我们还需要先了解如何通过反射技术来更新程序的变量。</p>
 <h2 id="通过reflect-Value修改值"><a href="#通过reflect-Value修改值" class="headerlink" title="通过reflect.Value修改值"></a>通过reflect.Value修改值</h2><p>到目前为止，反射还只是程序中变量的另一种读取方式。然而，在本节中我们将重点讨论如何通过反射机制来修改变量。</p>
 <p>回想一下，Go语言中类似x、x.f[1]和*p形式的表达式都可以表示变量，但是其它如x + 1和f(2)则不是变量。一个变量就是一个可寻址的内存空间，里面存储了一个值，并且存储的值可以通过内存地址来更新。</p>
