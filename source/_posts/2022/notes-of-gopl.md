@@ -12189,7 +12189,7 @@ Display("os.Stderr", os.Stderr)
 // (*(*os.Stderr).file).nepipe = 0
 ```
 
-可以看出，反射能够访问到结构体中未导出的成员。需要当心的是这个例子的输出在不同操作系统上可能是不同的，并且随着标准库的发展也可能导致结果不同。（这也是将这些成员定义为私有成员的原因之一！）我们甚至可以用`Display`函数来显示`reflect.Value`的内部构造（在这里设置为`*os.File`的类型描述体）。`Display("rV", reflect.ValueOf(os.Stderr))`调用的输出如下，当然不同环境得到的结果可能有差异：
+**可以看出，反射能够访问到结构体中未导出的成员。需要当心的是这个例子的输出在不同操作系统上可能是不同的，并且随着标准库的发展也可能导致结果不同。（这也是将这些成员定义为私有成员的原因之一！）**我们甚至可以用`Display`函数来显示`reflect.Value`的内部构造（在这里设置为`*os.File`的类型描述体）。`Display("rV", reflect.ValueOf(os.Stderr))`调用的输出如下，当然不同环境得到的结果可能有差异：
 
 ```go
 Display rV (reflect.Value):
@@ -12267,7 +12267,7 @@ foo         symbol（未用引号括起来的名字）
 (1 2 3)     list  （括号包起来的0个或多个元素）
 ```
 
-布尔型习惯上使用t符号表示`true`，空列表或`nil`符号表示`false`，但是为了简单起见，我们暂时忽略布尔类型。同时忽略的还有chan管道和函数，因为通过反射并无法知道它们的确切状态。我们忽略的还有浮点数、复数和interface。支持它们是练习12.3的任务。
+布尔型习惯上使用`t`符号表示`true`，空列表或`nil`符号表示`false`，但是为了简单起见，我们暂时忽略布尔类型。同时忽略的还有chan管道和函数，因为通过反射并无法知道它们的确切状态。我们忽略的还有浮点数、复数和interface。支持它们是练习12.3的任务。
 
 我们将Go语言的类型编码为S表达式的方法如下。整数和字符串以显而易见的方式编码。空值编码为nil符号。数组和slice被编码为列表。
 
@@ -12348,7 +12348,7 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 }
 ```
 
-`Marshal`函数是对`encode`的包装，以保持和 `encoding/...` 下其它包有着相似的API：
+`Marshal`函数是对`encode`的包装，以保持和 encoding/... 下其它包有着相似的API：
 
 ```go
 // Marshal encodes a Go value in S-expression form.
@@ -12398,13 +12398,13 @@ omin.)" "Best Picture (Nomin.)")) (Sequel nil))
 
 
 
-## 通过reflect.Value修改值
+## 通过`reflect.Value`修改值
 
 到目前为止，反射还只是程序中变量的另一种读取方式。然而，在本节中我们将重点讨论如何通过反射机制来修改变量。
 
-回想一下，Go语言中类似x、x.f[1]和*p形式的表达式都可以表示变量，但是其它如x + 1和f(2)则不是变量。一个变量就是一个可寻址的内存空间，里面存储了一个值，并且存储的值可以通过内存地址来更新。
+回想一下，**Go语言中类似`x`、`x.f[1]`和`*p`形式的表达式都可以表示变量，但是其它如`x + 1`和`f(2)`则不是变量。一个变量就是一个可寻址的内存空间，里面存储了一个值，并且存储的值可以通过内存地址来更新。**
 
-对于reflect.Values也有类似的区别。有一些reflect.Values是可取地址的；其它一些则不可以。考虑以下的声明语句：
+对于`reflect.Value`也有类似的区别。**有一些`reflect.Value`是可取地址的；其它一些则不可以。考虑以下的声明语句：**
 
 ```go
 x := 2                   // value   type    variable?
@@ -12414,9 +12414,9 @@ c := reflect.ValueOf(&x) // &x      *int    no
 d := c.Elem()            // 2       int     yes (x)
 ```
 
-其中a对应的变量不可取地址。因为a中的值仅仅是整数2的拷贝副本。b中的值也同样不可取地址。c中的值还是不可取地址，它只是一个指针`&x`的拷贝。实际上，所有通过reflect.ValueOf(x)返回的reflect.Value都是不可取地址的。但是对于d，它是c的解引用方式生成的，指向另一个变量，因此是可取地址的。我们可以通过调用reflect.ValueOf(&x).Elem()，来获取任意变量x对应的可取地址的Value。
+其中`a`对应的变量不可取地址。因为`a`中的值仅仅是整数`2`的拷贝副本。`b`中的值也同样不可取地址。`c`中的值还是不可取地址，它只是一个指针`&x`的拷贝。实际上，所有通过`reflect.ValueOf(x)`返回的`reflect.Value`都是不可取地址的。但是对于`d`，它是`c`的解引用方式生成的，指向另一个变量，因此是可取地址的。我们可以通过调用`reflect.ValueOf(&x).Elem()`，来获取任意变量`x`对应的可取地址的`Value`值。
 
-我们可以通过调用reflect.Value的CanAddr方法来判断其是否可以被取地址：
+**我们可以通过调用`reflect.Value`的`CanAddr`方法来判断其是否可以被取地址：**
 
 ```go
 fmt.Println(a.CanAddr()) // "false"
@@ -12425,9 +12425,9 @@ fmt.Println(c.CanAddr()) // "false"
 fmt.Println(d.CanAddr()) // "true"
 ```
 
-每当我们通过指针间接地获取的reflect.Value都是可取地址的，即使开始的是一个不可取地址的Value。在反射机制中，所有关于是否支持取地址的规则都是类似的。例如，slice的索引表达式e[i]将隐式地包含一个指针，它就是可取地址的，即使开始的e表达式不支持也没有关系。以此类推，`reflect.ValueOf(e).Index(i)`对应的值也是可取地址的，即使原始的`reflect.ValueOf(e)`不支持也没有关系。
+**我们可以通过一个指针来间接获取一个可寻址的 `reflect.Value`，即使这个指针是不可寻址的。可寻址的常见规则都在反射包里边有对应项。比如，slice 的脚标表达式 `e[i]` 隐式地做了指针去引用，所以即使 `e` 是不可寻址的，这个表达式仍然是可寻址的。类似地`reflect.ValueOf(e).Index(i)` 代表一个变量，尽管 `reflect.ValueOf(e)`不是可寻址的，这个变量也是可寻址的。**
 
-要从变量对应的可取地址的reflect.Value来访问变量需要三个步骤。第一步是调用Addr()方法，它返回一个Value，里面保存了指向变量的指针。然后是在Value上调用Interface()方法，也就是返回一个interface{}，里面包含指向变量的指针。最后，如果我们知道变量的类型，我们可以使用类型的断言机制将得到的interface{}类型的接口强制转为普通的类型指针。这样我们就可以通过这个普通指针来更新变量了：
+**从一个可寻址的 `reflect.Value()` 获取变量需要三步。首先，调用`Addr()`，返回一个`Value`，其中包含一个指向变量的指针，接下来，在这个 `Value` 上调用`Interface()`，会返回一个包含这个指针的 `interface{}` 值。最后，如果我们知道变量的类型，我们可以使用类型断言来把接口内容转换为一个普通指针。之后就可以通过这个指针来更新变量了：**
 
 ```go
 x := 2
@@ -12437,20 +12437,20 @@ px := d.Addr().Interface().(*int) // px := &x
 fmt.Println(x)                    // "3"
 ```
 
-或者，不使用指针，而是通过调用可取地址的reflect.Value的reflect.Value.Set方法来更新对应的值：
+还可以直接通过可寻址的 `reflect.Value` 来更新变量，不用通过指针，而是直接调用 `reflect.Value.Set` 方法：
 
 ```go
 d.Set(reflect.ValueOf(4))
 fmt.Println(x) // "4"
 ```
 
-Set方法将在运行时执行和编译时进行类似的可赋值性约束的检查。以上代码，变量和值都是int类型，但是如果变量是int64类型，那么程序将抛出一个panic异常，所以关键问题是要确保改类型的变量可以接受对应的值：
+`Set`方法将在运行时执行和编译时进行类似的可赋值性约束的检查。以上代码，变量和值都是int类型，但是如果变量是int64类型，那么程序将抛出一个panic异常，所以关键问题是要确保改类型的变量可以接受对应的值：
 
 ```go
 d.Set(reflect.ValueOf(int64(5))) // panic: int64 is not assignable to int
 ```
 
-同样，对一个不可取地址的reflect.Value调用Set方法也会导致panic异常：
+同样，对一个不可取地址的`reflect.Value`调用`Set`方法也会导致panic异常：
 
 ```go
 x := 2
@@ -12458,7 +12458,7 @@ b := reflect.ValueOf(x)
 b.Set(reflect.ValueOf(3)) // panic: Set using unaddressable value
 ```
 
-这里有很多用于基本数据类型的Set方法：SetInt、SetUint、SetString和SetFloat等。
+这里有很多用于基本数据类型的`Set`方法：`SetInt`、`SetUint`、`SetString`和`SetFloat`等。
 
 ```go
 d := reflect.ValueOf(&x).Elem()
@@ -12466,7 +12466,7 @@ d.SetInt(3)
 fmt.Println(x) // "3"
 ```
 
-从某种程度上说，这些Set方法总是尽可能地完成任务。以SetInt为例，只要变量是某种类型的有符号整数就可以工作，即使是一些命名的类型、甚至只要底层数据类型是有符号整数就可以，而且如果对于变量类型值太大的话会被自动截断。但需要谨慎的是：对于一个引用interface{}类型的reflect.Value调用SetInt会导致panic异常，即使那个interface{}变量对于整数类型也不行。
+这些方法还有一定程度的容错性。只要变量类型是某种带符号的整数，比如 `SetInt`，甚至可以是底层类型为带符号整数的命名类型，都可以成功。如果值太大了还会无提示地截断它。但需要注意的是，在指向 `interface{}` 变量的 `reflect.Value` 上调用 `SetInt` 会 panic（尽管使用 `Set` 就没有问题）。
 
 ```go
 x := 1
@@ -12484,7 +12484,7 @@ ry.SetString("hello")            // panic: SetString called on interface Value
 ry.Set(reflect.ValueOf("hello")) // OK, y = "hello"
 ```
 
-当我们用Display显示os.Stdout结构时，我们发现反射可以越过Go语言的导出规则的限制读取结构体中未导出的成员，比如在类Unix系统上os.File结构体中的fd int成员。然而，利用反射机制并不能修改这些未导出的成员：
+在把 `Display` 作用于 `os.Stdout` 时，**我们发现反射可以读取到未导出结构字段的值，通过Go语言的常规方法这些值是无法读取的。比如 `os.File` 结构在类 UNIX平台上的`fd int`字段。但反射不能更新这些值：**
 
 ```go
 stdout := reflect.ValueOf(os.Stdout).Elem() // *os.Stdout, an os.File var
@@ -12494,7 +12494,7 @@ fmt.Println(fd.Int()) // "1"
 fd.SetInt(2)          // panic: unexported field
 ```
 
-一个可取地址的reflect.Value会记录一个结构体成员是否是未导出成员，如果是的话则拒绝修改操作。因此，CanAddr方法并不能正确反映一个变量是否是可以被修改的。另一个相关的方法CanSet是用于检查对应的reflect.Value是否是可取地址并可被修改的：
+**一个可寻址的 `reflect.Value` 会记录它是否是通过遍历一个未导出字段来获得的，如果是这样，则不允许修改。所以，在更新变量前用 `CanAddr` 来检查并不能保证正确。`CanSet` 方法才能正确地报告一个 `reflect.Value` 是否可寻址且可更改：**
 
 ```go
 fmt.Println(fd.CanAddr(), fd.CanSet()) // "true false"
@@ -12504,7 +12504,7 @@ fmt.Println(fd.CanAddr(), fd.CanSet()) // "true false"
 
 ## 示例: 解码S表达式
 
-标准库中encoding/...下每个包中提供的Marshal编码函数都有一个对应的Unmarshal函数用于解码。例如，我们在4.5节中看到的，要将包含JSON编码格式的字节slice数据解码为我们自己的Movie类型（§12.3），我们可以这样做：
+标准库中 encoding/... 下每个包中提供的Marshal编码函数都有一个对应的`Unmarshal`函数用于解码。例如，我们在4.5节中看到的，要将包含JSON编码格式的字节slice数据解码为我们自己的`Movie`类型（§12.3），我们可以这样做：
 
 ```go
 data := []byte{/* ... */}
@@ -12514,9 +12514,9 @@ err := json.Unmarshal(data, &movie)
 
 Unmarshal函数使用了反射机制类修改movie变量的每个成员，根据输入的内容为Movie成员创建对应的map、结构体和slice。
 
-现在让我们为S表达式编码实现一个简易的Unmarshal，类似于前面的json.Unmarshal标准库函数，对应我们之前实现的sexpr.Marshal函数的逆操作。我们必须提醒一下，一个健壮的和通用的实现通常需要比例子更多的代码，为了便于演示我们采用了精简的实现。我们只支持S表达式有限的子集，同时处理错误的方式也比较粗暴，代码的目的是为了演示反射的用法，而不是构造一个实用的S表达式的解码器。
+现在让我们为S表达式编码实现一个简易的Unmarshal，类似于前面的`json.Unmarshal`标准库函数，对应我们之前实现的`sexpr.Marshal`函数的逆操作。我们必须提醒一下，一个健壮的和通用的实现通常需要比例子更多的代码，为了便于演示我们采用了精简的实现。我们只支持S表达式有限的子集，同时处理错误的方式也比较粗暴，代码的目的是为了演示反射的用法，而不是构造一个实用的S表达式的解码器。
 
-词法分析器lexer使用了标准库中的text/scanner包将输入流的字节数据解析为一个个类似注释、标识符、字符串面值和数字面值之类的标记。输入扫描器scanner的Scan方法将提前扫描和返回下一个记号，对于rune类型。大多数记号，比如“(”，对应一个单一rune可表示的Unicode字符，但是text/scanner也可以用小的负数表示记号标识符、字符串等由多个字符组成的记号。调用Scan方法将返回这些记号的类型，接着调用TokenText方法将返回记号对应的文本内容。
+词法分析器lexer使用了标准库中的`text/scanner`包将输入流的字节数据解析为一个个类似注释、标识符、字符串面值和数字面值之类的标记。输入扫描器`scanner`的`Scan`方法将提前扫描和返回下一个记号，对于rune类型。大多数记号，比如“(”，对应一个单一rune可表示的Unicode字符，但是`text/scanner`也可以用小的负数表示记号标识符、字符串等由多个字符组成的记号。调用Scan方法将返回这些记号的类型，接着调用TokenText方法将返回记号对应的文本内容。
 
 因为每个解析器可能需要多次使用当前的记号，但是Scan会一直向前扫描，所以我们包装了一个lexer扫描器辅助类型，用于跟踪最近由Scan方法返回的记号。
 
@@ -12690,9 +12690,9 @@ func search(resp http.ResponseWriter, req *http.Request) {
 }
 ```
 
-下面的Unpack函数主要完成三件事情。第一，它调用req.ParseForm()来解析HTTP请求。然后，req.Form将包含所有的请求参数，不管HTTP客户端使用的是GET还是POST请求方法。
+下面的Unpack函数主要完成三件事情。第一，它调用`req.ParseForm()`来解析HTTP请求。然后，`req.Form`将包含所有的请求参数，不管HTTP客户端使用的是GET还是POST请求方法。
 
-下一步，Unpack函数将构建每个结构体成员有效参数名字到成员变量的映射。如果结构体成员有成员标签的话，有效参数名字可能和实际的成员名字不相同。reflect.Type的Field方法将返回一个reflect.StructField，里面含有每个成员的名字、类型和可选的成员标签等信息。其中成员标签信息对应reflect.StructTag类型的字符串，并且提供了Get方法用于解析和根据特定key提取的子串，例如这里的http:"..."形式的子串。
+下一步，Unpack函数将构建每个结构体成员有效参数名字到成员变量的映射。如果结构体成员有成员标签的话，有效参数名字可能和实际的成员名字不相同。`reflect.Type`的Field方法将返回一个`reflect.StructField`，里面含有每个成员的名字、类型和可选的成员标签等信息。其中成员标签信息对应`reflect.StructTag`类型的字符串，并且提供了Get方法用于解析和根据特定key提取的子串，例如这里的http:"..."形式的子串。
 
 *gopl.io/ch12/params*
 
@@ -12814,7 +12814,7 @@ func Print(x interface{}) {
 }
 ```
 
-reflect.Type和reflect.Value都提供了一个Method方法。每次t.Method(i)调用将一个reflect.Method的实例，对应一个用于描述一个方法的名称和类型的结构体。每次v.Method(i)方法调用都返回一个reflect.Value以表示对应的值（§6.4），也就是一个方法是帮到它的接收者的。使用reflect.Value.Call方法（我们这里没有演示），将可以调用一个Func类型的Value，但是这个例子中只用到了它的类型。
+`reflect.Type`和`reflect.Value`都提供了一个`Method`方法。每次`t.Method(i)`调用将一个`reflect.Method`的实例，对应一个用于描述一个方法的名称和类型的结构体。每次`v.Method(i)`方法调用都返回一个`reflect.Value`以表示对应的值（§6.4），也就是一个方法是帮到它的接收者的。使用`reflect.Value.Call`方法（我们这里没有演示），将可以调用一个`Func`类型的`Value`，但是这个例子中只用到了它的类型。
 
 这是属于time.Duration和`*strings.Replacer`两个类型的方法：
 
