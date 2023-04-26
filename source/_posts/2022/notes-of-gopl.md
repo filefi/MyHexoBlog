@@ -12225,7 +12225,7 @@ Display("&i", &i)
 
 在第一个例子中，`Display`函数调用`reflect.ValueOf(i)`，它返回一个`Int`类型的值。正如我们在12.2节中提到的，`reflect.ValueOf`总是返回一个具体类型的 `Value`，因为它是从一个接口值提取的内容。
 
-在第二个例子中，`Display`函数调用的是`reflect.ValueOf(&i)`，它返回一个指向i的指针，对应`Ptr`类型。在switch的`Ptr`分支中，对这个值调用 `Elem` 方法，返回一个`Value`来表示变量 `i` 本身，对应`Interface`类型。像这样一个间接获得的`Value`，可能代表任意类型的值，包括接口类型。`display`函数递归调用自身，这次它分别打印了这个接口的动态类型和值。
+在第二个例子中，`Display`函数调用的是`reflect.ValueOf(&i)`，它返回一个指向`i`的指针，对应`Ptr`类型。在switch的`Ptr`分支中，对这个值调用 `Elem` 方法，返回一个`Value`来表示变量 `i` 本身，对应`Interface`类型。像这样一个间接获得的`Value`，可能代表任意类型的值，包括接口类型。`display`函数递归调用自身，这次它分别打印了这个接口的动态类型和值。
 
 对于目前的实现，如果遇到对象图中含有回环，`Display`将会陷入死循环，例如下面这个首尾相连的链表：
 
