@@ -9158,7 +9158,7 @@ strangelove<span class="token punctuation">.</span>Sequel <span class="token ope
 <span class="token comment">// (*&amp;i).value = 3</span></code></pre>
 
 <p>在第一个例子中，<code>Display</code>函数调用<code>reflect.ValueOf(i)</code>，它返回一个<code>Int</code>类型的值。正如我们在12.2节中提到的，<code>reflect.ValueOf</code>总是返回一个具体类型的 <code>Value</code>，因为它是从一个接口值提取的内容。</p>
-<p>在第二个例子中，<code>Display</code>函数调用的是<code>reflect.ValueOf(&amp;i)</code>，它返回一个指向i的指针，对应<code>Ptr</code>类型。在switch的<code>Ptr</code>分支中，对这个值调用 <code>Elem</code> 方法，返回一个<code>Value</code>来表示变量 <code>i</code> 本身，对应<code>Interface</code>类型。像这样一个间接获得的<code>Value</code>，可能代表任意类型的值，包括接口类型。<code>display</code>函数递归调用自身，这次它分别打印了这个接口的动态类型和值。</p>
+<p>在第二个例子中，<code>Display</code>函数调用的是<code>reflect.ValueOf(&amp;i)</code>，它返回一个指向<code>i</code>的指针，对应<code>Ptr</code>类型。在switch的<code>Ptr</code>分支中，对这个值调用 <code>Elem</code> 方法，返回一个<code>Value</code>来表示变量 <code>i</code> 本身，对应<code>Interface</code>类型。像这样一个间接获得的<code>Value</code>，可能代表任意类型的值，包括接口类型。<code>display</code>函数递归调用自身，这次它分别打印了这个接口的动态类型和值。</p>
 <p>对于目前的实现，如果遇到对象图中含有回环，<code>Display</code>将会陷入死循环，例如下面这个首尾相连的链表：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// a struct that points to itself</span>
 <span class="token keyword">type</span> Cycle <span class="token keyword">struct</span><span class="token punctuation">&#123;</span> Value <span class="token builtin">int</span><span class="token punctuation">;</span> Tail <span class="token operator">*</span>Cycle <span class="token punctuation">&#125;</span>
