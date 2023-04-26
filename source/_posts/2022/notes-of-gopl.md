@@ -11939,7 +11939,7 @@ fmt.Printf("%v\n", v)   // "3"
 fmt.Println(v.String()) // NOTE: "<int Value>"
 ```
 
-**和 `reflect.Type` 类似，`reflect.Value` 也满足 `fmt.Stringer` 接口，但是除非 `Value` 持有的是字符串，否则 `String` 方法只返回其类型。而使用 `fmt` 包的 `%v` 标志参数会对 `reflect.Value` 进行特殊处理。**
+**和 `reflect.Type` 类似，`reflect.Value` 也满足 `fmt.Stringer` 接口，但是除非 `Value` 持有的是字符串，否则 `Value.String` 方法只返回其类型。而使用 `fmt` 包的 `%v` 标志参数会对 `reflect.Value` 进行特殊处理。**
 
 **调用 `Value` 的 `Type` 方法会把它的类型以 `reflect.Type` 方式返回：**
 
