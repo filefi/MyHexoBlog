@@ -9857,7 +9857,7 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
     treflect<span class="token punctuation">.</span>Type
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>为了确保算法对于有环的数据结构也能正常退出，我们必须记录每次已经比较的变量，从而避免进入第二次的比较。<code>Equal</code>函数分配了一组用于比较的结构体，包含每对比较对象的地址（<code>unsafe.Pointer</code>形式保存）和类型。我们要记录类型的原因是，有些不同的变量可能对应相同的地址。例如，如果x和y都是数组类型，那么<code>x</code>和<code>x[0]</code>将对应相同的地址，<code>y</code>和<code>y[0]</code>也是对应相同的地址，这可以用于区分<code>x</code>与<code>y</code>之间的比较或<code>x[0]</code>与<code>y[0]</code>之间的比较是否进行过了。</p>
+<p>为了确保算法对于有环的数据结构也能正常退出，我们必须记录每次已经比较的变量，从而避免进入第二次的比较。<code>Equal</code>函数分配了一组用于比较的结构体，包含每对比较对象的地址（<code>unsafe.Pointer</code>形式保存）和类型。我们要记录类型的原因是，有些不同的变量可能对应相同的地址。例如，如果<code>x</code>和<code>y</code>都是数组类型，那么<code>x</code>和<code>x[0]</code>将对应相同的地址，<code>y</code>和<code>y[0]</code>也是对应相同的地址，这可以用于区分<code>x</code>与<code>y</code>之间的比较或<code>x[0]</code>与<code>y[0]</code>之间的比较是否进行过了。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// cycle check</span>
 <span class="token keyword">if</span> x<span class="token punctuation">.</span><span class="token function">CanAddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> y<span class="token punctuation">.</span><span class="token function">CanAddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     xptr <span class="token operator">:=</span> unsafe<span class="token punctuation">.</span><span class="token function">Pointer</span><span class="token punctuation">(</span>x<span class="token punctuation">.</span><span class="token function">UnsafeAddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
@@ -9872,13 +9872,13 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
     seen<span class="token punctuation">[</span>c<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token boolean">true</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>这是Equal函数用法的例子:</p>
+<p>这是<code>Equal</code>函数用法的例子:</p>
 <pre class="language-go" data-language="go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">Equal</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>        <span class="token comment">// "true"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">Equal</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token string">"foo"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token string">"bar"</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>      <span class="token comment">// "false"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">Equal</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>             <span class="token comment">// "true"</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">Equal</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token function">int</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// "true"</span></code></pre>
 
-<p>Equal函数甚至可以处理类似12.3章中导致Display陷入死循环的带有环的数据。</p>
+<p><code>Equal</code>函数甚至可以处理类似12.3章中导致<code>Display</code>陷入死循环的带有环的数据。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// Circular linked lists a -> b -> a and c -> c.</span>
 <span class="token keyword">type</span> link <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
     value <span class="token builtin">string</span>
@@ -9896,14 +9896,14 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 
 <h2 id="通过cgo调用C代码"><a href="#通过cgo调用C代码" class="headerlink" title="通过cgo调用C代码"></a>通过cgo调用C代码</h2><p>Go程序可能会遇到要访问C语言的某些硬件驱动函数的场景，或者是从一个C++语言实现的嵌入式数据库查询记录的场景，或者是使用Fortran语言实现的一些线性代数库的场景。C语言作为一个通用语言，很多库会选择提供一个C兼容的API，然后用其他不同的编程语言实现（译者：Go语言需要也应该拥抱这些巨大的代码遗产）。</p>
 <p>在本节中，我们将构建一个简易的数据压缩程序，使用了一个Go语言自带的叫cgo的用于支援C语言函数调用的工具。这类工具一般被称为 <em>foreign-function interfaces</em> （简称ffi），并且在类似工具中cgo也不是唯一的。SWIG（<a target="_blank" rel="noopener" href="http://swig.org/">http://swig.org</a>）是另一个类似的且被广泛使用的工具，SWIG提供了很多复杂特性以支援C++的特性，但SWIG并不是我们要讨论的主题。</p>
-<p>在标准库的<code>compress/...</code>子包有很多流行的压缩算法的编码和解码实现，包括流行的LZW压缩算法（Unix的compress命令用的算法）和DEFLATE压缩算法（GNU gzip命令用的算法）。这些包的API的细节虽然有些差异，但是它们都提供了针对 io.Writer类型输出的压缩接口和提供了针对io.Reader类型输入的解压缩接口。例如：</p>
+<p>在标准库的<code>compress/...</code>子包有很多流行的压缩算法的编码和解码实现，包括流行的LZW压缩算法（Unix的compress命令用的算法）和DEFLATE压缩算法（GNU gzip命令用的算法）。这些包的API的细节虽然有些差异，但是它们都提供了针对 <code>io.Writer</code>类型输出的压缩接口和提供了针对<code>io.Reader</code>类型输入的解压缩接口。例如：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> gzip <span class="token comment">// compress/gzip</span>
 <span class="token keyword">func</span> <span class="token function">NewWriter</span><span class="token punctuation">(</span>w io<span class="token punctuation">.</span>Writer<span class="token punctuation">)</span> io<span class="token punctuation">.</span>WriteCloser
 <span class="token keyword">func</span> <span class="token function">NewReader</span><span class="token punctuation">(</span>r io<span class="token punctuation">.</span>Reader<span class="token punctuation">)</span> <span class="token punctuation">(</span>io<span class="token punctuation">.</span>ReadCloser<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span></code></pre>
 
-<p>bzip2压缩算法，是基于优雅的Burrows-Wheeler变换算法，运行速度比gzip要慢，但是可以提供更高的压缩比。标准库的compress&#x2F;bzip2包目前还没有提供bzip2压缩算法的实现。完全从头开始实现一个压缩算法是一件繁琐的工作，而且 <a target="_blank" rel="noopener" href="http://bzip.org/">http://bzip.org</a> 已经有现成的libbzip2的开源实现，不仅文档齐全而且性能又好。</p>
-<p>如果是比较小的C语言库，我们完全可以用纯Go语言重新实现一遍。如果我们对性能也没有特殊要求的话，我们还可以用os&#x2F;exec包的方法将C编写的应用程序作为一个子进程运行。只有当你需要使用复杂而且性能更高的底层C接口时，就是使用cgo的场景了（译注：用os&#x2F;exec包调用子进程的方法会导致程序运行时依赖那个应用程序）。下面我们将通过一个例子讲述cgo的具体用法。</p>
-<p>译注：本章采用的代码都是最新的。因为之前已经出版的书中包含的代码只能在Go1.5之前使用。从Go1.6开始，Go语言已经明确规定了哪些Go语言指针可以直接传入C语言函数。新代码重点是增加了bz2alloc和bz2free的两个函数，用于bz_stream对象空间的申请和释放操作。下面是新代码中增加的注释，说明这个问题：</p>
+<p>bzip2压缩算法，是基于优雅的Burrows-Wheeler变换算法，运行速度比gzip要慢，但是可以提供更高的压缩比。标准库的<code>compress/bzip2</code>包目前还没有提供bzip2压缩算法的实现。完全从头开始实现一个压缩算法是一件繁琐的工作，而且 <a target="_blank" rel="noopener" href="http://bzip.org/">http://bzip.org</a> 已经有现成的libbzip2的开源实现，不仅文档齐全而且性能又好。</p>
+<p>如果是比较小的C语言库，我们完全可以用纯Go语言重新实现一遍。如果我们对性能也没有特殊要求的话，我们还可以用<code>os/exec</code>包的方法将C编写的应用程序作为一个子进程运行。只有当你需要使用复杂而且性能更高的底层C接口时，就是使用cgo的场景了（译注：用<code>os/exec</code>包调用子进程的方法会导致程序运行时依赖那个应用程序）。下面我们将通过一个例子讲述cgo的具体用法。</p>
+<p>译注：本章采用的代码都是最新的。因为之前已经出版的书中包含的代码只能在Go1.5之前使用。从Go1.6开始，Go语言已经明确规定了哪些Go语言指针可以直接传入C语言函数。新代码重点是增加了<code>bz2alloc</code>和<code>bz2free</code>的两个函数，用于<code>bz_stream</code>对象空间的申请和释放操作。下面是新代码中增加的注释，说明这个问题：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// The version of this program that appeared in the first and second</span>
 <span class="token comment">// printings did not comply with the proposed rules for passing</span>
 <span class="token comment">// pointers between Go and C, described here:</span>
@@ -9921,8 +9921,8 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 <span class="token comment">// it returns, it clears the fields of the bz_stream that contain</span>
 <span class="token comment">// pointers to Go variables.</span></code></pre>
 
-<p>要使用libbzip2，我们需要先构建一个bz_stream结构体，用于保持输入和输出缓存。然后有三个函数：BZ2_bzCompressInit用于初始化缓存，BZ2_bzCompress用于将输入缓存的数据压缩到输出缓存，BZ2_bzCompressEnd用于释放不需要的缓存。（目前不要担心包的具体结构，这个例子的目的就是演示各个部分如何组合在一起的。）</p>
-<p>我们可以在Go代码中直接调用BZ2_bzCompressInit和BZ2_bzCompressEnd，但是对于BZ2_bzCompress，我们将定义一个C语言的包装函数，用它完成真正的工作。下面是C代码，对应一个独立的文件。</p>
+<p>要使用libbzip2，我们需要先构建一个<code>bz_stream</code>结构体，用于保持输入和输出缓存。然后有三个函数：<code>BZ2_bzCompressInit</code>用于初始化缓存，<code>BZ2_bzCompress</code>用于将输入缓存的数据压缩到输出缓存，<code>BZ2_bzCompressEnd</code>用于释放不需要的缓存。（目前不要担心包的具体结构，这个例子的目的就是演示各个部分如何组合在一起的。）</p>
+<p>我们可以在Go代码中直接调用<code>BZ2_bzCompressInit</code>和<code>BZ2_bzCompressEnd</code>，但是对于<code>BZ2_bzCompress</code>，我们将定义一个C语言的包装函数，用它完成真正的工作。下面是C代码，对应一个独立的文件。</p>
 <p><em>gopl.io&#x2F;ch13&#x2F;bzip</em></p>
 <pre class="language-C" data-language="C"><code class="language-C">&#x2F;* This file is gopl.io&#x2F;ch13&#x2F;bzip&#x2F;bzip2.c,         *&#x2F;
 &#x2F;* a simple wrapper for libbzip2 suitable for cgo. *&#x2F;
@@ -9978,10 +9978,10 @@ void bz2free(bz_stream* s) &#123; free(s); &#125;
     <span class="token keyword">return</span> w
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>在预处理过程中，cgo工具生成一个临时包用于包含所有在Go语言中访问的C语言的函数或类型。例如C.bz_stream和C.BZ2_bzCompressInit。cgo工具通过以某种特殊的方式调用本地的C编译器来发现在Go源文件导入声明前的注释中包含的C头文件中的内容（译注：<code>import &quot;C&quot;</code>语句前紧挨着的注释是对应cgo的特殊语法，对应必要的构建参数选项和C语言代码）。</p>
-<p>在cgo注释中还可以包含#cgo指令，用于给C语言工具链指定特殊的参数。例如CFLAGS和LDFLAGS分别对应传给C语言编译器的编译参数和链接器参数，使它们可以从特定目录找到bzlib.h头文件和libbz2.a库文件。这个例子假设你已经在&#x2F;usr目录成功安装了bzip2库。如果bzip2库是安装在不同的位置，你需要更新这些参数（译注：这里有一个从纯C代码生成的cgo绑定，不依赖bzip2静态库和操作系统的具体环境，具体请访问 <a target="_blank" rel="noopener" href="https://github.com/chai2010/bzip2">https://github.com/chai2010/bzip2</a> ）。</p>
-<p>NewWriter函数通过调用C语言的BZ2_bzCompressInit函数来初始化stream中的缓存。在writer结构中还包括了另一个buffer，用于输出缓存。</p>
-<p>下面是Write方法的实现，返回成功压缩数据的大小，主体是一个循环中调用C语言的bz2compress函数实现的。从代码可以看到，Go程序可以访问C语言的bz_stream、char和uint类型，还可以访问bz2compress等函数，甚至可以访问C语言中像BZ_RUN那样的宏定义，全部都是以C.x语法访问。其中C.uint类型和Go语言的uint类型并不相同，即使它们具有相同的大小也是不同的类型。</p>
+<p>在预处理过程中，cgo工具生成一个临时包用于包含所有在Go语言中访问的C语言的函数或类型。例如<code>C.bz_stream</code>和<code>C.BZ2_bzCompressInit</code>。cgo工具通过以某种特殊的方式调用本地的C编译器来发现在Go源文件导入声明前的注释中包含的C头文件中的内容（译注：<code>import &quot;C&quot;</code>语句前紧挨着的注释是对应cgo的特殊语法，对应必要的构建参数选项和C语言代码）。</p>
+<p>在cgo注释中还可以包含<code>#cgo</code>指令，用于给C语言工具链指定特殊的参数。例如<code>CFLAGS</code>和<code>LDFLAGS</code>分别对应传给C语言编译器的编译参数和链接器参数，使它们可以从特定目录找到<code>bzlib.h</code>头文件和<code>libbz2.a</code>库文件。这个例子假设你已经在<code>/usr</code>目录成功安装了<code>bzip2</code>库。如果<code>bzip2</code>库是安装在不同的位置，你需要更新这些参数（译注：这里有一个从纯C代码生成的cgo绑定，不依赖<code>bzip2</code>静态库和操作系统的具体环境，具体请访问 <a target="_blank" rel="noopener" href="https://github.com/chai2010/bzip2">https://github.com/chai2010/bzip2</a> ）。</p>
+<p><code>NewWriter</code>函数通过调用C语言的<code>BZ2_bzCompressInit</code>函数来初始化<code>stream</code>中的缓存。在<code>writer</code>结构中还包括了另一个<code>buffer</code>，用于输出缓存。</p>
+<p>下面是<code>Write</code>方法的实现，返回成功压缩数据的大小，主体是一个循环中调用C语言的<code>bz2compress</code>函数实现的。从代码可以看到，Go程序可以访问C语言的<code>bz_stream</code>、<code>char</code>和<code>uint</code>类型，还可以访问<code>bz2compress</code>等函数，甚至可以访问C语言中像<code>BZ_RUN</code>那样的宏定义，全部都是以<code>C.x</code>语法访问。其中<code>C.uint</code>类型和Go语言的<code>uint</code>类型并不相同，即使它们具有相同的大小也是不同的类型。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>w <span class="token operator">*</span>writer<span class="token punctuation">)</span> <span class="token function">Write</span><span class="token punctuation">(</span>data <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">if</span> w<span class="token punctuation">.</span>stream <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
         <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"closed"</span><span class="token punctuation">)</span>
@@ -10002,8 +10002,8 @@ void bz2free(bz_stream* s) &#123; free(s); &#125;
     <span class="token keyword">return</span> total<span class="token punctuation">,</span> <span class="token boolean">nil</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>在循环的每次迭代中，向bz2compress传入数据的地址和剩余部分的长度，还有输出缓存w.outbuf的地址和容量。这两个长度信息通过它们的地址传入而不是值传入，因为bz2compress函数可能会根据已经压缩的数据和压缩后数据的大小来更新这两个值。每个块压缩后的数据被写入到底层的io.Writer。</p>
-<p>Close方法和Write方法有着类似的结构，通过一个循环将剩余的压缩数据刷新到输出缓存。</p>
+<p>在循环的每次迭代中，向<code>bz2compress</code>传入数据的地址和剩余部分的长度，还有输出缓存<code>w.outbuf</code>的地址和容量。这两个长度信息通过它们的地址传入而不是值传入，因为<code>bz2compress</code>函数可能会根据已经压缩的数据和压缩后数据的大小来更新这两个值。每个块压缩后的数据被写入到底层的<code>io.Writer</code>。</p>
+<p><code>Close</code>方法和<code>Write</code>方法有着类似的结构，通过一个循环将剩余的压缩数据刷新到输出缓存。</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// Close flushes the compressed data and closes the stream.</span>
 <span class="token comment">// It does not close the underlying io.Writer.</span>
 <span class="token keyword">func</span> <span class="token punctuation">(</span>w <span class="token operator">*</span>writer<span class="token punctuation">)</span> <span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
@@ -10028,8 +10028,8 @@ void bz2free(bz_stream* s) &#123; free(s); &#125;
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>压缩完成后，Close方法用了defer函数确保函数退出前调用C.BZ2_bzCompressEnd和C.bz2free释放相关的C语言运行时资源。此刻w.stream指针将不再有效，我们将它设置为nil以保证安全，然后在每个方法中增加了nil检测，以防止用户在关闭后依然错误使用相关方法。</p>
-<p>上面的实现中，不仅仅写是非并发安全的，甚至并发调用Close和Write方法也可能导致程序的的崩溃。修复这个问题是练习13.3的内容。</p>
+<p>压缩完成后，<code>Close</code>方法用了defer函数确保函数退出前调用<code>C.BZ2_bzCompressEnd</code>和<code>C.bz2free</code>释放相关的C语言运行时资源。此刻<code>w.stream</code>指针将不再有效，我们将它设置为<code>nil</code>以保证安全，然后在每个方法中增加了nil检测，以防止用户在关闭后依然错误使用相关方法。</p>
+<p>上面的实现中，不但<code>writer</code>不是并发安全的，甚至并发调用<code>Close</code>和<code>Write</code>方法也可能导致程序的的崩溃。修复这个问题是练习13.3的内容。</p>
 <p>下面的bzipper程序，使用我们自己包实现的bzip2压缩命令。它的行为和许多Unix系统的bzip2命令类似。</p>
 <p><em>gopl.io&#x2F;ch13&#x2F;bzipper</em></p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// Bzipper reads input, bzip2-compresses it, and writes it out.</span>
@@ -10063,11 +10063,11 @@ $ .&#x2F;bzipper &lt; &#x2F;usr&#x2F;share&#x2F;dict&#x2F;words | wc -c
 $ .&#x2F;bzipper &lt; &#x2F;usr&#x2F;share&#x2F;dict&#x2F;words | bunzip2 | sha256sum
 126a4ef38493313edc50b86f90dfdaf7c59ec6c948451eac228f2f3a8ab1a6ed -</code></pre>
 
-<p>我们演示了如何将一个C语言库链接到Go语言程序。相反，将Go编译为静态库然后链接到C程序，或者将Go程序编译为动态库然后在C程序中动态加载也都是可行的（译注：在Go1.5中，Windows系统的Go语言实现并不支持生成C语言动态库或静态库的特性。不过好消息是，目前已经有人在尝试解决这个问题，具体请访问 <a target="_blank" rel="noopener" href="https://github.com/golang/go/issues/11058">Issue11058</a> ）。这里我们只展示的cgo很小的一些方面，更多的关于内存管理、指针、回调函数、中断信号处理、字符串、errno处理、终结器，以及goroutines和系统线程的关系等，有很多细节可以讨论。特别是如何将Go语言的指针传入C函数的规则也是异常复杂的（译注：简单来说，要传入C函数的Go指针指向的数据本身不能包含指针或其他引用类型；并且C函数在返回后不能继续持有Go指针；并且在C函数返回之前，Go指针是被锁定的，不能导致对应指针数据被移动或栈的调整），部分的原因在13.2节有讨论到，但是在Go1.5中还没有被明确（译注：Go1.6将会明确cgo中的指针使用规则）。如果要进一步阅读，可以从 <a target="_blank" rel="noopener" href="https://golang.org/cmd/cgo">https://golang.org/cmd/cgo</a> 开始。</p>
-<h2 id="几点忠告-1"><a href="#几点忠告-1" class="headerlink" title="几点忠告"></a>几点忠告</h2><p>我们在前一章结尾的时候，我们警告要谨慎使用reflect包。那些警告同样适用于本章的unsafe包。</p>
+<p>我们演示了如何将一个C语言库链接到Go语言程序。相反，<strong>将Go编译为静态库然后链接到C程序，或者将Go程序编译为动态库然后在C程序中动态加载也都是可行的</strong>（译注：在Go1.5中，Windows系统的Go语言实现并不支持生成C语言动态库或静态库的特性。不过好消息是，目前已经有人在尝试解决这个问题，具体请访问 <a target="_blank" rel="noopener" href="https://github.com/golang/go/issues/11058">Issue11058</a> ）。这里我们只展示的cgo很小的一些方面，更多的关于内存管理、指针、回调函数、中断信号处理、字符串、errno处理、终结器，以及goroutines和系统线程的关系等，有很多细节可以讨论。特别是如何将Go语言的指针传入C函数的规则也是异常复杂的（译注：简单来说，要传入C函数的Go指针指向的数据本身不能包含指针或其他引用类型；并且C函数在返回后不能继续持有Go指针；并且在C函数返回之前，Go指针是被锁定的，不能导致对应指针数据被移动或栈的调整），部分的原因在13.2节有讨论到，但是在Go1.5中还没有被明确（译注：Go1.6将会明确cgo中的指针使用规则）。如果要进一步阅读，可以从 <a target="_blank" rel="noopener" href="https://golang.org/cmd/cgo">https://golang.org/cmd/cgo</a> 开始。</p>
+<h2 id="几点忠告-1"><a href="#几点忠告-1" class="headerlink" title="几点忠告"></a>几点忠告</h2><p>我们在前一章结尾的时候，我们警告要谨慎使用<code>reflect</code>包。那些警告同样适用于本章的<code>unsafe</code>包。</p>
 <p>高级语言使得程序员不用再关心真正运行程序的指令细节，同时也不再需要关注许多如内存布局之类的实现细节。因为高级语言这个绝缘的抽象层，我们可以编写安全健壮的，并且可以运行在不同操作系统上的具有高度可移植性的程序。</p>
-<p>但是unsafe包，它让程序员可以透过这个绝缘的抽象层直接使用一些必要的功能，虽然可能是为了获得更好的性能。但是代价就是牺牲了可移植性和程序安全，因此使用unsafe包是一个危险的行为。我们对何时以及如何使用unsafe包的建议和我们在11.5节提到的Knuth对过早优化的建议类似。大多数Go程序员可能永远不会需要直接使用unsafe包。当然，也永远都会有一些需要使用unsafe包实现会更简单的场景。如果确实认为使用unsafe包是最理想的方式，那么应该尽可能将它限制在较小的范围，这样其它代码就可以忽略unsafe的影响。</p>
-<p>现在，赶紧将最后两章抛入脑后吧。编写一些实实在在的应用是真理。请远离reflect和unsafe包，除非你确实需要它们。</p>
+<p>但是<code>unsafe</code>包，它让程序员可以透过这个绝缘的抽象层直接使用一些必要的功能，虽然可能是为了获得更好的性能。但是代价就是牺牲了可移植性和程序安全，因此使用<code>unsafe</code>包是一个危险的行为。我们对何时以及如何使用<code>unsafe</code>包的建议和我们在11.5节提到的Knuth对过早优化的建议类似。大多数Go程序员可能永远不会需要直接使用<code>unsafe</code>包。当然，也永远都会有一些需要使用<code>unsafe</code>包实现会更简单的场景。如果确实认为使用<code>unsafe</code>包是最理想的方式，那么应该尽可能将它限制在较小的范围，这样其它代码就可以忽略<code>unsafe</code>的影响。</p>
+<p>现在，赶紧将最后两章抛入脑后吧。编写一些实实在在的应用是真理。请远离<code>reflect</code>和<code>unsafe</code>包，除非你确实需要它们。</p>
 <p>最后，用Go快乐地编程。我们希望你能像我们一样喜欢Go语言。</p>
 
     </div>
