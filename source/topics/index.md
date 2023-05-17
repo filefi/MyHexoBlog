@@ -9,3 +9,5 @@ description: 专题
 - {% post_link docker_practice '《Docker 从入门到实践》学习笔记' %}
 
 - {% post_link learn_gobyexample 'gobyexample 学习笔记' %}
+
+- {% post_link notes-of-gopl '《The Go Programming Language》学习笔记' %}
