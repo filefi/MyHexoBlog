@@ -2,7 +2,7 @@
 title: 更新 Rocket.Chat
 date: 2023-05-28 19:46:31
 updated: 2023-05-28 19:46:31
-tags: [Docker, IM, MongoDB, Docker Compose]
+tags: [Docker, RocketChat, MongoDB, Docker Compose]
 categories: Docker
 ---
 
@@ -211,3 +211,14 @@ docker compose up -d mongodb
 
 13. 检查是否更新成功。
 
+
+## 参考文档
+https://docs.rocket.chat/deploy/updating-rocket.chat
+https://docs.rocket.chat/deploy/prepare-for-your-deployment/rapid-deployment-methods/docker-and-docker-compose
+https://docs.rocket.chat/deploy/rocket.chat-environment-configuration/mongodb-configuration/mongodb-backup-and-restore
+https://www.mongodb.com/docs/manual/release-notes/5.0-upgrade-replica-set/
+https://www.mongodb.com/docs/manual/release-notes/6.0-upgrade-replica-set/
+https://www.mongodb.com/docs/manual/tutorial/manage-mongodb-processes/#force-replica-set-shutdown
+https://www.mongodb.com/compatibility/deploying-a-mongodb-cluster-with-docker
+https://www.mongodb.com/docs/database-tools/mongodump/
+https://www.mongodb.com/docs/database-tools/mongorestore/
