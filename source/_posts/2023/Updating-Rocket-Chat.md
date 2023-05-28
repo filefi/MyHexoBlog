@@ -151,6 +151,7 @@ docker exec -it mongodb bash
 ```
 
 3. 进入MongoDB shell：
+
 ```
 mongo
 ```
