@@ -37,6 +37,13 @@ docker compose up -d rocketchat
 ```
 
 ## 更新到指定版本Rocket.Chat
+
+拉取指定版本的Docker镜像：
+
+```
+docker pull registry.rocket.chat/rocketchat/rocket.chat:latest
+```
+
 要更新到指定版本的Rocket.Chat，需要修改部署目录中的`.env`配置文件，或者`compose.yml`文件：
 
 - 修改部署目录中的`.env`配置文件，将`RELEASE`变量的值修改为预期的Rocket.Chat版本号：
