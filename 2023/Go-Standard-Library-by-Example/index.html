@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"ifelif.cn","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.16.0/source/js/config.min.js"></script>
+
+    <meta name="description" content="io 基本I&#x2F;O接口io 包为 I&#x2F;O 原语提供了基本的接口。它主要包装了这些原语的已有实现。 由于这些被接口包装的I&#x2F;O原语是由不同的低级操作实现，因此，在另有声明之前不该假定它们的并发执行是安全的。 在 io 包中最重要的是两个接口：Reader 和 Writer 接口。 Reader 接口type Reader interface &amp;#123; 	Read(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go Standard Library by Example">
+<meta property="og:url" content="https://ifelif.cn/2023/Go-Standard-Library-by-Example/index.html">
+<meta property="og:site_name" content="正经人谁写日记">
+<meta property="og:description" content="io 基本I&#x2F;O接口io 包为 I&#x2F;O 原语提供了基本的接口。它主要包装了这些原语的已有实现。 由于这些被接口包装的I&#x2F;O原语是由不同的低级操作实现，因此，在另有声明之前不该假定它们的并发执行是安全的。 在 io 包中最重要的是两个接口：Reader 和 Writer 接口。 Reader 接口type Reader interface &amp;#123; 	Read(">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-28T10:25:04.000Z">
+<meta property="article:modified_time" content="2023-05-28T10:25:04.000Z">
+<meta property="article:author" content="filefi">
+<meta property="article:tag" content="Golang">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ifelif.cn/2023/Go-Standard-Library-by-Example/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ifelif.cn/2023/Go-Standard-Library-by-Example/","path":"2023/Go-Standard-Library-by-Example/","title":"Go Standard Library by Example"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Go Standard Library by Example | 正经人谁写日记</title>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.16.0/source/js/third-party/analytics/baidu-analytics.min.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?3f08a6c1407c206aa070325c05c2844d"></script>
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="正经人谁写日记" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">正经人谁写日记</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-专题"><a href="/topics/" rel="section"><i class="fa fa-book fa-fw"></i>专题</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#io-%E5%9F%BA%E6%9C%ACI-x2F-O%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.</span> <span class="nav-text">io 基本I&#x2F;O接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Reader-%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.1.</span> <span class="nav-text">Reader 接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#func-LimitReader-r-Reader-n-int64-Reader"><span class="nav-number">1.1.1.</span> <span class="nav-text">func LimitReader(r Reader, n int64) Reader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-MultiReader-readers-%E2%80%A6Reader-Reader"><span class="nav-number">1.1.2.</span> <span class="nav-text">func MultiReader(readers …Reader) Reader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-TeeReader-r-Reader-w-Writer-Reader"><span class="nav-number">1.1.3.</span> <span class="nav-text">func TeeReader(r Reader, w Writer) Reader</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ByteReader-%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.2.</span> <span class="nav-text">ByteReader 接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ByteScanner"><span class="nav-number">1.3.</span> <span class="nav-text">type ByteScanner</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ByteWriter"><span class="nav-number">1.4.</span> <span class="nav-text">type ByteWriter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-Closer"><span class="nav-number">1.5.</span> <span class="nav-text">type Closer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-LimitedReader"><span class="nav-number">1.6.</span> <span class="nav-text">type LimitedReader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#func-l-LimitedReader-Read-p-byte-n-int-err-error"><span class="nav-number">1.6.1.</span> <span class="nav-text">func (l *LimitedReader) Read(p []byte) (n int, err error)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-OffsetWriter"><span class="nav-number">1.7.</span> <span class="nav-text">type OffsetWriter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#func-NewOffsetWriter-w-WriterAt-off-int64-OffsetWriter"><span class="nav-number">1.7.1.</span> <span class="nav-text">func NewOffsetWriter(w WriterAt, off int64) *OffsetWriter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-o-OffsetWriter-Seek-offset-int64-whence-int-int64-error"><span class="nav-number">1.7.2.</span> <span class="nav-text">func (o *OffsetWriter) Seek(offset int64, whence int) (int64, error)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-o-OffsetWriter-Write-p-byte-n-int-err-error"><span class="nav-number">1.7.3.</span> <span class="nav-text">func (o *OffsetWriter) Write(p []byte) (n int, err error)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-o-OffsetWriter-WriteAt-p-byte-off-int64-n-int-err-error"><span class="nav-number">1.7.4.</span> <span class="nav-text">func (o *OffsetWriter) WriteAt(p []byte, off int64) (n int, err error)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-PipeReader"><span class="nav-number">1.8.</span> <span class="nav-text">type PipeReader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#func-r-PipeReader-Close-error"><span class="nav-number">1.8.1.</span> <span class="nav-text">func (r *PipeReader) Close() error</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-r-PipeReader-CloseWithError-err-error-error"><span class="nav-number">1.8.2.</span> <span class="nav-text">func (r *PipeReader) CloseWithError(err error) error</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-r-PipeReader-Read-data-byte-n-int-err-error"><span class="nav-number">1.8.3.</span> <span class="nav-text">func (r *PipeReader) Read(data []byte) (n int, err error)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-PipeWriter"><span class="nav-number">1.9.</span> <span class="nav-text">type PipeWriter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#func-w-PipeWriter-Close-error"><span class="nav-number">1.9.1.</span> <span class="nav-text">func (w *PipeWriter) Close() error</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-w-PipeWriter-CloseWithError-err-error-error"><span class="nav-number">1.9.2.</span> <span class="nav-text">func (w *PipeWriter) CloseWithError(err error) error</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-w-PipeWriter-Write-data-byte-n-int-err-error"><span class="nav-number">1.9.3.</span> <span class="nav-text">func (w *PipeWriter) Write(data []byte) (n int, err error)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ReadCloser"><span class="nav-number">1.10.</span> <span class="nav-text">type ReadCloser</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#func-NopCloser-r-Reader-ReadCloser"><span class="nav-number">1.10.1.</span> <span class="nav-text">func NopCloser(r Reader) ReadCloser</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ReadSeekCloser"><span class="nav-number">1.11.</span> <span class="nav-text">type ReadSeekCloser</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ReadSeeker"><span class="nav-number">1.12.</span> <span class="nav-text">type ReadSeeker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ReadWriteCloser"><span class="nav-number">1.13.</span> <span class="nav-text">type ReadWriteCloser</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ReadWriteSeeker"><span class="nav-number">1.14.</span> <span class="nav-text">type ReadWriteSeeker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ReadWriter"><span class="nav-number">1.15.</span> <span class="nav-text">type ReadWriter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-Reader"><span class="nav-number">1.16.</span> <span class="nav-text">type Reader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ReaderAt"><span class="nav-number">1.17.</span> <span class="nav-text">type ReaderAt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-ReaderFrom"><span class="nav-number">1.18.</span> <span class="nav-text">type ReaderFrom</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-RuneReader"><span class="nav-number">1.19.</span> <span class="nav-text">type RuneReader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-RuneScanner"><span class="nav-number">1.20.</span> <span class="nav-text">type RuneScanner</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-SectionReader"><span class="nav-number">1.21.</span> <span class="nav-text">type SectionReader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#func-NewSectionReader-r-ReaderAt-off-int64-n-int64-SectionReader"><span class="nav-number">1.21.1.</span> <span class="nav-text">func NewSectionReader(r ReaderAt, off int64, n int64) *SectionReader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-s-SectionReader-Read-p-byte-n-int-err-error"><span class="nav-number">1.21.2.</span> <span class="nav-text">func (s *SectionReader) Read(p []byte) (n int, err error)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-s-SectionReader-ReadAt-p-byte-off-int64-n-int-err-error"><span class="nav-number">1.21.3.</span> <span class="nav-text">func (s *SectionReader) ReadAt(p []byte, off int64) (n int, err error)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-s-SectionReader-Seek-offset-int64-whence-int-int64-error"><span class="nav-number">1.21.4.</span> <span class="nav-text">func (s *SectionReader) Seek(offset int64, whence int) (int64, error)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-s-SectionReader-Size-int64"><span class="nav-number">1.21.5.</span> <span class="nav-text">func (s *SectionReader) Size() int64</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-Seeker"><span class="nav-number">1.22.</span> <span class="nav-text">type Seeker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-StringWriter"><span class="nav-number">1.23.</span> <span class="nav-text">type StringWriter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-WriteCloser"><span class="nav-number">1.24.</span> <span class="nav-text">type WriteCloser</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-WriteSeeker"><span class="nav-number">1.25.</span> <span class="nav-text">type WriteSeeker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-Writer"><span class="nav-number">1.26.</span> <span class="nav-text">type Writer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#func-MultiWriter-writers-%E2%80%A6Writer-Writer"><span class="nav-number">1.26.1.</span> <span class="nav-text">func MultiWriter(writers …Writer) Writer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-WriterAt"><span class="nav-number">1.27.</span> <span class="nav-text">type WriterAt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-WriterTo"><span class="nav-number">1.28.</span> <span class="nav-text">type WriterTo</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="filefi"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">filefi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/filefi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;filefi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://filefi.github.io/" title="https:&#x2F;&#x2F;filefi.github.io" rel="noopener" target="_blank">github home page</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2023/Go-Standard-Library-by-Example/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="filefi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Go Standard Library by Example | 正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go Standard Library by Example<a href="https://github.com/filefi/MyHexoBlog/tree/master/source/_posts/2023/Go-Standard-Library-by-Example.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-05-28 18:25:04" itemprop="dateCreated datePublished" datetime="2023-05-28T18:25:04+08:00">2023-05-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><span id="more"></span>
+
+<h1 id="io-基本I-x2F-O接口"><a href="#io-基本I-x2F-O接口" class="headerlink" title="io 基本I&#x2F;O接口"></a><code>io</code> 基本I&#x2F;O接口</h1><p><code>io</code> 包为 I&#x2F;O 原语提供了基本的接口。它主要包装了这些原语的已有实现。</p>
+<p>由于这些被接口包装的I&#x2F;O原语是由不同的低级操作实现，因此，在另有声明之前不该假定它们的并发执行是安全的。</p>
+<p>在 <code>io</code> 包中最重要的是两个接口：<code>Reader</code> 和 <code>Writer</code> 接口。</p>
+<h2 id="Reader-接口"><a href="#Reader-接口" class="headerlink" title="Reader 接口"></a><code>Reader</code> 接口</h2><pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">interface</span> <span class="token punctuation">&#123;</span>
+	<span class="token function">Read</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p><code>Reader</code>接口封装了基本的 <code>Read</code> 方法。</p>
+<p><code>Read</code> 将 <code>len(p)</code> 个字节读取到 <code>p</code> 中。它返回读取的字节数 <code>n（0 &lt;= n &lt;= len(p)）</code> 以及任何遇到的错误。即使 <code>Read</code> 返回的 <code>n &lt; len(p)</code>，它也会在调用过程中占用 <code>len(p)</code> 个字节作为暂存空间。若可读取的数据不到 <code>len(p)</code> 个字节，<code>Read</code> 会返回可用数据，而不是等待更多数据。</p>
+<p>当 <code>Read</code> 在成功读取 <code>n &gt; 0</code> 个字节后遇到一个错误或 EOF (end-of-file)，它会返回读取的字节数。它可能会同时在本次的调用中返回一个non-nil错误,或在下一次的调用中返回这个错误（且 n 为 0）。 一般情况下, Reader会返回一个非0字节数n, 若 <code>n = len(p)</code> 个字节从输入源的结尾处由 Read 返回，<code>Read</code> 可能返回 <code>err == EOF</code> 或者 <code>err == nil</code>。并且之后的 <code>Read()</code> 都应该返回 (n:0, err:EOF)。</p>
+<p>调用者在考虑错误之前应当首先处理返回的数据。这样做可以正确地处理在读取一些字节后产生的 I&#x2F;O 错误，同时允许EOF的出现。</p>
+<p><code>ReadFrom</code> 函数将 <code>io.Reader</code> 作为参数，也就是说，<code>ReadFrom</code> 可以从任意的地方读取数据，只要来源实现了 <code>io.Reader</code> 接口。比如，我们可以从标准输入、文件、字符串等读取数据，示例代码如下：</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>reader io<span class="token punctuation">.</span>Reader<span class="token punctuation">,</span> num <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    p <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> num<span class="token punctuation">)</span>
+    n<span class="token punctuation">,</span> err <span class="token operator">:=</span> reader<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> n <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> p<span class="token punctuation">[</span><span class="token punctuation">:</span>n<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> p<span class="token punctuation">,</span> err
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 从标准输入读取</span>
+data<span class="token punctuation">,</span> err <span class="token operator">=</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 从普通文件读取，其中 file 是 os.File 的实例</span>
+data<span class="token punctuation">,</span> err <span class="token operator">=</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 从字符串读取</span>
+data<span class="token punctuation">,</span> err <span class="token operator">=</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"from string"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">12</span><span class="token punctuation">)</span></code></pre>
+
+
+<h3 id="func-LimitReader-r-Reader-n-int64-Reader"><a href="#func-LimitReader-r-Reader-n-int64-Reader" class="headerlink" title="func LimitReader(r Reader, n int64) Reader"></a>func LimitReader(r Reader, n int64) Reader</h3><h3 id="func-MultiReader-readers-…Reader-Reader"><a href="#func-MultiReader-readers-…Reader-Reader" class="headerlink" title="func MultiReader(readers …Reader) Reader"></a>func MultiReader(readers …Reader) Reader</h3><h3 id="func-TeeReader-r-Reader-w-Writer-Reader"><a href="#func-TeeReader-r-Reader-w-Writer-Reader" class="headerlink" title="func TeeReader(r Reader, w Writer) Reader"></a>func TeeReader(r Reader, w Writer) Reader</h3><h2 id="ByteReader-接口"><a href="#ByteReader-接口" class="headerlink" title="ByteReader 接口"></a><code>ByteReader</code> 接口</h2><h2 id="type-ByteScanner"><a href="#type-ByteScanner" class="headerlink" title="type ByteScanner"></a>type ByteScanner</h2><h2 id="type-ByteWriter"><a href="#type-ByteWriter" class="headerlink" title="type ByteWriter"></a>type ByteWriter</h2><h2 id="type-Closer"><a href="#type-Closer" class="headerlink" title="type Closer"></a>type Closer</h2><h2 id="type-LimitedReader"><a href="#type-LimitedReader" class="headerlink" title="type LimitedReader"></a>type LimitedReader</h2><h3 id="func-l-LimitedReader-Read-p-byte-n-int-err-error"><a href="#func-l-LimitedReader-Read-p-byte-n-int-err-error" class="headerlink" title="func (l *LimitedReader) Read(p []byte) (n int, err error)"></a>func (l *LimitedReader) Read(p []byte) (n int, err error)</h3><h2 id="type-OffsetWriter"><a href="#type-OffsetWriter" class="headerlink" title="type OffsetWriter"></a>type OffsetWriter</h2><h3 id="func-NewOffsetWriter-w-WriterAt-off-int64-OffsetWriter"><a href="#func-NewOffsetWriter-w-WriterAt-off-int64-OffsetWriter" class="headerlink" title="func NewOffsetWriter(w WriterAt, off int64) *OffsetWriter"></a>func NewOffsetWriter(w WriterAt, off int64) *OffsetWriter</h3><h3 id="func-o-OffsetWriter-Seek-offset-int64-whence-int-int64-error"><a href="#func-o-OffsetWriter-Seek-offset-int64-whence-int-int64-error" class="headerlink" title="func (o *OffsetWriter) Seek(offset int64, whence int) (int64, error)"></a>func (o *OffsetWriter) Seek(offset int64, whence int) (int64, error)</h3><h3 id="func-o-OffsetWriter-Write-p-byte-n-int-err-error"><a href="#func-o-OffsetWriter-Write-p-byte-n-int-err-error" class="headerlink" title="func (o *OffsetWriter) Write(p []byte) (n int, err error)"></a>func (o *OffsetWriter) Write(p []byte) (n int, err error)</h3><h3 id="func-o-OffsetWriter-WriteAt-p-byte-off-int64-n-int-err-error"><a href="#func-o-OffsetWriter-WriteAt-p-byte-off-int64-n-int-err-error" class="headerlink" title="func (o *OffsetWriter) WriteAt(p []byte, off int64) (n int, err error)"></a>func (o *OffsetWriter) WriteAt(p []byte, off int64) (n int, err error)</h3><h2 id="type-PipeReader"><a href="#type-PipeReader" class="headerlink" title="type PipeReader"></a>type PipeReader</h2><h3 id="func-r-PipeReader-Close-error"><a href="#func-r-PipeReader-Close-error" class="headerlink" title="func (r *PipeReader) Close() error"></a>func (r *PipeReader) Close() error</h3><h3 id="func-r-PipeReader-CloseWithError-err-error-error"><a href="#func-r-PipeReader-CloseWithError-err-error-error" class="headerlink" title="func (r *PipeReader) CloseWithError(err error) error"></a>func (r *PipeReader) CloseWithError(err error) error</h3><h3 id="func-r-PipeReader-Read-data-byte-n-int-err-error"><a href="#func-r-PipeReader-Read-data-byte-n-int-err-error" class="headerlink" title="func (r *PipeReader) Read(data []byte) (n int, err error)"></a>func (r *PipeReader) Read(data []byte) (n int, err error)</h3><h2 id="type-PipeWriter"><a href="#type-PipeWriter" class="headerlink" title="type PipeWriter"></a>type PipeWriter</h2><h3 id="func-w-PipeWriter-Close-error"><a href="#func-w-PipeWriter-Close-error" class="headerlink" title="func (w *PipeWriter) Close() error"></a>func (w *PipeWriter) Close() error</h3><h3 id="func-w-PipeWriter-CloseWithError-err-error-error"><a href="#func-w-PipeWriter-CloseWithError-err-error-error" class="headerlink" title="func (w *PipeWriter) CloseWithError(err error) error"></a>func (w *PipeWriter) CloseWithError(err error) error</h3><h3 id="func-w-PipeWriter-Write-data-byte-n-int-err-error"><a href="#func-w-PipeWriter-Write-data-byte-n-int-err-error" class="headerlink" title="func (w *PipeWriter) Write(data []byte) (n int, err error)"></a>func (w *PipeWriter) Write(data []byte) (n int, err error)</h3><h2 id="type-ReadCloser"><a href="#type-ReadCloser" class="headerlink" title="type ReadCloser"></a>type ReadCloser</h2><h3 id="func-NopCloser-r-Reader-ReadCloser"><a href="#func-NopCloser-r-Reader-ReadCloser" class="headerlink" title="func NopCloser(r Reader) ReadCloser"></a>func NopCloser(r Reader) ReadCloser</h3><h2 id="type-ReadSeekCloser"><a href="#type-ReadSeekCloser" class="headerlink" title="type ReadSeekCloser"></a>type ReadSeekCloser</h2><h2 id="type-ReadSeeker"><a href="#type-ReadSeeker" class="headerlink" title="type ReadSeeker"></a>type ReadSeeker</h2><h2 id="type-ReadWriteCloser"><a href="#type-ReadWriteCloser" class="headerlink" title="type ReadWriteCloser"></a>type ReadWriteCloser</h2><h2 id="type-ReadWriteSeeker"><a href="#type-ReadWriteSeeker" class="headerlink" title="type ReadWriteSeeker"></a>type ReadWriteSeeker</h2><h2 id="type-ReadWriter"><a href="#type-ReadWriter" class="headerlink" title="type ReadWriter"></a>type ReadWriter</h2><h2 id="type-Reader"><a href="#type-Reader" class="headerlink" title="type Reader"></a>type Reader</h2><h2 id="type-ReaderAt"><a href="#type-ReaderAt" class="headerlink" title="type ReaderAt"></a>type ReaderAt</h2><h2 id="type-ReaderFrom"><a href="#type-ReaderFrom" class="headerlink" title="type ReaderFrom"></a>type ReaderFrom</h2><h2 id="type-RuneReader"><a href="#type-RuneReader" class="headerlink" title="type RuneReader"></a>type RuneReader</h2><h2 id="type-RuneScanner"><a href="#type-RuneScanner" class="headerlink" title="type RuneScanner"></a>type RuneScanner</h2><h2 id="type-SectionReader"><a href="#type-SectionReader" class="headerlink" title="type SectionReader"></a>type SectionReader</h2><h3 id="func-NewSectionReader-r-ReaderAt-off-int64-n-int64-SectionReader"><a href="#func-NewSectionReader-r-ReaderAt-off-int64-n-int64-SectionReader" class="headerlink" title="func NewSectionReader(r ReaderAt, off int64, n int64) *SectionReader"></a>func NewSectionReader(r ReaderAt, off int64, n int64) *SectionReader</h3><h3 id="func-s-SectionReader-Read-p-byte-n-int-err-error"><a href="#func-s-SectionReader-Read-p-byte-n-int-err-error" class="headerlink" title="func (s *SectionReader) Read(p []byte) (n int, err error)"></a>func (s *SectionReader) Read(p []byte) (n int, err error)</h3><h3 id="func-s-SectionReader-ReadAt-p-byte-off-int64-n-int-err-error"><a href="#func-s-SectionReader-ReadAt-p-byte-off-int64-n-int-err-error" class="headerlink" title="func (s *SectionReader) ReadAt(p []byte, off int64) (n int, err error)"></a>func (s *SectionReader) ReadAt(p []byte, off int64) (n int, err error)</h3><h3 id="func-s-SectionReader-Seek-offset-int64-whence-int-int64-error"><a href="#func-s-SectionReader-Seek-offset-int64-whence-int-int64-error" class="headerlink" title="func (s *SectionReader) Seek(offset int64, whence int) (int64, error)"></a>func (s *SectionReader) Seek(offset int64, whence int) (int64, error)</h3><h3 id="func-s-SectionReader-Size-int64"><a href="#func-s-SectionReader-Size-int64" class="headerlink" title="func (s *SectionReader) Size() int64"></a>func (s *SectionReader) Size() int64</h3><h2 id="type-Seeker"><a href="#type-Seeker" class="headerlink" title="type Seeker"></a>type Seeker</h2><h2 id="type-StringWriter"><a href="#type-StringWriter" class="headerlink" title="type StringWriter"></a>type StringWriter</h2><h2 id="type-WriteCloser"><a href="#type-WriteCloser" class="headerlink" title="type WriteCloser"></a>type WriteCloser</h2><h2 id="type-WriteSeeker"><a href="#type-WriteSeeker" class="headerlink" title="type WriteSeeker"></a>type WriteSeeker</h2><h2 id="type-Writer"><a href="#type-Writer" class="headerlink" title="type Writer"></a>type Writer</h2><h3 id="func-MultiWriter-writers-…Writer-Writer"><a href="#func-MultiWriter-writers-…Writer-Writer" class="headerlink" title="func MultiWriter(writers …Writer) Writer"></a>func MultiWriter(writers …Writer) Writer</h3><h2 id="type-WriterAt"><a href="#type-WriterAt" class="headerlink" title="type WriterAt"></a>type WriterAt</h2><h2 id="type-WriterTo"><a href="#type-WriterTo" class="headerlink" title="type WriterTo"></a>type WriterTo</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="filefi 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="filefi 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>filefi
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://ifelif.cn/2023/Go-Standard-Library-by-Example/" title="Go Standard Library by Example">https://ifelif.cn/2023/Go-Standard-Library-by-Example/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Golang/" rel="tag"># Golang</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/How-does-Windows-decide-whether-your-computer-has-limited-or-full-Internet-access/" rel="prev" title="How does Windows decide whether your computer has limited or full Internet access">
+                  <i class="fa fa-chevron-left"></i> How does Windows decide whether your computer has limited or full Internet access
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/Updating-Rocket-Chat/" rel="next" title="更新 Rocket.Chat">
+                  更新 Rocket.Chat <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">filefi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/filefi" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="300" alpha="0.45" zIndex="-1" src="/plugins/ribbon.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.16.0/source/js/comments.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.16.0/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.16.0/source/js/schemes/muse.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.16.0/source/js/next-boot.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.16.0/source/js/third-party/search/local-search.min.js"></script>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.16.0/source/js/third-party/fancybox.min.js"></script>
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
