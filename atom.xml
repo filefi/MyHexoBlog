@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2023-05-28T11:46:31.000Z</updated>
+  <updated>2023-06-25T15:02:39.000Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Learning vbird 4e</title>
+    <link href="https://ifelif.cn/2023/learning-vbird-4e/"/>
+    <id>https://ifelif.cn/2023/learning-vbird-4e/</id>
+    <published>2023-06-25T15:02:39.000Z</published>
+    <updated>2023-06-25T15:02:39.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;span id=&quot;more&quot;&gt;&lt;/span&gt;
+
+&lt;h1 id=&quot;Chapter-0-计算机概论&quot;&gt;&lt;a href=&quot;#Chapter-0-计算机概论&quot; class=&quot;headerlink&quot; title=&quot;Chapter 0 计算机概论&quot;&gt;&lt;/a&gt;Chapter 0</summary>
+        
+      
+    
+    
+    
+    <category term="Linux" scheme="https://ifelif.cn/categories/Linux/"/>
+    
+    
+    <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
+    
+    <category term="Shell" scheme="https://ifelif.cn/tags/Shell/"/>
+    
+  </entry>
   
   <entry>
     <title>更新 Rocket.Chat</title>
@@ -365,7 +394,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2023-06-12T14:20:50.681Z</updated>
+    <updated>2023-06-25T15:56:20.131Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
@@ -388,7 +417,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2023-06-12T14:20:50.709Z</updated>
+    <updated>2023-06-25T15:56:20.155Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -427,7 +456,7 @@ hello world&lt;/code&gt;&lt;/pre&gt;</summary>
     <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
     <id>https://ifelif.cn/2022/ansible_user_guide/</id>
     <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2023-06-12T14:20:50.681Z</updated>
+    <updated>2023-06-25T15:56:20.127Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
@@ -473,7 +502,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/docker_practice/"/>
     <id>https://ifelif.cn/2022/docker_practice/</id>
     <published>2022-04-28T15:56:21.000Z</published>
-    <updated>2023-06-12T14:20:50.697Z</updated>
+    <updated>2023-06-25T15:56:20.143Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;什么是-Docker&quot;&gt;&lt;a href=&quot;#什么是-Docker&quot; class=&quot;headerlink&quot; title=&quot;什么是 Docker&quot;&gt;&lt;/a&gt;什么是 Docker&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;Docker&lt;/strong&gt; 使用 &lt;code&gt;Google&lt;/code&gt; 公司推出的 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go 语言&lt;/a&gt; 进行开发实现，基于 &lt;code&gt;Linux&lt;/code&gt; 内核的 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Cgroups&quot;&gt;cgroup&lt;/a&gt;，&lt;a href=&quot;https://en.wikipedia.org/wiki/Linux_namespaces&quot;&gt;namespace&lt;/a&gt;，以及 &lt;a href=&quot;https://docs.docker.com/storage/storagedriver/overlayfs-driver/&quot;&gt;OverlayFS&lt;/a&gt; 类的 &lt;a href=&quot;https://en.wikipedia.org/wiki/Union_mount&quot;&gt;Union FS&lt;/a&gt; 等技术，对进程进行封装隔离，属于 &lt;a href=&quot;https://en.wikipedia.org/wiki/Operating-system-level_virtualization&quot;&gt;操作系统层面的虚拟化技术&lt;/a&gt;。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。&lt;/p&gt;
@@ -487,9 +516,9 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <category term="Docker" scheme="https://ifelif.cn/categories/Docker/"/>
     
     
-    <category term="Docker" scheme="https://ifelif.cn/tags/Docker/"/>
-    
     <category term="CNCF" scheme="https://ifelif.cn/tags/CNCF/"/>
+    
+    <category term="Docker" scheme="https://ifelif.cn/tags/Docker/"/>
     
   </entry>
   
@@ -498,7 +527,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/some_pieces_of_nginx/"/>
     <id>https://ifelif.cn/2022/some_pieces_of_nginx/</id>
     <published>2022-04-14T15:41:21.000Z</published>
-    <updated>2023-06-12T14:20:50.721Z</updated>
+    <updated>2023-06-25T15:56:20.163Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;nginx及其衍生版本&quot;&gt;&lt;a href=&quot;#nginx及其衍生版本&quot; class=&quot;headerlink&quot; title=&quot;nginx及其衍生版本&quot;&gt;&lt;/a&gt;nginx及其衍生版本&lt;/h1&gt;&lt;ul&gt;
@@ -577,7 +606,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/linux_firewall/"/>
     <id>https://ifelif.cn/2022/linux_firewall/</id>
     <published>2022-04-10T08:35:21.000Z</published>
-    <updated>2023-06-12T14:20:50.709Z</updated>
+    <updated>2023-06-25T15:56:20.155Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;iptables&quot;&gt;&lt;a href=&quot;#iptables&quot; class=&quot;headerlink&quot; title=&quot;iptables&quot;&gt;&lt;/a&gt;iptables&lt;/h1&gt;&lt;h2 id=&quot;netfilter-和-iptables&quot;&gt;&lt;a href=&quot;#netfilter-和-iptables&quot; class=&quot;headerlink&quot; title=&quot;netfilter 和 iptables&quot;&gt;&lt;/a&gt;netfilter 和 iptables&lt;/h2&gt;&lt;ul&gt;
@@ -624,7 +653,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/tkinter_geometry_manager/"/>
     <id>https://ifelif.cn/2022/tkinter_geometry_manager/</id>
     <published>2022-02-16T15:56:21.000Z</published>
-    <updated>2023-06-12T14:20:50.721Z</updated>
+    <updated>2023-06-25T15:56:20.163Z</updated>
     
     
     <summary type="html">&lt;p&gt;本文讲述如何使用 tkinter 的布局管理 (被称作 layout managers 或 geometry managers)。tkinter 有三种布局管理方式：&lt;/p&gt;
@@ -662,7 +691,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/"/>
     <id>https://ifelif.cn/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/</id>
     <published>2022-02-16T15:56:21.000Z</published>
-    <updated>2023-06-12T14:20:50.721Z</updated>
+    <updated>2023-06-25T15:56:20.163Z</updated>
     
     
       
@@ -684,44 +713,6 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <category term="tkinter" scheme="https://ifelif.cn/tags/tkinter/"/>
     
     <category term="GUI" scheme="https://ifelif.cn/tags/GUI/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>CheatEngine Tutorial</title>
-    <link href="https://ifelif.cn/2022/cheat_engine_tutorial/"/>
-    <id>https://ifelif.cn/2022/cheat_engine_tutorial/</id>
-    <published>2022-02-16T13:41:21.000Z</published>
-    <updated>2023-06-12T14:20:50.681Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;CheatEngine-Tutorial&quot;&gt;&lt;a href=&quot;#CheatEngine-Tutorial&quot; class=&quot;headerlink&quot; title=&quot;CheatEngine Tutorial&quot;&gt;&lt;/a&gt;CheatEngine Tutorial&lt;/h1&gt;&lt;h2 id=&quot;Step-1&quot;&gt;&lt;a href=&quot;#Step-1&quot; class=&quot;headerlink&quot; title=&quot;Step 1&quot;&gt;&lt;/a&gt;Step 1&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2022/cheat_engine_tutorial/image-20220215145201605.png&quot;&gt;&lt;/p&gt;
-&lt;h3 id=&quot;Description&quot;&gt;&lt;a href=&quot;#Description&quot; class=&quot;headerlink&quot; title=&quot;Description&quot;&gt;&lt;/a&gt;Description&lt;/h3&gt;&lt;pre class=&quot;language-text&quot; data-language=&quot;text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Welcome to the Cheat Engine Tutorial (v3.6)
-
-This tutorial will teach you the basics of cheating in video games. It will also show you foundational aspects of using Cheat Engine (or CE for short). Follow the steps below to get started.
-
-1: Open Cheat Engine if it currently isn&#39;t running.
-2: Click on the &quot;Open Process&quot; icon (it&#39;s the top-left icon with the computer on it, below &quot;File&quot;.).
-3: With the Process List window now open, look for this tutorial&#39;s process in the list. It will look something like &quot;00001F98-Tutorial-x86_64.exe&quot; or &quot;0000047C-Tutorial-i386.exe&quot;. (The first 8 numbers/letters will probably be different.)
-4: Once you&#39;ve found the process, click on it to select it, then click the &quot;Open&quot; button. (Don&#39;t worry about all the other buttons right now. You can learn about them later if you&#39;re interested.)
-
-Congratulations! If you did everything correctly, the process window should be gone with Cheat Engine now attached to the tutorial (you will see the process name towards the top-center of CE).
-
-Click the &quot;Next&quot; button below to continue, or fill in the password and click the &quot;OK&quot; button to proceed to that step.)
-
-If you&#39;re having problems, simply head over to forum.cheatengine.org, then click on &quot;Tutorials&quot; to view beginner-friendly guides!&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;操作&quot;&gt;&lt;a href=&quot;#操作&quot; class=&quot;headerlink&quot; title=&quot;操作&quot;&gt;&lt;/a&gt;操作&lt;/h3&gt;&lt;h4 id=&quot;步骤1：选择要附加的进程&quot;&gt;&lt;a href=&quot;#步骤1：选择要附加的进程&quot; class=&quot;headerlink&quot; title=&quot;步骤1：选择要附加的进程&quot;&gt;&lt;/a&gt;步骤1：选择要附加的进程&lt;/h4&gt;&lt;p&gt;&lt;img src=&quot;/2022/cheat_engine_tutorial/image-20220215145836858.png&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/2022/cheat_engine_tutorial/image-20220215150314077.png&quot;&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="PWN" scheme="https://ifelif.cn/categories/PWN/"/>
-    
-    
-    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
-    
-    <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
     
   </entry>
   
