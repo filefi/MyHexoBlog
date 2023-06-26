@@ -21,7 +21,7 @@ categories: Linux
   - **CPU算数逻辑单元**：算数逻辑单元主要负责程序运算与逻辑判断；
   - **内存**：CPU片内高速缓存价格高昂，使用内存暂存数据。 内存内的数据则是从输入单元所传输进来。而 CPU 处理完毕的数据也必须要先写回内存中，最后数据才从内存传输到输出单元。
 
-![电脑的五大单元](learning-vbird-4e/computer02.gif)
+![电脑的五大单元](computer02.gif)
 
 - **CPU架构**
   - **精简指令集 （Reduced Instruction Set Computer, RISC）**：这种 CPU 的设计中，微指令集较为精简，每个指令的执行时间都很短，完成的动作也很单纯，指令的执行性能较佳； 但是若要做复杂的事情，就要由多个指令来完成。常见的 RISC 微指令集 CPU 主要例如甲骨文 （Oracle） 公司的 SPARC 系列、 IBM 公司的 Power Architecture （包括 PowerPC） 系列、与安谋公司 （ARM Holdings） 的 ARM CPU 系列等。
@@ -48,3 +48,6 @@ categories: Linux
 
 ## 个人计算机架构与相关设备
 
+一般消费者常说的电脑通常指的就是x86的个人计算机架构。由于目前市场占有率还是以 Intel 占大部分，因此下面以目前（2015）相对较新的 Intel 主板架构来谈谈：
+
+![Intel芯片架构](chipset_z87.jpg)
