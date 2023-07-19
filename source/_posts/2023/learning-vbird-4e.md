@@ -6,7 +6,7 @@ tags: [Linux, Shell]
 categories: Linux
 ---
 
-<!-- more -->
+
 
 # Chapter 0 计算机概论
 
@@ -44,7 +44,7 @@ categories: Linux
 | 二进制 | 1 | 8 bit | 1024B | 1024K | 1024M | 1024G | 1024T | 1024P | 1024E |
 | 十进制 | 1 | 8 bit | 1000B | 1000K | 1000M | 1000G | 1000T | 1000P | 1000E |
 
-
+<!-- more -->
 
 ## 个人计算机架构与相关设备
 
