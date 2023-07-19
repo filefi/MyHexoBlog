@@ -153,7 +153,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -164,7 +164,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-count">46</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -210,6 +210,153 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="filefi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/" class="post-title-link" itemprop="url">tkinter 一例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-02-16 23:56:21" itemprop="dateCreated datePublished" datetime="2022-02-16T23:56:21+08:00">2022-02-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-07-19 23:24:00" itemprop="dateModified" datetime="2023-07-19T23:24:00+08:00">2023-07-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>entry输入命令，text实时获得命令输出：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> tkinter <span class="token keyword">as</span> tk
+<span class="token keyword">import</span> tkinter<span class="token punctuation">.</span>ttk <span class="token keyword">as</span> ttk
+<span class="token keyword">import</span> subprocess
+<span class="token keyword">import</span> shlex
+<span class="token keyword">import</span> sys
+
+
+<span class="token keyword">class</span> <span class="token class-name">App</span><span class="token punctuation">(</span>tk<span class="token punctuation">.</span>Frame<span class="token punctuation">)</span><span class="token punctuation">:</span>
+	<span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>master<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+		<span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>master<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>fill<span class="token operator">=</span>tk<span class="token punctuation">.</span>BOTH<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>create_widgets<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	
+	<span class="token keyword">def</span> <span class="token function">test</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		content <span class="token operator">=</span> self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> content<span class="token punctuation">:</span>
+			cmd <span class="token operator">=</span> shlex<span class="token punctuation">.</span>split<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+			result <span class="token operator">=</span> subprocess<span class="token punctuation">.</span>Popen<span class="token punctuation">(</span>cmd<span class="token punctuation">,</span> shell<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> stdout<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> stderr<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> encoding<span class="token operator">=</span><span class="token string">"gbk"</span><span class="token punctuation">)</span>
+			<span class="token comment"># 实时获取子进程输出的每一行内容</span>
+			<span class="token keyword">for</span> line <span class="token keyword">in</span> <span class="token builtin">iter</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>readline<span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+				<span class="token comment"># 将子进程输出的每一行写入text文本框</span>
+				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>tk<span class="token punctuation">.</span>END<span class="token punctuation">,</span> line<span class="token punctuation">)</span>
+				<span class="token comment"># 立即重绘Text内容</span>
+				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">)</span>
+			
+	
+	<span class="token keyword">def</span> <span class="token function">create_widgets</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		self<span class="token punctuation">.</span>entry <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		
+		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>button <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"确定"</span><span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>test<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>button<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
+		
+		self<span class="token punctuation">.</span>scrollbar <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Scrollbar<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>text <span class="token operator">=</span> tk<span class="token punctuation">.</span>Text<span class="token punctuation">(</span>self<span class="token punctuation">,</span> yscrollcommand<span class="token operator">=</span>self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span><span class="token builtin">set</span><span class="token punctuation">)</span>
+		<span class="token comment"># 渲染以上2个组件</span>
+		self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token operator">+</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
+		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>config<span class="token punctuation">(</span>command<span class="token operator">=</span>self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>yview<span class="token punctuation">)</span>
+		
+		
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+	root <span class="token operator">=</span> tk<span class="token punctuation">.</span>Tk<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	root<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">"Test"</span>
+	
+	app <span class="token operator">=</span> App<span class="token punctuation">(</span>master<span class="token operator">=</span>root<span class="token punctuation">)</span>
+	app<span class="token punctuation">.</span>mainloop<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+	main<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+
+
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/cheat_engine_tutorial/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -246,7 +393,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-07-13 16:42:12" itemprop="dateModified" datetime="2023-07-13T16:42:12+08:00">2023-07-13</time>
+      <time title="修改时间：2023-07-19 23:24:00" itemprop="dateModified" datetime="2023-07-19T23:24:00+08:00">2023-07-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -355,7 +502,7 @@ If you're having problems, simply head over to forum.cheatengine.org, then click
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-07-13 16:42:12" itemprop="dateModified" datetime="2023-07-13T16:42:12+08:00">2023-07-13</time>
+      <time title="修改时间：2023-07-19 23:24:00" itemprop="dateModified" datetime="2023-07-19T23:24:00+08:00">2023-07-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -455,7 +602,7 @@ If you're having problems, simply head over to forum.cheatengine.org, then click
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-07-13 16:42:12" itemprop="dateModified" datetime="2023-07-13T16:42:12+08:00">2023-07-13</time>
+      <time title="修改时间：2023-07-19 23:24:00" itemprop="dateModified" datetime="2023-07-19T23:24:00+08:00">2023-07-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1033,95 +1180,6 @@ If you're having problems, simply head over to forum.cheatengine.org, then click
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2014/MPLS_Lab_8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2014/MPLS_Lab_7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2014/MPLS_Lab_7/" class="post-title-link" itemprop="url">MPLS 实验7：MPLS VPN running EIGRP on the PE-CE link</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2014-03-14 22:48:51" itemprop="dateCreated datePublished" datetime="2014-03-14T22:48:51+08:00">2014-03-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Network/" itemprop="url" rel="index"><span itemprop="name">Network</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="实验环境："><a href="#实验环境：" class="headerlink" title="实验环境："></a>实验环境：</h1><ul>
-<li>模拟器：GNS3 0.8.6</li>
-<li>Cisco IOS：c7200-adventerprisek9-mz.151-4.M2.image</li>
-</ul>
-<h1 id="GNS3实验拓扑文件："><a href="#GNS3实验拓扑文件：" class="headerlink" title="GNS3实验拓扑文件："></a>GNS3实验拓扑文件：</h1><p><a href="topology.net">拓扑文件</a></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2014/MPLS_Lab_7/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

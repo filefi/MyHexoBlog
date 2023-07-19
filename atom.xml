@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2023-06-25T15:02:39.000Z</updated>
+  <updated>2023-07-19T14:25:01.000Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -17,6 +17,55 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Learning Vbird Server 3e</title>
+    <link href="https://ifelif.cn/2023/learning-vbird-server-3e/"/>
+    <id>https://ifelif.cn/2023/learning-vbird-server-3e/</id>
+    <published>2023-07-19T14:25:01.000Z</published>
+    <updated>2023-07-19T14:25:01.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Chapter-1-架设服务器前的准备工作&quot;&gt;&lt;a href=&quot;#Chapter-1-架设服务器前的准备工作&quot; class=&quot;headerlink&quot; title=&quot;Chapter 1 架设服务器前的准备工作&quot;&gt;&lt;/a&gt;Chapter 1 架设服务器前的准备工作&lt;/h1&gt;</summary>
+    
+    
+    
+    <category term="Linux" scheme="https://ifelif.cn/categories/Linux/"/>
+    
+    
+    <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
+    
+    <category term="FTP" scheme="https://ifelif.cn/tags/FTP/"/>
+    
+    <category term="NFS" scheme="https://ifelif.cn/tags/NFS/"/>
+    
+    <category term="SELinux" scheme="https://ifelif.cn/tags/SELinux/"/>
+    
+    <category term="NTP" scheme="https://ifelif.cn/tags/NTP/"/>
+    
+    <category term="SSH" scheme="https://ifelif.cn/tags/SSH/"/>
+    
+    <category term="RDP" scheme="https://ifelif.cn/tags/RDP/"/>
+    
+    <category term="VNC" scheme="https://ifelif.cn/tags/VNC/"/>
+    
+    <category term="WWW" scheme="https://ifelif.cn/tags/WWW/"/>
+    
+    <category term="NIS" scheme="https://ifelif.cn/tags/NIS/"/>
+    
+    <category term="SMB" scheme="https://ifelif.cn/tags/SMB/"/>
+    
+    <category term="Samba" scheme="https://ifelif.cn/tags/Samba/"/>
+    
+    <category term="Telnet" scheme="https://ifelif.cn/tags/Telnet/"/>
+    
+    <category term="DNS" scheme="https://ifelif.cn/tags/DNS/"/>
+    
+    <category term="TCP Wrappers" scheme="https://ifelif.cn/tags/TCP-Wrappers/"/>
+    
+    <category term="DHCP" scheme="https://ifelif.cn/tags/DHCP/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Learning vbird 4e</title>
     <link href="https://ifelif.cn/2023/learning-vbird-4e/"/>
     <id>https://ifelif.cn/2023/learning-vbird-4e/</id>
@@ -24,15 +73,83 @@
     <updated>2023-06-25T15:02:39.000Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;span id=&quot;more&quot;&gt;&lt;/span&gt;
-
-&lt;h1 id=&quot;Chapter-0-计算机概论&quot;&gt;&lt;a href=&quot;#Chapter-0-计算机概论&quot; class=&quot;headerlink&quot; title=&quot;Chapter 0 计算机概论&quot;&gt;&lt;/a&gt;Chapter 0</summary>
-        
-      
+    <summary type="html">&lt;h1 id=&quot;Chapter-0-计算机概论&quot;&gt;&lt;a href=&quot;#Chapter-0-计算机概论&quot; class=&quot;headerlink&quot; title=&quot;Chapter 0 计算机概论&quot;&gt;&lt;/a&gt;Chapter 0 计算机概论&lt;/h1&gt;&lt;h2 id=&quot;计算机&quot;&gt;&lt;a href=&quot;#计算机&quot; class=&quot;headerlink&quot; title=&quot;计算机&quot;&gt;&lt;/a&gt;计算机&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;计算机&lt;/strong&gt;：接受使用者输入指令与数据，经由中央处理器的数学与逻辑单元运算处理后， 以产生或储存成有用的信息。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;计算机5大单元&lt;/strong&gt;：计算机由5大单元所组成，包括&lt;strong&gt;输入单元&lt;/strong&gt;、 &lt;strong&gt;输出单元&lt;/strong&gt;、&lt;strong&gt;CPU 内部的&lt;em&gt;控制单元&lt;/em&gt; 和&lt;em&gt;算数逻辑单元&lt;/em&gt;&lt;/strong&gt;，以及&lt;strong&gt;内存&lt;/strong&gt;五大部分。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;输入单元&lt;/strong&gt;：包括键盘、鼠标、读卡机、扫描仪、手写板、触摸屏等等一堆；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;输出单元&lt;/strong&gt;：例如屏幕、打印机等等；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CPU控制单元&lt;/strong&gt;：控制单元则主要在协调各周边元件与各单元间的工作；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CPU算数逻辑单元&lt;/strong&gt;：算数逻辑单元主要负责程序运算与逻辑判断；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;内存&lt;/strong&gt;：CPU片内高速缓存价格高昂，使用内存暂存数据。 内存内的数据则是从输入单元所传输进来。而 CPU 处理完毕的数据也必须要先写回内存中，最后数据才从内存传输到输出单元。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/2023/learning-vbird-4e/computer02.gif&quot; alt=&quot;电脑的五大单元&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;CPU架构&lt;/strong&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;精简指令集 （Reduced Instruction Set Computer, RISC）&lt;/strong&gt;：这种 CPU 的设计中，微指令集较为精简，每个指令的执行时间都很短，完成的动作也很单纯，指令的执行性能较佳； 但是若要做复杂的事情，就要由多个指令来完成。常见的 RISC 微指令集 CPU 主要例如甲骨文 （Oracle） 公司的 SPARC 系列、 IBM 公司的 Power Architecture （包括 PowerPC） 系列、与安谋公司 （ARM Holdings） 的 ARM CPU 系列等。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;复杂指令集（Complex Instruction Set Computer, CISC）&lt;/strong&gt;：与RISC不同的，CISC在微指令集的每个小指令可以执行一些较低阶的硬件操作，指令数目多而且复杂， 每条指令的长度并不相同。因为指令执行较为复杂所以每条指令花费的时间较长， 但每条个别指令可以处理的工作较为丰富。常见的CISC微指令集CPU主要有AMD、Intel、VIA等的x86架构的CPU。&lt;/li&gt;
+&lt;li&gt;最新的Intel&amp;#x2F;AMD的x86架构中，针对多媒体、虚拟化、省电功能各有哪些重要的微指令集：&lt;ul&gt;
+&lt;li&gt;多媒体微指令集：MMX, SSE, SSE2, SSE3, SSE4, AMD-3DNow!&lt;/li&gt;
+&lt;li&gt;虚拟化微指令集：Intel-VT, AMD-SVM&lt;/li&gt;
+&lt;li&gt;省电功能：Intel-SpeedStep, AMD-PowerNow!&lt;/li&gt;
+&lt;li&gt;64&amp;#x2F;32位相容技术：AMD-AMD64, Intel-EM64T&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;计算机的分类&lt;/strong&gt;：如果以计算机的复杂度与运算能力进行分类的话，主要可以分为这几类：&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;超级计算机（Supercomputer）&lt;/strong&gt;： 超级计算机是运行速度最快的电脑，但是他的维护、操作费用也最高！主要是用于需要有高速计算的计划中。 例如：国防军事、气象预测、太空科技，用在仿真的领域较多。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;大型计算机（Mainframe Computer）&lt;/strong&gt; ：大型计算机通常也具有数个高速的CPU，功能上虽不及超级计算机，但也可用来处理大量数据与复杂的运算。 例如大型企业的主机、全国性的证券交易所等每天需要处理数百万笔数据的企业机构， 或者是大型企业的数据库服务器等等。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;迷你电脑（Minicomputer）&lt;/strong&gt;： 迷你电脑仍保有大型计算机同时支持多使用者的特性，但是主机可以放在一般作业场所， 不必像前两个大型计算机需要特殊的空调场所。通常用来作为科学研究、工程分析与工厂的流程管理等。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;工作站（Workstation）&lt;/strong&gt;：工作站的价格又比迷你电脑便宜许多，是针对特殊用途而设计的电脑。在个人电脑的性能还没有提升到目前的状况之前， 工作站电脑的性能&amp;#x2F;价格比是所有电脑当中较佳的，因此在学术研究与工程分析方面相当常见。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;微电脑（Microcomputer）&lt;/strong&gt;： 个人电脑就属于这部份的电脑分类。体积最小，价格最低，但功能还是五脏俱全的！ 大致又可分为桌上型、笔记型等等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;容量单位&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;进位制&lt;/th&gt;
+&lt;th&gt;bit&lt;/th&gt;
+&lt;th&gt;Byte&lt;/th&gt;
+&lt;th&gt;Kilo&lt;/th&gt;
+&lt;th&gt;Mega&lt;/th&gt;
+&lt;th&gt;Giga&lt;/th&gt;
+&lt;th&gt;Tera&lt;/th&gt;
+&lt;th&gt;Peta&lt;/th&gt;
+&lt;th&gt;Exa&lt;/th&gt;
+&lt;th&gt;Zetta&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;td&gt;二进制&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;8 bit&lt;/td&gt;
+&lt;td&gt;1024B&lt;/td&gt;
+&lt;td&gt;1024K&lt;/td&gt;
+&lt;td&gt;1024M&lt;/td&gt;
+&lt;td&gt;1024G&lt;/td&gt;
+&lt;td&gt;1024T&lt;/td&gt;
+&lt;td&gt;1024P&lt;/td&gt;
+&lt;td&gt;1024E&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;十进制&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;8 bit&lt;/td&gt;
+&lt;td&gt;1000B&lt;/td&gt;
+&lt;td&gt;1000K&lt;/td&gt;
+&lt;td&gt;1000M&lt;/td&gt;
+&lt;td&gt;1000G&lt;/td&gt;
+&lt;td&gt;1000T&lt;/td&gt;
+&lt;td&gt;1000P&lt;/td&gt;
+&lt;td&gt;1000E&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;</summary>
     
     
     
@@ -394,7 +511,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2023-07-13T08:42:12.878Z</updated>
+    <updated>2023-07-19T15:24:00.330Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
@@ -417,7 +534,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2023-07-13T08:42:12.906Z</updated>
+    <updated>2023-07-19T15:24:00.354Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -456,7 +573,7 @@ hello world&lt;/code&gt;&lt;/pre&gt;</summary>
     <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
     <id>https://ifelif.cn/2022/ansible_user_guide/</id>
     <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2023-07-13T08:42:12.878Z</updated>
+    <updated>2023-07-19T15:24:00.330Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
@@ -502,7 +619,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/docker_practice/"/>
     <id>https://ifelif.cn/2022/docker_practice/</id>
     <published>2022-04-28T15:56:21.000Z</published>
-    <updated>2023-07-13T08:42:12.894Z</updated>
+    <updated>2023-07-19T15:24:00.342Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;什么是-Docker&quot;&gt;&lt;a href=&quot;#什么是-Docker&quot; class=&quot;headerlink&quot; title=&quot;什么是 Docker&quot;&gt;&lt;/a&gt;什么是 Docker&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;Docker&lt;/strong&gt; 使用 &lt;code&gt;Google&lt;/code&gt; 公司推出的 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go 语言&lt;/a&gt; 进行开发实现，基于 &lt;code&gt;Linux&lt;/code&gt; 内核的 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Cgroups&quot;&gt;cgroup&lt;/a&gt;，&lt;a href=&quot;https://en.wikipedia.org/wiki/Linux_namespaces&quot;&gt;namespace&lt;/a&gt;，以及 &lt;a href=&quot;https://docs.docker.com/storage/storagedriver/overlayfs-driver/&quot;&gt;OverlayFS&lt;/a&gt; 类的 &lt;a href=&quot;https://en.wikipedia.org/wiki/Union_mount&quot;&gt;Union FS&lt;/a&gt; 等技术，对进程进行封装隔离，属于 &lt;a href=&quot;https://en.wikipedia.org/wiki/Operating-system-level_virtualization&quot;&gt;操作系统层面的虚拟化技术&lt;/a&gt;。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。&lt;/p&gt;
@@ -527,7 +644,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/some_pieces_of_nginx/"/>
     <id>https://ifelif.cn/2022/some_pieces_of_nginx/</id>
     <published>2022-04-14T15:41:21.000Z</published>
-    <updated>2023-07-13T08:42:12.914Z</updated>
+    <updated>2023-07-19T15:24:00.362Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;nginx及其衍生版本&quot;&gt;&lt;a href=&quot;#nginx及其衍生版本&quot; class=&quot;headerlink&quot; title=&quot;nginx及其衍生版本&quot;&gt;&lt;/a&gt;nginx及其衍生版本&lt;/h1&gt;&lt;ul&gt;
@@ -606,7 +723,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/linux_firewall/"/>
     <id>https://ifelif.cn/2022/linux_firewall/</id>
     <published>2022-04-10T08:35:21.000Z</published>
-    <updated>2023-07-13T08:42:12.906Z</updated>
+    <updated>2023-07-19T15:24:00.354Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;iptables&quot;&gt;&lt;a href=&quot;#iptables&quot; class=&quot;headerlink&quot; title=&quot;iptables&quot;&gt;&lt;/a&gt;iptables&lt;/h1&gt;&lt;h2 id=&quot;netfilter-和-iptables&quot;&gt;&lt;a href=&quot;#netfilter-和-iptables&quot; class=&quot;headerlink&quot; title=&quot;netfilter 和 iptables&quot;&gt;&lt;/a&gt;netfilter 和 iptables&lt;/h2&gt;&lt;ul&gt;
@@ -653,7 +770,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/tkinter_geometry_manager/"/>
     <id>https://ifelif.cn/2022/tkinter_geometry_manager/</id>
     <published>2022-02-16T15:56:21.000Z</published>
-    <updated>2023-07-13T08:42:12.914Z</updated>
+    <updated>2023-07-19T15:24:00.362Z</updated>
     
     
     <summary type="html">&lt;p&gt;本文讲述如何使用 tkinter 的布局管理 (被称作 layout managers 或 geometry managers)。tkinter 有三种布局管理方式：&lt;/p&gt;
@@ -672,36 +789,6 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
 &lt;li&gt;管理控件在屏幕上的显示&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;虽然控件自己也可以指定大小和对齐方式等信息， 但最终的控件大小及位置还是由布局管理决定的。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Python" scheme="https://ifelif.cn/categories/Python/"/>
-    
-    
-    <category term="Python" scheme="https://ifelif.cn/tags/Python/"/>
-    
-    <category term="tkinter" scheme="https://ifelif.cn/tags/tkinter/"/>
-    
-    <category term="GUI" scheme="https://ifelif.cn/tags/GUI/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>tkinter 一例</title>
-    <link href="https://ifelif.cn/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/"/>
-    <id>https://ifelif.cn/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/</id>
-    <published>2022-02-16T15:56:21.000Z</published>
-    <updated>2023-07-13T08:42:12.918Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;entry输入命令，text实时获得命令输出：&lt;/p&gt;
-&lt;pre class=&quot;language-python&quot; data-language=&quot;python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token</summary>
-        
-      
     
     
     
