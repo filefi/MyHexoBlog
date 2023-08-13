@@ -28,8 +28,8 @@
 <meta property="og:description" content="Scrapy基本抓取流程UR²IM一切始于URL，发起Request，由Response检索抽取需要的数据（可能包含更多URL），将数据填充于Item中，方便pipelines对Item进行二次加工（校验、清洗、存储等）。由Response获取更多URL，继续对URL发起抓取流程。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://ifelif.cn/2023/learning-scrapy/webwxgetmsgimg.jpg">
-<meta property="og:image" content="https://ifelif.cn/learning-scrapy/ch3-1.jpg">
-<meta property="og:image" content="https://ifelif.cn/learning-scrapy/ch3-2.jpg">
+<meta property="og:image" content="https://ifelif.cn/2023/learning-scrapy/ch3-1.jpg">
+<meta property="og:image" content="https://ifelif.cn/2023/learning-scrapy/ch3-2.jpg">
 <meta property="article:published_time" content="2023-08-11T04:14:24.000Z">
 <meta property="article:modified_time" content="2023-08-11T04:14:24.000Z">
 <meta property="article:author" content="filefi">
@@ -150,7 +150,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Scrapy%E5%9F%BA%E6%9C%AC%E6%8A%93%E5%8F%96%E6%B5%81%E7%A8%8BUR%C2%B2IM"><span class="nav-number">1.</span> <span class="nav-text">Scrapy基本抓取流程UR²IM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Scrapy%E9%A1%B9%E7%9B%AE%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">Scrapy项目基本步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-Scrapy"><span class="nav-number">2.1.</span> <span class="nav-text">安装 Scrapy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="nav-number">2.2.</span> <span class="nav-text">创建项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAspider%E6%96%87%E4%BB%B6"><span class="nav-number">2.3.</span> <span class="nav-text">创建spider文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89Spider%E7%B1%BB"><span class="nav-number">2.4.</span> <span class="nav-text">定义Spider类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8Cspider"><span class="nav-number">2.5.</span> <span class="nav-text">运行spider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#scrapy-shell-%E2%80%94%E2%80%94-%E5%9C%A8%E4%BA%A4%E4%BA%92%E5%BC%8Fshell%E4%B8%AD%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81"><span class="nav-number">2.5.1.</span> <span class="nav-text">scrapy shell —— 在交互式shell中编写代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scrapy-parse-%E2%80%94%E2%80%94%E9%AA%8C%E8%AF%81Spider-parse%E6%96%B9%E6%B3%95%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="nav-number">2.5.2.</span> <span class="nav-text">scrapy parse ——验证Spider parse方法的结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scrapy-runspider-%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E7%BB%99%E5%AE%9Aspider%E6%96%87%E4%BB%B6%E4%B8%AD%E5%AE%9A%E4%B9%89%E7%9A%84Spider"><span class="nav-number">2.5.3.</span> <span class="nav-text">scrapy runspider ——运行给定spider文件中定义的Spider</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scrapy-crawl-%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E7%89%B9%E5%AE%9Aname%E7%9A%84Spider"><span class="nav-number">2.5.4.</span> <span class="nav-text">scrapy crawl ——运行特定name的Spider</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAItem"><span class="nav-number">2.6.</span> <span class="nav-text">创建Item</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Item%E5%AF%B9%E8%B1%A1"><span class="nav-number">2.7.</span> <span class="nav-text">使用Item对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%AD%97%E6%AE%B5%E5%80%BC"><span class="nav-number">2.7.0.1.</span> <span class="nav-text">获取字段值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%AD%97%E6%AE%B5%E5%80%BC"><span class="nav-number">2.7.0.2.</span> <span class="nav-text">设置字段值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%89%80%E6%9C%89%E5%B7%B2%E5%A1%AB%E5%85%85%E7%9A%84%E5%AD%97%E6%AE%B5"><span class="nav-number">2.7.0.3.</span> <span class="nav-text">访问所有已填充的字段</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ItemLoader%E5%A1%AB%E5%85%85item"><span class="nav-number">2.8.</span> <span class="nav-text">使用ItemLoader填充item</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%88%AC%E5%8F%96%E5%88%B0%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">2.9.</span> <span class="nav-text">存储爬取到的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8contract%E5%92%8C%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7scrapy-check%E6%B5%8B%E8%AF%95spider%E7%9A%84%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="nav-number">2.10.</span> <span class="nav-text">使用contract和命令行工具scrapy check测试spider的可用性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8F%8C%E5%90%91%E7%88%AC%E5%8F%96"><span class="nav-number">3.</span> <span class="nav-text">实现双向爬取</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E5%8F%8C%E5%90%91%E7%88%AC%E5%8F%96"><span class="nav-number">3.1.</span> <span class="nav-text">手动实现双向爬取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8CrawlSpider%E5%AE%9E%E7%8E%B0%E5%8F%8C%E5%90%91%E7%88%AC%E5%8F%96"><span class="nav-number">3.2.</span> <span class="nav-text">使用CrawlSpider实现双向爬取</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Scrapy%E5%9F%BA%E6%9C%AC%E6%8A%93%E5%8F%96%E6%B5%81%E7%A8%8BUR%C2%B2IM"><span class="nav-number">1.</span> <span class="nav-text">Scrapy基本抓取流程UR²IM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Scrapy%E9%A1%B9%E7%9B%AE%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">Scrapy项目基本步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-Scrapy"><span class="nav-number">2.1.</span> <span class="nav-text">安装 Scrapy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="nav-number">2.2.</span> <span class="nav-text">创建项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAspider%E6%96%87%E4%BB%B6"><span class="nav-number">2.3.</span> <span class="nav-text">创建spider文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89Spider%E7%B1%BB"><span class="nav-number">2.4.</span> <span class="nav-text">定义Spider类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8Cspider"><span class="nav-number">2.5.</span> <span class="nav-text">运行spider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#scrapy-shell-%E2%80%94%E2%80%94-%E5%9C%A8%E4%BA%A4%E4%BA%92%E5%BC%8Fshell%E4%B8%AD%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81"><span class="nav-number">2.5.1.</span> <span class="nav-text">scrapy shell —— 在交互式shell中编写代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scrapy-parse-%E2%80%94%E2%80%94%E9%AA%8C%E8%AF%81Spider-parse%E6%96%B9%E6%B3%95%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="nav-number">2.5.2.</span> <span class="nav-text">scrapy parse ——验证Spider parse方法的结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scrapy-runspider-%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E7%BB%99%E5%AE%9Aspider%E6%96%87%E4%BB%B6%E4%B8%AD%E5%AE%9A%E4%B9%89%E7%9A%84Spider"><span class="nav-number">2.5.3.</span> <span class="nav-text">scrapy runspider ——运行给定spider文件中定义的Spider</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scrapy-crawl-%E2%80%94%E2%80%94%E8%BF%90%E8%A1%8C%E7%89%B9%E5%AE%9Aname%E7%9A%84Spider"><span class="nav-number">2.5.4.</span> <span class="nav-text">scrapy crawl ——运行特定name的Spider</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAItem"><span class="nav-number">2.6.</span> <span class="nav-text">创建Item</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Item%E5%AF%B9%E8%B1%A1"><span class="nav-number">2.7.</span> <span class="nav-text">使用Item对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A1%AB%E5%85%85Item"><span class="nav-number">2.7.1.</span> <span class="nav-text">填充Item</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAItem%E5%AF%B9%E8%B1%A1%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.7.2.</span> <span class="nav-text">创建Item对象实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%AD%97%E6%AE%B5%E5%80%BC"><span class="nav-number">2.7.3.</span> <span class="nav-text">获取字段值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%AD%97%E6%AE%B5%E5%80%BC"><span class="nav-number">2.7.4.</span> <span class="nav-text">设置字段值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%89%80%E6%9C%89%E5%B7%B2%E5%A1%AB%E5%85%85%E7%9A%84%E5%AD%97%E6%AE%B5"><span class="nav-number">2.7.5.</span> <span class="nav-text">访问所有已填充的字段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ItemLoader%E5%A1%AB%E5%85%85item"><span class="nav-number">2.8.</span> <span class="nav-text">使用ItemLoader填充item</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%88%AC%E5%8F%96%E5%88%B0%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">2.9.</span> <span class="nav-text">存储爬取到的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8contract%E5%92%8C%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7scrapy-check%E6%B5%8B%E8%AF%95spider%E7%9A%84%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="nav-number">2.10.</span> <span class="nav-text">使用contract和命令行工具scrapy check测试spider的可用性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8F%8C%E5%90%91%E7%88%AC%E5%8F%96"><span class="nav-number">3.</span> <span class="nav-text">实现双向爬取</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E5%8F%8C%E5%90%91%E7%88%AC%E5%8F%96"><span class="nav-number">3.1.</span> <span class="nav-text">手动实现双向爬取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8CrawlSpider%E5%AE%9E%E7%8E%B0%E5%8F%8C%E5%90%91%E7%88%AC%E5%8F%96"><span class="nav-number">3.2.</span> <span class="nav-text">使用CrawlSpider实现双向爬取</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AA%92%E4%BD%93%E4%B8%8B%E8%BD%BD"><span class="nav-number">4.</span> <span class="nav-text">媒体下载</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -524,9 +524,8 @@ Options
     one_field <span class="token operator">=</span> attr<span class="token punctuation">.</span>ib<span class="token punctuation">(</span><span class="token punctuation">)</span>
     another_field <span class="token operator">=</span> attr<span class="token punctuation">.</span>ib<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
 
-<h2 id="使用Item对象"><a href="#使用Item对象" class="headerlink" title="使用Item对象"></a>使用<code>Item</code>对象</h2><p>在项目目录的<code>items.py</code>中创建<code>Item</code>类的子类并定义字段：</p>
+<h2 id="使用Item对象"><a href="#使用Item对象" class="headerlink" title="使用Item对象"></a>使用<code>Item</code>对象</h2><h3 id="填充Item"><a href="#填充Item" class="headerlink" title="填充Item"></a>填充Item</h3><p>在项目目录的<code>items.py</code>中创建<code>Item</code>类的子类并定义字段：</p>
 <pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> scrapy
-
 
 <span class="token keyword">class</span> <span class="token class-name">ProductItem</span><span class="token punctuation">(</span>scrapy<span class="token punctuation">.</span>Item<span class="token punctuation">)</span><span class="token punctuation">:</span>
     name <span class="token operator">=</span> scrapy<span class="token punctuation">.</span>Field<span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -536,14 +535,31 @@ Options
     last_updated <span class="token operator">=</span> scrapy<span class="token punctuation">.</span>Field<span class="token punctuation">(</span>serializer<span class="token operator">=</span><span class="token builtin">str</span><span class="token punctuation">)</span></code></pre>
 
 <p>然后在<code>spiders</code>目录中的spider文件中引入&#96;&#96;items.py&#96;中的Item类：</p>
-<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> project<span class="token punctuation">.</span>items <span class="token keyword">import</span> ProductItem</code></pre>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> project<span class="token punctuation">.</span>items <span class="token keyword">import</span> ProductItem
 
-<p><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/items.html#creating-items">创建Item对象实例</a></p>
-<pre class="language-python" data-language="python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> product <span class="token operator">=</span> Product<span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"Desktop PC"</span><span class="token punctuation">,</span> price<span class="token operator">=</span><span class="token number">1000</span><span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">BasicSpider</span><span class="token punctuation">(</span>scrapy<span class="token punctuation">.</span>Spider<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">"basic"</span>
+    allowed_domains <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"web"</span><span class="token punctuation">]</span>
+
+    start_urls <span class="token operator">=</span> <span class="token punctuation">(</span>
+        <span class="token string">'http://web:9312/properties/property_000000.html'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">parse</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># 创建Item对象实例</span>
+        item <span class="token operator">=</span> ProductItem<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        item<span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">]</span> <span class="token operator">=</span> response<span class="token punctuation">.</span>css<span class="token punctuation">(</span><span class="token string">'title'</span><span class="token punctuation">)</span>
+        item<span class="token punctuation">[</span><span class="token string">'price'</span><span class="token punctuation">]</span> <span class="token operator">=</span> response<span class="token punctuation">.</span>css<span class="token punctuation">(</span><span class="token string">'#price'</span><span class="token punctuation">)</span>
+        item<span class="token punctuation">[</span><span class="token string">'description'</span><span class="token punctuation">]</span> <span class="token operator">=</span> response<span class="token punctuation">.</span>css<span class="token punctuation">(</span><span class="token string">'#description'</span><span class="token punctuation">)</span>
+        item<span class="token punctuation">[</span><span class="token string">'address'</span><span class="token punctuation">]</span> <span class="token operator">=</span> response<span class="token punctuation">.</span>css<span class="token punctuation">(</span><span class="token string">'#address'</span><span class="token punctuation">)</span>
+        <span class="token comment"># 返回 item 对象，将 item 传递给 pipeline</span>
+        <span class="token keyword">return</span> item</code></pre>
+
+<h3 id="创建Item对象实例"><a href="#创建Item对象实例" class="headerlink" title="创建Item对象实例"></a><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/items.html#creating-items">创建Item对象实例</a></h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> product <span class="token operator">=</span> Product<span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"Desktop PC"</span><span class="token punctuation">,</span> price<span class="token operator">=</span><span class="token number">1000</span><span class="token punctuation">)</span>
 <span class="token operator">>></span><span class="token operator">></span> <span class="token keyword">print</span><span class="token punctuation">(</span>product<span class="token punctuation">)</span>
 <span class="token operator">>></span><span class="token operator">></span> Product<span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">'Desktop PC'</span><span class="token punctuation">,</span> price<span class="token operator">=</span><span class="token number">1000</span><span class="token punctuation">)</span></code></pre>
 
-<h4 id="获取字段值"><a href="#获取字段值" class="headerlink" title="获取字段值"></a><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/items.html#getting-field-values">获取字段值</a></h4><pre class="language-python" data-language="python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> product<span class="token punctuation">[</span><span class="token string">"name"</span><span class="token punctuation">]</span>
+<h3 id="获取字段值"><a href="#获取字段值" class="headerlink" title="获取字段值"></a><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/items.html#getting-field-values">获取字段值</a></h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> product<span class="token punctuation">[</span><span class="token string">"name"</span><span class="token punctuation">]</span>
 Desktop PC
 <span class="token operator">>></span><span class="token operator">></span> product<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span>
 Desktop PC
@@ -579,7 +595,7 @@ KeyError<span class="token punctuation">:</span> <span class="token string">'lal
 <span class="token operator">>></span><span class="token operator">></span> <span class="token string">"lala"</span> <span class="token keyword">in</span> product<span class="token punctuation">.</span>fields  <span class="token comment"># is lala a declared field?</span>
 <span class="token boolean">False</span></code></pre>
 
-<h4 id="设置字段值"><a href="#设置字段值" class="headerlink" title="设置字段值"></a><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/items.html#setting-field-values">设置字段值</a></h4><pre class="language-python" data-language="python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> product<span class="token punctuation">[</span><span class="token string">"last_updated"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"today"</span>
+<h3 id="设置字段值"><a href="#设置字段值" class="headerlink" title="设置字段值"></a><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/items.html#setting-field-values">设置字段值</a></h3><pre class="language-python" data-language="python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> product<span class="token punctuation">[</span><span class="token string">"last_updated"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"today"</span>
 <span class="token operator">>></span><span class="token operator">></span> product<span class="token punctuation">[</span><span class="token string">"last_updated"</span><span class="token punctuation">]</span>
 today
 
@@ -588,7 +604,7 @@ Traceback <span class="token punctuation">(</span>most recent call last<span cla
     <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
 KeyError<span class="token punctuation">:</span> <span class="token string">'Product does not support field: lala'</span></code></pre>
 
-<h4 id="访问所有已填充的字段"><a href="#访问所有已填充的字段" class="headerlink" title="访问所有已填充的字段"></a><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/items.html#accessing-all-populated-values">访问所有已填充的字段</a></h4><p>To access all populated values, just use the typical <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a> API:</p>
+<h3 id="访问所有已填充的字段"><a href="#访问所有已填充的字段" class="headerlink" title="访问所有已填充的字段"></a><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/items.html#accessing-all-populated-values">访问所有已填充的字段</a></h3><p>To access all populated values, just use the typical <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a> API:</p>
 <pre class="language-python" data-language="python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> product<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">[</span><span class="token string">'price'</span><span class="token punctuation">,</span> <span class="token string">'name'</span><span class="token punctuation">]</span>
 
@@ -695,8 +711,6 @@ Options
   -l, --list            only list contracts, without checking them
   -v, --verbose         print contract tests for all spiders</code></pre>
 
-
-
 <h1 id="实现双向爬取"><a href="#实现双向爬取" class="headerlink" title="实现双向爬取"></a>实现双向爬取</h1><p><strong>纵向与横向爬取：</strong></p>
 <ul>
 <li><p><strong>横向</strong>：从一个索引页到另外一个索引页。也叫做<strong>水平爬取</strong>，因为这种情况是在同一层级下爬取页面（比如索引页或列表页）。</p>
@@ -704,28 +718,121 @@ Options
 <li><p><strong>纵向</strong>：从一个索引页到详情页，并在详情页中抽取数据填充Item。也叫做<strong>垂直爬取</strong>，因为这种方式是从一个更高的层级（比如索引页）到一个更低的层级（比如详情页）。</p>
 </li>
 </ul>
-<p><img src="/learning-scrapy/ch3-1.jpg"></p>
-<p><img src="/learning-scrapy/ch3-2.jpg"></p>
+<p><img src="/2023/learning-scrapy/ch3-1.jpg"></p>
+<p><img src="/2023/learning-scrapy/ch3-2.jpg"></p>
 <h2 id="手动实现双向爬取"><a href="#手动实现双向爬取" class="headerlink" title="手动实现双向爬取"></a>手动实现双向爬取</h2><pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">parse</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token comment"># Get the next index URLs and yield Requests</span>
-        next_selector <span class="token operator">=</span> response<span class="token punctuation">.</span>xpath<span class="token punctuation">(</span><span class="token string">'//*[contains(@class,"next")]//@href'</span><span class="token punctuation">)</span>
-        <span class="token keyword">for</span> url <span class="token keyword">in</span> next_selector<span class="token punctuation">.</span>extract<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-            <span class="token keyword">yield</span> Request<span class="token punctuation">(</span>urlparse<span class="token punctuation">.</span>urljoin<span class="token punctuation">(</span>response<span class="token punctuation">.</span>url<span class="token punctuation">,</span> url<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment"># Get the next index URLs and yield Requests</span>
+    next_selector <span class="token operator">=</span> response<span class="token punctuation">.</span>xpath<span class="token punctuation">(</span><span class="token string">'//*[contains(@class,"next")]//@href'</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> url <span class="token keyword">in</span> next_selector<span class="token punctuation">.</span>extract<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># 返回Request，发起对横向链接的请求</span>
+        <span class="token keyword">yield</span> Request<span class="token punctuation">(</span>urlparse<span class="token punctuation">.</span>urljoin<span class="token punctuation">(</span>response<span class="token punctuation">.</span>url<span class="token punctuation">,</span> url<span class="token punctuation">)</span><span class="token punctuation">)</span>
 
-        <span class="token comment"># Get item URLs and yield Requests</span>
-        item_selector <span class="token operator">=</span> response<span class="token punctuation">.</span>xpath<span class="token punctuation">(</span><span class="token string">'//*[@itemprop="url"]/@href'</span><span class="token punctuation">)</span>
-        <span class="token keyword">for</span> url <span class="token keyword">in</span> item_selector<span class="token punctuation">.</span>extract<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-            <span class="token keyword">yield</span> Request<span class="token punctuation">(</span>urlparse<span class="token punctuation">.</span>urljoin<span class="token punctuation">(</span>response<span class="token punctuation">.</span>url<span class="token punctuation">,</span> url<span class="token punctuation">)</span><span class="token punctuation">,</span>
-                          callback<span class="token operator">=</span>self<span class="token punctuation">.</span>parse_item<span class="token punctuation">)</span>
-            
+    <span class="token comment"># Get item URLs and yield Requests</span>
+    item_selector <span class="token operator">=</span> response<span class="token punctuation">.</span>xpath<span class="token punctuation">(</span><span class="token string">'//*[@itemprop="url"]/@href'</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> url <span class="token keyword">in</span> item_selector<span class="token punctuation">.</span>extract<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># 返回Request，发起对纵向链接的请求</span>
+        <span class="token keyword">yield</span> Request<span class="token punctuation">(</span>urlparse<span class="token punctuation">.</span>urljoin<span class="token punctuation">(</span>response<span class="token punctuation">.</span>url<span class="token punctuation">,</span> url<span class="token punctuation">)</span><span class="token punctuation">,</span>
+                    callback<span class="token operator">=</span>self<span class="token punctuation">.</span>parse_item<span class="token punctuation">)</span> <span class="token comment"># 将parse_item作为回调函数传递给Request，用以匹配详情页的数据来填充item</span>
+
 <span class="token keyword">def</span> <span class="token function">parse_item</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">:</span>
     <span class="token triple-quoted-string string">""" This function parses a property page.
     """</span>
-	<span class="token keyword">pass</span></code></pre>
+	  <span class="token keyword">pass</span></code></pre>
 
 
 
-<h2 id="使用CrawlSpider实现双向爬取"><a href="#使用CrawlSpider实现双向爬取" class="headerlink" title="使用CrawlSpider实现双向爬取"></a>使用CrawlSpider实现双向爬取</h2>
+<h2 id="使用CrawlSpider实现双向爬取"><a href="#使用CrawlSpider实现双向爬取" class="headerlink" title="使用CrawlSpider实现双向爬取"></a>使用CrawlSpider实现双向爬取</h2><p>使用<code>rules</code>变量替换手工实现双向爬取中的水平爬取和垂直爬取。同样的，将<code>parse_item</code>方法作为回调函数传递给<code>Request</code>，用以匹配详情页的数据来填充item。且使用<code>CrawlSpider</code>类和<code>rules</code>变量，则不再需要实现<code>parse</code>方法。</p>
+<p><code>LinkExtractor</code>用于抽取链接，默认情况下，它会查找<code>&lt;a&gt;</code>标签的<code>href</code>属性。也可以通过设置<code>tags</code>和<code>attrs</code>参数来进行自定义。</p>
+<p>在不设置<code>callback</code>参数的情况下，<code>Rule</code>会跟踪已经抽取的URL，也就是，它会扫描目标页面以获取更多的URL并跟踪它们。如果设置了<code>callback</code>参数，<code>Rule</code>将不会跟踪目标页面中的链接。如果既想设置<code>callback</code>参数，又想让<code>Rule</code>跟踪页面中的链接，则可以将<code>follow</code>参数设置为<code>True</code>。</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> scrapy<span class="token punctuation">.</span>linkextractors <span class="token keyword">import</span> LinkExtractor
+<span class="token keyword">from</span> scrapy<span class="token punctuation">.</span>spiders <span class="token keyword">import</span> CrawlSpider<span class="token punctuation">,</span> Rule
+<span class="token keyword">class</span> <span class="token class-name">EasySpider</span><span class="token punctuation">(</span>CrawlSpider<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">'easy'</span>
+    allowed_domains <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"web"</span><span class="token punctuation">]</span>
+
+    <span class="token comment"># Start on the first index page</span>
+    start_urls <span class="token operator">=</span> <span class="token punctuation">(</span>
+        <span class="token string">'http://web:9312/properties/index_00000.html'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+    
+  	<span class="token comment"># Rules for horizontal and vertical crawling</span>
+    rules <span class="token operator">=</span> <span class="token punctuation">(</span>
+        Rule<span class="token punctuation">(</span>LinkExtractor<span class="token punctuation">(</span>restrict_xpaths<span class="token operator">=</span><span class="token string">'//*[contains(@class,"next")]'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        Rule<span class="token punctuation">(</span>LinkExtractor<span class="token punctuation">(</span>restrict_xpaths<span class="token operator">=</span><span class="token string">'//*[@itemprop="url"]'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+             callback<span class="token operator">=</span><span class="token string">'parse_item'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">parse_item</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># 略</span>
+        <span class="token keyword">pass</span></code></pre>
+
+<p>完整代码如下：</p>
+<pre class="language-python" data-language="python"><code class="language-python"><span class="token comment"># https://github.com/scalingexcellence/scrapybook/blob/master/ch03/properties/properties/spiders/easy.py</span>
+
+<span class="token keyword">import</span> datetime
+<span class="token keyword">import</span> urlparse
+<span class="token keyword">import</span> socket
+
+<span class="token keyword">from</span> scrapy<span class="token punctuation">.</span>loader<span class="token punctuation">.</span>processors <span class="token keyword">import</span> MapCompose<span class="token punctuation">,</span> Join
+<span class="token keyword">from</span> scrapy<span class="token punctuation">.</span>linkextractors <span class="token keyword">import</span> LinkExtractor
+<span class="token keyword">from</span> scrapy<span class="token punctuation">.</span>spiders <span class="token keyword">import</span> CrawlSpider<span class="token punctuation">,</span> Rule
+<span class="token keyword">from</span> scrapy<span class="token punctuation">.</span>loader <span class="token keyword">import</span> ItemLoader
+
+<span class="token keyword">from</span> properties<span class="token punctuation">.</span>items <span class="token keyword">import</span> PropertiesItem
+
+
+<span class="token keyword">class</span> <span class="token class-name">EasySpider</span><span class="token punctuation">(</span>CrawlSpider<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">'easy'</span>
+    allowed_domains <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"web"</span><span class="token punctuation">]</span>
+
+    <span class="token comment"># Start on the first index page</span>
+    start_urls <span class="token operator">=</span> <span class="token punctuation">(</span>
+        <span class="token string">'http://web:9312/properties/index_00000.html'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    <span class="token comment"># Rules for horizontal and vertical crawling</span>
+    rules <span class="token operator">=</span> <span class="token punctuation">(</span>
+        Rule<span class="token punctuation">(</span>LinkExtractor<span class="token punctuation">(</span>restrict_xpaths<span class="token operator">=</span><span class="token string">'//*[contains(@class,"next")]'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        Rule<span class="token punctuation">(</span>LinkExtractor<span class="token punctuation">(</span>restrict_xpaths<span class="token operator">=</span><span class="token string">'//*[@itemprop="url"]'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+             callback<span class="token operator">=</span><span class="token string">'parse_item'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">parse_item</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">""" This function parses a property page.
+
+        @url http://web:9312/properties/property_000000.html
+        @returns items 1
+        @scrapes title price description address image_urls
+        @scrapes url project spider server date
+        """</span>
+
+        <span class="token comment"># Create the loader using the response</span>
+        l <span class="token operator">=</span> ItemLoader<span class="token punctuation">(</span>item<span class="token operator">=</span>PropertiesItem<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> response<span class="token operator">=</span>response<span class="token punctuation">)</span>
+
+        <span class="token comment"># Load fields using XPath expressions</span>
+        l<span class="token punctuation">.</span>add_xpath<span class="token punctuation">(</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'//*[@itemprop="name"][1]/text()'</span><span class="token punctuation">,</span>
+                    MapCompose<span class="token punctuation">(</span><span class="token builtin">unicode</span><span class="token punctuation">.</span>strip<span class="token punctuation">,</span> <span class="token builtin">unicode</span><span class="token punctuation">.</span>title<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        l<span class="token punctuation">.</span>add_xpath<span class="token punctuation">(</span><span class="token string">'price'</span><span class="token punctuation">,</span> <span class="token string">'.//*[@itemprop="price"][1]/text()'</span><span class="token punctuation">,</span>
+                    MapCompose<span class="token punctuation">(</span><span class="token keyword">lambda</span> i<span class="token punctuation">:</span> i<span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">','</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token builtin">float</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                    re<span class="token operator">=</span><span class="token string">'[,.0-9]+'</span><span class="token punctuation">)</span>
+        l<span class="token punctuation">.</span>add_xpath<span class="token punctuation">(</span><span class="token string">'description'</span><span class="token punctuation">,</span> <span class="token string">'//*[@itemprop="description"][1]/text()'</span><span class="token punctuation">,</span>
+                    MapCompose<span class="token punctuation">(</span><span class="token builtin">unicode</span><span class="token punctuation">.</span>strip<span class="token punctuation">)</span><span class="token punctuation">,</span> Join<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        l<span class="token punctuation">.</span>add_xpath<span class="token punctuation">(</span><span class="token string">'address'</span><span class="token punctuation">,</span>
+                    <span class="token string">'//*[@itemtype="http://schema.org/Place"][1]/text()'</span><span class="token punctuation">,</span>
+                    MapCompose<span class="token punctuation">(</span><span class="token builtin">unicode</span><span class="token punctuation">.</span>strip<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        l<span class="token punctuation">.</span>add_xpath<span class="token punctuation">(</span><span class="token string">'image_urls'</span><span class="token punctuation">,</span> <span class="token string">'//*[@itemprop="image"][1]/@src'</span><span class="token punctuation">,</span>
+                    MapCompose<span class="token punctuation">(</span><span class="token keyword">lambda</span> i<span class="token punctuation">:</span> urlparse<span class="token punctuation">.</span>urljoin<span class="token punctuation">(</span>response<span class="token punctuation">.</span>url<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># Housekeeping fields</span>
+        l<span class="token punctuation">.</span>add_value<span class="token punctuation">(</span><span class="token string">'url'</span><span class="token punctuation">,</span> response<span class="token punctuation">.</span>url<span class="token punctuation">)</span>
+        l<span class="token punctuation">.</span>add_value<span class="token punctuation">(</span><span class="token string">'project'</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>settings<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'BOT_NAME'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        l<span class="token punctuation">.</span>add_value<span class="token punctuation">(</span><span class="token string">'spider'</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+        l<span class="token punctuation">.</span>add_value<span class="token punctuation">(</span><span class="token string">'server'</span><span class="token punctuation">,</span> socket<span class="token punctuation">.</span>gethostname<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        l<span class="token punctuation">.</span>add_value<span class="token punctuation">(</span><span class="token string">'date'</span><span class="token punctuation">,</span> datetime<span class="token punctuation">.</span>datetime<span class="token punctuation">.</span>now<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> l<span class="token punctuation">.</span>load_item<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<h1 id="媒体下载"><a href="#媒体下载" class="headerlink" title="媒体下载"></a>媒体下载</h1>
     </div>
 
     
