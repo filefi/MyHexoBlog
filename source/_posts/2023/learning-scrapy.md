@@ -332,11 +332,12 @@ class CustomItem:
 
 ## 使用`Item`对象
 
+### 填充Item
+
 在项目目录的`items.py`中创建`Item`类的子类并定义字段：
 
 ```python
 import scrapy
-
 
 class ProductItem(scrapy.Item):
     name = scrapy.Field()
@@ -350,9 +351,27 @@ class ProductItem(scrapy.Item):
 
 ```python
 from project.items import ProductItem
+
+class BasicSpider(scrapy.Spider):
+    name = "basic"
+    allowed_domains = ["web"]
+
+    start_urls = (
+        'http://web:9312/properties/property_000000.html',
+    )
+
+    def parse(self, response):
+        # 创建Item对象实例
+        item = ProductItem()
+        item['title'] = response.css('title')
+        item['price'] = response.css('#price')
+        item['description'] = response.css('#description')
+        item['address'] = response.css('#address')
+        # 返回 item 对象，将 item 传递给 pipeline
+        return item
 ```
 
-[创建Item对象实例](https://docs.scrapy.org/en/latest/topics/items.html#creating-items)
+### [创建Item对象实例](https://docs.scrapy.org/en/latest/topics/items.html#creating-items)
 
 ```python
 >>> product = Product(name="Desktop PC", price=1000)
@@ -360,7 +379,7 @@ from project.items import ProductItem
 >>> Product(name='Desktop PC', price=1000)
 ```
 
-#### [获取字段值](https://docs.scrapy.org/en/latest/topics/items.html#getting-field-values)
+### [获取字段值](https://docs.scrapy.org/en/latest/topics/items.html#getting-field-values)
 
 ```python
 >>> product["name"]
@@ -400,7 +419,7 @@ True
 False
 ```
 
-#### [设置字段值](https://docs.scrapy.org/en/latest/topics/items.html#setting-field-values)
+### [设置字段值](https://docs.scrapy.org/en/latest/topics/items.html#setting-field-values)
 
 ```python
 >>> product["last_updated"] = "today"
@@ -413,7 +432,7 @@ Traceback (most recent call last):
 KeyError: 'Product does not support field: lala'
 ```
 
-#### [访问所有已填充的字段](https://docs.scrapy.org/en/latest/topics/items.html#accessing-all-populated-values)
+### [访问所有已填充的字段](https://docs.scrapy.org/en/latest/topics/items.html#accessing-all-populated-values)
 
 To access all populated values, just use the typical [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) API:
 
@@ -544,8 +563,6 @@ Options
   -v, --verbose         print contract tests for all spiders
 ```
 
-
-
 # 实现双向爬取
 
 **纵向与横向爬取：**
@@ -554,33 +571,136 @@ Options
 
 - **纵向**：从一个索引页到详情页，并在详情页中抽取数据填充Item。也叫做**垂直爬取**，因为这种方式是从一个更高的层级（比如索引页）到一个更低的层级（比如详情页）。
 
-![](learning-scrapy/ch3-1.jpg)
+![](ch3-1.jpg)
 
-![](learning-scrapy/ch3-2.jpg)
+![](ch3-2.jpg)
 
 ## 手动实现双向爬取
 ```python
 def parse(self, response):
-        # Get the next index URLs and yield Requests
-        next_selector = response.xpath('//*[contains(@class,"next")]//@href')
-        for url in next_selector.extract():
-            yield Request(urlparse.urljoin(response.url, url))
+    # Get the next index URLs and yield Requests
+    next_selector = response.xpath('//*[contains(@class,"next")]//@href')
+    for url in next_selector.extract():
+        # 返回Request，发起对横向链接的请求
+        yield Request(urlparse.urljoin(response.url, url))
 
-        # Get item URLs and yield Requests
-        item_selector = response.xpath('//*[@itemprop="url"]/@href')
-        for url in item_selector.extract():
-            yield Request(urlparse.urljoin(response.url, url),
-                          callback=self.parse_item)
-            
+    # Get item URLs and yield Requests
+    item_selector = response.xpath('//*[@itemprop="url"]/@href')
+    for url in item_selector.extract():
+        # 返回Request，发起对纵向链接的请求
+        yield Request(urlparse.urljoin(response.url, url),
+                    callback=self.parse_item) # 将parse_item作为回调函数传递给Request，用以匹配详情页的数据来填充item
+
 def parse_item(self, response):
     """ This function parses a property page.
     """
-	pass
+	  pass
 ```
 
 
 
 ## 使用CrawlSpider实现双向爬取
+
+使用`rules`变量替换手工实现双向爬取中的水平爬取和垂直爬取。同样的，将`parse_item`方法作为回调函数传递给`Request`，用以匹配详情页的数据来填充item。且使用`CrawlSpider`类和`rules`变量，则不再需要实现`parse`方法。
+
+`LinkExtractor`用于抽取链接，默认情况下，它会查找`<a>`标签的`href`属性。也可以通过设置`tags`和`attrs`参数来进行自定义。
+
+在不设置`callback`参数的情况下，`Rule`会跟踪已经抽取的URL，也就是，它会扫描目标页面以获取更多的URL并跟踪它们。如果设置了`callback`参数，`Rule`将不会跟踪目标页面中的链接。如果既想设置`callback`参数，又想让`Rule`跟踪页面中的链接，则可以将`follow`参数设置为`True`。
+
+```python
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
+class EasySpider(CrawlSpider):
+    name = 'easy'
+    allowed_domains = ["web"]
+
+    # Start on the first index page
+    start_urls = (
+        'http://web:9312/properties/index_00000.html',
+    )
+    
+  	# Rules for horizontal and vertical crawling
+    rules = (
+        Rule(LinkExtractor(restrict_xpaths='//*[contains(@class,"next")]')),
+        Rule(LinkExtractor(restrict_xpaths='//*[@itemprop="url"]'),
+             callback='parse_item')
+    )
+    
+    def parse_item(self, response):
+        # 略
+        pass
+```
+
+完整代码如下：
+
+```python
+# https://github.com/scalingexcellence/scrapybook/blob/master/ch03/properties/properties/spiders/easy.py
+
+import datetime
+import urlparse
+import socket
+
+from scrapy.loader.processors import MapCompose, Join
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.loader import ItemLoader
+
+from properties.items import PropertiesItem
+
+
+class EasySpider(CrawlSpider):
+    name = 'easy'
+    allowed_domains = ["web"]
+
+    # Start on the first index page
+    start_urls = (
+        'http://web:9312/properties/index_00000.html',
+    )
+
+    # Rules for horizontal and vertical crawling
+    rules = (
+        Rule(LinkExtractor(restrict_xpaths='//*[contains(@class,"next")]')),
+        Rule(LinkExtractor(restrict_xpaths='//*[@itemprop="url"]'),
+             callback='parse_item')
+    )
+
+    def parse_item(self, response):
+        """ This function parses a property page.
+
+        @url http://web:9312/properties/property_000000.html
+        @returns items 1
+        @scrapes title price description address image_urls
+        @scrapes url project spider server date
+        """
+
+        # Create the loader using the response
+        l = ItemLoader(item=PropertiesItem(), response=response)
+
+        # Load fields using XPath expressions
+        l.add_xpath('title', '//*[@itemprop="name"][1]/text()',
+                    MapCompose(unicode.strip, unicode.title))
+        l.add_xpath('price', './/*[@itemprop="price"][1]/text()',
+                    MapCompose(lambda i: i.replace(',', ''), float),
+                    re='[,.0-9]+')
+        l.add_xpath('description', '//*[@itemprop="description"][1]/text()',
+                    MapCompose(unicode.strip), Join())
+        l.add_xpath('address',
+                    '//*[@itemtype="http://schema.org/Place"][1]/text()',
+                    MapCompose(unicode.strip))
+        l.add_xpath('image_urls', '//*[@itemprop="image"][1]/@src',
+                    MapCompose(lambda i: urlparse.urljoin(response.url, i)))
+
+        # Housekeeping fields
+        l.add_value('url', response.url)
+        l.add_value('project', self.settings.get('BOT_NAME'))
+        l.add_value('spider', self.name)
+        l.add_value('server', socket.gethostname())
+        l.add_value('date', datetime.datetime.now())
+
+        return l.load_item()
+```
+
+# 媒体下载
 
 
 
