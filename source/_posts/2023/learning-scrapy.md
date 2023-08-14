@@ -702,15 +702,113 @@ class EasySpider(CrawlSpider):
 
 # 媒体下载
 
+Scrapy 的 [Item Pipeline](https://docs.scrapy.org/en/latest/topics/item-pipeline.html) 用来对 spider 爬取到的 Item 进行二次加工处理，典型的应用有：
+
+- 清洗HTML数据
+- 验证爬取到的数据（检查items是否包含某些字段）
+- 去重
+- 将爬取到的数据存储到数据库
+
+同时，Scrapy 还提供了2个可重用的 Item Pipeline 来方便的实现文件下载和图片下载，它们称为 Media Pipeline。当然，Item Pipeline 是用来对 Item 进行二次加工处理的。所以，`FilesPipeline`和`ImagesPipeline`也是对 Item 进行二次加工处理的。`FilesPipeline`作用于`file_urls`和`files`字段，`ImagesPipeline`作用于`image_urls`和`images`字段。
+
+`FilesPipeline`和`ImagesPipeline`都实现了以下特性：
+
+- Avoid re-downloading media that was downloaded recently
+- Specifying where to store the media (filesystem directory, FTP server, Amazon S3 bucket, Google Cloud Storage bucket)
+
+`ImagesPipeline`包含一些用于对图片进行处理的额外功能：
+
+- Convert all downloaded images to a common format (JPG) and mode (RGB)
+- 生成缩略图
+- Check images width/height to make sure they meet a minimum constraint
+
+## [`FilesPipeline`使用流程](https://docs.scrapy.org/en/latest/topics/media-pipeline.html#using-the-files-pipeline)
+
+The typical workflow, when using the `FilesPipeline` goes like this:
+
+1. In a Spider, you scrape an item and put the URLs of the desired into a `file_urls` field.
+2. The item is returned from the spider and goes to the item pipeline.
+3. When the item reaches the `FilesPipeline`, the URLs in the `file_urls` field are scheduled for download using the standard Scrapy scheduler and downloader (which means the scheduler and downloader middlewares are reused), but with a higher priority, processing them before other pages are scraped. The item remains “locked” at that particular pipeline stage until the files have finish downloading (or fail for some reason).
+4. When the files are downloaded, another field (`files`) will be populated with the results. This field will contain a list of dicts with information about the downloaded files, such as the downloaded path, the original scraped url (taken from the `file_urls` field), the file checksum and the file status. The files in the list of the `files` field will retain the same order of the original `file_urls` field. If some file failed downloading, an error will be logged and the file won’t be present in the `files` field.
+
+## [`ImagesPipeline`使用流程](https://docs.scrapy.org/en/latest/topics/media-pipeline.html#using-the-images-pipeline)
+
+Using the [`ImagesPipeline`](https://docs.scrapy.org/en/latest/topics/media-pipeline.html#scrapy.pipelines.images.ImagesPipeline) is a lot like using the `FilesPipeline`, except the default field names used are different: you use `image_urls` for the image URLs of an item and it will populate an `images` field for the information about the downloaded images.
+
+The advantage of using the [`ImagesPipeline`](https://docs.scrapy.org/en/latest/topics/media-pipeline.html#scrapy.pipelines.images.ImagesPipeline) for image files is that you can configure some extra functions like generating thumbnails and filtering the images based on their size.
+
+The Images Pipeline requires [Pillow](https://github.com/python-pillow/Pillow) 7.1.0 or greater. It is used for thumbnailing and normalizing images to JPEG/RGB format.
+
+## [启用 Media Pipeline](https://docs.scrapy.org/en/latest/topics/media-pipeline.html#enabling-your-media-pipeline)
+
+要启用 media pipeline，需要将其加入到项目的`settings.py`文件的 [`ITEM_PIPELINES`](https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-ITEM_PIPELINES) 设置。
+
+对于 `ImagesPipeline`：
+
+```python
+ITEM_PIPELINES = {"scrapy.pipelines.images.ImagesPipeline": 1}
+```
+
+对于`FilesPipeline`：
+
+```python
+ITEM_PIPELINES = {"scrapy.pipelines.files.FilesPipeline": 1}
+```
+
+然后，还需要将配置文件的下载位置也加入项目的`settins.py`文件，否则就算是已经设置了项目`settins.py`中的`ITEM_PIPELINES`，`FilesPipelines`和`ImagesPipelines`依然为disabled。
+
+对于 `FilesPipeline`, 设置项目`settings.py`中的[`FILES_STORE`](https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std-setting-FILES_STORE) :
+
+```
+FILES_STORE = "/path/to/valid/dir"
+```
+
+对于 `ImagesPipeline`, 设置项目`settings.py`中的[`IMAGES_STORE`](https://docs.scrapy.org/en/latest/topics/media-pipeline.html#std-setting-IMAGES_STORE):
+
+```
+IMAGES_STORE = "/path/to/valid/dir"
+```
+
+### 实例
+
+```python
+import scrapy
 
 
+class MyItem(scrapy.Item):
+    # ... other item fields ...
+    file_urls = scrapy.Field() # 必须填充file_urls或image_urls字段，或者指定自定义字段
+    files = scrapy.Field() # 必须填充files或images字段，或者指定自定义字段
+```
+
+实现`FilesPipeline`类的子类：
+
+```python
+from pathlib import PurePosixPath
+from urllib.parse import urlparse
+
+from itemadapter import ItemAdapter
+from scrapy.exceptions import DropItem
+from scrapy.pipelines.files import FilesPipeline
 
 
+class MyFilesPipeline(FilesPipeline):
+    def file_path(self, request, response=None, info=None, *, item=None):
+        return "files/" + PurePosixPath(urlparse(request.url).path).name
+      
+    def get_media_requests(self, item, info):
+      	adapter = ItemAdapter(item)
+      	for file_url in adapter["file_urls"]:
+          	yield scrapy.Request(file_url)
 
-
-
-
-
+    def item_completed(self, results, item, info):
+        file_paths = [x["path"] for ok, x in results if ok]
+        if not file_paths:
+            raise DropItem("Item contains no files")
+        adapter = ItemAdapter(item)
+        adapter["file_paths"] = file_paths
+        return item
+```
 
 
 
