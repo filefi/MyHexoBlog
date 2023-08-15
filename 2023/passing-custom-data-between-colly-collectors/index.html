@@ -31,9 +31,9 @@
 <meta property="article:modified_time" content="2023-08-15T13:54:03.000Z">
 <meta property="article:author" content="filefi">
 <meta property="article:tag" content="Golang">
-<meta property="article:tag" content="Spider">
 <meta property="article:tag" content="Colly">
 <meta property="article:tag" content="Web Scraping">
+<meta property="article:tag" content="Spider">
 <meta property="article:tag" content="Scraper">
 <meta property="article:tag" content="Crawler">
 <meta name="twitter:card" content="summary">
@@ -327,6 +327,7 @@
 <li><a target="_blank" rel="noopener" href="https://pkg.go.dev/github.com/gocolly/colly/v2#Context.MarshalBinary"><code>MarshalBinary</code></a>: <code>MarshalBinary</code> encodes <code>Context</code> value This function is used by request caching.</li>
 <li><a target="_blank" rel="noopener" href="https://pkg.go.dev/github.com/gocolly/colly/v2#Context.UnmarshalBinary"><code>UnmarshalBinary</code></a>: <code>UnmarshalBinary</code> decodes <code>Context</code> value to nil This function is used by request caching.</li>
 </ul>
+<p>实例：</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
 
 <span class="token keyword">import</span> <span class="token punctuation">(</span>
@@ -361,7 +362,7 @@
 		filename <span class="token operator">:=</span> r<span class="token punctuation">.</span>Ctx<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"filename"</span><span class="token punctuation">)</span>
 		url <span class="token operator">:=</span> r<span class="token punctuation">.</span>Ctx<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"url"</span><span class="token punctuation">)</span>
 		fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"filename:%s url:%s"</span><span class="token punctuation">,</span> filename<span class="token punctuation">,</span> url<span class="token punctuation">)</span>
-    
+
 		<span class="token comment">// now you can custom the path</span>
 		r<span class="token punctuation">.</span><span class="token function">Save</span><span class="token punctuation">(</span>filename<span class="token punctuation">)</span>
 	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
@@ -435,9 +436,9 @@
 
           <div class="post-tags">
               <a href="/tags/Golang/" rel="tag"># Golang</a>
-              <a href="/tags/Spider/" rel="tag"># Spider</a>
               <a href="/tags/Colly/" rel="tag"># Colly</a>
               <a href="/tags/Web-Scraping/" rel="tag"># Web Scraping</a>
+              <a href="/tags/Spider/" rel="tag"># Spider</a>
               <a href="/tags/Scraper/" rel="tag"># Scraper</a>
               <a href="/tags/Crawler/" rel="tag"># Crawler</a>
           </div>

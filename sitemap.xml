@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://ifelif.cn/about/index.html</loc>
+    
+    <lastmod>2023-08-15</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/categories/index.html</loc>
+    
+    <lastmod>2023-08-15</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://ifelif.cn/projects/index.html</loc>
     
     <lastmod>2023-08-15</lastmod>
@@ -21,24 +39,6 @@
   
   <url>
     <loc>https://ifelif.cn/topics/index.html</loc>
-    
-    <lastmod>2023-08-15</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/about/index.html</loc>
-    
-    <lastmod>2023-08-15</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/categories/index.html</loc>
     
     <lastmod>2023-08-15</lastmod>
     
@@ -547,6 +547,41 @@
   </url>
   
   <url>
+    <loc>https://ifelif.cn/tags/Colly/</loc>
+    <lastmod>2023-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Web-Scraping/</loc>
+    <lastmod>2023-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Spider/</loc>
+    <lastmod>2023-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Scraper/</loc>
+    <lastmod>2023-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Crawler/</loc>
+    <lastmod>2023-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://ifelif.cn/tags/Nginx/</loc>
     <lastmod>2023-08-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -625,13 +660,6 @@
   
   <url>
     <loc>https://ifelif.cn/tags/Scraping/</loc>
-    <lastmod>2023-08-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/Spider/</loc>
     <lastmod>2023-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -744,34 +772,6 @@
   
   <url>
     <loc>https://ifelif.cn/tags/DHCP/</loc>
-    <lastmod>2023-08-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/Colly/</loc>
-    <lastmod>2023-08-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/Web-Scraping/</loc>
-    <lastmod>2023-08-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/Scraper/</loc>
-    <lastmod>2023-08-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/Crawler/</loc>
     <lastmod>2023-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
