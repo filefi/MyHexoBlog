@@ -86,7 +86,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 )
 
 func main() {
@@ -121,6 +121,7 @@ func main() {
 	})
 
 	c.Visit("http://example.com")
+
 	// r.Ctx.Put("item", struct {
 	// 	Name string
 	// 	Age  int
