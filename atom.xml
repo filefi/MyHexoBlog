@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2023-08-11T04:14:24.000Z</updated>
+  <updated>2023-08-15T13:54:03.000Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -15,6 +15,68 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用 colly.Context 在 colly.Collector 之间传递自定义数据</title>
+    <link href="https://ifelif.cn/2023/passing-custom-data-between-colly-collectors/"/>
+    <id>https://ifelif.cn/2023/passing-custom-data-between-colly-collectors/</id>
+    <published>2023-08-15T13:54:03.000Z</published>
+    <updated>2023-08-15T13:54:03.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;爬虫通常需要进行&lt;strong&gt;横向爬取&lt;/strong&gt;和&lt;strong&gt;纵向爬取&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;横向&lt;/strong&gt;：从一个索引页到另外一个索引页。也叫做&lt;strong&gt;水平爬取&lt;/strong&gt;，因为这种情况是在同一层级下爬取页面（比如索引页或列表页）。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;纵向&lt;/strong&gt;：从一个索引页到详情页，并在详情页中抽取数据填充Item。也叫做&lt;strong&gt;垂直爬取&lt;/strong&gt;，因为这种方式是从一个更高的层级（比如索引页）到一个更低的层级（比如详情页）。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Colly官方文档建议，如果单个爬取作业过于复杂，或者有多个不同的子任务，则应该使用多个&lt;code&gt;colly.Colletor&lt;/code&gt;负责不同的子任务。比如，一个负责横向，从索引页获得更多链接。一个负责纵向，爬取详情页中的数据或下载文件。&lt;/p&gt;
+&lt;p&gt;编写爬虫时，经常需要把一个页面中爬取到的数据传递给下一个请求。例如，由页面A中的数据拼接出下一个Request的URL；或者，由页面A中的数据拼接得到文件名，并将文件名传递给下载文件的Request，用来设置下载文件的文件名。&lt;/p&gt;
+&lt;p&gt;在 Scrapy 中，我们可以通过&lt;code&gt;Request&lt;/code&gt;的&lt;code&gt;meta&lt;/code&gt;属性向&lt;code&gt;Response&lt;/code&gt;传递数据。例如：&lt;/p&gt;
+&lt;pre class=&quot;language-python&quot; data-language=&quot;python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;start_requests&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;self&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# 将数据存放如 request的meta属性中&lt;/span&gt;
+  	&lt;span class=&quot;token keyword&quot;&gt;yield&lt;/span&gt; Request&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; meta&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;#123;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;Mike&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;age&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;#125;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;self&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; response&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+		item &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Item&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# 从response.meta中取出数据&lt;/span&gt;
+    item&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; response&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;meta&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    item&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;age&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; response&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;meta&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;age&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;或者&lt;/p&gt;
+&lt;pre class=&quot;language-python&quot; data-language=&quot;python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;start_requests&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;self&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  	request &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Request&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# 将数据存放如 request的meta属性中&lt;/span&gt;
+    request&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;meta &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&amp;#123;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;Mike&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;age&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;#125;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;yield&lt;/span&gt; request
+
+&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;self&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; response&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+		item &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Item&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# 从response.meta中取出数据&lt;/span&gt;
+    item&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; response&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;meta&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    item&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;age&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; response&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;meta&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;age&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;那么，在 &lt;a href=&quot;http://go-colly.org/&quot;&gt;Colly&lt;/a&gt; 中该如何在 &lt;code&gt;colly.Collector&lt;/code&gt; 之间传递数据呢？&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
+    
+    
+    <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
+    
+    <category term="Spider" scheme="https://ifelif.cn/tags/Spider/"/>
+    
+    <category term="Colly" scheme="https://ifelif.cn/tags/Colly/"/>
+    
+    <category term="Web Scraping" scheme="https://ifelif.cn/tags/Web-Scraping/"/>
+    
+    <category term="Scraper" scheme="https://ifelif.cn/tags/Scraper/"/>
+    
+    <category term="Crawler" scheme="https://ifelif.cn/tags/Crawler/"/>
+    
+  </entry>
   
   <entry>
     <title>Learning Scrapy</title>
@@ -537,7 +599,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2023-08-14T16:12:48.892Z</updated>
+    <updated>2023-08-15T15:49:50.412Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
@@ -560,7 +622,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2023-08-14T16:12:48.920Z</updated>
+    <updated>2023-08-15T15:49:50.444Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -599,7 +661,7 @@ hello world&lt;/code&gt;&lt;/pre&gt;</summary>
     <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
     <id>https://ifelif.cn/2022/ansible_user_guide/</id>
     <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2023-08-14T16:12:48.892Z</updated>
+    <updated>2023-08-15T15:49:50.412Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
@@ -645,7 +707,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/docker_practice/"/>
     <id>https://ifelif.cn/2022/docker_practice/</id>
     <published>2022-04-28T15:56:21.000Z</published>
-    <updated>2023-08-14T16:12:48.908Z</updated>
+    <updated>2023-08-15T15:49:50.432Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;什么是-Docker&quot;&gt;&lt;a href=&quot;#什么是-Docker&quot; class=&quot;headerlink&quot; title=&quot;什么是 Docker&quot;&gt;&lt;/a&gt;什么是 Docker&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;Docker&lt;/strong&gt; 使用 &lt;code&gt;Google&lt;/code&gt; 公司推出的 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go 语言&lt;/a&gt; 进行开发实现，基于 &lt;code&gt;Linux&lt;/code&gt; 内核的 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Cgroups&quot;&gt;cgroup&lt;/a&gt;，&lt;a href=&quot;https://en.wikipedia.org/wiki/Linux_namespaces&quot;&gt;namespace&lt;/a&gt;，以及 &lt;a href=&quot;https://docs.docker.com/storage/storagedriver/overlayfs-driver/&quot;&gt;OverlayFS&lt;/a&gt; 类的 &lt;a href=&quot;https://en.wikipedia.org/wiki/Union_mount&quot;&gt;Union FS&lt;/a&gt; 等技术，对进程进行封装隔离，属于 &lt;a href=&quot;https://en.wikipedia.org/wiki/Operating-system-level_virtualization&quot;&gt;操作系统层面的虚拟化技术&lt;/a&gt;。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。&lt;/p&gt;
@@ -670,7 +732,7 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <link href="https://ifelif.cn/2022/some_pieces_of_nginx/"/>
     <id>https://ifelif.cn/2022/some_pieces_of_nginx/</id>
     <published>2022-04-14T15:41:21.000Z</published>
-    <updated>2023-08-14T16:12:48.932Z</updated>
+    <updated>2023-08-15T15:49:50.452Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;nginx及其衍生版本&quot;&gt;&lt;a href=&quot;#nginx及其衍生版本&quot; class=&quot;headerlink&quot; title=&quot;nginx及其衍生版本&quot;&gt;&lt;/a&gt;nginx及其衍生版本&lt;/h1&gt;&lt;ul&gt;
@@ -741,53 +803,6 @@ $ python &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; 
     <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
     
     <category term="Nginx" scheme="https://ifelif.cn/tags/Nginx/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Linux Firewall 学习笔记</title>
-    <link href="https://ifelif.cn/2022/linux_firewall/"/>
-    <id>https://ifelif.cn/2022/linux_firewall/</id>
-    <published>2022-04-10T08:35:21.000Z</published>
-    <updated>2023-08-14T16:12:48.920Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;iptables&quot;&gt;&lt;a href=&quot;#iptables&quot; class=&quot;headerlink&quot; title=&quot;iptables&quot;&gt;&lt;/a&gt;iptables&lt;/h1&gt;&lt;h2 id=&quot;netfilter-和-iptables&quot;&gt;&lt;a href=&quot;#netfilter-和-iptables&quot; class=&quot;headerlink&quot; title=&quot;netfilter 和 iptables&quot;&gt;&lt;/a&gt;netfilter 和 iptables&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;netfilter：内核态，即不以文件的形式存在的防火墙。&lt;/li&gt;
-&lt;li&gt;iptables：用户态，在&lt;code&gt;/sbin/iptables&lt;/code&gt;存在的防火墙。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;防火墙的分类&quot;&gt;&lt;a href=&quot;#防火墙的分类&quot; class=&quot;headerlink&quot; title=&quot;防火墙的分类&quot;&gt;&lt;/a&gt;防火墙的分类&lt;/h2&gt;&lt;p&gt;按保护范围划分:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;主机防火墙:服务范围为当前一台主机&lt;/li&gt;
-&lt;li&gt;网络防火墙:服务范围为防火墙一侧的局域网&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;4-Tables&quot;&gt;&lt;a href=&quot;#4-Tables&quot; class=&quot;headerlink&quot; title=&quot;4 Tables&quot;&gt;&lt;/a&gt;4 Tables&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;filter&lt;/li&gt;
-&lt;li&gt;nat&lt;/li&gt;
-&lt;li&gt;mangle&lt;/li&gt;
-&lt;li&gt;raw&lt;/li&gt;
-&lt;li&gt;security&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;5-Chains&quot;&gt;&lt;a href=&quot;#5-Chains&quot; class=&quot;headerlink&quot; title=&quot;5 Chains&quot;&gt;&lt;/a&gt;5 Chains&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;PREROUTING&lt;/li&gt;
-&lt;li&gt;INPUT&lt;/li&gt;
-&lt;li&gt;FORWARD&lt;/li&gt;
-&lt;li&gt;OUTPUT&lt;/li&gt;
-&lt;li&gt;POSTROUTING&lt;/li&gt;
-&lt;/ul&gt;</summary>
-    
-    
-    
-    <category term="Linux" scheme="https://ifelif.cn/categories/Linux/"/>
-    
-    
-    <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
-    
-    <category term="iptables" scheme="https://ifelif.cn/tags/iptables/"/>
-    
-    <category term="firewalld" scheme="https://ifelif.cn/tags/firewalld/"/>
-    
-    <category term="nftables" scheme="https://ifelif.cn/tags/nftables/"/>
     
   </entry>
   
