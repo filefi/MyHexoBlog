@@ -78,7 +78,7 @@ type Context struct {
 - [`MarshalBinary`](https://pkg.go.dev/github.com/gocolly/colly/v2#Context.MarshalBinary): `MarshalBinary` encodes `Context` value This function is used by request caching.
 - [`UnmarshalBinary`](https://pkg.go.dev/github.com/gocolly/colly/v2#Context.UnmarshalBinary): `UnmarshalBinary` decodes `Context` value to nil This function is used by request caching.
 
-
+实例：
 
 ```go
 package main
@@ -115,7 +115,7 @@ func main() {
 		filename := r.Ctx.Get("filename")
 		url := r.Ctx.Get("url")
 		fmt.Printf("filename:%s url:%s", filename, url)
-    
+
 		// now you can custom the path
 		r.Save(filename)
 	})
