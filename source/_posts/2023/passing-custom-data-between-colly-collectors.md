@@ -89,6 +89,11 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
+type Item struct {
+	Name string
+	Age  int
+}
+
 func main() {
 	c := colly.NewCollector(
 		colly.UserAgent("myUserAgent"),
@@ -105,7 +110,8 @@ func main() {
 		// Put stores a value of any type in Context
 		r.Ctx.Put("filename", filename)
 		r.Ctx.Put("url", url)
-
+		item := Item{Name: "Mike", Age: 12}
+		r.Ctx.Put("item", item)
 		// Use collector’s Request() function to be able to share context with other collectors.
 		c2.Request("GET", url, nil, r.Ctx, nil)
 	})
@@ -114,18 +120,21 @@ func main() {
 		// Get retrieves a string value from Context. Get returns an empty string if key not found
 		filename := r.Ctx.Get("filename")
 		url := r.Ctx.Get("url")
-		fmt.Printf("filename:%s url:%s", filename, url)
+        
+         // `GetAny` retrieves a value from `Context`. `GetAny` returns nil if key not found.
+		item := r.Ctx.GetAny("item").(Item) // 取出对象，并断言为Item类型
+		fmt.Printf("filename:%s url:%s item:%v", filename, url, item)
 
 		// now you can custom the path
 		r.Save(filename)
 	})
 
 	c.Visit("http://example.com")
-
-	// r.Ctx.Put("item", struct {
-	// 	Name string
-	// 	Age  int
-	// }{Name: "neo", Age: 12})
-
 }
+```
+
+运行后可成功下载文件，并将其保存为自定义的文件名。同时输出如下：
+```bash
+$ go run .\main.go
+filename:custom_name.html url:http://example.com/index.html item:{Mike 12}
 ```
