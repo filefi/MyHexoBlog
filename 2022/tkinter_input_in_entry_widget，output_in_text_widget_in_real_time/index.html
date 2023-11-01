@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.0.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"ifelif.cn","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.18.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.18.2/source/js/config.min.js"></script>
 
-    <meta name="description" content="entry输入命令，text实时获得命令输出： import tkinter as tk import tkinter.ttk as ttk import subprocess import shlex import sys   class App(tk.Frame): 	def __init__(self,master&#x3D;None): 		super().__init__(master) 		se">
+    <meta name="description" content="entry输入命令，text实时获得命令输出： import tkinter as tkimport tkinter.ttk as ttkimport subprocessimport shleximport sysclass App(tk.Frame):	def __init__(self,master&#x3D;None):		super().__init__(master)		self.pack(fi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="tkinter 一例">
 <meta property="og:url" content="https://ifelif.cn/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/index.html">
 <meta property="og:site_name" content="正经人谁写日记">
-<meta property="og:description" content="entry输入命令，text实时获得命令输出： import tkinter as tk import tkinter.ttk as ttk import subprocess import shlex import sys   class App(tk.Frame): 	def __init__(self,master&#x3D;None): 		super().__init__(master) 		se">
+<meta property="og:description" content="entry输入命令，text实时获得命令输出： import tkinter as tkimport tkinter.ttk as ttkimport subprocessimport shleximport sysclass App(tk.Frame):	def __init__(self,master&#x3D;None):		super().__init__(master)		self.pack(fi">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-02-16T15:56:21.000Z">
-<meta property="article:modified_time" content="2023-10-25T06:45:14.247Z">
+<meta property="article:modified_time" content="2023-11-01T03:15:18.871Z">
 <meta property="article:author" content="filefi">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="tkinter">
@@ -253,7 +253,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-10-25 14:45:14" itemprop="dateModified" datetime="2023-10-25T14:45:14+08:00">2023-10-25</time>
+      <time title="修改时间：2023-11-01 11:15:18" itemprop="dateModified" datetime="2023-11-01T11:15:18+08:00">2023-11-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -275,65 +275,7 @@
     
     
     <div class="post-body" itemprop="articleBody"><p>entry输入命令，text实时获得命令输出：</p>
-<pre class="language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> tkinter <span class="token keyword">as</span> tk
-<span class="token keyword">import</span> tkinter<span class="token punctuation">.</span>ttk <span class="token keyword">as</span> ttk
-<span class="token keyword">import</span> subprocess
-<span class="token keyword">import</span> shlex
-<span class="token keyword">import</span> sys
-
-
-<span class="token keyword">class</span> <span class="token class-name">App</span><span class="token punctuation">(</span>tk<span class="token punctuation">.</span>Frame<span class="token punctuation">)</span><span class="token punctuation">:</span>
-	<span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>master<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-		<span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>master<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>fill<span class="token operator">=</span>tk<span class="token punctuation">.</span>BOTH<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>create_widgets<span class="token punctuation">(</span><span class="token punctuation">)</span>
-	
-	<span class="token keyword">def</span> <span class="token function">test</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-		content <span class="token operator">=</span> self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span>
-		<span class="token keyword">if</span> content<span class="token punctuation">:</span>
-			cmd <span class="token operator">=</span> shlex<span class="token punctuation">.</span>split<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
-			result <span class="token operator">=</span> subprocess<span class="token punctuation">.</span>Popen<span class="token punctuation">(</span>cmd<span class="token punctuation">,</span> shell<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> stdout<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> stderr<span class="token operator">=</span>subprocess<span class="token punctuation">.</span>PIPE<span class="token punctuation">,</span> encoding<span class="token operator">=</span><span class="token string">"gbk"</span><span class="token punctuation">)</span>
-			<span class="token comment"># 实时获取子进程输出的每一行内容</span>
-			<span class="token keyword">for</span> line <span class="token keyword">in</span> <span class="token builtin">iter</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>readline<span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-				<span class="token comment"># 将子进程输出的每一行写入text文本框</span>
-				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>tk<span class="token punctuation">.</span>END<span class="token punctuation">,</span> line<span class="token punctuation">)</span>
-				<span class="token comment"># 立即重绘Text内容</span>
-				self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">)</span>
-			
-	
-	<span class="token keyword">def</span> <span class="token function">create_widgets</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-		self<span class="token punctuation">.</span>entry <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>entry<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		
-		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>button <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"确定"</span><span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>test<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>button<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>label_split <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>label_split<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token punctuation">)</span>
-		
-		self<span class="token punctuation">.</span>scrollbar <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Scrollbar<span class="token punctuation">(</span>self<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>text <span class="token operator">=</span> tk<span class="token punctuation">.</span>Text<span class="token punctuation">(</span>self<span class="token punctuation">,</span> yscrollcommand<span class="token operator">=</span>self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span><span class="token builtin">set</span><span class="token punctuation">)</span>
-		<span class="token comment"># 渲染以上2个组件</span>
-		self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>W<span class="token operator">+</span>tk<span class="token punctuation">.</span>E<span class="token operator">+</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>sticky<span class="token operator">=</span>tk<span class="token punctuation">.</span>N<span class="token operator">+</span>tk<span class="token punctuation">.</span>S<span class="token punctuation">)</span>
-		self<span class="token punctuation">.</span>scrollbar<span class="token punctuation">.</span>config<span class="token punctuation">(</span>command<span class="token operator">=</span>self<span class="token punctuation">.</span>text<span class="token punctuation">.</span>yview<span class="token punctuation">)</span>
-		
-		
-<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-	root <span class="token operator">=</span> tk<span class="token punctuation">.</span>Tk<span class="token punctuation">(</span><span class="token punctuation">)</span>
-	root<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">"Test"</span>
-	
-	app <span class="token operator">=</span> App<span class="token punctuation">(</span>master<span class="token operator">=</span>root<span class="token punctuation">)</span>
-	app<span class="token punctuation">.</span>mainloop<span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-
-<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
-	main<span class="token punctuation">(</span><span class="token punctuation">)</span>
-</code></pre>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tkinter <span class="keyword">as</span> tk</span><br><span class="line"><span class="keyword">import</span> tkinter.ttk <span class="keyword">as</span> ttk</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> shlex</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">App</span>(tk.Frame):</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,master=<span class="literal">None</span></span>):</span><br><span class="line">		<span class="built_in">super</span>().__init__(master)</span><br><span class="line">		self.pack(fill=tk.BOTH)</span><br><span class="line">		self.create_widgets()</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">test</span>(<span class="params">self</span>):</span><br><span class="line">		content = self.entry.get()</span><br><span class="line">		<span class="keyword">if</span> content:</span><br><span class="line">			cmd = shlex.split(content)</span><br><span class="line">			result = subprocess.Popen(cmd, shell=<span class="literal">True</span>, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding=<span class="string">&quot;gbk&quot;</span>)</span><br><span class="line">			<span class="comment"># 实时获取子进程输出的每一行内容</span></span><br><span class="line">			<span class="keyword">for</span> line <span class="keyword">in</span> <span class="built_in">iter</span>(result.stdout.readline, <span class="string">&#x27;&#x27;</span>):</span><br><span class="line">				<span class="comment"># 将子进程输出的每一行写入text文本框</span></span><br><span class="line">				self.text.insert(tk.END, line)</span><br><span class="line">				<span class="comment"># 立即重绘Text内容</span></span><br><span class="line">				self.text.update()</span><br><span class="line">			</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">create_widgets</span>(<span class="params">self</span>):</span><br><span class="line">		self.entry = ttk.Entry(self)</span><br><span class="line">		self.entry.grid(row=<span class="number">0</span>, column=<span class="number">0</span>, sticky=tk.W+tk.E)</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">		self.label_split = ttk.Label(self)</span><br><span class="line">		self.label_split.grid(row=<span class="number">0</span>, column=<span class="number">1</span>)</span><br><span class="line">		</span><br><span class="line">		self.button = ttk.Button(self, text=<span class="string">&quot;确定&quot;</span>, width=<span class="number">10</span>, command=self.test)</span><br><span class="line">		self.button.grid(row=<span class="number">0</span>, column=<span class="number">2</span>, sticky=tk.E)</span><br><span class="line">		</span><br><span class="line">		self.label_split = ttk.Label(self)</span><br><span class="line">		self.label_split.grid(row=<span class="number">1</span>, column=<span class="number">0</span>, sticky=tk.W+tk.E)</span><br><span class="line">		</span><br><span class="line">		self.scrollbar = ttk.Scrollbar(self)</span><br><span class="line">		self.text = tk.Text(self, yscrollcommand=self.scrollbar.<span class="built_in">set</span>)</span><br><span class="line">		<span class="comment"># 渲染以上2个组件</span></span><br><span class="line">		self.text.grid(row=<span class="number">2</span>, column=<span class="number">0</span>, sticky=tk.W+tk.E+tk.N+tk.S)</span><br><span class="line">		self.scrollbar.grid(row=<span class="number">2</span>, column=<span class="number">1</span>,sticky=tk.N+tk.S)</span><br><span class="line">		self.scrollbar.config(command=self.text.yview)</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">	root = tk.Tk()</span><br><span class="line">	root.title = <span class="string">&quot;Test&quot;</span></span><br><span class="line">	</span><br><span class="line">	app = App(master=root)</span><br><span class="line">	app.mainloop()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">	main()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.0.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -301,23 +301,14 @@
 </ol>
 <p>Pretty simple, ain’t it?</p>
 <p>Now, the most interesting part is that metadata file:</p>
-<pre class="language-none"><code class="language-none">0000  02 00 00 00 00 00 00 00  &lt;-- File header (QW)
-0008  00 7C 0A 00 00 00 00 00  &lt;-- File size (QW)
-0010  90 83 72 44 28 9C D8 01  &lt;-- File deletion date (QW)
-0018  18 00 00 00|43 00 3A 00  &lt;-- File path string length (DW)
-0020  5C 00 24 00 52 00 65 00  
-0028  63 00 79 00 63 00 6C 00
-0030  65 00 2E 00 42 00 69 00
-0038  6E 00 5C 00 66 00 73 00
-0040  73 00 2E 00 65 00 78 00
-0048  65 00 00 00|             &lt;-- |Null-terminated path string| (wchar_t)</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0000  02 00 00 00 00 00 00 00  &lt;-- File header (QW)</span><br><span class="line">0008  00 7C 0A 00 00 00 00 00  &lt;-- File size (QW)</span><br><span class="line">0010  90 83 72 44 28 9C D8 01  &lt;-- File deletion date (QW)</span><br><span class="line">0018  18 00 00 00|43 00 3A 00  &lt;-- File path string length (DW)</span><br><span class="line">0020  5C 00 24 00 52 00 65 00  </span><br><span class="line">0028  63 00 79 00 63 00 6C 00</span><br><span class="line">0030  65 00 2E 00 42 00 69 00</span><br><span class="line">0038  6E 00 5C 00 66 00 73 00</span><br><span class="line">0040  73 00 2E 00 65 00 78 00</span><br><span class="line">0048  65 00 00 00|             &lt;-- |Null-terminated path string| (wchar_t)</span><br></pre></td></tr></table></figure>
 
 <p>All values are in <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Endianness">Little Endian</a> format.</p>
 <p>Header is fixed and its identical for all the files. Be warned that some <code>$I</code> files might have some junk bytes <code>FF FE</code> appear before the Header. I have no idea what are this for, so you should check for full header before reading further.</p>
 <p>Deletion date is in <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime">FILETIME</a> format and can be converted to usual <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime">SYSTEMTIME</a> via <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/timezoneapi/nf-timezoneapi-filetimetosystemtime">FileTimeToSystemTime</a>. It represents 100-nanosecond intervals since January 1, 1601 (UTC).</p>
 <p>So it’s not super complicated file format, but quite interesting design.</p>
 <p>To reclaim all of that storage, We can open an elevated command prompt and execute the following command:</p>
-<pre class="language-none"><code class="language-none">rd &#x2F;s &#x2F;q c:\$Recycle.Bin</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rd /s /q c:\$Recycle.Bin</span><br></pre></td></tr></table></figure>
 
 <p>Following a reboot, the <code>$RECYCLE.BIN</code> folder will be recreated and each Windows user profile will now have an empty recycle bin.</p>
 

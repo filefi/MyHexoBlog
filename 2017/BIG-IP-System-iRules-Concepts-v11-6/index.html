@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.0.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -28,7 +28,7 @@
 <meta property="og:description" content="本文是 F5官方文档 BIG-IP System iRules Concepts v11.6 的中文翻译版。初次于2017年11月30日发布在 此repo。  1 iRules介绍什么是iRuleiRule是BIG-IP本地流量管理器（LTM）中的一个强大而灵活的功能，你可以用它来管理你的网络流量。使用基于行业标准工具命令语言（Tcl）的语法，iRules功能不仅允许您根据报头数据（header">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-11-30T01:05:31.000Z">
-<meta property="article:modified_time" content="2023-10-25T06:45:14.207Z">
+<meta property="article:modified_time" content="2023-11-01T03:15:18.831Z">
 <meta property="article:author" content="filefi">
 <meta property="article:tag" content="F5">
 <meta property="article:tag" content="LoadBalance">
@@ -253,7 +253,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-10-25 14:45:14" itemprop="dateModified" datetime="2023-10-25T14:45:14+08:00">2023-10-25</time>
+      <time title="修改时间：2023-11-01 11:15:18" itemprop="dateModified" datetime="2023-11-01T11:15:18+08:00">2023-11-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -282,11 +282,7 @@
 <p>重要：有关iRules语法的完整和详细信息，请参阅F5 Networks DevCentral网站 <a target="_blank" rel="noopener" href="http://devcentral.f5.com.请注意,irules必须符合标准的tcl语法规则/">http://devcentral.f5.com。请注意，iRules必须符合标准的Tcl语法规则</a>; 因此，有关Tcl语法的更多信息，请参见 <a target="_blank" rel="noopener" href="http://tmml.sourceforge.net/doc/tcl/index.html%E3%80%82">http://tmml.sourceforge.net/doc/tcl/index.html。</a></p>
 </blockquote>
 <p>如果您想要单独的连接来命中（target）除为Virtual Server定义的默认Pool之外的Pool，则你就可以写这样一个iRule脚本。iRules允许您更直接地指定要将流量定向到你想要的目的地。使用iRules，您不仅可以将流量发送到Pool，还可以向单个Pool Member，端口或URI发送流量。您创建的iRules可以很简单，也可以很复杂，具体取决于您的内容交换（content-switching）需求。</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when CLIENT_ACCEPTED <span class="token punctuation">&#123;</span>
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>IP::addr <span class="token punctuation">[</span>IP::client_addr<span class="token punctuation">]</span> equals 10.10.10.10<span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        pool my_pool 
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when CLIENT_ACCEPTED &#123;</span><br><span class="line">    <span class="keyword">if</span> &#123; [IP::addr [IP::client_addr] equals <span class="number">10.10</span><span class="number">.10</span><span class="number">.10</span>] &#125; &#123;</span><br><span class="line">        pool my_pool </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>当客户端连接被接受时，这条iRule会被触发。这时，如果客户端的地址与 <code>10.10.10.10</code> 相匹配，将使得本地流量管理器（LTM）将数据包发送到my_pool池。</p>
 <span id="more"></span>
@@ -302,13 +298,7 @@
 <h4 id="查询或操纵数据的命令"><a href="#查询或操纵数据的命令" class="headerlink" title="查询或操纵数据的命令"></a>查询或操纵数据的命令</h4><p>一些命令会搜索报头（header）和内容数据，而其他命令执行数据操作，例如将header插入到HTTP请求中。查询命令的一个例子是 <code>IP:: remote_addr</code>，它搜索并返回连接的远程IP地址。数据操作命令的一个例子是<code>HTTP::header remove &lt;name&gt;</code>，它从请求或响应中删除命名的header的最后一次事件（occurrence）。</p>
 <h4 id="工具命令（Utility-Commands）"><a href="#工具命令（Utility-Commands）" class="headerlink" title="工具命令（Utility Commands）"></a>工具命令（Utility Commands）</h4><p>这些命令是对解析和操作内容非常有用的功能。一个工具命令的例子是<code>decode_uri &lt;string&gt;</code>，它使用HTTP URI编码解码命名的字符串并返回结果。</p>
 <h3 id="事件声明"><a href="#事件声明" class="headerlink" title="事件声明"></a>事件声明</h3><p>iRules是事件驱动的，这意味着本地流量管理器(LTM)会根据您在iRule中指定的事件来触发iRule。<em><strong>事件声明</strong></em> 是iRule中一个事件的详细描述，这个事件会导致本地流量管理器（LTM）不论何时，只要事件发生就触发iRule。事件<code>HTTP_REQUEST</code>是触发iRule事件声明的例子，每当系统收到HTTP请求时，此事件会触发iRule；还有事件<code> CLIENT_ACCCEPTED</code>，此事件会在客户端建立连接时触发iRule。</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span> 
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> contains <span class="token string">"aol"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        pool aol_pool 
-    <span class="token punctuation">&#125;</span> <span class="token builtin">else</span> <span class="token punctuation">&#123;</span> 
-        pool all_pool 
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when HTTP_REQUEST &#123; </span><br><span class="line">    <span class="keyword">if</span> &#123; [HTTP::uri] contains <span class="string">&quot;aol&quot;</span> &#125; &#123;</span><br><span class="line">        pool aol_pool </span><br><span class="line">    &#125; else &#123; </span><br><span class="line">        pool all_pool </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h3><p>iRule运算符会比较表达式中的两个操作数。</p>
 <p>例如，您可以使用<code>contains</code>运算符将变量操作数与常量进行比较。您可以通过创建一个if语句来表示以下内容：“如果HTTP URI包含aol，发送到aol_pool池。</p>
@@ -338,61 +328,23 @@
 </blockquote>
 <h3 id="工具命令"><a href="#工具命令" class="headerlink" title="工具命令"></a>工具命令</h3><p>LTM包括一些你可以在iRules中使用的工具命令。你可以使用这些命令来解析和检索内容，将数据编码为ASCII格式，校验数据完整性，以及检索关于Active的pool和pool member的信息。</p>
 <h2 id="pool命令"><a href="#pool命令" class="headerlink" title="pool命令"></a>pool命令</h2><p>一旦你已经在iRules中指定了一个查询，你就可以使用<code>pool</code>命令来选择一个你希望LTM向其发送请求的负载均衡Pool。这是一个此命令的示例：</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span> 
-    <span class="token keyword">set</span> <span class="token variable">uri</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> 
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> $<span class="token variable">uri</span> ends_with <span class="token string">".gif"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        pool my_pool 
-    <span class="token punctuation">&#125;</span> <span class="token builtin">elseif</span> <span class="token punctuation">&#123;</span> $<span class="token variable">uri</span> ends_with <span class="token string">".jpg"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        pool your_pool
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when HTTP_REQUEST &#123; </span><br><span class="line">    <span class="keyword">set</span> uri [HTTP::uri] </span><br><span class="line">    <span class="keyword">if</span> &#123; <span class="variable">$uri</span> ends_with <span class="string">&quot;.gif&quot;</span> &#125; &#123;</span><br><span class="line">        pool my_pool </span><br><span class="line">    &#125; elseif &#123; <span class="variable">$uri</span> ends_with <span class="string">&quot;.jpg&quot;</span> &#125; &#123;</span><br><span class="line">        pool your_pool</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="node命令"><a href="#node命令" class="headerlink" title="node命令"></a>node命令</h2><p>作为<code>pool</code>命令的替代命令，你也可以写一个定向流量到指定服务器（server）的iRule。要这样做，你可以使用<code>node</code>命令。</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span> 
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> ends_with <span class="token string">".gif"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        node 10.1.2.200 80 
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when HTTP_REQUEST &#123; </span><br><span class="line">    <span class="keyword">if</span> &#123; [HTTP::uri] ends_with <span class="string">&quot;.gif&quot;</span> &#125; &#123;</span><br><span class="line">        node <span class="number">10.1</span><span class="number">.2</span><span class="number">.200</span> <span class="number">80</span> </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="选择缓存服务器池（pool）的命令"><a href="#选择缓存服务器池（pool）的命令" class="headerlink" title="选择缓存服务器池（pool）的命令"></a>选择缓存服务器池（pool）的命令</h2><p>你可以创建一个iRule，这个iRule可以从缓存服务器池（pool）中选择一个服务器（Server）。这是一个从缓存服务器池中选择一个服务器的示例：</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span>
-    <span class="token comment"># This line specifies the expressions that determine whether the BIG-IP system sends requests to the cache pool:</span>
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> ends_with <span class="token string">"html"</span> or <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> ends_with <span class="token string">"gif"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        pool cache_pool
-        <span class="token keyword">set</span> <span class="token variable">key</span> <span class="token punctuation">[</span>crc32 <span class="token punctuation">[</span><span class="token keyword">concat</span> <span class="token punctuation">[</span>domain <span class="token punctuation">[</span>HTTP::host<span class="token punctuation">]</span> 2<span class="token punctuation">]</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
-        <span class="token keyword">set</span> <span class="token variable">cache_mbr</span> <span class="token punctuation">[</span>persist lookup hash $<span class="token variable">key</span> node<span class="token punctuation">]</span>
-        <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> $<span class="token variable">cache_mbr</span> <span class="token operator">ne</span> <span class="token string">""</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-            <span class="token comment"># This line verifies that the request is not coming from the cache:</span>
-            <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>IP::addr <span class="token punctuation">[</span>IP::remote_addr<span class="token punctuation">]</span> equals $<span class="token variable">cache_mbr</span><span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-                <span class="token comment"># This line sends the request from the cache to the origin pool:</span>
-                pool origin_pool
-                <span class="token builtin">return</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token comment">#These lines ensure that the persistence record is added for this host/URI:</span>
-    persist hash $<span class="token variable">key</span>
-    <span class="token punctuation">&#125;</span> <span class="token builtin">else</span> <span class="token punctuation">&#123;</span>
-        pool origin_pool
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when HTTP_REQUEST &#123;</span><br><span class="line"><span class="comment">    # This line specifies the expressions that determine whether the BIG-IP system sends requests to the cache pool:</span></span><br><span class="line">    <span class="keyword">if</span> &#123; [HTTP::uri] ends_with <span class="string">&quot;html&quot;</span> or [HTTP::uri] ends_with <span class="string">&quot;gif&quot;</span> &#125; &#123;</span><br><span class="line">        pool cache_pool</span><br><span class="line">        <span class="keyword">set</span> key [crc32 [<span class="keyword">concat</span> [domain [HTTP::host] <span class="number">2</span>] [HTTP::uri]]]</span><br><span class="line">        <span class="keyword">set</span> cache_mbr [persist lookup hash <span class="variable">$key</span> node]</span><br><span class="line">        <span class="keyword">if</span> &#123; <span class="variable">$cache_mbr</span> ne <span class="string">&quot;&quot;</span> &#125; &#123;</span><br><span class="line"><span class="comment">            # This line verifies that the request is not coming from the cache:</span></span><br><span class="line">            <span class="keyword">if</span> &#123; [IP::addr [IP::remote_addr] equals <span class="variable">$cache_mbr</span>] &#125; &#123;</span><br><span class="line"><span class="comment">                # This line sends the request from the cache to the origin pool:</span></span><br><span class="line">                pool origin_pool</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"><span class="comment">    #These lines ensure that the persistence record is added for this host/URI:</span></span><br><span class="line">    persist hash <span class="variable">$key</span></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        pool origin_pool</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>注意：LTM是在BIG-IP系统接收到URI的请求时，重定向URI到一个新的缓存服务器，而不是在pool member变为不可用时进行这一重定向操作。</p>
 </blockquote>
 <h2 id="HTTP-redirect命令"><a href="#HTTP-redirect命令" class="headerlink" title="HTTP::redirect命令"></a><code>HTTP::redirect</code>命令</h2><p>除了配置iRule来选择指定的pool，你也可以使用 <code>HTTP::redirect</code> iRule命令来重定向HTTP请求到特定位置（location）。这个位置（location）可以是一个主机名或是一个URI。</p>
 <p>以下是一个被配置来重定向HTTP响应的iRule。</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_RESPONSE <span class="token punctuation">&#123;</span>
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::status<span class="token punctuation">]</span> contains <span class="token string">"404"</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        HTTP::redirect <span class="token string">"http://www.siterequest.com/"</span> 
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when HTTP_RESPONSE &#123;</span><br><span class="line">    <span class="keyword">if</span> &#123; [HTTP::status] contains <span class="string">&quot;404&quot;</span>&#125; &#123;</span><br><span class="line">        HTTP::redirect <span class="string">&quot;http://www.siterequest.com/&quot;</span> </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这是一个重定向HTTP请求的iRule示例：</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when HTTP_REQUEST <span class="token punctuation">&#123;</span>
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::uri<span class="token punctuation">]</span> contains <span class="token string">"secure"</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span> 
-        HTTP::redirect <span class="token string">"https://[HTTP::host][HTTP::uri]"</span>
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when HTTP_REQUEST &#123;</span><br><span class="line">    <span class="keyword">if</span> &#123; [HTTP::uri] contains <span class="string">&quot;secure&quot;</span>&#125; &#123; </span><br><span class="line">        HTTP::redirect <span class="string">&quot;https://[HTTP::host][HTTP::uri]&quot;</span></span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="snat和snatpool命令"><a href="#snat和snatpool命令" class="headerlink" title="snat和snatpool命令"></a><code>snat</code>和<code>snatpool</code>命令</h2><p>iRules功能包括2个声明命令<code>snat</code>和<code>snatpool</code>。使用<code>snat</code>命令可以为iRule中的初始（Original）IP地址分配一个指定的翻译地址（Translation Address），而不是使用BIG-IP Configuration utility中的SNAT界面。</p>
 <p>使用<code>snatpool</code>命令也可以为初始（Original）IP地址分配翻译地址（Translation Address），尽管不像<code>snat</code>命令，<code>snatpool</code>命令使得LTM从你之前创建的一个特定SNAT池（pool）中选择翻译地址。</p>
@@ -414,20 +366,12 @@
 </blockquote>
 <h2 id="iRule上下文（context）"><a href="#iRule上下文（context）" class="headerlink" title="iRule上下文（context）"></a>iRule上下文（context）</h2><p>对于每个你在iRule中指定的事件，你也可以指定由关键字<code>clientside</code>或<code>serverside</code>所表示的上下文（context）。因为每个事件都有与之关联的默认上下文，所以，如果你想要修改默认的上下文（context），你只需要声明一个上下文（context）。</p>
 <p>这个例子展示了<code>my_iRule1</code>，它包含事件声明 <code>CLIENT_ACCEPTED</code>，以及iRule命令<code>IP::remote_addr</code>。在这种情况下，iRule命令返回的IP地址是客户端的IP地址。因为事件声明<code>CLIENT_ACCEPED</code>的默认上下文（context）是<code>clientside</code>。</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when CLIENT_ACCEPTED <span class="token punctuation">&#123;</span> 
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>IP::addr <span class="token punctuation">[</span>IP::remote_addr<span class="token punctuation">]</span> equals 10.1.1.80<span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        pool my_pool1 
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when CLIENT_ACCEPTED &#123; </span><br><span class="line">    <span class="keyword">if</span> &#123; [IP::addr [IP::remote_addr] equals <span class="number">10.1</span><span class="number">.1</span><span class="number">.80</span>] &#125; &#123;</span><br><span class="line">        pool my_pool1 </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>同样地，如果你在iRule中包括事件声明<code>SERVER_CONNECTED</code>，以及iRule命令<code>IP::remote_addr</code>，那么iRule命令返回的IP地址就是服务器的IP地址。因为，事件声明<code>SERVER_CONNECTED</code>的默认上下文是<code>serverside</code>。</p>
 <p>上述例子展示了当你在处理iRule命令时，编写使用默认上下文（context）的iRule<br>将发生什么。然而，你可以显式地指定关键字<code>clientside</code>和<code>serverside</code>来变更iRule命令的行为。</p>
 <p>继续之前的例子，下面的例子展示了事件声明<code>SERVER_CONNECTED</code>和显式地为iRule命令<code>IP::remote_addr</code>指定关键字<code>clientside</code>。在这种情况下，iRule命令返回的IP地址就是客户端的IP地址，尽管事件声明的默认上下文是服务器端。</p>
-<pre class="language-none"><code class="language-none">when SERVER_CONNECTED &#123;
-    if &#123; [IP::addr [IP::addr [clientside &#123;IP::remote_addr&#125;] equals 10.1.1.80] &#125; &#123;
-        discard 
-    &#125; 
-&#125;</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">when SERVER_CONNECTED &#123;</span><br><span class="line">    if &#123; [IP::addr [IP::addr [clientside &#123;IP::remote_addr&#125;] equals 10.1.1.80] &#125; &#123;</span><br><span class="line">        discard </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>注意：你可以通过使用一个紧跟在事件名后的关键字<code>when</code>在iRule中进行事件声明。这展示了iRule中事件声明的一个例子。</p>
@@ -464,13 +408,7 @@
 </blockquote>
 <h3 id="关于class-match命令"><a href="#关于class-match命令" class="headerlink" title="关于class match命令"></a>关于<code>class match</code>命令</h3><p>BIG-IP系统包括一个称为<code>class</code>的iRule命令 ，此命令具有一个<code>match</code>选项，根据iRule中使用的命令是否表示特定数据组的成员，您可以使用该命令来选择Pool。当你使用<code>class</code>命令，BIG-IP系统知道跟在标识符后面的字符串是数据组的名称。</p>
 <p>例如，如果<code>IP::remote_addr</code>命令的值是数据组AOL的成员，使用<code>class</code>命令，您可以使BIG-IP系统将所有入站的AOL连接负载均衡到aol_pool池。在这种情况下，<code>class match</code>命令表示命名为aol的对象是一个值的集合（即一个数据组）。</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">when CLIENT_ACCEPTED <span class="token punctuation">&#123;</span> 
-    <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>class match <span class="token punctuation">[</span>IP::remote_addr<span class="token punctuation">]</span> equals aol<span class="token punctuation">]</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-        pool aol_pool 
-    <span class="token punctuation">&#125;</span> <span class="token builtin">else</span> <span class="token punctuation">&#123;</span>
-        pool all_pool
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">when CLIENT_ACCEPTED &#123; </span><br><span class="line">    <span class="keyword">if</span> &#123; [class match [IP::remote_addr] equals aol] &#125; &#123;</span><br><span class="line">        pool aol_pool </span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        pool all_pool</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="存储选项"><a href="#存储选项" class="headerlink" title="存储选项"></a>存储选项</h3><p>使用LTM，你能够以2种方式存储数据，<em>内嵌存储（in-line storage）</em> 或者 <em>外部存储</em>。</p>
 <h4 id="内嵌存储（in-line-storage）"><a href="#内嵌存储（in-line-storage）" class="headerlink" title="内嵌存储（in-line storage）"></a>内嵌存储（in-line storage）</h4><p>当你创建data group时，LTM会自动把所创建的data group完整地保存在配置文件<code>bigip.conf</code>中。这种存储类型称为</p>
@@ -548,27 +486,7 @@
 <li><code>array set [file attributes IFILENAME]</code></li>
 </ul>
 <p>这个简单的iRule展示这些命令中的其中一些：</p>
-<pre class="language-tcl" data-language="tcl"><code class="language-tcl">ltm rule ifile_rule <span class="token punctuation">&#123;</span> 
-    when HTTP_RESPONSE <span class="token punctuation">&#123;</span> 
-        <span class="token comment"># return a list of iFiles in all partitions </span>
-        <span class="token keyword">set</span> <span class="token variable">listifiles</span> <span class="token punctuation">[</span>ifile listall<span class="token punctuation">]</span>
-        log local0. <span class="token string">"list of ifiles: $listifiles"</span>
-        
-        <span class="token comment"># return the attributes of an iFile specified </span>
-        <span class="token keyword">array</span> <span class="token keyword">set</span> array_attributes <span class="token punctuation">[</span>ifile attributes <span class="token string">"/Common/ifileURL"</span><span class="token punctuation">]</span>
-        
-        <span class="token builtin">foreach</span> <span class="token punctuation">&#123;</span>array attr<span class="token punctuation">&#125;</span> <span class="token punctuation">[</span><span class="token keyword">array</span> get array_attributes <span class="token punctuation">]</span> <span class="token punctuation">&#123;</span>
-            log local0. <span class="token string">"$array : $attr"</span>
-        <span class="token punctuation">&#125;</span> 
-        
-        <span class="token comment"># serve an iFile when http status is 404. </span>
-        <span class="token keyword">set</span> <span class="token variable">file</span> <span class="token punctuation">[</span>ifile get <span class="token string">"Common/ifileURL"</span><span class="token punctuation">]</span> 
-        log local0. <span class="token string">"file: $ifile"</span> 
-        <span class="token builtin">if</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">[</span>HTTP::status<span class="token punctuation">]</span> equals <span class="token string">"404"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
-            HTTP::respond 200 ifile <span class="token string">"/Common/ifileURL"</span> 
-        <span class="token punctuation">&#125;</span> 
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span></code></pre>
+<figure class="highlight tcl"><table><tr><td class="code"><pre><span class="line">ltm rule ifile_rule &#123; </span><br><span class="line">    when HTTP_RESPONSE &#123; </span><br><span class="line"><span class="comment">        # return a list of iFiles in all partitions </span></span><br><span class="line">        <span class="keyword">set</span> listifiles [ifile listall]</span><br><span class="line">        log local0. <span class="string">&quot;list of ifiles: $listifiles&quot;</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">        # return the attributes of an iFile specified </span></span><br><span class="line">        <span class="keyword">array</span> <span class="keyword">set</span> array_attributes [ifile attributes <span class="string">&quot;/Common/ifileURL&quot;</span>]</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">foreach</span> &#123;<span class="keyword">array</span> attr&#125; [<span class="keyword">array</span> get array_attributes ] &#123;</span><br><span class="line">            log local0. <span class="string">&quot;$array : $attr&quot;</span></span><br><span class="line">        &#125; </span><br><span class="line">        </span><br><span class="line"><span class="comment">        # serve an iFile when http status is 404. </span></span><br><span class="line">        <span class="keyword">set</span> <span class="keyword">file</span> [ifile get <span class="string">&quot;Common/ifileURL&quot;</span>] </span><br><span class="line">        log local0. <span class="string">&quot;file: $ifile&quot;</span> </span><br><span class="line">        <span class="keyword">if</span> &#123; [HTTP::status] equals <span class="string">&quot;404&quot;</span> &#125; &#123;</span><br><span class="line">            HTTP::respond <span class="number">200</span> ifile <span class="string">&quot;/Common/ifileURL&quot;</span> </span><br><span class="line">        &#125; </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
     </div>
 
     

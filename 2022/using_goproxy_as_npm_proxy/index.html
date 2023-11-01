@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.0.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -290,14 +290,13 @@
 <blockquote>
 <p><code>--max-conns-rate</code> 参数控制每秒客户端的最大连接数, 默认20, 0为不限制。有时候 npm 包依赖太多，并发会超过默认的20；超过限制后，goproxy 会杀掉超过的会话，导致 npm 包安装失败。</p>
 </blockquote>
-<pre class="language-cmd" data-language="cmd"><code class="language-cmd">.\proxy.exe http -t tcp -p &quot;:33080&quot; --max-conns-rate 0 --forever</code></pre>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">.\proxy.exe http -t tcp -p &quot;:<span class="number">33080</span>&quot; --max-conns-rate <span class="number">0</span> --forever</span><br></pre></td></tr></table></figure>
 
 <p>第2步：在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
 <blockquote>
 <p>注意：这里 <code>http_proxy</code> 和 <code>https_proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
 </blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">http_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080
-<span class="token builtin class-name">export</span> <span class="token assign-left variable">https_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> http_proxy=http://192.168.200.1:33080</span><br><span class="line"><span class="built_in">export</span> https_proxy=http://192.168.200.1:33080</span><br></pre></td></tr></table></figure>
 
 
 
@@ -305,35 +304,16 @@
 <blockquote>
 <p>注意：这里 <code>proxy</code> 和 <code>https-proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
 </blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> proxy http://192.168.200.1:33080
-<span class="token function">npm</span> config <span class="token builtin class-name">set</span> https-proxy http://192.168.200.1:33080</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> proxy http://192.168.200.1:33080</span><br><span class="line">npm config <span class="built_in">set</span> https-proxy http://192.168.200.1:33080</span><br></pre></td></tr></table></figure>
 
 <p>第4步：修改 NPM 源（非必需）。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> registry https://registry.npmmirror.com</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry https://registry.npmmirror.com</span><br></pre></td></tr></table></figure>
 
 <p><strong>测试</strong></p>
 <p>使用 npm 安装 <code>nrm</code> ，测试 http 代理是否可用。</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm <span class="token parameter variable">-g</span>
-<span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
-<span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
-<span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
-
-added <span class="token number">58</span> packages <span class="token keyword">in</span> 4s
-
-<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm i nrm -g</span><br><span class="line">npm WARN deprecated har-validator@5.1.5: this library is no longer supported</span><br><span class="line">npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() <span class="keyword">in</span> certain circumstances, <span class="built_in">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="keyword">for</span> details.</span><br><span class="line">npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142</span><br><span class="line"></span><br><span class="line">added 58 packages <span class="keyword">in</span> 4s</span><br><span class="line"></span><br><span class="line">11 packages are looking <span class="keyword">for</span> funding</span><br><span class="line">  run `npm fund` <span class="keyword">for</span> details</span><br></pre></td></tr></table></figure>
 <p>可以看到处于内网的服务器已经成功安装了 <code>nrm</code> 包。同时，开发计算机的控制台也输出了来自服务器的相关 log ： </p>
-<pre class="language-cmd" data-language="cmd"><code class="language-cmd"> E:\proxy-windows-amd64&gt;.\proxy.exe http -t tcp -p &quot;:33080&quot; --max-conns-rate 0 --forever
-2022&#x2F;06&#x2F;09 22:49:12.715429 INFO worker E:\Downloads\Chrome\proxy-windows-amd64\proxy.exe [PID] 88516 running...
-2022&#x2F;06&#x2F;09 22:49:12.821243 INFO tcp http(s) proxy on [::]:33080
-2022&#x2F;06&#x2F;09 22:49:19.266803 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 22:49:19.266803 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 22:49:19.291648 INFO conn 192.168.200.129:55892 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 22:49:19.576069 INFO conn 192.168.200.129:55892 - 39.130.171.71:443 released [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 22:49:19.641743 INFO CONNECT:registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 22:49:19.641743 INFO use parent : false, registry.npmmirror.com:443
-2022&#x2F;06&#x2F;09 22:49:19.664109 INFO conn 192.168.200.129:55894 - 39.130.171.71:443 connected [registry.npmmirror.com:443]
-2022&#x2F;06&#x2F;09 22:49:19.939819 INFO conn 192.168.200.129:55894 - 39.130.171.71:443 released [registry.npmmirror.com:443]</code></pre>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function"> E:\<span class="title">proxy</span>-<span class="title">windows</span>-<span class="title">amd64</span>&gt;.\<span class="title">proxy.exe</span> <span class="title">http</span> -<span class="title">t</span> <span class="title">tcp</span> -<span class="title">p</span> &quot;:33080&quot; --<span class="title">max</span>-<span class="title">conns</span>-<span class="title">rate</span> 0 --<span class="title">forever</span></span></span><br><span class="line"><span class="function">2022/06/09 22:49:12.715429 <span class="title">INFO</span> <span class="title">worker</span> <span class="title">E</span>:\<span class="title">Downloads</span>\<span class="title">Chrome</span>\<span class="title">proxy</span>-<span class="title">windows</span>-<span class="title">amd64</span>\<span class="title">proxy.exe</span> [<span class="title">PID</span>] 88516 <span class="title">running</span>...</span></span><br><span class="line"><span class="function">2022/06/09 22:49:12.821243 <span class="title">INFO</span> <span class="title">tcp</span> <span class="title">http</span>(<span class="title">s</span>) <span class="title">proxy</span> <span class="title">on</span> [::]:33080</span></span><br><span class="line"><span class="function">2022/06/09 22:49:19.266803 <span class="title">INFO</span> <span class="title">CONNECT:registry</span>.<span class="title">npmmirror.com</span>:443</span></span><br><span class="line"><span class="function">2022/06/09 22:49:19.266803 <span class="title">INFO</span> <span class="title">use</span> <span class="title">parent</span> : <span class="title">false</span>, <span class="title">registry.npmmirror.com</span>:443</span></span><br><span class="line"><span class="function">2022/06/09 22:49:19.291648 <span class="title">INFO</span> <span class="title">conn</span> 192.168.200.129:55892 - 39.130.171.71:443 <span class="title">connected</span> [<span class="title">registry.npmmirror.com</span>:443]</span></span><br><span class="line"><span class="function">2022/06/09 22:49:19.576069 <span class="title">INFO</span> <span class="title">conn</span> 192.168.200.129:55892 - 39.130.171.71:443 <span class="title">released</span> [<span class="title">registry.npmmirror.com</span>:443]</span></span><br><span class="line"><span class="function">2022/06/09 22:49:19.641743 <span class="title">INFO</span> <span class="title">CONNECT:registry</span>.<span class="title">npmmirror.com</span>:443</span></span><br><span class="line"><span class="function">2022/06/09 22:49:19.641743 <span class="title">INFO</span> <span class="title">use</span> <span class="title">parent</span> : <span class="title">false</span>, <span class="title">registry.npmmirror.com</span>:443</span></span><br><span class="line"><span class="function">2022/06/09 22:49:19.664109 <span class="title">INFO</span> <span class="title">conn</span> 192.168.200.129:55894 - 39.130.171.71:443 <span class="title">connected</span> [<span class="title">registry.npmmirror.com</span>:443]</span></span><br><span class="line"><span class="function">2022/06/09 22:49:19.939819 <span class="title">INFO</span> <span class="title">conn</span> 192.168.200.129:55894 - 39.130.171.71:443 <span class="title">released</span> [<span class="title">registry.npmmirror.com</span>:443]</span></span><br></pre></td></tr></table></figure>
     </div>
 
     

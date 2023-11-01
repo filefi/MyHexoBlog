@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.0.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -287,73 +287,36 @@
 
 
 <p><strong>安装依赖</strong></p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i express http-proxy-middleware</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm i express http-proxy-middleware</span><br></pre></td></tr></table></figure>
 
 <p><strong>代码实现</strong></p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// proxy.js</span>
-
-<span class="token comment">// include dependencies</span>
-<span class="token keyword">const</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> createProxyMiddleware <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http-proxy-middleware'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token comment">// proxy middleware options</span>
-<span class="token comment">/** @type &#123;import('http-proxy-middleware/dist/types').Options&#125; */</span>
-<span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
-  <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'https://registry.npmmirror.com'</span><span class="token punctuation">,</span> <span class="token comment">// target host with the same base path</span>
-<span class="token comment">//   changeOrigin: true, // needed for virtual hosted sites</span>
-  <span class="token literal-property property">logger</span><span class="token operator">:</span> console<span class="token punctuation">,</span>
-  <span class="token literal-property property">secure</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">// don't verify the SSL certs</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-<span class="token comment">// create the proxy</span>
-<span class="token keyword">const</span> proxy <span class="token operator">=</span> <span class="token function">createProxyMiddleware</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token comment">// mount `exampleProxy` in web server</span>
-app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>proxy<span class="token punctuation">)</span><span class="token punctuation">;</span>
-app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">33080</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// proxy.js</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// include dependencies</span></span><br><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> &#123; createProxyMiddleware &#125; = <span class="built_in">require</span>(<span class="string">&#x27;http-proxy-middleware&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">express</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// proxy middleware options</span></span><br><span class="line"><span class="comment">/** <span class="doctag">@type</span> &#123;<span class="type">import(&#x27;http-proxy-middleware/dist/types&#x27;).Options</span>&#125; */</span></span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">  <span class="attr">target</span>: <span class="string">&#x27;https://registry.npmmirror.com&#x27;</span>, <span class="comment">// target host with the same base path</span></span><br><span class="line"><span class="comment">//   changeOrigin: true, // needed for virtual hosted sites</span></span><br><span class="line">  <span class="attr">logger</span>: <span class="variable language_">console</span>,</span><br><span class="line">  <span class="attr">secure</span>: <span class="literal">false</span>, <span class="comment">// don&#x27;t verify the SSL certs</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// create the proxy</span></span><br><span class="line"><span class="keyword">const</span> proxy = <span class="title function_">createProxyMiddleware</span>(options);</span><br><span class="line"></span><br><span class="line"><span class="comment">// mount `exampleProxy` in web server</span></span><br><span class="line">app.<span class="title function_">use</span>(proxy);</span><br><span class="line">app.<span class="title function_">listen</span>(<span class="number">33080</span>);</span><br></pre></td></tr></table></figure>
 
 <p><strong>服务器配置</strong></p>
 <p>在服务器上启用全局http代理。注意，以下为临时启用，直接设置<code>http_proxy</code>和<code>https_proxy</code>环境变量。如果需要重启后依然生效，则需要将其写入配置文件。</p>
 <blockquote>
 <p>注意：这里 <code>http_proxy</code> 和 <code>https_proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
 </blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">http_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080
-<span class="token builtin class-name">export</span> <span class="token assign-left variable">https_proxy</span><span class="token operator">=</span>http://192.168.200.1:33080</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> http_proxy=http://192.168.200.1:33080</span><br><span class="line"><span class="built_in">export</span> https_proxy=http://192.168.200.1:33080</span><br></pre></td></tr></table></figure>
 
 <p>配置 NPM 代理，将 <code>proxy</code> 和 <code>https-proxy</code> 同时指向 <code>http://192.168.200.1:33080</code>。</p>
 <blockquote>
 <p>注意：这里 <code>proxy</code> 和 <code>https-proxy</code> 都是指向 <code>http://</code> 而不是 <code>https://</code> 。</p>
 </blockquote>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> config <span class="token builtin class-name">set</span> proxy http://192.168.200.1:33080
-<span class="token function">npm</span> config <span class="token builtin class-name">set</span> https-proxy http://192.168.200.1:33080</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> proxy http://192.168.200.1:33080</span><br><span class="line">npm config <span class="built_in">set</span> https-proxy http://192.168.200.1:33080</span><br></pre></td></tr></table></figure>
 
 <p><strong>修改 npm registry</strong></p>
 <p><strong>注意，由于我们的实现没有使用HTTPS，需要修改 npm registry 为<code>http://</code>。</strong></p>
-<pre class="language-none"><code class="language-none">npm config set registry http:&#x2F;&#x2F;registry.npmmirror.com</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm config set registry http://registry.npmmirror.com</span><br></pre></td></tr></table></figure>
 
 <p><strong>测试</strong></p>
 <p>在开发用的电脑上运行我们实现的代码：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">node</span> proxy.js</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">node proxy.js</span><br></pre></td></tr></table></figure>
 
 <p>在服务器上使用 npm 安装外部依赖包：</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i <span class="token function">npm</span> <span class="token parameter variable">-g</span>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm i npm -g</span><br><span class="line"></span><br><span class="line">changed 14 packages <span class="keyword">in</span> 3s</span><br><span class="line"></span><br><span class="line">11 packages are looking <span class="keyword">for</span> funding</span><br><span class="line">  run `npm fund` <span class="keyword">for</span> details</span><br></pre></td></tr></table></figure>
 
-changed <span class="token number">14</span> packages <span class="token keyword">in</span> 3s
-
-<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
-
-<pre class="language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">npm</span> i nrm <span class="token parameter variable">-g</span>
-<span class="token function">npm</span> WARN deprecated har-validator@5.1.5: this library is no longer supported
-<span class="token function">npm</span> WARN deprecated uuid@3.4.0: Please upgrade  to version <span class="token number">7</span> or higher.  Older versions may use Math.random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">in</span> certain circumstances, <span class="token function">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="token keyword">for</span> details.
-<span class="token function">npm</span> WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
-
-changed <span class="token number">73</span> packages <span class="token keyword">in</span> 6s
-
-<span class="token number">11</span> packages are looking <span class="token keyword">for</span> funding
-  run <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> fund<span class="token variable">`</span></span> <span class="token keyword">for</span> details</code></pre>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm i nrm -g</span><br><span class="line">npm WARN deprecated har-validator@5.1.5: this library is no longer supported</span><br><span class="line">npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() <span class="keyword">in</span> certain circumstances, <span class="built_in">which</span> is known to be problematic.  See https://v8.dev/blog/math-random <span class="keyword">for</span> details.</span><br><span class="line">npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142</span><br><span class="line"></span><br><span class="line">changed 73 packages <span class="keyword">in</span> 6s</span><br><span class="line"></span><br><span class="line">11 packages are looking <span class="keyword">for</span> funding</span><br><span class="line">  run `npm fund` <span class="keyword">for</span> details</span><br></pre></td></tr></table></figure>
 
 <p>可以看到，内网服务器同样可以通过我们实现的 HTTP 代理使用 npm 安装第三方外部依赖了。</p>
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.0.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -285,33 +285,27 @@
 <span id="more"></span>
 
 <h1 id="更新使用Docker部署的-Rocket-Chat"><a href="#更新使用Docker部署的-Rocket-Chat" class="headerlink" title="更新使用Docker部署的 Rocket.Chat"></a>更新使用Docker部署的 Rocket.Chat</h1><h2 id="更新到最新版Rocket-Chat"><a href="#更新到最新版Rocket-Chat" class="headerlink" title="更新到最新版Rocket.Chat"></a>更新到最新版Rocket.Chat</h2><p>拉取最新版的Docker镜像：</p>
-<pre class="language-none"><code class="language-none">docker pull registry.rocket.chat&#x2F;rocketchat&#x2F;rocket.chat:latest</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker pull registry.rocket.chat/rocketchat/rocket.chat:latest</span><br></pre></td></tr></table></figure>
 
 <p>停止并删除当前运行中的容器，然后重新运行新容器：</p>
-<pre class="language-none"><code class="language-none">docker compose stop rocketchat
-docker compose rm rocketchat
-docker compose up -d rocketchat</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker compose stop rocketchat</span><br><span class="line">docker compose rm rocketchat</span><br><span class="line">docker compose up -d rocketchat</span><br></pre></td></tr></table></figure>
 
 <h2 id="更新到指定版本Rocket-Chat"><a href="#更新到指定版本Rocket-Chat" class="headerlink" title="更新到指定版本Rocket.Chat"></a>更新到指定版本Rocket.Chat</h2><p>拉取指定版本的Docker镜像：</p>
-<pre class="language-none"><code class="language-none">docker pull registry.rocket.chat&#x2F;rocketchat&#x2F;rocket.chat:latest</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker pull registry.rocket.chat/rocketchat/rocket.chat:latest</span><br></pre></td></tr></table></figure>
 
 <p>要更新到指定版本的Rocket.Chat，需要修改部署目录中的<code>.env</code>配置文件，或者<code>compose.yml</code>文件：</p>
 <ul>
 <li>修改部署目录中的<code>.env</code>配置文件，将<code>RELEASE</code>变量的值修改为预期的Rocket.Chat版本号：</li>
 </ul>
-<pre class="language-none"><code class="language-none">RELEASE&#x3D;&lt;desired version&gt;</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">RELEASE=&lt;desired version&gt;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>如果未使用<code>.env</code>配置文件，则可以直接修改<code>compose.yml</code>文件中<code>rocketchat</code>服务的<code>image</code>值所对应的Docker镜像tag改为预期的特定版本号：</li>
 </ul>
-<pre class="language-none"><code class="language-none">services:
-  rocketchat:
-    image:registry.rocket.chat&#x2F;rocketchat&#x2F;rocket.chat:&lt;desired version&gt;</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">services:</span><br><span class="line">  rocketchat:</span><br><span class="line">    image:registry.rocket.chat/rocketchat/rocket.chat:&lt;desired version&gt;</span><br></pre></td></tr></table></figure>
 
 <p>停止并删除当前运行中的容器，然后重新运行新容器：</p>
-<pre class="language-none"><code class="language-none">docker compose stop rocketchat
-docker compose rm rocketchat
-docker compose up -d rocketchat</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker compose stop rocketchat</span><br><span class="line">docker compose rm rocketchat</span><br><span class="line">docker compose up -d rocketchat</span><br></pre></td></tr></table></figure>
 
 <h2 id="更新到指定版本的MongoDB"><a href="#更新到指定版本的MongoDB" class="headerlink" title="更新到指定版本的MongoDB"></a>更新到指定版本的MongoDB</h2><p>更新MongoDB前应提前对数据库进行备份，以便更新失败后回退。</p>
 <h3 id="使用mongodump备份MongoDB"><a href="#使用mongodump备份MongoDB" class="headerlink" title="使用mongodump备份MongoDB"></a>使用<code>mongodump</code>备份MongoDB</h3><blockquote>
@@ -330,25 +324,25 @@ docker compose up -d rocketchat</code></pre>
 </ul>
 </blockquote>
 <p>根据部署目录中的<code>.env</code>配置文件和<code>compose.yml</code>设置相应的命令行参数：</p>
-<pre class="language-none"><code class="language-none">mongorestore --uri&#x3D;&quot;mongodb:&#x2F;&#x2F;&lt;host URL&#x2F;IP&gt;:&lt;Port&gt;&quot; &#x2F;dump</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mongorestore --uri=&quot;mongodb://&lt;host URL/IP&gt;:&lt;Port&gt;&quot; /dump</span><br></pre></td></tr></table></figure>
 
 <h3 id="更新MongoDB"><a href="#更新MongoDB" class="headerlink" title="更新MongoDB"></a>更新MongoDB</h3><p>MongoDB不允许跨大版本更新，必须按大版本逐个更新。假设当前RocketChat所使用的MongoDB版本为4.4，现在要将MongoDB更新到6.0，则需要先将4.4更新到5.0，然后再从5.0更新到6.0。</p>
 <details class="note info"><summary><p>前提条件</p>
 </summary>
 <p>The 4.4 replica set must have <code>featureCompatibilityVersion</code> set to <code>&quot;4.4&quot;</code>. </p>
 <p>To ensure that all members of the replica set have <code>featureCompatibilityVersion</code> set to <code>&quot;4.4&quot;</code>, connect to each replica set member and check the <code>featureCompatibilityVersion</code>:</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript">db<span class="token punctuation">.</span><span class="token function">adminCommand</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">getParameter</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">featureCompatibilityVersion</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">db.<span class="title function_">adminCommand</span>( &#123; <span class="attr">getParameter</span>: <span class="number">1</span>, <span class="attr">featureCompatibilityVersion</span>: <span class="number">1</span> &#125; )</span><br></pre></td></tr></table></figure>
 <p>All members should return a result that includes <code>&quot;featureCompatibilityVersion&quot; : { &quot;version&quot; : &quot;4.4&quot; }</code>.</p>
 <p>To set or update <code>featureCompatibilityVersion</code>, run the following command on the primary. A majority of the data-bearing members must be available:</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript">db<span class="token punctuation">.</span><span class="token function">adminCommand</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">setFeatureCompatibilityVersion</span><span class="token operator">:</span> <span class="token string">"4.4"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">db.<span class="title function_">adminCommand</span>( &#123; <span class="attr">setFeatureCompatibilityVersion</span>: <span class="string">&quot;4.4&quot;</span> &#125; )</span><br></pre></td></tr></table></figure>
 
 <p>The 5.0 replica set must have <code>featureCompatibilityVersion</code> set to <code>&quot;5.0&quot;</code>.</p>
 <p>To ensure that all members of the replica set have <code>featureCompatibilityVersion</code> set to <code>&quot;5.0&quot;</code>, connect to each replica set member and check the <code>featureCompatibilityVersion</code>:</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript">db<span class="token punctuation">.</span><span class="token function">adminCommand</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">getParameter</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">featureCompatibilityVersion</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">db.<span class="title function_">adminCommand</span>( &#123; <span class="attr">getParameter</span>: <span class="number">1</span>, <span class="attr">featureCompatibilityVersion</span>: <span class="number">1</span> &#125; )</span><br></pre></td></tr></table></figure>
 
 <p>All members should return a result that includes <code>&quot;featureCompatibilityVersion&quot; : { &quot;version&quot; : &quot;5.0&quot; }</code>.</p>
 <p>To set or update featureCompatibilityVersion, run the following command on the primary. A majority of the data-bearing members must be available:</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript">db<span class="token punctuation">.</span><span class="token function">adminCommand</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">setFeatureCompatibilityVersion</span><span class="token operator">:</span> <span class="token string">"5.0"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">db.<span class="title function_">adminCommand</span>( &#123; <span class="attr">setFeatureCompatibilityVersion</span>: <span class="string">&quot;5.0&quot;</span> &#125; )</span><br></pre></td></tr></table></figure>
 
 </details>
 
@@ -358,64 +352,59 @@ docker compose up -d rocketchat</code></pre>
 <ol>
 <li>拉取或加载指定版本的MongoDB镜像。要想将MongoDB 4.4 更新到 6.0，必须先更新到5.0，再从 5.0 更新到 6.0。所以我们需要首先拉取或加载 MongoDB 5.0 和 6.0 的Docker 镜像：</li>
 </ol>
-<pre class="language-none"><code class="language-none">docker pull bitnami&#x2F;mongodb:5.0
-docker pull bitnami&#x2F;mongodb:6.0</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker pull bitnami/mongodb:5.0</span><br><span class="line">docker pull bitnami/mongodb:6.0</span><br></pre></td></tr></table></figure>
 
 
 <ol start="2">
 <li>进入容器<code>mongodb</code> shell：</li>
 </ol>
-<pre class="language-none"><code class="language-none">docker exec -it mongodb bash</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker exec -it mongodb bash</span><br></pre></td></tr></table></figure>
 
 <ol start="3">
 <li>进入MongoDB shell：</li>
 </ol>
-<pre class="language-none"><code class="language-none">mongo</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mongo</span><br></pre></td></tr></table></figure>
 
 <ol start="4">
 <li>检查当前MongoDB的<code>featureCompatibilityVersion</code>值。</li>
 </ol>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript">db<span class="token punctuation">.</span><span class="token function">adminCommand</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">getParameter</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">featureCompatibilityVersion</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">db.<span class="title function_">adminCommand</span>( &#123; <span class="attr">getParameter</span>: <span class="number">1</span>, <span class="attr">featureCompatibilityVersion</span>: <span class="number">1</span> &#125; )</span><br></pre></td></tr></table></figure>
 
 <ol start="5">
 <li>如果输出结果不为<code>&quot;featureCompatibilityVersion&quot; : &#123; &quot;version&quot; : &quot;4.4&quot; &#125;</code>，则手动设置其值为<code>4.4</code>：</li>
 </ol>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript">db<span class="token punctuation">.</span><span class="token function">adminCommand</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">setFeatureCompatibilityVersion</span><span class="token operator">:</span> <span class="token string">"4.4"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">db.<span class="title function_">adminCommand</span>( &#123; <span class="attr">setFeatureCompatibilityVersion</span>: <span class="string">&quot;4.4&quot;</span> &#125; )</span><br></pre></td></tr></table></figure>
 
 <ol start="6">
 <li>修改部署目录中的<code>.env</code>配置文件的MongoDB版本变量（本文所使用的<code>compose.yml</code>部署文件中对应MongoDB版本的变量为<code>MONGODB_VERSION</code>）:</li>
 </ol>
-<pre class="language-none"><code class="language-none">MONGODB_VERSION&#x3D;5.0</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MONGODB_VERSION=5.0</span><br></pre></td></tr></table></figure>
 
 <ol start="7">
 <li>停止并删除当前运行<code>mongodb</code>容器，然后重新运行新容器：</li>
 </ol>
-<pre class="language-none"><code class="language-none">docker compose stop mongodb
-docker compose rm mongodb
-docker compose up -d mongodb</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker compose stop mongodb</span><br><span class="line">docker compose rm mongodb</span><br><span class="line">docker compose up -d mongodb</span><br></pre></td></tr></table></figure>
 
 <ol start="8">
 <li>检验是否更新成功；</li>
 <li>继续。检查当前MongoDB的<code>featureCompatibilityVersion</code>值。</li>
 </ol>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript">db<span class="token punctuation">.</span><span class="token function">adminCommand</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">getParameter</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">featureCompatibilityVersion</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">db.<span class="title function_">adminCommand</span>( &#123; <span class="attr">getParameter</span>: <span class="number">1</span>, <span class="attr">featureCompatibilityVersion</span>: <span class="number">1</span> &#125; )</span><br></pre></td></tr></table></figure>
 
 <ol start="10">
 <li>如果输出结果不为<code>&quot;featureCompatibilityVersion&quot; : &#123; &quot;version&quot; : &quot;5.0&quot; &#125;</code>，则手动设置其值为<code>5.0</code>：</li>
 </ol>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript">db<span class="token punctuation">.</span><span class="token function">adminCommand</span><span class="token punctuation">(</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">setFeatureCompatibilityVersion</span><span class="token operator">:</span> <span class="token string">"5.0"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">)</span></code></pre>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">db.<span class="title function_">adminCommand</span>( &#123; <span class="attr">setFeatureCompatibilityVersion</span>: <span class="string">&quot;5.0&quot;</span> &#125; )</span><br></pre></td></tr></table></figure>
 
 <ol start="11">
 <li>修改部署目录中的<code>.env</code>配置文件的MongoDB版本变量（本文所使用的<code>compose.yml</code>部署文件中对应MongoDB版本的变量为<code>MONGODB_VERSION</code>）:</li>
 </ol>
-<pre class="language-none"><code class="language-none">MONGODB_VERSION&#x3D;6.0</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MONGODB_VERSION=6.0</span><br></pre></td></tr></table></figure>
 
 <ol start="12">
 <li>停止并删除当前运行<code>mongodb</code>容器，然后重新运行新容器：</li>
 </ol>
-<pre class="language-none"><code class="language-none">docker compose stop mongodb
-docker compose rm mongodb
-docker compose up -d mongodb</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker compose stop mongodb</span><br><span class="line">docker compose rm mongodb</span><br><span class="line">docker compose up -d mongodb</span><br></pre></td></tr></table></figure>
 
 <ol start="13">
 <li>检查是否更新成功。</li>
