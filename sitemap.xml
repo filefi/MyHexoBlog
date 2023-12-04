@@ -2,24 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://ifelif.cn/about/index.html</loc>
-    
-    <lastmod>2023-12-04</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/categories/index.html</loc>
-    
-    <lastmod>2023-12-04</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/projects/index.html</loc>
     
     <lastmod>2023-12-04</lastmod>
@@ -39,6 +21,24 @@
   
   <url>
     <loc>https://ifelif.cn/topics/index.html</loc>
+    
+    <lastmod>2023-12-04</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/about/index.html</loc>
+    
+    <lastmod>2023-12-04</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/categories/index.html</loc>
     
     <lastmod>2023-12-04</lastmod>
     
