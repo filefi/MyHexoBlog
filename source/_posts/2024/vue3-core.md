@@ -36,7 +36,7 @@ categories: Vue
 
 1. `watch`监视`ref`：
 
-```vue
+```html
 
 ```
 
@@ -58,7 +58,7 @@ categories: Vue
 
 - `ref`属性在HTML原生标签中时，获取`ref`属性所引用的标签；
 
-```vue
+```html
 <template>
 	<div>
         <h1>Hello</h1>
@@ -73,7 +73,7 @@ categories: Vue
 
 - `ref`属性在组件标签中时，获取`ref`属性所引用的组件实例；
 
-```vue
+```html
 <template>
 	<div>
         <h1>Hello</h1>
@@ -90,7 +90,7 @@ const person = ref(); // person将引用Person组件的实例
 
 `defineProps`是编译器宏，不需要导入就可使用，用来定义组件的属性：
 
-```vue
+```html
 // Person.vue
 <template>
 	<div>
@@ -105,7 +105,7 @@ console.log(x.msg); // haha
 
 在父组件中使用组件`Person`：
 
-```vue
+```html
 <template>
 	<Person msg="haha" /> <!-- 父组件为Person组件msg属性设置值 -->
 </template>
@@ -113,7 +113,7 @@ console.log(x.msg); // haha
 
 使用泛型指定props类型：
 
-```vue
+```html
 // Person.vue
 <template>
 	<div>
@@ -128,7 +128,7 @@ console.log(x.msg); // haha
 
 可选props：
 
-```vue
+```html
 // Person.vue
 <template>
 	<div>
@@ -143,7 +143,7 @@ console.log(x.msg); // haha
 
 使用`withDefaults`定义props默认值：
 
-```vue
+```html
 // Person.vue
 <template>
 	<div>
@@ -160,7 +160,7 @@ console.log(x.msg); // 在父组件没有传递msg属性时，输出yoyo
 
 当props是对象，如数组时，默认值需要由函数返回：
 
-```vue
+```html
 // Person.vue
 <template>
 	<div>
@@ -188,7 +188,7 @@ console.log(x.msg); // 在父组件没有传递msg属性时，输出['haha', 'yo
 7. `beforeDestroy`：组件销毁前；
 8. `destroyed`：组件销毁后；
 
-```vue
+```html
 <script>
 export default {
     data(){
@@ -237,7 +237,7 @@ export default {
 6. `onBeforeUnmount`：组件取消挂载前，相当于 Vue2 的`beforeDestroy`；
 7. `onUnmounted`：组件取消挂载后，相当于 Vue2 的`destroyed`；
 
-```vue
+```html
 <script>
 import { ref } from 'vue'
 export default {
@@ -278,7 +278,7 @@ export default {
 
 使用`setup`标签属性：
 
-```vue
+```html
 <script setup>
 import { ref } from 'vue'
 
@@ -331,7 +331,7 @@ onUnmounted(()=>{
 
 步骤1：创建路由视图组件。路由视图组件通常放在项目目录的`views/`目录或`pages/`目录中；一般组件放在`components/`目录中。
 
-```vue
+```html
 // HomeView.vue
 <script setup lang="ts">
 import TheWelcome from '../components/TheWelcome.vue'
@@ -344,7 +344,7 @@ import TheWelcome from '../components/TheWelcome.vue'
 </template>
 ```
 
-```vue
+```html
 // AboutView.vue
 
 <template>
@@ -402,7 +402,7 @@ app.mount('#app')
 
 步骤4：在路由视图View呈现页添加`<RouterLink>`导航和`<RouterView>`；
 
-```vue
+```html
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 </script>
@@ -482,14 +482,14 @@ export default router
 ## `RouterLink`中`to`属性的2种写法
 **字符串写法：**
 
-```vue
+```html
 <RouterLink to="/">首页</RouterLink>
 <RouterLink to="/about">关于</RouterLink> 
 ```
 
 **对象写法：**
 
-```vue
+```html
 <!-- 路径跳转 -->
 <RouterLink :to="{path: '/'}">关于</RouterLink>
 <RouterLink :to="{path: '/about'}">关于</RouterLink>
@@ -520,12 +520,12 @@ const router = createRouter({
           {
               path: 'sport',
       		 name: 'sport',
-              component: HomeView,
+              component: SportView,
           },
           {
               path: 'economy',
               name: 'economy',
-              component: HomeView,
+              component: EconomyView,
           }
       ]
     },
@@ -543,7 +543,7 @@ const router = createRouter({
 export default router
 ```
 
-```vue
+```html
 <RouterLink to="/news/sport">体育</RouterLink>
 <RouterLink to="/news/economy">财经</RouterLink>
 ```
@@ -554,14 +554,14 @@ export default router
 
 - 写法1：
 
-```vue
+```html
 <RouterLink to="/news/sport?id=1&title=sportnews&content=arsenalwin">体育</RouterLink>
 <RouterLink to="/news/economy?id=2&title=economynews&content=btcfalldown">财经</RouterLink>
 ```
 
 - 写法2：
 
-```vue
+```html
 <!-- 路径跳转 -->
 <RouterLink :to="{
     path:'/news/sport',
@@ -585,7 +585,7 @@ export default router
 
 **在路由视图中使用`useRoute` hooks接收参数：**
 
-```vue
+```html
 <template>
 	<ul>
     	<li>{{ route.query.id }}</li>
@@ -602,7 +602,226 @@ let route = useRoute();
 </script>
 ```
 
-## 路由的props
+## 路由的params参数
+
+配置路由，在`path`属性中使用 params 参数占位符：
+
+```ts
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView
+    },
+    {
+      path: '/news',
+      name: 'news',
+      component: NewsView,
+      children:[ // 子路由
+          {
+              path: 'sport/:id/:title/:content', // params占位参数
+      		 name: 'sport',
+              component: SportView,
+          },
+          {
+              path: 'economy/:id/:title/:content?', // params占位参数；使用问号?指定可选参数
+              name: 'economy',
+              component: EconomyView,
+          }
+      ]
+    },
+    {
+      path: '/about',
+      name: 'about', // 命名路由
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/AboutView.vue')
+    }
+  ]
+})
+
+export default router
+```
+
+在`RouterLink`中进行传参：
+
+```html
+<template>
+    <!-- 写法1 -->
+	<RouterLink to="/news/sport/1/sportnews/arsenalwin">体育</RouterLink>
+	<RouterLink :to="`/news/economy/${news.id}/${news.title}/${news.content}`">财经</RouterLink>
+    
+    <!-- 写法2: to属性使用对象传参只能使用命名视图路由（name属性），不能使用path属性 -->
+    <!-- 注意写法2不允许将对象作为参数 -->
+    <RouterLink :to="{
+         name:'sport',
+         params: {
+             id: news.id,
+             title: news.title,
+             content: news.content
+         }
+    }">体育</RouterLink>
+    <RouterLink :to="{
+         name:'economy',
+         params: {
+             id: news.id,
+             title: news.title,
+             content: news.content
+         }
+    }">财经</RouterLink>
+    
+<RouterView />
+</template>
+
+<script>
+const news = {
+    id: 'id',
+    title: 'title',
+    content: 'content'
+}
+</script>
+```
+
+在路由视图中获取参数：
+
+```html
+<template>
+	<ul>
+    	<li>{{ route.params.id }}</li>
+        <li>{{ route.params.title }}</li>
+        <li>{{ route.params.content }}</li>
+	</ul>
+</template>
+
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+
+const route  = useRoute();
+
+</script>
+```
+
+## 路由的props配置
+
+在路由配置中将路由的`props`设置为`true`：
+
+```ts
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView
+    },
+    {
+      path: '/news',
+      name: 'news',
+      component: NewsView,
+      children:[ // 子路由
+          {
+              name: 'sport',
+              path: 'sport/:id/:title/:content', 
+              component: SportView,
+              // 写法1：将路由收到的所有params参数作为props传给路由组件
+              props: true,
+          },
+          {
+              name: 'economy',
+              path: 'economy',
+              component: EconomyView,
+              // 写法2：props是一个函数，这种写法可以自己决定将什么作为props传给路由组件
+              // 此函数接收一个RouteLink传递的路由信息作为参数，可以通过返回其中的特定属性来决定将哪种参数传给路由组件
+              props: (route)=>{
+                  // 返回路由的params参数
+                  // return route.params
+                  // 返回路由的querystring参数
+                  return route.query
+              }
+              /*
+              // 写法3(不常用)：props是一个对象，可以自己决定将什么作为props传给路由组件
+              props: {
+                  id: 'id',
+                  title: 'title',
+                  content: 'content'
+              }
+              */
+          }
+      ]
+    },
+    {
+      path: '/about',
+      name: 'about', // 命名路由
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/AboutView.vue')
+    }
+  ]
+})
+
+export default router
+```
+
+在`RouterLink`中传递参数的方式与传params参数的方式相同：
+
+```html
+<template>
+    <!-- 写法1：将路由收到的所有params参数作为props传给路由组件 -->
+    <!-- 如前文所述，下面2种写法等价 -->
+	<RouterLink to="/news/sport/1/sportnews/arsenalwin">体育</RouterLink>
+    <RouterLink :to="{
+         name:'sport',
+         params: {
+             id: news.id,
+             title: news.title,
+             content: news.content
+         }
+    }">体育</RouterLink>
+    
+    <!-- 写法2: props为函数时可以自由决定传递给路由组件的参数 -->
+    <!-- 上文配置中返回的路由的querystring，即将querystring作为props传递给路由组件 -->
+    <!-- 如前文所述，下面2种写法等价 -->
+    <RouterLink to="/news/economy?id=2&title=economynews&content=btcfalldown">财经</RouterLink>
+    <RouterLink :to="{
+    name:'economy',
+    query:{
+		id: news:id,
+         title: news.title,
+         content: news.content
+    	}
+	}">财经</RouterLink>
+    
+<RouterView />
+</template>
+
+<script>
+const news = {
+    id: 'id',
+    title: 'title',
+    content: 'content'
+}
+</script>
+```
+
+在路由视图中获取参数：
+
+```html
+<template>
+	<ul>
+    	<li>{{ id }}</li>
+        <li>{{ title }}</li>
+        <li>{{ content }}</li>
+	</ul>
+</template>
+
+<script setup lang="ts">
+defineProps(['id', 'title', 'content']) // 使用defineProps接收RouterLink传来的params参数
+</script>
+```
 
 
 
