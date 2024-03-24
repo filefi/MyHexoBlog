@@ -1,5 +1,5 @@
 ---
-title: Vue3 核心
+title: Vue3 核心笔记
 date: 2024-03-23 12:39:46
 updated: 2024-03-23 12:39:46
 tags: [Vue, Vue3, Front-End]
@@ -18,9 +18,9 @@ categories: Vue
 
 <!-- more -->
 
+# Vue3 核心
 
-
-## 3.9 watch
+## watch
 
 - 作用：监视数据的变化（和Vue2中的`watch`作用一致）；
 
@@ -44,7 +44,7 @@ categories: Vue
 
 
 
-## 3.10 watchEffet
+## watchEffet
 
 - 立即运行一个函数，同时响应式地追踪器其中所使用的响应式变量，并在其中的响应式变量更该时重新执行该函数。
 - 对比`watch`：
@@ -54,7 +54,7 @@ categories: Vue
 
 
 
-## 3.11 标签中的ref属性
+## 标签中的ref属性
 
 - `ref`属性在HTML原生标签中时，获取`ref`属性所引用的标签；
 
@@ -86,7 +86,7 @@ const person = ref(); // person将引用Person组件的实例
 </script>
 ```
 
-## 3.12 props
+## props
 
 `defineProps`是编译器宏，不需要导入就可使用，用来定义组件的属性：
 
@@ -175,9 +175,9 @@ console.log(x.msg); // 在父组件没有传递msg属性时，输出['haha', 'yo
 </script>
 ```
 
-## 3.13 生命周期
+## 生命周期
 
-### 3.13.1 Vue2生命周期
+### Vue2生命周期
 
 1. `beforeCreate`：初始化选项式API前；
 2. `created`：初始化选项式API后；
@@ -227,7 +227,7 @@ export default {
 
 
 
-### 3.13.2 Vue3生命周期
+### Vue3生命周期
 
 1. `setup`：将 Vue2 的`beforeCreate`和`created`合并了；
 2. `onBeforeMount`： 初始渲染前；
@@ -316,11 +316,11 @@ onUnmounted(()=>{
 
 多组件时，子组件先于父组件被创建。
 
-## 3.14 Hooks
+## Hooks
 
-# 4 路由 vue-router
+# 路由 vue-router
 
-## 4.1 基本使用步骤
+## 基本使用步骤
 
 使用`vue-router`创建SPA基本步骤：
 
@@ -421,7 +421,7 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 ```
 
-## 4.2 路由器模式
+## 路由器模式
 
 **history模式：**
 
@@ -449,7 +449,7 @@ const router = createRouter({
 })
 ```
 
-## 4.3 命名路由
+## 命名路由
 
 ```ts
 import { createRouter, createWebHistory } from 'vue-router'
@@ -479,7 +479,7 @@ export default router
 
 
 
-## 4.4 `RouterLink`中`to`属性的2种写法
+## `RouterLink`中`to`属性的2种写法
 **字符串写法：**
 
 ```vue
@@ -501,7 +501,7 @@ export default router
 
 
 
-## 4.5 嵌套路由
+## 嵌套路由
 
 ```ts
 const router = createRouter({
@@ -548,7 +548,7 @@ export default router
 <RouterLink to="/news/economy">财经</RouterLink>
 ```
 
-## 4.6 路由的querystring参数
+## 路由的querystring参数
 
 **在`RouterLink`的`to`属性中传参：**
 
@@ -602,7 +602,7 @@ let route = useRoute();
 </script>
 ```
 
-## 4.7 路由的props
+## 路由的props
 
 
 
