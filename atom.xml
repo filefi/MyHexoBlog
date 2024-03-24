@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2023-08-15T13:54:03.000Z</updated>
+  <updated>2024-03-23T04:39:46.000Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Vue3 核心</title>
+    <link href="https://ifelif.cn/2024/vue3-core/"/>
+    <id>https://ifelif.cn/2024/vue3-core/</id>
+    <published>2024-03-23T04:39:46.000Z</published>
+    <updated>2024-03-23T04:39:46.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本文使用以下版本：&lt;/p&gt;
+&lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;pinia&amp;quot;: &amp;quot;2.1.7&amp;quot;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;vue&amp;quot;: &amp;quot;3.4.21&amp;quot;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;vue-router&amp;quot;: &amp;quot;4.3.0&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
+    
+    
+    
+    <category term="Vue" scheme="https://ifelif.cn/categories/Vue/"/>
+    
+    
+    <category term="Vue" scheme="https://ifelif.cn/tags/Vue/"/>
+    
+    <category term="Vue3" scheme="https://ifelif.cn/tags/Vue3/"/>
+    
+    <category term="Front-End" scheme="https://ifelif.cn/tags/Front-End/"/>
+    
+  </entry>
   
   <entry>
     <title>使用 colly.Context 在 colly.Collector 之间传递自定义数据</title>
@@ -581,7 +605,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2024-03-21T10:05:21.151Z</updated>
+    <updated>2024-03-24T10:39:47.781Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
@@ -604,7 +628,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2024-03-21T10:05:21.175Z</updated>
+    <updated>2024-03-24T10:39:47.805Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -633,7 +657,7 @@
     <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
     <id>https://ifelif.cn/2022/ansible_user_guide/</id>
     <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2024-03-21T10:05:21.151Z</updated>
+    <updated>2024-03-24T10:39:47.781Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
@@ -677,7 +701,7 @@
     <link href="https://ifelif.cn/2022/docker_practice/"/>
     <id>https://ifelif.cn/2022/docker_practice/</id>
     <published>2022-04-28T15:56:21.000Z</published>
-    <updated>2024-03-21T10:05:21.163Z</updated>
+    <updated>2024-03-24T10:39:47.797Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;什么是-Docker&quot;&gt;&lt;a href=&quot;#什么是-Docker&quot; class=&quot;headerlink&quot; title=&quot;什么是 Docker&quot;&gt;&lt;/a&gt;什么是 Docker&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;Docker&lt;/strong&gt; 使用 &lt;code&gt;Google&lt;/code&gt; 公司推出的 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go 语言&lt;/a&gt; 进行开发实现，基于 &lt;code&gt;Linux&lt;/code&gt; 内核的 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Cgroups&quot;&gt;cgroup&lt;/a&gt;，&lt;a href=&quot;https://en.wikipedia.org/wiki/Linux_namespaces&quot;&gt;namespace&lt;/a&gt;，以及 &lt;a href=&quot;https://docs.docker.com/storage/storagedriver/overlayfs-driver/&quot;&gt;OverlayFS&lt;/a&gt; 类的 &lt;a href=&quot;https://en.wikipedia.org/wiki/Union_mount&quot;&gt;Union FS&lt;/a&gt; 等技术，对进程进行封装隔离，属于 &lt;a href=&quot;https://en.wikipedia.org/wiki/Operating-system-level_virtualization&quot;&gt;操作系统层面的虚拟化技术&lt;/a&gt;。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。&lt;/p&gt;
@@ -694,42 +718,6 @@
     <category term="CNCF" scheme="https://ifelif.cn/tags/CNCF/"/>
     
     <category term="Docker" scheme="https://ifelif.cn/tags/Docker/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Nginx小记</title>
-    <link href="https://ifelif.cn/2022/some_pieces_of_nginx/"/>
-    <id>https://ifelif.cn/2022/some_pieces_of_nginx/</id>
-    <published>2022-04-14T15:41:21.000Z</published>
-    <updated>2024-03-21T10:05:21.183Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;nginx及其衍生版本&quot;&gt;&lt;a href=&quot;#nginx及其衍生版本&quot; class=&quot;headerlink&quot; title=&quot;nginx及其衍生版本&quot;&gt;&lt;/a&gt;nginx及其衍生版本&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;nginx开源版：&lt;a href=&quot;http://nginx.org/&quot;&gt;http://nginx.org&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;nginx plus 商业版: &lt;a href=&quot;https://www.nginx.com/&quot;&gt;https://www.nginx.com&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;openresty: &lt;a href=&quot;http://openresty.org/&quot;&gt;http://openresty.org&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;tengine: &lt;a href=&quot;http://tengine.taobao.org/&quot;&gt;http://tengine.taobao.org&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&quot;nginx默认目录结构&quot;&gt;&lt;a href=&quot;#nginx默认目录结构&quot; class=&quot;headerlink&quot; title=&quot;nginx默认目录结构&quot;&gt;&lt;/a&gt;nginx默认目录结构&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;logs/&lt;/code&gt;：日志目录；&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;conf/&lt;/code&gt;：配置文件目录；&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;html/&lt;/code&gt;：静态资源目录；&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;sbin/&lt;/code&gt;：存放nginx可执行文件；&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&quot;nginx基础配置&quot;&gt;&lt;a href=&quot;#nginx基础配置&quot; class=&quot;headerlink&quot; title=&quot;nginx基础配置&quot;&gt;&lt;/a&gt;nginx基础配置&lt;/h1&gt;&lt;h2 id=&quot;nginx最小配置&quot;&gt;&lt;a href=&quot;#nginx最小配置&quot; class=&quot;headerlink&quot; title=&quot;nginx最小配置&quot;&gt;&lt;/a&gt;nginx最小配置&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;worker_processes&lt;/code&gt; worker 进程数，根据CPU核心数进行配置；&lt;/li&gt;
-&lt;/ul&gt;
-&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attribute&quot;&gt;user&lt;/span&gt;  nginx;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attribute&quot;&gt;worker_processes&lt;/span&gt;  auto;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attribute&quot;&gt;error_log&lt;/span&gt;  /var/log/nginx/&lt;span class=&quot;literal&quot;&gt;error&lt;/span&gt;.log &lt;span class=&quot;literal&quot;&gt;notice&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attribute&quot;&gt;pid&lt;/span&gt;        /var/run/nginx.pid;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;section&quot;&gt;events&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;worker_connections&lt;/span&gt;  &lt;span class=&quot;number&quot;&gt;1024&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;section&quot;&gt;http&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;include&lt;/span&gt;       /etc/nginx/mime.types;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;default_type&lt;/span&gt;  application/octet-stream;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;log_format&lt;/span&gt;  main  &lt;span class=&quot;string&quot;&gt;&amp;#x27;&lt;span class=&quot;variable&quot;&gt;$remote_addr&lt;/span&gt; - &lt;span class=&quot;variable&quot;&gt;$remote_user&lt;/span&gt; [&lt;span class=&quot;variable&quot;&gt;$time_local&lt;/span&gt;] &amp;quot;&lt;span class=&quot;variable&quot;&gt;$request&lt;/span&gt;&amp;quot; &amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                      &lt;span class=&quot;string&quot;&gt;&amp;#x27;&lt;span class=&quot;variable&quot;&gt;$status&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;$body_bytes_sent&lt;/span&gt; &amp;quot;&lt;span class=&quot;variable&quot;&gt;$http_referer&lt;/span&gt;&amp;quot; &amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                      &lt;span class=&quot;string&quot;&gt;&amp;#x27;&amp;quot;&lt;span class=&quot;variable&quot;&gt;$http_user_agent&lt;/span&gt;&amp;quot; &amp;quot;&lt;span class=&quot;variable&quot;&gt;$http_x_forwarded_for&lt;/span&gt;&amp;quot;&amp;#x27;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;access_log&lt;/span&gt;  /var/log/nginx/access.log  main;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;sendfile&lt;/span&gt;        &lt;span class=&quot;literal&quot;&gt;on&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;keepalive_timeout&lt;/span&gt;  &lt;span class=&quot;number&quot;&gt;65&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;section&quot;&gt;server&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;attribute&quot;&gt;listen&lt;/span&gt;       &lt;span class=&quot;number&quot;&gt;80&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;attribute&quot;&gt;server_name&lt;/span&gt;  localhost;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;section&quot;&gt;location&lt;/span&gt; / &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;attribute&quot;&gt;root&lt;/span&gt;   /usr/share/nginx/html;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;attribute&quot;&gt;index&lt;/span&gt;  index.html index.htm;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;#error_page  404              /404.html;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;# redirect server error pages to the static page /50x.html&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;attribute&quot;&gt;error_page&lt;/span&gt;   &lt;span class=&quot;number&quot;&gt;500&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;502&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;503&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;504&lt;/span&gt;  /50x.html;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;section&quot;&gt;location&lt;/span&gt; = /50x.html &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;attribute&quot;&gt;root&lt;/span&gt;   /usr/share/nginx/html;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
-    
-    
-    
-    <category term="Linux" scheme="https://ifelif.cn/categories/Linux/"/>
-    
-    
-    <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
-    
-    <category term="Nginx" scheme="https://ifelif.cn/tags/Nginx/"/>
     
   </entry>
   
