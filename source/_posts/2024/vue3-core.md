@@ -654,7 +654,7 @@ export default router
 	<RouterLink to="/news/sport/1/sportnews/arsenalwin">体育</RouterLink>
 	<RouterLink :to="`/news/economy/${news.id}/${news.title}/${news.content}`">财经</RouterLink>
     
-    <!-- 写法2: to属性使用对象传参只能使用命名视图路由（name属性），不能使用path属性 -->
+    <!-- 写法2: to属性将对象作为params参数传给路由视图组件时，只能使用命名视图路由（name属性），不能使用path属性 -->
     <!-- 注意写法2不允许将对象作为参数 -->
     <RouterLink :to="{
          name:'sport',
@@ -823,7 +823,190 @@ defineProps(['id', 'title', 'content']) // 使用defineProps接收RouterLink传�
 </script>
 ```
 
+## `RouterLink`的`replace`属性
 
+在`RouterLink`组件中使用`replace`属性，则在路由跳转时会使用`replace`模式，浏览器不会留下此URL的历史记录。
+
+```html
+<RouterLink replace to="/">首页</RouterLink>
+<RouterLink replace to="/about">关于</RouterLink> 
+```
+
+与`replace`模式对应的是`push`模式，`push`模式会将访问的URL压入历史记录栈中，从而保存浏览器历史记录。
+
+## 编程式导航
+
+`<RouterLink>`在浏览器渲染后会变成 HTML 原生`<a>`标签，当需要实现点击`<button>`跳转URL，或基于编程来实现URL跳转时，即想要脱离`<RouterLink>`实现路由跳转，需使用编程式路由导航。
+
+简单示例，实现当前组件挂载3秒后自动跳转到路由`/news`：
+
+```html
+<template>
+</template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+    
+// 使用useRouter hook 获取 router 对象
+const router = useRouter()
+
+// 在当前组件挂载3秒后跳转到路由/news
+onMounted(()=>{
+    setTimeout(()=>{
+        router.push('/news') // push方法即使用push路由模式跳转URL
+    }, 3000)
+})
+</script>
+```
+
+示例2，使用编程式导航实现以下`<RouterLink>`路由导航功能：
+
+```html
+<template>
+  <header>
+    <div class="wrapper">
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/news/sport">NewsSport</RouterLink>
+        <RouterLink to="/news/economy">NewsEconomy</RouterLink>
+      </nav>
+    </div>
+  </header>
+
+  <RouterView />
+</template>
+
+<script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+</script>
+```
+
+实现：
+
+```html
+<template>
+  <header>
+    <div class="wrapper">
+      <nav>
+        <button @click="toHome">Home</button>
+        <button @click="toAbout">About</button>
+        <button @click="toNewsSport(news)">NewsSport</button>
+        <button @click="toNewsEconomy(news)">NewsEconomy</button>
+      </nav>
+    </div>
+  </header>
+
+  <RouterView />
+</template>
+
+<script setup lang="ts">
+import { reactive } from 'vue'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+
+const news = reactive({
+    id: 'id',
+    title: 'title',
+    content: 'content'
+});
+
+const router = useRouter();
+
+function toHome(){
+    // 使用push模式跳转
+    router.push('/')
+}
+
+function toAbout(){
+	// 使用replace模式跳转
+    router.replace('/')
+}
+
+function toNewsSport(news){
+    // push方法接收的参数类型基本与<RouterLink>的to属性接收的参数相同
+    // 可以接受字符串形式的路由路径，如上面2个方法中那样；
+    // 也可以向路由视图组件传递querystring参数和params参数：
+    // router.push('/news/sport?id=id&title=title&content=content')
+    // router.push(`/news/sport?id=${news.id}&title=${news.title}&content=${news.content}`)
+    
+    // router.push('/news/sport/id/title/content')
+    router.push(`/news/sport/${news.id}/${news.title}/${news.content}`)
+}
+
+function toNewsEconomy(news){
+    // 也可以接受对象作为参数，并且也可以向路由视图组件传递querystring参数和params参数：
+    router.push({
+         path:'/news/economy',
+         query: {
+             id: news.id,
+             title: news.title,
+             content: news.content
+         }
+    })
+    
+    router.push({
+         name:'economy',
+         params: {
+             id: news.id,
+             title: news.title,
+             content: news.content
+         }
+    })
+}
+</script>
+```
+
+## 重定向
+
+在路由配置中进行重定向配置：
+
+```ts
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView,
+      redirect: '/home' // 访问路由/时重定向至/home
+    },
+    {
+      path: '/about',
+      name: 'about', 
+      component: () => import('../views/AboutView.vue')
+    }
+  ]
+})
+
+export default router
+```
+
+# Pinia
+
+安装`pinia`：
+
+```bash
+npm i pinia
+```
+
+在项目入口`main.ts`文件中引入`pinia`：
+
+```ts
+import { createApp } from 'vue'
+import App from './App.vue'
+// 引入pinia
+import { createPinia } from 'pinia'
+
+const app = createApp(App);
+// 创建pinia
+const pinia = createPinia();
+// 安装pinia
+app.use(pinia);
+app.mount('#app');
+```
+
+## 使用Pinia存储和读取数据
 
 
 
