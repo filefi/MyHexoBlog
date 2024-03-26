@@ -1010,7 +1010,7 @@ app.mount('#app');
 
 根据约定，`store`目录用来存放Pinia定义的`useStore`对象的源文件，文件名通常是与其相关功能相对应。
 
-![](vue3-core/image-20240326214945605.png)
+![](image-20240326214945605.png)
 
 定义 `useCountStore`：
 
