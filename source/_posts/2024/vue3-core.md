@@ -1008,7 +1008,224 @@ app.mount('#app');
 
 ## 使用Pinia存储和读取数据
 
+根据约定，`store`目录用来存放Pinia定义的`useStore`对象的源文件，文件名通常是与其相关功能相对应。
 
+![](vue3-core/image-20240326214945605.png)
+
+定义 `useCountStore`：
+
+```ts
+import { defineStore } from 'pinia'
+
+const useCountStore = defineStore('count', {
+    // state方法所返回的对象的属性是各个实际存储数据(state)的变量
+    state(){
+        return {
+            sum: 0 // 实际存储数据的state
+        }
+    }
+})
+```
+
+在组件中存取`sum`：
+
+```html
+<template>
+    <p>
+        {{ countStore.sum }}
+        {{ countStore.$state.sum }}
+    </p>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue'
+import { useCountStore } from '@/store/count'
+
+const countStore = useCountStore()
+
+// 以下方式都可以取得sum
+console.log(countStore.sum)
+console.log(countStore.$state.sum)
+</script>
+```
+
+## 修改数据的3种方式
+
+**方法1，直接赋值：**
+
+```ts
+countStore.sum = 0
+```
+
+**方法2，使用`$patch`方法：**
+
+```ts
+countStore.$patch({
+    sum:888
+})
+
+// 如果countStore中有多个存有多个state，也可以一次性修改多个state
+countStore.$patch({
+    sum:888,
+    name: 'name',
+    age: 18
+})
+```
+
+**方法3，在定义store时，定义action方法：**
+
+```ts
+import { defineStore } from 'pinia'
+
+const useCountStore = defineStore('count', {
+    // actions里面放置的是一个一个的方法，用于响应组件中的“动作”
+    actions:{
+        increment(){
+            this.sum++
+            console.log(this.sum)
+        },
+        add(value){ // action方法也可以接收参数
+            this.sum += value
+            console.log(this.sum)
+        }
+    }
+    // state方法所返回的对象的属性是各个实际存储数据(state)的变量
+    state(){
+        return {
+            sum: 0 // 实际存储数据的state
+        }
+    }
+})
+```
+
+在组件中调用action方法：
+
+```html
+<template>
+    <p>
+        {{ countStore.sum }}
+        {{ countStore.$state.sum }}
+    </p>
+    <button @click="increment">
+        increment
+    </button>
+    <button @click="add(3)">
+        add
+    </button>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue'
+import { useCountStore } from '@/store/count'
+
+const countStore = useCountStore()
+
+function increment(){
+    countStore.increment();
+}
+
+//
+function add(value){
+    countStore.add(value);
+}
+</script>
+```
+
+## `storeToRefs`
+
+```ts
+import { ref, reactive } from 'vue'
+import { useCountStore, storeToRefs } from '@/store/count'
+
+const countStore = useCountStore()
+// 使用storeToRefs结构countStore不会丢失响应式
+const { sum } = storeToRefs(countStore)
+```
+
+## getters
+
+store的getters类似于Vue组件的计算属性：
+
+```ts
+import { defineStore } from 'pinia'
+
+const useCountStore = defineStore('count', {
+    state(){
+        return {
+            sum: 1
+        }
+    },
+    actions:{
+        increment(){
+            this.sum++
+            console.log(this.sum)
+        },
+        add(value){
+            this.sum += value
+            console.log(this.sum)
+        }
+    },
+    // 类似于vue组件的计算属性
+    getters: {
+        bigSum(state){
+            return state.sum *10
+        }
+    }
+})
+```
+
+取得getters中的值：
+```ts
+import { ref, reactive } from 'vue'
+import { useCountStore, storeToRefs } from '@/store/count'
+
+const countStore = useCountStore()
+const { sum, bigSum } = storeToRefs(countStore)
+
+console.log(sum) // 1
+console.log(bigSum) // 10 因为 bigSum = sum * 10 
+```
+
+## `$subscribe`方法
+
+store的`$subscribe`方法可以监控store中state的变化，类似于Vue组件的watch：
+
+```ts
+import { ref, reactive } from 'vue'
+import { useCountStore, storeToRefs } from '@/store/count'
+
+const countStore = useCountStore()
+
+countStore.$subscribe((mutation, state)=>{
+    console.log(mutation, state)
+})
+```
+
+## store的组合式写法
+
+```ts
+import { ref, computed } from 'vue'
+import { defineStore } from 'pinia'
+
+export const useCounterStore = defineStore('counter', () => {
+  // 组合式写法的state
+  const count = ref(0)
+  
+  // 组合式写法的getter
+  const doubleCount = computed(() => count.value * 2)
+  
+  // 组合式写法的action
+  function increment() {
+    count.value++
+  }
+
+  return { count, doubleCount, increment }
+})
+```
+
+
+
+# 组件通信
 
 
 
