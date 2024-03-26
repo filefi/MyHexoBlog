@@ -598,7 +598,6 @@ export default router
 import { useRoute } from 'vue-router'
 
 let route = useRoute();
-
 </script>
 ```
 
@@ -700,7 +699,6 @@ const news = {
 import { useRoute } from 'vue-router'
 
 const route  = useRoute();
-
 </script>
 ```
 
@@ -798,7 +796,7 @@ export default router
 <RouterView />
 </template>
 
-<script>
+<script setup lang="ts">
 const news = {
     id: 'id',
     title: 'title',
@@ -1133,13 +1131,15 @@ function add(value){
 
 ## `storeToRefs`
 
-```ts
+```html
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useCountStore, storeToRefs } from '@/store/count'
 
 const countStore = useCountStore()
 // 使用storeToRefs结构countStore不会丢失响应式
 const { sum } = storeToRefs(countStore)
+</script>
 ```
 
 ## getters
@@ -1175,7 +1175,8 @@ const useCountStore = defineStore('count', {
 ```
 
 取得getters中的值：
-```ts
+```html
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useCountStore, storeToRefs } from '@/store/count'
 
@@ -1184,13 +1185,15 @@ const { sum, bigSum } = storeToRefs(countStore)
 
 console.log(sum) // 1
 console.log(bigSum) // 10 因为 bigSum = sum * 10 
+</script>
 ```
 
 ## `$subscribe`方法
 
 store的`$subscribe`方法可以监控store中state的变化，类似于Vue组件的watch：
 
-```ts
+```html
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useCountStore, storeToRefs } from '@/store/count'
 
@@ -1199,11 +1202,13 @@ const countStore = useCountStore()
 countStore.$subscribe((mutation, state)=>{
     console.log(mutation, state)
 })
+</script>
 ```
 
 ## store的组合式写法
 
-```ts
+```html
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
@@ -1221,6 +1226,7 @@ export const useCounterStore = defineStore('counter', () => {
 
   return { count, doubleCount, increment }
 })
+</script>
 ```
 
 
