@@ -20,6 +20,399 @@ categories: Vue
 
 # Vue3 核心
 
+## 什么是Vue
+
+Vue (发音为 /vjuː/，类似 **view**) 是一款用于构建用户界面的 JavaScript 框架。它基于标准 HTML、CSS 和 JavaScript 构建，并提供了一套声明式的、组件化的编程模型：
+
+- **声明式渲染**：Vue 基于标准 HTML 拓展了一套模板语法，使得我们可以声明式地描述最终输出的 HTML 和 JavaScript 状态之间的关系。
+- **响应性**：Vue 会自动跟踪 JavaScript 状态并在其发生变化时响应式地更新 DOM。
+
+你可以用不同的方式使用 Vue：
+
+- 无需构建步骤，渐进式增强静态的 HTML。
+- 在任何页面中作为 Web Components 嵌入
+- 单页应用 (SPA)
+- 全栈 / 服务端渲染 (SSR)
+- Jamstack / 静态站点生成 (SSG)
+- 开发桌面端、移动端、WebGL，甚至是命令行终端中的界面
+
+## [单文件组件](https://cn.vuejs.org/guide/introduction.html#single-file-components)
+
+**单文件组件** (也被称为 `*.vue` 文件，英文 Single-File Components，缩写为 **SFC**)：
+
+- 一种类似 HTML 格式的文件来书写 Vue 组件；
+- Vue 的单文件组件会将一个组件的逻辑 (JavaScript)，模板 (HTML) 和样式 (CSS) 封装在同一个文件里。
+- 需要构建工具的支持。
+
+下面我们将用单文件组件的格式重写上面的计数器示例：
+
+```html
+<script setup>
+import { ref } from 'vue'
+const count = ref(0)
+</script>
+
+<template>
+  <button @click="count++">Count is: {{ count }}</button>
+</template>
+
+<style scoped>
+button {
+  font-weight: bold;
+}
+</style>
+```
+
+使用单文件组件创建项目时，通常使用基于 [Vite](https://vitejs.dev/) 的构建设置：
+
+```shell
+npm create vue@latest
+```
+
+在项目被创建后，通过以下步骤安装依赖并启动开发服务器：
+
+```shell
+$ cd <your-project-name>
+$ npm install
+$ npm run dev
+```
+
+## 通过`<script>`标签引入Vue并直接使用
+
+借助 script 标签直接通过 CDN 来使用 Vue 时，
+
+- 不涉及“构建步骤”，无需构建工具支持。
+- 但是，你将无法使用单文件组件 (SFC) 语法。
+
+在这些场景中你可以将 Vue 看作一个更加声明式的 jQuery 替代品。
+
+### 使用全局构建版本
+
+```html
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<div id="app">{{ message }}</div>
+
+<script>
+  const { createApp, ref } = Vue
+
+  createApp({
+    setup() {
+      const message = ref('Hello vue!')
+      return {
+        message
+      }
+    }
+  }).mount('#app')
+</script>
+```
+
+### 使用 ES 模块构建版本
+
+```html
+<div id="app">{{ message }}</div>
+
+<script type="module">
+  import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+  createApp({
+    setup() {
+      const message = ref('Hello Vue!')
+      return {
+        message
+      }
+    }
+  }).mount('#app')
+</script>
+```
+
+### 启用 Import maps
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+    }
+  }
+</script>
+
+<div id="app">{{ message }}</div>
+
+<script type="module">
+  import { createApp, ref } from 'vue'
+
+  createApp({
+    setup() {
+      const message = ref('Hello Vue!')
+      return {
+        message
+      }
+    }
+  }).mount('#app')
+</script>
+```
+
+
+
+## API 风格
+
+### 选项式API (Options API)
+
+```html
+<script>
+export default {
+  // data() 返回的属性将会成为响应式的状态
+  // 并且暴露在 `this` 上
+  data() {
+    return {
+      count: 0
+    }
+  },
+
+  // methods 是一些用来更改状态与触发更新的函数
+  // 它们可以在模板中作为事件处理器绑定
+  methods: {
+    increment() {
+      this.count++
+    }
+  },
+
+  // 生命周期钩子会在组件生命周期的各个不同阶段被调用
+  // 例如这个函数就会在组件挂载完成后被调用
+  mounted() {
+    console.log(`The initial count is ${this.count}.`)
+  }
+}
+</script>
+
+<template>
+  <button @click="increment">Count is: {{ count }}</button>
+</template>
+```
+
+
+
+### 组合式 API (Composition API)
+
+```html
+<script setup>
+import { ref, onMounted } from 'vue'
+
+// 响应式状态
+const count = ref(0)
+
+// 用来修改状态、触发更新的函数
+function increment() {
+  count.value++
+}
+
+// 生命周期钩子
+onMounted(() => {
+  console.log(`The initial count is ${count.value}.`)
+})
+</script>
+
+<template>
+  <button @click="increment">Count is: {{ count }}</button>
+</template>
+```
+
+
+
+## `setup()`
+
+[可以在一个组件中同时使用选项式 API 和 组合式 API 吗？](https://cn.vuejs.org/guide/extras/composition-api-faq.html#can-i-use-both-apis-in-the-same-component)可以。你可以在一个选项式 API 的组件中通过 [`setup()`](https://cn.vuejs.org/api/composition-api-setup.html) 选项来使用组合式 API。
+
+`setup()` 钩子是在组件中使用组合式 API 的入口，通常只在以下情况下使用：
+
+1. 需要在非单文件组件中使用组合式 API 时。
+2. 需要在基于选项式 API 的组件中集成基于组合式 API 的代码时。
+
+使用[响应式 API](https://cn.vuejs.org/api/reactivity-core.html) 来声明响应式的状态，在 `setup()` 函数中返回的对象会暴露给模板和组件实例。其他的选项也可以通过组件实例来获取 `setup()` 暴露的属性。
+
+```html
+<script>
+import { ref } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+    
+    // setup() 自身并不含对组件实例的访问权，即在 setup() 中访问 this 会是 undefined。
+    // 你可以在选项式 API 中访问组合式 API 暴露的值，但反过来则不行。
+    // console.log(this.name)
+
+    // 返回值会暴露给模板和其他的选项式 API 钩子
+    return {
+      count
+    }
+  },
+  data(){
+      return {
+          name: 'name'
+      }
+  }
+  mounted() {
+    // 其他的选项也可以通过组件实例来获取 `setup()` 暴露的属性。
+    // 当通过 this 访问时也会自动浅层解包。
+    console.log(this.count) // 0
+  }
+}
+</script>
+
+<template>
+  <!-- 在模板中访问从 setup 返回的 ref 时，它会自动浅层解包，因此你无须再在模板中为它写 .value。 -->
+  <button @click="count++">{{ count }}</button> 
+</template>
+```
+
+### setup 访问 props
+
+`setup` 函数的第1个参数是组件的 `props`。和标准的组件一致，一个 `setup` 函数的 `props` 是响应式的。
+
+```ts
+export default {
+  props: {
+    title: String
+  },
+  setup(props) {
+    console.log(props.title)
+  }
+}
+```
+
+如果需要解构 `props` 对象，使用 [toRefs()](https://cn.vuejs.org/api/reactivity-utilities.html#torefs) 和 [toRef()](https://cn.vuejs.org/api/reactivity-utilities.html#toref) 这两个工具函数，否则结构出来的变量会失去响应性。
+
+```ts
+import { toRefs, toRef } from 'vue'
+
+export default {
+  setup(props) {
+    // 将 `props` 转为一个其中全是 ref 的对象，然后解构
+    const { title } = toRefs(props)
+    // `title` 是一个追踪着 `props.title` 的 ref
+    console.log(title.value)
+
+    // 或者，将 `props` 的单个属性转为一个 ref
+    const title = toRef(props, 'title')
+  }
+}
+```
+
+### Setup 上下文
+
+传入 `setup` 函数的第2个参数是一个 **Setup 上下文**对象。上下文对象暴露了其他一些在 `setup` 中可能会用到的值：
+
+```ts
+export default {
+  setup(props, context) {
+    // 该上下文对象是非响应式的，可以安全地解构
+    const { attrs, slots, emit, expose } = context
+    
+    // 透传 Attributes（非响应式的对象，等价于 $attrs）
+    console.log(attrs)
+
+    // 插槽（非响应式的对象，等价于 $slots）
+    console.log(slots)
+
+    // 触发事件（函数，等价于 $emit）
+    console.log(emit)
+
+    // 暴露公共属性（函数）
+    console.log(expose)
+  }
+}
+```
+
+`attrs` 和 `slots` 都是**有状态（但不是响应式）**的对象：
+
+- 它们总是会随着组件自身的更新而更新。
+- 应当避免解构它们，并始终通过 `attrs.x` 或 `slots.x` 的形式使用其中的属性。
+- 如果你想要基于 `attrs` 或 `slots` 的改变来执行副作用，那么你应该在 `onBeforeUpdate` 生命周期钩子中编写相关逻辑。
+
+### 暴露公共属性
+
+`expose` 函数用于显式地限制该组件暴露出的属性，当父组件通过[模板引用](https://cn.vuejs.org/guide/essentials/template-refs.html#ref-on-component)访问该组件的实例时，将仅能访问 `expose` 函数暴露出的内容：
+
+```ts
+export default {
+  setup(props, { expose }) {
+    // 让组件实例处于 “关闭状态”
+    // 即不向父组件暴露任何东西
+    expose()
+
+    const publicCount = ref(0)
+    const privateCount = ref(0)
+    // 有选择地暴露局部状态
+    expose({ count: publicCount })
+  }
+}
+```
+
+### setup 返回函数
+
+`setup`除了返回对象，还可以返回一个函数。修改默认脚手架里的`AboutView.vue`：
+
+![](image-20240327174312645.png)
+
+```html
+<template>
+  <div class="about">
+
+  </div>
+</template>
+
+
+<script lang="ts">
+export default {
+  setup() {
+    return () => '<p><i>haha</i></p>'
+  }
+}
+</script>
+```
+
+页面上会直接显示`setup`返回的内容：
+
+![](image-20240327174204982.png)
+
+通常，`setup`返回函数时，会与渲染函数一起使用。
+
+### 与渲染函数一起使用
+
+`setup` 也可以返回一个[渲染函数](https://cn.vuejs.org/guide/extras/render-function.html)，此时在渲染函数中可以直接使用在同一作用域下声明的响应式状态：
+
+```ts
+import { h, ref } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+    return () => h('div', count.value)
+  }
+}
+```
+
+返回一个渲染函数将会阻止我们返回其他东西，所以，如果我们想通过模板引用将这个组件的方法暴露给父组件，需要通过调用 [`expose()`](https://cn.vuejs.org/api/composition-api-setup.html#exposing-public-properties) 解决这个问题：
+
+```ts
+import { h, ref } from 'vue'
+
+export default {
+  setup(props, { expose }) {
+    const count = ref(0)
+    const increment = () => ++count.value
+
+    expose({
+      increment // 父组件可以通过模板引用来访问这个 increment 方法
+    })
+
+    return () => h('div', count.value)
+  }
+}
+```
+
 ## watch
 
 - 作用：监视数据的变化（和Vue2中的`watch`作用一致）；
@@ -54,7 +447,7 @@ categories: Vue
 
 
 
-## 标签中的ref属性
+## 模板引用：标签中的ref属性
 
 - `ref`属性在HTML原生标签中时，获取`ref`属性所引用的标签；
 
