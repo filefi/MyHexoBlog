@@ -1535,7 +1535,7 @@ const { sum } = storeToRefs(countStore)
 </script>
 ```
 
-## getters
+## `getters`
 
 store的getters类似于Vue组件的计算属性：
 
@@ -1622,9 +1622,337 @@ export const useCounterStore = defineStore('counter', () => {
 </script>
 ```
 
+# 组件间通信
 
+## props
 
-# 组件通信
+props 是使用频率最高的组件通信方式，常用于进行父子组件间相互传递数据：
 
+- 父传子：父组件直接向子组件的属性值传递数据；
+- 子传父：父组件向子组件的属性值传递一个函数，通过此函数间接获得子组件中的数据。
 
+### 父传子
+
+父组件直接通过子组件的props向子组件传递数据。
+
+父组件：
+
+```html
+<template>
+	<div class="father">
+        <h3>父组件</h3>
+        <h4>车：{{ car }}</h4>
+        <Child :car="car"/>
+    </div>
+</template>
+<script setup lang="ts">
+import Child from './Child.vue'
+import { ref } from 'vue'
+
+const car = ref('car')
+</script>
+```
+
+子组件：
+
+```html
+<template>
+	<div class="child">
+        <h3>子组件</h3>
+        <h4>玩具：{{ toy }}</h4>
+        <h4>符给的车：{{ car }}</h4>
+    </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const toy = ref('toy')
+
+// 定义props用于接收来自父组件传递的数据
+defineProps(['car'])
+</script>
+```
+
+### 子传父
+
+“子传父”通过向子的props传递一个函数，来间接拿到数据。
+
+父组件：
+
+```html
+<template>
+	<div class="father">
+        <h3>父组件</h3>
+        <h4>车：{{ car }}</h4>
+        <!-- 将函数getToy传给子组件 -->
+        <Child :car="car" :sendToy="getToy"/>
+    </div>
+</template>
+<script setup lang="ts">
+import Child from './Child.vue'
+import { ref } from 'vue'
+
+const car = ref('car')
+
+function getToy(value: string){
+    console.log('father got', value)
+}
+</script>
+```
+
+子组件：
+
+```html
+<template>
+	<div class="child">
+        <h3>子组件</h3>
+        <h4>玩具：{{ toy }}</h4>
+        <h4>符给的车：{{ car }}</h4>
+        <!-- 子组件调用父组件传来的函数，通过向此函数传参向父组件传递数据 -->
+        <button @click="sendToy(toy)">
+            把玩具给父亲
+        </button>
+    </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const toy = ref('toy')
+
+// 定义props用于接收来自父组件传递的数据
+defineProps(['car', 'sendToy'])
+
+</script>
+```
+
+## 自定义事件子传父
+
+父组件：
+
+```html
+<template>
+	<div class="father">
+        <h3>父组件</h3>
+        <h4>车：{{ car }}</h4>
+        <!-- 为子组件的自定义事件sendToy绑定回调函数为getToy -->
+        <Child @send-toy="getToy"/>
+    </div>
+</template>
+<script setup lang="ts">
+import Child from './Child.vue'
+import { ref } from 'vue'
+    
+const car = ref('car')
+
+function getToy(value: string){
+    console.log('father got', value)
+}
+</script>
+```
+
+子组件：
+
+```html
+<template>
+	<div class="child">
+        <h3>子组件</h3>
+        <h4>玩具：{{ toy }}</h4>
+        <!-- 点击按钮，子组件触发sendToy事件 -->
+        <button @click="emit('send-toy')">
+            把玩具给父亲
+        </button>
+        <!-- 不仅可以触发sendToy事件，还可以传递数据 -->
+        <button @click="emit('send-toy', toy)">
+            把玩具给父亲
+        </button>
+    </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const toy = ref('toy')
+// 定义自定义事件sendToy
+const emit = defineEmits(['send-toy'])
+
+</script>
+```
+
+## mitt
+
+[mitt](https://github.com/developit/mitt) 是一个只有200Bytes的事件发送/订阅库，也可以用来实现组件间通信，并且不仅可以实现父子组件之间的通信，还可以实现兄弟组件甚至任意组件间通信。
+
+使用以下命令安装：
+
+```
+$ npm install --save mitt
+```
+
+通常将工具库放到项目`src`目录下的`utils`目录中：
+
+![](image-20240327214623386.png)
+
+```ts
+// emitter.ts
+
+// 引入mitt
+import mitt from 'mitt'
+
+const emitter = mitt()
+
+// 绑定事件
+/*
+emitter.on('event1', ()=>{
+    console.log('event1 emitted')
+})
+
+emitter.on('event2', ()=>{
+    console.log('event2 emitted')
+})
+*/
+
+// 暴露emitter
+export default emitter
+```
+
+实例：
+
+```html
+<template>
+	<div class="child1">
+        <h3>子组件1</h3>
+        <h4>玩具：{{ toy }}</h4>
+        <!-- 为子组件的自定义事件sendToy绑定回调函数为getToy -->
+        <button @click="emitter.emit('send-toy', toy)">
+            把玩具给子组件2
+        </button>
+    </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import emitter from '@/utils/emitter'
+
+const toy = ref('toy')
+
+</script>
+```
+
+```html
+<template>
+	<div class="child2">
+        <h3>子组件2</h3>
+        <h4>子组件1给的玩具：{{ toy }}</h4>
+    </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import emitter from '@/utils/emitter'
+
+const toy = ref('')
+
+// 绑定事件回调
+emitter.on('send-toy', (value)=>{
+    console.log('收到来自子组件1的', value);
+    toy.value = value
+})
+
+// 在组件卸载后解绑事件
+onUnmounted(()=>{
+    emitter.off('send-toy')
+})
+
+</script>
+```
+
+## `v-model`
+
+```html
+<!-- v-model 用在html标签上 -->
+<input type="text" v-model="username">
+```
+
+`v-model`其实是以下代码的语法糖：
+
+```html
+<input type="text" :value="username" @input="username = $event.target.value">
+```
+
+所以以上两行代码其实是等价的。
+
+那么接下来以此为思路实现父子组件之间的数据双向绑定：
+
+```html
+<template>
+	<div class="father">
+        <h3>父组件</h3>
+        <!-- v-model 用在组件标签上 -->
+        <!-- 下面两行代码也是等价的 -->
+        <MyInput v-model="username"></MyInput>
+        <MyInput :modelValue="username" @update:modelValue="username = $event"></MyInput>
+    </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyInput from './MyInput.vue'
+
+const username = ref('zhangsan')
+
+</script>
+```
+
+`MyInput.vue`：
+
+```html
+<template>
+	<input type="text" :value="modelValue" @input="emit('update:modelValue', $event.target.value)">
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+defineProps(['modelValue'])
+const emit = defineEmits(['update:modelValue'])
+
+</script>
+```
+
+## `defineModel`
+
+Vue3.4版本新增的`defineModel`可以简化父子组件之间的双向绑定。是目前官方推荐的双向绑定实现方式。也就是说，从Vue3.4开始，不必再使用上节中的方式实现父子组件之间的双向绑定。
+
+父组件：
+
+```html
+<template>
+  <div class="about">
+    <h1>This is an about page</h1>
+    <MyInput v-model="value"></MyInput>
+    <p>{{ value }}</p>
+  </div>
+</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyInput from "@/components/MyInput.vue"
+
+const value = ref()
+</script>
+```
+
+子组件：
+
+```html
+<template>
+    <input type="text" v-model="model">
+</template>
+
+<script setup lang="ts">
+const model = defineModel()
+</script>
+```
+
+![](image-20240327235845488.png)
+
+渲染后效果为：
+
+![](image-20240327235425665.png)
+
+在子组件的输入框中输入字符，可以看到`<p>`中出现输入的字符，看来父组件的`value`和子组件输入框中的值确实实现了双向绑定。
 
