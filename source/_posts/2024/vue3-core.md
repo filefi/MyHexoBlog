@@ -2358,13 +2358,13 @@ defineProps(['changeA'])
 
 ## `$refs`和`$parent`
 
-**`$refs`**：
+**`$refs`** ：
 
 - 值为对象，包含所有被 `ref` 属性（模板引用）标识的 DOM 元素或组件实例。
 
 - 可通过`$refs`实现父传子通信。
 
-**`$parent`**：
+**`$parent`** ：
 
 - `$parent`是当前组件的父组件的对象引用。
 - 可通过`$parent`实现子传父通信。
@@ -2607,4 +2607,208 @@ const giveMoney = inject('giveMoney', (v: number) => { v })
  ## Slots
 
 ### 默认插槽
+
+`Father.vue`：
+
+```html
+<template>
+    <div class="Father">
+        <h1>Father</h1>
+        <div class="content">
+            <Child>
+                <ul>
+                    <li v-for="(game, index) in games" :key="index">
+                        {{ game }}
+                    </li>
+                </ul>
+            </Child>
+            <Child>
+                <ul>
+                    <li v-for="(game, index) in games" :key="index">
+                        {{ game }}
+                    </li>
+                </ul>
+            </Child>
+            <Child>
+                <ul>
+                    <li v-for="(game, index) in games" :key="index">
+                        {{ game }}
+                    </li>
+                </ul>
+            </Child>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
+import Child from './Child.vue'
+
+const games = reactive([
+    'FIFA 23',
+    "Palworld",
+    "WoW",
+    "Final Fantasy"
+])
+
+</script>
+
+<style scoped>
+.Father {
+    background-color: yellow;
+    height: 400px;
+}
+
+.content {
+    display: flex;
+    justify-content: space-evently;
+}
+</style>
+```
+
+`Child.vue`：
+
+```html
+<template>
+    <div class="Child">
+        <h1>Child</h1>
+        <slot></slot>
+    </div>
+</template>
+
+<script setup lang="ts">
+
+</script>
+<style scoped>
+.Child {
+    background-color: pink;
+    width: 200px;
+    height: 200px;
+    margin: 20px;
+    border: 2px solid white;
+}
+</style>
+```
+
+渲染后：
+
+![](image-20240330234559849.png)
+
+### 具名插槽
+
+`Father.vue`：
+
+```html
+<template>
+    <div class="Father">
+        <h1>Father</h1>
+        <div class="content">
+            <Child>
+                <template v-slot:s1>
+                    <h2>热门游戏</h2>
+                </template>
+                <template v-slot:s2>
+                    <ul>
+                        <li v-for="(game, index) in games" :key="index">
+                            {{ game }}
+                        </li>
+                    </ul>
+                </template>
+            </Child>
+            <Child>
+                <!-- #是v-slot的简便写法 -->
+                <template #s3>
+                    <h2>今日美食</h2>
+                    <ul>
+                        <li v-for="(item, index) in foods" :key="index">
+                            {{ item }}
+                        </li>
+                    </ul>
+                </template>
+            </Child>
+            <Child>
+                <!-- #是v-slot的简便写法 -->
+                <template #s4>
+                    <h2>今日影视</h2>
+                    <ul>
+                        <li v-for="(item, index) in films" :key="index">
+                            {{ item }}
+                        </li>
+                    </ul>
+                </template>
+            </Child>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
+import Child from './Child.vue'
+
+const games = reactive([
+    'FIFA 23',
+    "Palworld",
+    "WoW",
+    "Final Fantasy"
+])
+
+const foods = reactive([
+    "KFC",
+    "Burger King",
+    "McDonald"
+])
+
+const films = reactive([
+    'Mission Impossible',
+    "007",
+    "WoW",
+    "Final Fantasy"
+])
+
+</script>
+
+<style scoped>
+.Father {
+    background-color: yellow;
+    height: 400px;
+}
+
+.content {
+    display: flex;
+    justify-content: space-evently;
+}
+</style>
+```
+
+`Child.vue`：
+
+```html
+<template>
+    <div class="Child">
+        <slot name="s1"></slot>
+        <slot name="s2"></slot>
+        <slot name="s3"></slot>
+        <slot name="s4"></slot>
+    </div>
+</template>
+
+<script setup lang="ts">
+</script>
+
+<style scoped>
+.Child {
+    background-color: pink;
+    width: 200px;
+    height: 200px;
+    margin: 20px;
+    border: 2px solid white;
+}
+</style>
+```
+
+渲染后：
+
+![](image-20240331000844416.png)
+
+
 
