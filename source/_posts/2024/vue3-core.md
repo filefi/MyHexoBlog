@@ -1725,7 +1725,9 @@ defineProps(['car', 'sendToy'])
 </script>
 ```
 
-## 自定义事件子传父
+## 自定义事件
+
+通常也可以使用自定义事件来实现 *子组件向父组件* 传递数据。
 
 父组件：
 
@@ -1863,39 +1865,45 @@ onUnmounted(()=>{
 </script>
 ```
 
-## `v-model`
+## 组件`v-model`
+
+通常，我们使用`v-model`实现双向绑定：
 
 ```html
 <!-- v-model 用在html标签上 -->
 <input type="text" v-model="username">
 ```
 
-`v-model`其实是以下代码的语法糖：
+`v-model`其实是以下代码的语法糖，这两行代码其实是等价的：
 
 ```html
 <input type="text" :value="username" @input="username = $event.target.value">
 ```
 
-所以以上两行代码其实是等价的。
+### 底层机制
 
-那么接下来以此为思路实现父子组件之间的数据双向绑定：
+**其实现双向绑定的本质是：**
+
+- `:value="username"`将`username`的值赋给`<input>`的`value`属性，实现了将`username`的值显示在输入框中。
+- `@input="username = $event.target.value"`又将输入框中的值传递给`username`。
+- `$event.target.value`中，`$event`是事件对象（在这个例子中是`<input>`元素的input事件）；`target`是被触发事件的目标对象（在这个例子中是`<input>`元素）；`value`为`value`属性，即输入框中的值。
+
+那么接下来以此为思路封装一个`<MyInput>`组件，实现父子组件之间的数据双向绑定：
 
 ```html
 <template>
-	<div class="father">
-        <h3>父组件</h3>
+  <div class="about">
+    <h1>This is an about page</h1>
         <!-- v-model 用在组件标签上 -->
-        <!-- 下面两行代码也是等价的 -->
-        <MyInput v-model="username"></MyInput>
         <MyInput :modelValue="username" @update:modelValue="username = $event"></MyInput>
     </div>
 </template>
+
 <script setup lang="ts">
 import { ref } from 'vue'
-import MyInput from './MyInput.vue'
+import MyInput from "@/components/MyInput.vue"
 
 const username = ref('zhangsan')
-
 </script>
 ```
 
@@ -1905,14 +1913,170 @@ const username = ref('zhangsan')
 <template>
 	<input type="text" :value="modelValue" @input="emit('update:modelValue', $event.target.value)">
 </template>
-<script setup lang="ts">
-import { ref } from 'vue'
 
+<script setup lang="ts">
 defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
-
 </script>
 ```
+
+**`<MyInput>`实现的本质是：**
+
+- `MyInput`组件定义了一个名为`modelValue`的props。父组件通过这个props将`username`的值传递给`modelValue`。 然后，`MyInput`组件又将`modelValue`收到的值赋给`value`，从而将`username`的内容显示在输入框中。
+- `MyInput`组件定义了一个自定义事件`update:modelValue`。当`input`事件被触发时，触发自定义事件`update:modelValue`并将输入框中的值传递给父组件。父组件在自定义事件`update:modelValue`被触发时，将`MyInput`通过事件传递来的值`$event`赋给`username`。此处由于`update:modelValue`是自定义事件，所以`$event`就是通过自定义事件传递的值。
+
+当然，在父组件里你也可以这样写：
+
+```html
+<template>
+  <div class="about">
+    <h1>This is an about page</h1>
+    <MyInput :modelValue="username" @update:modelValue="getUsername"></MyInput>
+    <p>{{ username }}</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyInput from "@/components/MyInput.vue"
+
+const username = ref('zhangsan')
+
+function getUsername(value) {
+  username.value = value
+}
+</script>
+```
+
+更进一步，也可以在父组件里直接使用`v-model`语法糖：
+
+```html
+<template>
+  <div class="about">
+    <h1>This is an about page</h1>
+    <MyInput v-model="username"></MyInput>
+    <p>{{ username }}</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyInput from "@/components/MyInput.vue"
+
+const username = ref('zhangsan')
+</script>
+```
+
+### 单向数据流
+
+那么为什么`MyInput`不能像下面这样直接使用`v-model`双向绑定props呢？
+
+```html
+<template>
+    <input type="text" v-model="props.modelValue">
+</template>
+
+<script setup lang="ts">
+const props = defineProps(['modelValue'])
+</script>
+```
+
+可以看到eslint报错了：
+
+![](image-20240330141835059.png)
+
+**这其实由于Vue只支持 *单向数据流*，即：**
+
+- 父级组件传递给props的响应式变量更新时会向下传递给子组件，子组件中所有的props都会更新为最新的值；
+- 但是反过来则不行，不应该在一个子组件内修改props。
+
+同时，如果`MyInput`像上面那样写，可以看到在Vue DevTools中修改父组件的`username`后，子组件的中输入框中的内容也跟着变化了：
+
+![](image-20240330142605365.png)
+
+但是在Vue DevTools中查看子组件`MyInput`，可以看到props是不能编辑的，同时`update:model-value`也是没有声明的。并且，当你直接修改输入框中的内容后，`props.modelValue`的值也没有变，父组件中`username`的值也没有变。预想中的双向绑定并没有实现。
+
+![](image-20240330143125207.png)
+
+### `v-model`的参数
+
+组件上的 `v-model` 是可以接受一个参数的。如果不指定参数，则默认为`modelValue`，即`v-model`等价于`v-model:modelValue`。也就是说，组件上的`v-model`如果不添加参数，则默认是将值传递给组件的prop `modelValue`。
+
+同样，相应地，组件中自定义事件的默认事件名为`update:modelValue`。
+
+```html
+<template>
+  <div class="about">
+    <h1>This is an about page</h1>
+    <!-- 双向绑定到userName props -->
+    <MyInput v-model:userName="username"></MyInput>
+    <p>{{ username }}</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyInput from "@/components/MyInput.vue"
+
+const username = ref('zhangsan')
+</script>
+```
+
+`MyInput`组件：
+
+```html
+<template>
+    <input type="text" :value="userName" @input="emit('update:userName', $event.target.value)">
+</template>
+
+<script setup lang="ts">
+// 相应地，子组件中也要把props修改为userName
+defineProps(['userName'])
+// 相应地，自定义事件也要修改为update:userName
+const emit = defineEmits(['update:userName'])
+</script>
+```
+
+### 多个`v-model`绑定
+
+父组件：
+
+```html
+<template>
+  <div class="about">
+    <h1>This is an about page</h1>
+    <MyInput v-model="nickname" v-model:userName="username"></MyInput>
+    <p>{{ nickname }}</p>
+    <p>{{ username }}</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyInput from "@/components/MyInput.vue"
+
+const nickname = ref('nickName');
+const username = ref('zhangsan')
+</script>
+```
+
+`MyInput`组件：
+
+```html
+<template>
+    <input type="text" :value="modelValue" @input="emit('update:modelValue', $event.target.value)">
+    <input type="text" :value="userName" @input="emit('update:userName', $event.target.value)">
+</template>
+
+<script setup lang="ts">
+defineProps(['modelValue', 'userName'])
+const emit = defineEmits(['update:modelValue', 'update:userName'])
+</script>
+```
+
+渲染后效果：
+
+![](image-20240330150656285.png)
 
 ## `defineModel`
 
@@ -1928,6 +2092,7 @@ Vue3.4版本新增的`defineModel`可以简化父子组件之间的双向绑定�
     <p>{{ value }}</p>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import MyInput from "@/components/MyInput.vue"
@@ -1936,7 +2101,7 @@ const value = ref()
 </script>
 ```
 
-子组件：
+`MyInput`组件：
 
 ```html
 <template>
@@ -1955,4 +2120,240 @@ const model = defineModel()
 ![](image-20240327235425665.png)
 
 在子组件的输入框中输入字符，可以看到`<p>`中出现输入的字符，看来父组件的`value`和子组件输入框中的值确实实现了双向绑定。
+
+### `v-model`的参数
+
+使用`defineModel`时，`v-model`也可以接收一个参数：
+
+```html
+<MyInput v-model:userName="username"></MyInput>
+```
+
+父组件：
+
+```html
+<template>
+  <div class="about">
+    <h1>This is an about page</h1>
+    <MyInput v-model:userName="username"></MyInput>
+    <p>{{ username }}</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyInput from "@/components/MyInput.vue"
+
+const username = ref('zhangsan')
+</script>
+```
+
+在`MyInput`组件中可以通过将字符串作为第一个参数传递给 `defineModel()` 来支持相应的参数：
+
+```html
+<template>
+    <input type="text" v-model="userName">
+</template>
+
+<script setup lang="ts">
+const userName = defineModel('userName')
+</script>
+```
+
+如果需要额外的 prop 选项，应该在 model 名称之后传递：
+
+```ts
+const title = defineModel('title', { required: true })
+```
+
+### 多个`v-model`绑定
+
+父组件：
+
+```html
+<template>
+  <div class="about">
+    <h1>This is an about page</h1>
+    <MyInput v-model="nickname" v-model:userName="username"></MyInput>
+    <p>{{ nickname }}</p>
+    <p>{{ username }}</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import MyInput from "@/components/MyInput.vue"
+
+const nickname = ref('nickName');
+const username = ref('zhangsan')
+</script>
+```
+
+`MyInput`组件：
+
+```html
+<template>
+    <input type="text" v-model="NickName">
+    <input type="text" v-model="UserName">
+</template>
+
+<script setup lang="ts">
+const NickName = defineModel()
+const UserName = defineModel('userName')
+</script>
+```
+
+## `$attrs`
+
+组件的`$attts`属性可用来实现祖先组件与孙组件相互通信。其中，孙组件与祖先组件通信需借助祖先组件传递给孙组件一个函数来间接实现，类似于子组件使用props与父组件通信。
+
+### 祖传孙
+
+![](image-20240330182802645.png)
+
+`GrandFather.vue`：
+
+```html
+<template>
+    <div id="GrandFather">
+        <h1>GrandFather</h1>
+        <p>a: {{ a }}</p>
+        <p>b: {{ b }}</p>
+        <p>c: {{ c }}</p>
+        <p>d: {{ d }}</p>
+        <!-- 以下两行是等价的，v-bind是可以传入对象的 -->
+        <!-- <Father :a="a" :b="b" :c="c" :d="d" /> -->
+        <Father v-bind="{ a, b, c, d }" />
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import Father from './Father.vue';
+
+const a = ref('a')
+const b = ref('b')
+const c = ref('c')
+const d = ref('d')
+</script>
+```
+
+`Father.vue`：
+
+```html
+<template>
+    <div id="Father">
+        <h1>Father</h1>
+        <p>a: {{ a }}</p>
+        <p>未接收的其余props: {{ $attrs }}</p>
+        <Child v-bind="$attrs" />
+    </div>
+</template>
+
+<script setup lang="ts">
+import Child from './Child.vue'
+defineProps(['a'])
+
+</script>
+```
+
+`Child.vue`：
+
+```html
+<template>
+    <div id="Child">
+        <h1>Child</h1>
+        <p>未接收的其余props: {{ $attrs }}</p>
+    </div>
+</template>
+
+<script setup lang="ts">
+
+</script>
+```
+
+渲染后为：
+
+![](image-20240330183054059.png)
+
+### 孙传祖
+
+通过将祖先组件的方法传递给孙组件，孙组件可以间接修改祖先组件中的响应式对象：
+
+![](image-20240330184416815.png)
+
+`GrandFather.vue`：
+
+```html
+<template>
+    <div id="GrandFather">
+        <h1>GrandFather</h1>
+        <p>a: {{ a }}</p>
+        <p>b: {{ b }}</p>
+        <p>c: {{ c }}</p>
+        <p>d: {{ d }}</p>
+        <!-- 以下两行是等价的，v-bind是可以传入对象的 -->
+        <!-- <Father :a="a" :b="b" :c="c" :d="d" /> -->
+        <Father v-bind="{ a, b, c, d, changeA }" />
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import Father from './Father.vue';
+
+const a = ref('a')
+const b = ref('b')
+const c = ref('c')
+const d = ref('d')
+
+function changeA(newValue: string) {
+    a.value = newValue
+}
+</script>
+```
+
+`Father.vue`：
+
+```html
+<template>
+    <div id="Father">
+        <h1>Father</h1>
+        <p>a: {{ a }}</p>
+        <p>未接收的其余props: {{ $attrs }}</p>
+        <Child v-bind="$attrs" />
+    </div>
+</template>
+
+<script setup lang="ts">
+import Child from './Child.vue'
+defineProps(['a'])
+</script>
+```
+
+`Child.vue`：
+
+```html
+<template>
+    <div id="Child">
+        <h1>Child</h1>
+        <p>未接收的其余props: {{ $attrs }}</p>
+        <!-- 点击按钮修改祖先组件中的ref a -->
+        <button @click="changeA('changeA')">changeA</button>
+    </div>
+</template>
+
+<script setup lang="ts">
+// 从props中接收祖先组件传来的changeA方法
+defineProps(['changeA'])
+</script>
+```
+
+渲染后，点击按钮前：
+
+![](image-20240330184834433.png)
+
+点击按钮后：
+
+![](image-20240330184856590.png)
 
