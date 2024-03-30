@@ -2292,8 +2292,7 @@ defineProps(['a'])
         <p>b: {{ b }}</p>
         <p>c: {{ c }}</p>
         <p>d: {{ d }}</p>
-        <!-- 以下两行是等价的，v-bind是可以传入对象的 -->
-        <!-- <Father :a="a" :b="b" :c="c" :d="d" /> -->
+        <!-- 将方法changeA传递给Father -->
         <Father v-bind="{ a, b, c, d, changeA }" />
     </div>
 </template>
