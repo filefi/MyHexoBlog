@@ -333,7 +333,7 @@ export default {
 
 ### 暴露公共属性
 
-`expose` 函数用于显式地限制该组件暴露出的属性，当父组件通过[模板引用](https://cn.vuejs.org/guide/essentials/template-refs.html#ref-on-component)访问该组件的实例时，将仅能访问 `expose` 函数暴露出的内容：
+`expose` 函数用于显式地限制该组件暴露出的属性，当父组件通过[模板引用](https://cn.vuejs.org/guide/essentials/template-refs.html#ref-on-component) (组件的`ref`属性) 访问该组件的实例时，将仅能访问 `expose` 函数暴露出的内容：
 
 ```ts
 export default {
@@ -2355,4 +2355,150 @@ defineProps(['changeA'])
 点击按钮后：
 
 ![](image-20240330184856590.png)
+
+## `$refs`和`$parent`
+
+**`$refs`**：
+
+- 值为对象，包含所有被 `ref` 属性（模板引用）标识的 DOM 元素或组件实例。
+
+- 可通过`$refs`实现父传子通信。
+
+**`$parent`**：
+
+- `$parent`是当前组件的父组件的对象引用。
+- 可通过`$parent`实现子传父通信。
+
+`Father.vue`：
+
+```html
+<template>
+    <div class="Father">
+        <h1>Father</h1>
+        <p>car: {{ car }}</p>
+        <button @click="changeToy('ttooyy')">修改toy</button>
+
+        <!-- $refs可以获得当前组件所有通过模板引用ref获取到的子组件，即c1和c2 -->
+        <button @click="changeAll($refs)">changeAll</button>
+
+        <Child ref="c1" />
+        <Child2 ref="c2" />
+
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import Child from './Child.vue'
+import Child2 from './Child2.vue'
+
+const car = ref('car')
+const c1 = ref()
+const c2 = ref()
+
+function changeToy(newValue: string) {
+    c1.value.toy = newValue
+}
+
+function changeAll(refs: any) {
+    for (const key in refs) {
+        // 如果子组件中有book属性
+        if ('book' in refs[key]) {
+            // 将book改为'three body problems'
+            refs[key]['book'] = 'three body problems'
+        }
+
+        // 如果子组件中有game属性
+        if ('game' in refs[key]) {
+            // 将game改为'palworld'
+            refs[key]['game'] = 'palworld'
+        }
+    }
+}
+
+// 将car暴露给子组件
+defineExpose({ car })
+</script>
+
+<style scoped></style>
+```
+
+`Child.vue`：
+
+```html
+<template>
+    <div class="Child">
+        <h1>Child</h1>
+        <p>toy: {{ toy }}</p>
+        <p>book: {{ book }}</p>
+        <!-- $parent 是父组件对象的引用 -->
+        <button @click="changeCar($parent)">给爹换辆BMW</button>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const toy = ref('toy')
+const book = ref('book')
+
+function changeCar(parent: any) {
+    parent.car = 'BMW'
+}
+
+// 由于Vue的单向数据流，如果不使用defineExpose将数据暴露出去，
+// 那么，父组件即便使用ref模板引用获取到子组件对象，也没法修改子组件的数据
+
+// 将数据暴露给父组件
+defineExpose({ toy, book })
+</script>
+
+<style scoped></style>
+```
+
+`Child2.vue`：
+
+```html
+<template>
+    <div class="Child2">
+        <h1>Child2</h1>
+        <p>computer: {{ computer }}</p>
+        <p>game: {{ game }}</p>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const computer = ref('computer')
+const game = ref('game')
+
+// 将数据暴露给父组件
+defineExpose({ computer, game })
+</script>
+
+<style scoped></style>
+```
+
+渲染后：
+
+![](image-20240330194816099.png)
+
+点击“修改toy”：
+
+![](image-20240330194832278.png)
+
+点击“changeAll”：
+
+![](image-20240330194846111.png)
+
+点击“给爹换辆BMW”：
+
+![](image-20240330194922057.png)
+
+
+
+
+
+
 
