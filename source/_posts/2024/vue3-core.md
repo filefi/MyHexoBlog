@@ -2205,7 +2205,7 @@ const UserName = defineModel('userName')
 
 ## `$attrs`
 
-组件的`$attts`属性可用来实现祖先组件与孙组件相互通信。其中，孙组件与祖先组件通信需借助祖先组件传递给孙组件一个函数来间接实现，类似于子组件使用props与父组件通信。
+组件的`$attts`属性可用来实现祖先组件、父组件与孙组件相互通信。其中，孙组件与祖先组件通信需借助祖先组件传递给孙组件一个函数来间接实现，类似于子组件使用props与父组件通信。
 
 ### 祖传孙
 
@@ -2496,9 +2496,115 @@ defineExpose({ computer, game })
 
 ![](image-20240330194922057.png)
 
+## `provide`和`inject`
 
+`GrandFather.vue`：
 
+```html
+<template>
+    <div class="GrandFather">
+        <h1>GrandFather</h1>
+        <p>money: {{ money }}</p>
+        <p>car: {{ car }}</p>
 
+        <Father />
+    </div>
+</template>
 
+<script setup lang="ts">
+import { provide, reactive, ref } from 'vue'
+import Father from './Father.vue';
 
+const money = ref(100)
+const car = reactive({
+    brand: 'BMW',
+    price: 100
+})
+
+function getMoney(val: number) {
+    money.value += val
+}
+
+// 向后代组件提供数据
+provide('money', money)
+provide('car', car)
+provide('giveMoney', getMoney)
+</script>
+
+<style scoped>
+.GrandFather {
+    background-color: aquamarine;
+}
+</style>
+```
+
+`Fahter.vue`：
+
+```html
+<template>
+    <div class="Father">
+        <h1>Father</h1>
+        <p>car: {{ c }}</p>
+
+        <Child />
+    </div>
+</template>
+
+<script setup lang="ts">
+import { inject } from 'vue';
+import Child from './Child.vue'
+
+// 取出GrandFather provide的car
+const c = inject('car')
+</script>
+
+<style scoped>
+.Father {
+    background-color: yellow;
+}
+</style>
+```
+
+`Child.vue`：
+
+```html
+<template>
+    <div class="Child">
+        <h1>Child</h1>
+        <p>money: {{ m }}</p>
+        <p>car: {{ c }}</p>
+        <button @click="giveMoney(100)">给爷爷钱</button>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { inject } from 'vue';
+
+// inject可以直接收一个参数，但如果没有provide则为undefined
+// const m = inject('money') // 取出GrandFather provide的money
+// const c = inject('car') // 取出GrandFather provide的car
+
+// inject也可以接收默认值作为第二个参数，当第一个参数没有provide时，会返回默认值
+const m = inject('money', '默认值')
+const c = inject('car', { brand: 'mini', price: 50 })
+const giveMoney = inject('giveMoney', (v: number) => { v })
+</script>
+<style scoped>
+.Child {
+    background-color: pink;
+}
+</style>
+```
+
+渲染后：
+
+![](image-20240330225823642.png)
+
+点击“给爷爷钱”：
+
+![](动画.gif)
+
+ ## Slots
+
+### 默认插槽
 
