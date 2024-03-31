@@ -2812,3 +2812,128 @@ const films = reactive([
 
 
 
+### 作用域插槽
+
+在某些场景下插槽的内容可能想要**在父组件中使用子组件作用域中的数据**，或者，**同时使用父组件域内和子组件域内的数据**。要做到这一点，我们需要使用作用域插槽，来让子组件在渲染时将一部分数据提供给插槽。
+
+`Father.vue`：
+
+```html
+<template>
+    <div class="Father">
+        <h1>Father</h1>
+        <div class="content">
+            <Child>
+                <!-- 获取子组件传给slot的props，这里变量名params可以随便起 -->
+                <template v-slot="params">
+                    <ul>
+                        <!-- 现在便可以从params中取出子组件传给slot的propsGames -->
+                        <li v-for="(game, index) in params.propsGames" :key="index">
+                            {{ game }}
+                        </li>
+                    </ul>
+                </template>
+            </Child>
+            <Child>
+                <!-- 这里变量名可以随便起，例如上面是params，这里是args-->
+                <template v-slot="args">
+                    <ol>
+                        <li v-for="(game, index) in args.propsGames" :key="index">
+                            {{ game }}
+                        </li>
+                    </ol>
+                </template>
+            </Child>
+            <Child>
+                <!-- 也直接对象解构 -->
+                <template v-slot="{ propsGames }">
+                    <p v-for="(game, index) in propsGames" :key="index">
+                        {{ game }}
+                    </p>
+                </template>
+            </Child>
+
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
+import Child from './Child.vue'
+
+</script>
+
+<style scoped>
+.Father {
+    background-color: yellow;
+    height: 400px;
+}
+
+.content {
+    display: flex;
+    justify-content: space-evently;
+}
+</style>
+```
+
+`Child.vue`：
+
+```html
+<template>
+    <div class="Child">
+        <h2>游戏列表</h2>
+        <!-- 将games作为props传递给slot，这样就可以在父组件中获取到 -->
+        <slot :propsGames="games"></slot>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { reactive } from 'vue';
+const games = reactive([
+    'FIFA 23',
+    "Palworld",
+    "WoW",
+    "Final Fantasy"
+])
+</script>
+
+<style scoped>
+.Child {
+    background-color: pink;
+    width: 200px;
+    margin: 20px;
+    border: 2px solid white;
+}
+</style>
+```
+
+渲染后：
+
+![](image-20240331221005074.png)
+
+### 具名作用域插槽
+
+```html
+<MyComponent>
+  <template v-slot:header="headerProps">
+    {{ headerProps }}
+  </template>
+
+  <template #default="defaultProps">
+    {{ defaultProps }}
+  </template>
+
+  <template #footer="footerProps">
+    {{ footerProps }}
+  </template>
+</MyComponent>
+```
+
+向具名插槽中传入 props：
+
+```html
+<slot name="header" message="hello"></slot>
+```
+
+
+
