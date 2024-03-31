@@ -2937,3 +2937,109 @@ const games = reactive([
 
 
 
+# 其他常用API
+
+## `shallowRef`与`shallowReactive`
+
+**`shallowRef` **
+
+- 作用：创建一个响应式数据，但是只对顶层属性进行响应式处理。
+- 用法：
+
+```ts
+let myVar = shallowRef('initialValue');
+```
+
+- 特点：只跟踪引用值的变化，不关心值内部属性的变化。
+
+**`shallowReactvie`**
+
+- 作用：创建一个浅层响应式对象，只会使对象的最顶层属性变成响应式的，对象内部的嵌套属性则不会变成响应式的。
+- 用法：
+
+```ts
+const myObj = shallowReactive({});
+```
+
+- 特点：对象的顶层属性是响应式的，但嵌套对象的属性不是。
+
+## `readonly`和`shallowReadonly`
+
+## `toRaw`和`markRaw`
+
+## `customRef`
+
+```ts
+let initValue = 'initValue'
+let msg = customRef((track, trigger)=>{
+    return {
+        // msg 被读取时调用
+        get(){
+            track() // 跟踪msg的变化，一旦msg变化就更新
+            return initValue
+        },
+        // msg被修改时调用
+        set(val){
+            initValue = val
+            trigger() // msg发生变化了，通知Vue
+        }
+    }
+})
+```
+
+使用`customRef`封装一个hooks，实现输入框输入数据时延迟显示：
+
+```ts
+// useMsgRef.ts
+import { customRef } from 'vue'
+
+export default function(initValue: string, delay: number){
+    let timer: number
+    let msg = customRef((track, trigger)=>{
+        return {
+            // msg 被读取时调用
+            get(){
+                track() // 跟踪msg的变化，一旦msg变化就更新
+                return initValue
+            },
+            // msg被修改时调用
+            set(val){
+                clearTimeout(timer)
+                timer = setTimeout(()=>{
+                    initValue = val
+                	trigger() // msg发生变化了，通知Vue
+                }, delay)
+            }
+        }
+    })
+    
+    return {
+        msg
+    }
+}
+
+```
+
+使用这个`useMsgRef.ts`：
+
+```html
+<template>
+    <div class="app">
+        <h2>{{ msg }}</h2>
+        <input type="text" v-model="msg">
+    </div>
+</template>
+
+<script setup lang="ts">
+import { reactive } from 'vue';
+import useMsgRef from './useMsgRef'
+
+// 使用useMsgRef来定义一个响应式数据且延迟2秒显示
+const { msg } = useMsgRef('你好', 2000);
+</script>
+```
+
+效果：
+
+![](adsfasd.gif)
+
