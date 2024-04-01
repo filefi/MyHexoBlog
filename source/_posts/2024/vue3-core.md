@@ -110,12 +110,13 @@ $ npm run dev
 ### 使用 ES 模块构建版本
 
 ```html
-<div id="app">{{ message }}</div>
+<div id="app"></div>
 
 <script type="module">
   import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
   createApp({
+    template: `<div>message is {{ message }}</div>`,
     setup() {
       const message = ref('Hello Vue!')
       return {
@@ -412,6 +413,199 @@ export default {
   }
 }
 ```
+
+## 创建Vue应用
+
+每个 Vue 应用都是通过 [`createApp`](https://cn.vuejs.org/api/application.html#createapp) 函数创建一个新的 **应用实例**：
+
+```js
+import { createApp } from 'vue'
+
+const app = createApp({
+  /* 根组件选项 */
+})
+```
+
+### [根组件](https://cn.vuejs.org/guide/essentials/application.html#the-root-component)
+
+我们传入 `createApp` 的对象实际上是一个组件，每个应用都需要一个“根组件”，其他组件将作为其子组件。
+
+使用单文件组件作为根组件，直接从另一个文件中导入根组件：
+
+```js
+import { createApp } from 'vue'
+// 从一个单文件组件中导入根组件
+import App from './App.vue'
+
+const app = createApp(App)
+```
+
+使用无构建步骤的方式创建组件对象作为根组件：
+
+> 注意：使用`template`选项提供模板时，必须使用带有编译器的Vue打包版本。否则会报错：
+>
+> `[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias "vue" to "vue/dist/vue.esm-bundler.js".`
+
+```js
+import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-bundler.js'
+
+const app = createApp({
+  setup() {
+    const count = ref(0)
+    return { count }
+  },
+  template: `<div>count is {{ count }}</div>`
+})
+```
+
+或者：
+
+```js
+import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+const App = {
+  setup() {
+    const count = ref(0)
+    return { count }
+  },
+  template: `<div>count is {{ count }}</div>`
+}
+
+const app = createApp(App)
+```
+
+或者拆分模块：
+
+```js
+// my-component.js
+import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-bundler.js'
+export default {
+  setup() {
+    const count = ref(0)
+    return { count }
+  },
+  template: `<div>count is {{ count }}</div>`
+}
+```
+
+```js
+import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-bundler.js'
+import MyComponent from './my-component.js'
+
+const app = createApp(MyComponent)
+```
+
+### 挂载应用
+
+应用实例必须在调用了 `.mount()` 方法后才会渲染出来。该方法接收一个“容器”参数，可以是一个实际的 DOM 元素或是一个 CSS 选择器字符串：
+
+```html
+<div id="app"></div>
+```
+
+```js
+app.mount('#app')
+```
+
+#### DOM 中的根组件模板
+
+根组件的模板通常是组件本身的一部分，但也可以直接通过在挂载容器内编写模板来单独提供：
+
+```html
+<div id="app">
+  <button @click="count++">{{ count }}</button>
+</div>
+```
+
+```js
+import { createApp } from 'vue'
+
+const app = createApp({
+  data() {
+    return {
+      count: 0
+    }
+  }
+})
+
+app.mount('#app')
+```
+
+当根组件没有设置 `template` 选项时，Vue 将自动使用容器的 `innerHTML` 作为模板。
+
+### [多个应用实例](https://cn.vuejs.org/guide/essentials/application.html#multiple-application-instances)
+
+应用实例并不只限于一个。`createApp` API 允许你在同一个页面中创建多个共存的 Vue 应用，而且每个应用都拥有自己的用于配置和全局资源的作用域。
+
+```js
+const app1 = createApp({
+  /* ... */
+})
+app1.mount('#container-1')
+
+const app2 = createApp({
+  /* ... */
+})
+app2.mount('#container-2')
+```
+
+## 模板语法
+
+### 文本插值
+
+双大括号标签会被替换为[相应组件实例中](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html#declaring-reactive-state) `msg` 属性的值。同时每次 `msg` 属性更改时它也会同步更新。
+
+```html
+<span>Message: {{ msg }}</span>
+```
+
+### 原始HTML
+
+双大括号会将数据解释为纯文本，而不是 HTML。若想插入 HTML，你需要使用 [`v-html` 指令](https://cn.vuejs.org/api/built-in-directives.html#v-html)：
+
+```html
+<p>Using text interpolation: {{ rawHtml }}</p>
+<p>Using v-html directive: <span v-html="rawHtml"></span></p>
+```
+
+![](image-20240401175510523.png)
+
+### [Attribute 绑定](https://cn.vuejs.org/guide/essentials/template-syntax.html#attribute-bindings)
+
+双大括号不能在 HTML attributes 中使用。想要响应式地绑定一个 attribute，应该使用 [`v-bind` 指令](https://cn.vuejs.org/api/built-in-directives.html#v-bind)。
+
+`v-bind` 指令指示 Vue 将元素的 `id` attribute 与组件的 `dynamicId` 属性保持一致。如果绑定的值是 `null` 或者 `undefined`，那么该 attribute 将会从渲染的元素上移除。
+
+```html
+<div v-bind:id="dynamicId"></div>
+```
+
+简写：
+
+```html
+<div :id="dynamicId"></div>
+```
+
+Vue3.4及以后版本支持同名简写：
+
+```html
+<!-- 与 :id="id" 相同 -->
+<div :id></div>
+
+<!-- 这也同样有效 -->
+<div v-bind:id></div>
+```
+
+### [布尔型 Attribute](https://cn.vuejs.org/guide/essentials/template-syntax.html#boolean-attributes)
+
+[布尔型 attribute](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes#布尔值属性) 依据 `true` / `false` 值来决定 attribute 是否应该存在于该元素上。
+
+当 `isButtonDisabled` 为[真值](https://developer.mozilla.org/en-US/docs/Glossary/Truthy)或一个空字符串 (即 `<button disabled="">`) 时，元素会包含这个 `disabled` attribute。而当其为其他[假值](https://developer.mozilla.org/en-US/docs/Glossary/Falsy)时 attribute 将被忽略：
+
+```html
+<button :disabled="isButtonDisabled">Button</button>
+```
+
+
 
 ## watch
 
