@@ -221,7 +221,9 @@ onMounted(() => {
 
 
 
-## `setup()`
+## setup
+
+### `setup()`
 
 [可以在一个组件中同时使用选项式 API 和 组合式 API 吗？](https://cn.vuejs.org/guide/extras/composition-api-faq.html#can-i-use-both-apis-in-the-same-component)可以。你可以在一个选项式 API 的组件中通过 [`setup()`](https://cn.vuejs.org/api/composition-api-setup.html) 选项来使用组合式 API。
 
@@ -414,6 +416,32 @@ export default {
 }
 ```
 
+### `<script setup>`
+
+使用`setup()` 函数需要手动`return`要暴露的状态和方法，当需要暴露大量的状态和方法时非常繁琐。幸运的是，我们可以通过使用[单文件组件 (SFC)](https://cn.vuejs.org/guide/scaling-up/sfc.html) 搭配 `<script setup>` 来大幅度地简化代码：
+
+```html
+<script setup>
+import { ref } from 'vue'
+
+const count = ref(0)
+
+function increment() {
+  count.value++
+}
+</script>
+
+<template>
+  <button @click="increment">
+    {{ count }}
+  </button>
+</template>
+```
+
+`<script setup>` 中的顶层的导入、声明的变量和函数可在同一组件的模板中直接使用。你可以理解为模板是在同一作用域内声明的一个 JavaScript 函数。
+
+
+
 ## 创建Vue应用
 
 每个 Vue 应用都是通过 [`createApp`](https://cn.vuejs.org/api/application.html#createapp) 函数创建一个新的 **应用实例**：
@@ -604,6 +632,326 @@ Vue3.4及以后版本支持同名简写：
 ```html
 <button :disabled="isButtonDisabled">Button</button>
 ```
+
+### [动态绑定多个值](https://cn.vuejs.org/guide/essentials/template-syntax.html#dynamically-binding-multiple-attributes)
+
+如果你有像这样的一个包含多个 attribute 的 JavaScript 对象：
+
+```js
+const objectOfAttrs = {
+  id: 'container',
+  class: 'wrapper'
+}
+```
+
+通过不带参数的 `v-bind`，你可以将它们绑定到单个元素上：
+
+```html
+<div v-bind="objectOfAttrs"></div>
+```
+
+### [使用 JavaScript 表达式](https://cn.vuejs.org/guide/essentials/template-syntax.html#using-javascript-expressions)
+
+ Vue 在所有的数据绑定中都支持完整的 JavaScript 表达式：
+
+```html
+{{ number + 1 }}
+
+{{ ok ? 'YES' : 'NO' }}
+
+{{ message.split('').reverse().join('') }}
+
+<div :id="`list-${id}`"></div>
+```
+
+这些表达式都会被作为 JavaScript ，以当前组件实例为作用域解析执行。
+
+在 Vue 模板内，JavaScript 表达式可以被使用在如下场景上：
+
+- 在文本插值中 (双大括号)
+- 在任何 Vue 指令 (以 `v-` 开头的特殊 attribute) attribute 的值中
+
+#### [仅支持表达式](https://cn.vuejs.org/guide/essentials/template-syntax.html#expressions-only)
+
+每个绑定仅支持**单一表达式**，也就是一段能够被求值的 JavaScript 代码。一个简单的判断方法是是否可以合法地写在 `return` 后面。因此，下面的例子都是**无效**的：
+
+```html
+<!-- 这是一个语句，而非表达式 -->
+{{ var a = 1 }}
+
+<!-- 条件控制也不支持，请使用三元表达式 -->
+{{ if (ok) { return message } }}
+```
+
+#### [调用函数](https://cn.vuejs.org/guide/essentials/template-syntax.html#calling-functions)
+
+可以在绑定的表达式中使用一个组件暴露的方法：
+
+```html
+<time :title="toTitleDate(date)" :datetime="date">
+  {{ formatDate(date) }}
+</time>
+```
+
+> 绑定在表达式中的方法在组件每次更新时都会被重新调用，因此**不**应该产生任何副作用，比如改变数据或触发异步操作。
+
+### 指令 Directives
+
+指令是带有 `v-` 前缀的特殊 attribute。指令 attribute 的期望值为一个 JavaScript 表达式 (除了少数几个例外： `v-for`、`v-on` 和 `v-slot`)。一个指令的任务是在其表达式的值变化时响应式地更新 DOM。
+
+以下[`v-if`](https://cn.vuejs.org/api/built-in-directives.html#v-if) 指令会基于表达式 `seen` 的值的真假来移除/插入该 `<p>` 元素。
+
+```html
+<p v-if="seen">Now you see me</p>
+```
+
+#### [参数 Arguments](https://cn.vuejs.org/guide/essentials/template-syntax.html#arguments)
+
+某些指令会需要一个“参数”，在指令名后通过一个冒号隔开做标识。例如用 `v-bind` 指令来响应式地更新一个 HTML attribute：
+
+```html
+<a v-bind:href="url"> ... </a>
+
+<!-- 简写 -->
+<a :href="url"> ... </a>
+```
+
+这里 `href` 就是一个参数，它告诉 `v-bind` 指令将表达式 `url` 的值绑定到元素的 `href` attribute 上。在简写中，参数前的一切 (例如 `v-bind:`) 都会被缩略为一个 `:` 字符。
+
+另一个例子是 `v-on` 指令，它将监听 DOM 事件：
+
+```html
+<a v-on:click="doSomething"> ... </a>
+
+<!-- 简写 -->
+<a @click="doSomething"> ... </a>
+```
+
+这里的参数是要监听的事件名称：`click`。`v-on` 有一个相应的缩写，即 `@` 字符。我们之后也会讨论关于事件处理的更多细节。
+
+#### [动态参数](https://cn.vuejs.org/guide/essentials/template-syntax.html#dynamic-arguments)
+
+同样在指令参数上也可以使用一个 JavaScript 表达式，需要包含在一对方括号内：
+
+```html
+<template>
+<!--
+注意，参数表达式有一些约束，
+参见下面“动态参数值的限制”与“动态参数语法的限制”章节的解释
+-->
+<a v-bind:[attributeName]="url"> ... </a>
+
+<!-- 简写 -->
+<a :[attributeName]="url"> ... </a>
+</template>
+
+<script setup>
+const attributeName = 'href';
+</script>
+```
+
+相似地，你还可以将一个函数绑定到动态的事件名称上：
+
+```html
+<template>
+<a v-on:[eventName]="doSomething"> ... </a>
+
+<!-- 简写 -->
+<a @[eventName]="doSomething"> ... </a>
+</template>
+
+<script setup>
+const eventName = 'click';
+</script>
+```
+
+动态参数值的限制：
+
+- 动态参数中表达式的值应当是一个字符串，或者是 `null`。特殊值 `null` 意为显式移除该绑定。其他非字符串的值会触发警告。
+
+动态参数值的限制：
+
+- 动态参数表达式因为某些字符的缘故有一些语法限制，比如空格和引号，在 HTML attribute 名称中都是不合法的。如`<a :['foo' + bar]="value"> ... </a>`这会触发一个编译器警告。
+- 当使用 DOM 内嵌模板 (直接写在 HTML 文件里的模板) 时，我们需要避免在名称中使用大写字母，因为浏览器会强制将其转换为小写。如`<a :[someAttr]="value"> ... </a>`会被转换为`:[someattr]`。
+
+#### [修饰符 Modifiers](https://cn.vuejs.org/guide/essentials/template-syntax.html#modifiers)
+
+修饰符是以点开头的特殊后缀，表明指令需要以一些特殊的方式被绑定。例如 `.prevent` 修饰符会告知 `v-on` 指令对触发的事件调用 `event.preventDefault()`：
+
+```html
+<form @submit.prevent="onSubmit">...</form>
+```
+
+## 响应式基础
+
+### `ref()`
+
+在组合式 API 中，推荐使用 [`ref()`](https://cn.vuejs.org/api/reactivity-core.html#ref) 函数来声明响应式状态：
+
+```js
+import { ref } from 'vue'
+
+const count = ref(0)
+```
+
+`ref()` 接收参数，并将其包裹在一个带有 `.value` 属性的 ref 对象中返回：
+
+```js
+const count = ref(0)
+
+console.log(count) // { value: 0 }
+console.log(count.value) // 0
+
+count.value++
+console.log(count.value) // 1
+```
+
+在模板中使用 ref 时，我们**不**需要附加 `.value`：
+
+```html
+<div>{{ count }}</div>
+```
+
+你也可以直接在事件监听器中改变一个 ref：
+
+```html
+<button @click="count++">
+  {{ count }}
+</button>
+```
+
+在同一作用域内声明更改 ref 的函数：
+
+```js
+const count = ref(0)
+
+function increment() {
+    // 在 JavaScript 中需要 .value
+    count.value++
+}
+```
+
+然后把方法暴露给事件监听器：
+
+```html
+<button @click="increment">
+    {{ count }}
+</button>
+```
+
+Ref 可以持有任何类型的值，包括深层嵌套的对象、数组或者 JavaScript 内置的数据结构，比如 `Map`。
+
+Ref 会使它的值具有深层响应性。这意味着即使改变嵌套对象或数组时，变化也会被检测到：
+
+```js
+import { ref } from 'vue'
+
+const obj = ref({
+  nested: { count: 0 },
+  arr: ['foo', 'bar']
+})
+
+function mutateDeeply() {
+  // 以下都会按照期望工作
+  obj.value.nested.count++
+  obj.value.arr.push('baz')
+}
+```
+
+非原始值将通过 [`reactive()`](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html#reactive) 转换为响应式代理。
+
+#### [DOM 更新时机](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html#dom-update-timing)
+
+当你修改了响应式状态时，DOM 会被自动更新。但 DOM 更新不是同步的。Vue 会在“next tick”更新周期中缓冲所有状态的修改，以确保不管你进行了多少次状态修改，每个组件都只会被更新一次。
+
+要等待 DOM 更新完成后再执行额外的代码，可以使用 [`nextTick()`](https://cn.vuejs.org/api/general.html#nexttick) 全局 API：
+
+```js
+import { nextTick } from 'vue'
+
+async function increment() {
+  count.value++
+  await nextTick()
+  // 现在 DOM 已经更新了
+}
+```
+
+### `reactive()`
+
+与将内部值包装在特殊对象中的 `ref()` 不同，`reactive()` 将使对象本身具有响应性：
+
+```js
+import { reactive } from 'vue'
+
+const state = reactive({ count: 0 })
+```
+
+在模板中使用：
+
+```html
+<button @click="state.count++">
+  {{ state.count }}
+</button>
+```
+
+响应式对象是 [JavaScript 代理](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)，Vue 能够拦截对响应式对象所有属性的访问和修改，以便进行依赖追踪和触发更新。
+
+`reactive()` 将深层地转换对象：当访问嵌套对象时，它们也会被 `reactive()` 包装。当 ref 的值是一个对象时，`ref()` 也会在内部调用`reactive()`。
+
+**`reactive()` API 有一些局限性：**
+
+1. **有限的值类型**：它只能用于对象类型 (对象、数组和如 `Map`、`Set` 这样的[集合类型](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects#keyed_collections))。它不能持有如 `string`、`number` 或 `boolean` 这样的[原始类型](https://developer.mozilla.org/en-US/docs/Glossary/Primitive)。
+
+2. **不能替换整个对象**：由于 Vue 的响应式跟踪是通过属性访问实现的，因此我们必须始终保持对响应式对象的相同引用。这意味着我们不能轻易地“替换”响应式对象，因为这样的话与第一个引用的响应性连接将丢失。而应该使用`Object.assign()`来将新对象的值复制给响应式对象：
+
+```js
+let state = reactive({ count: 0 })
+
+// 上面的 ({ count: 0 }) 引用将不再被追踪。响应性连接已丢失！
+state = reactive({ count: 1 })
+
+// 使用Object.assign()不会丢失响应性连接
+state = Object.assign(state, {count: 1})
+```
+
+3. **对解构操作不友好**：当我们将响应式对象的原始类型属性解构为本地变量时，或者将该属性传递给函数时，我们将丢失响应性连接。当需要对`reactive()`创建的响应性对象进行解构时，需要使用`toRefs()`或`toRef()`。
+
+```js
+const state = reactive({ count: 0 })
+
+// 当解构时，count 已经与 state.count 断开连接
+let { count } = state
+// 不会影响原始的 state
+count++
+
+// 该函数接收到的是一个普通的数字
+// 并且无法追踪 state.count 的变化
+// 我们必须传入整个对象以保持响应性
+callSomeFunction(state.count)
+```
+
+使用`toRefs` 消费者组件可以解构/展开返回的对象而不会失去响应性：
+
+```js
+const state = reactive({
+  foo: 1,
+  bar: 2
+})
+
+const stateAsRefs = toRefs(state)
+
+// 这个 ref 和源属性已经“链接上了”
+state.foo++
+console.log(stateAsRefs.foo.value) // 2
+
+stateAsRefs.foo.value++
+console.log(state.foo) // 3
+
+// 使用 toRefs 对 state 进行解构，不会丢失响应性。
+const { bar } = toRefs(state)
+```
+
+由于这些限制，我们建议使用 `ref()` 作为声明响应式状态的主要 API。
 
 
 
