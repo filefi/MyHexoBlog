@@ -153,18 +153,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">56</span>
+        <span class="site-state-item-count">59</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -201,6 +201,87 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2024/create-web-worker-in-tampermonkey-userscript/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="filefi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/create-web-worker-in-tampermonkey-userscript/" class="post-title-link" itemprop="url">在Tampermonkey中创建并使用WebWorker</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-04-06 22:35:21" itemprop="dateCreated datePublished" datetime="2024-04-06T22:35:21+08:00">2024-04-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Tampermonkey/" itemprop="url" rel="index"><span itemprop="name">Tampermonkey</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ==UserScript==</span></span><br><span class="line"><span class="comment">// @name         Web Worker Demo</span></span><br><span class="line"><span class="comment">// @namespace    http://tampermonkey.net/</span></span><br><span class="line"><span class="comment">// @version      2024-04-06</span></span><br><span class="line"><span class="comment">// @description  try to take over the world!</span></span><br><span class="line"><span class="comment">// @author       You</span></span><br><span class="line"><span class="comment">// @match        https://www.example.com/</span></span><br><span class="line"><span class="comment">// @grant        GM_setValue</span></span><br><span class="line"><span class="comment">// ==/UserScript==</span></span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="string">&#x27;use strict&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Web Worker 内嵌脚本字符串</span></span><br><span class="line">    <span class="keyword">const</span> workerString = <span class="string">`</span></span><br><span class="line"><span class="string">let count = 1;</span></span><br><span class="line"><span class="string">setInterval(()=&gt;&#123;</span></span><br><span class="line"><span class="string">    console.log(&#x27;worker&#x27;, count); </span></span><br><span class="line"><span class="string">    postMessage(&#123;&#x27;workerMsg&#x27;: count&#125;); </span></span><br><span class="line"><span class="string">    count++;</span></span><br><span class="line"><span class="string">&#125;, 3000);</span></span><br><span class="line"><span class="string">`</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 由字符串创建Web Worker文件URL</span></span><br><span class="line">    <span class="keyword">const</span> workerURL = <span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(<span class="keyword">new</span> <span class="title class_">Blob</span>([workerString]));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建Web Worker</span></span><br><span class="line">    <span class="keyword">const</span> worker = <span class="keyword">new</span> <span class="title class_">Worker</span>(workerURL);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Web Worker无法直接访问GM_*方法，将数据返回给页面主线程</span></span><br><span class="line">    worker.<span class="property">onmessage</span> = <span class="keyword">function</span> (<span class="params">e</span>)&#123;</span><br><span class="line">        <span class="comment">// 由主线程调用GM_*方法</span></span><br><span class="line">        <span class="title function_">GM_setValue</span>(<span class="string">&#x27;workerMsg&#x27;</span>, <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(e.<span class="property">data</span>));</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="property">data</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/create-web-worker-in-tampermonkey-userscript/image-20240406224118761.png"></p>
+<p><img src="/2024/create-web-worker-in-tampermonkey-userscript/image-20240406224158990.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1157,97 +1238,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/How-does-the-Recycle-Bin-in-Windows-work/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/How-does-the-Recycle-Bin-in-Windows-work/" class="post-title-link" itemprop="url">How does the Recycle Bin in Windows work?</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-10-28 09:28:39" itemprop="dateCreated datePublished" datetime="2022-10-28T09:28:39+08:00">2022-10-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Windows/" itemprop="url" rel="index"><span itemprop="name">Windows</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>References from:</p>
-<p><a target="_blank" rel="noopener" href="https://superuser.com/questions/368890/how-does-the-recycle-bin-in-windows-work/1736690#1736690">https://superuser.com/questions/368890/how-does-the-recycle-bin-in-windows-work/1736690#1736690</a></p>
-<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Trash_(computing)#Microsoft_Windows">https://en.wikipedia.org/wiki/Trash_(computing)#Microsoft_Windows</a></p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/How-does-the-Recycle-Bin-in-Windows-work/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>

@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2024-03-23T04:39:46.000Z</updated>
+  <updated>2024-04-06T14:35:21.000Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -15,6 +15,39 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>在Tampermonkey中创建并使用WebWorker</title>
+    <link href="https://ifelif.cn/2024/create-web-worker-in-tampermonkey-userscript/"/>
+    <id>https://ifelif.cn/2024/create-web-worker-in-tampermonkey-userscript/</id>
+    <published>2024-04-06T14:35:21.000Z</published>
+    <updated>2024-04-06T14:35:21.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;figure class=&quot;highlight js&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//</summary>
+        
+      
+    
+    
+    
+    <category term="Tampermonkey" scheme="https://ifelif.cn/categories/Tampermonkey/"/>
+    
+    
+    <category term="JavaScript" scheme="https://ifelif.cn/tags/JavaScript/"/>
+    
+    <category term="Tampermonkey" scheme="https://ifelif.cn/tags/Tampermonkey/"/>
+    
+    <category term="UserScript" scheme="https://ifelif.cn/tags/UserScript/"/>
+    
+    <category term="Front-End" scheme="https://ifelif.cn/tags/Front-End/"/>
+    
+    <category term="WebWorker" scheme="https://ifelif.cn/tags/WebWorker/"/>
+    
+  </entry>
   
   <entry>
     <title>Vue3 核心笔记</title>
@@ -32,11 +65,11 @@
     <category term="Vue" scheme="https://ifelif.cn/categories/Vue/"/>
     
     
+    <category term="Front-End" scheme="https://ifelif.cn/tags/Front-End/"/>
+    
     <category term="Vue" scheme="https://ifelif.cn/tags/Vue/"/>
     
     <category term="Vue3" scheme="https://ifelif.cn/tags/Vue3/"/>
-    
-    <category term="Front-End" scheme="https://ifelif.cn/tags/Front-End/"/>
     
   </entry>
   
@@ -605,7 +638,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2024-04-03T06:35:14.444Z</updated>
+    <updated>2024-04-06T14:43:05.850Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
@@ -628,7 +661,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2024-04-03T06:35:14.464Z</updated>
+    <updated>2024-04-06T14:43:05.878Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -657,7 +690,7 @@
     <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
     <id>https://ifelif.cn/2022/ansible_user_guide/</id>
     <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2024-04-03T06:35:14.444Z</updated>
+    <updated>2024-04-06T14:43:05.850Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
@@ -693,31 +726,6 @@
     <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
     
     <category term="ansible" scheme="https://ifelif.cn/tags/ansible/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>《Docker 从入门到实践》学习笔记</title>
-    <link href="https://ifelif.cn/2022/docker_practice/"/>
-    <id>https://ifelif.cn/2022/docker_practice/</id>
-    <published>2022-04-28T15:56:21.000Z</published>
-    <updated>2024-04-03T06:35:14.456Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;什么是-Docker&quot;&gt;&lt;a href=&quot;#什么是-Docker&quot; class=&quot;headerlink&quot; title=&quot;什么是 Docker&quot;&gt;&lt;/a&gt;什么是 Docker&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;Docker&lt;/strong&gt; 使用 &lt;code&gt;Google&lt;/code&gt; 公司推出的 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go 语言&lt;/a&gt; 进行开发实现，基于 &lt;code&gt;Linux&lt;/code&gt; 内核的 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Cgroups&quot;&gt;cgroup&lt;/a&gt;，&lt;a href=&quot;https://en.wikipedia.org/wiki/Linux_namespaces&quot;&gt;namespace&lt;/a&gt;，以及 &lt;a href=&quot;https://docs.docker.com/storage/storagedriver/overlayfs-driver/&quot;&gt;OverlayFS&lt;/a&gt; 类的 &lt;a href=&quot;https://en.wikipedia.org/wiki/Union_mount&quot;&gt;Union FS&lt;/a&gt; 等技术，对进程进行封装隔离，属于 &lt;a href=&quot;https://en.wikipedia.org/wiki/Operating-system-level_virtualization&quot;&gt;操作系统层面的虚拟化技术&lt;/a&gt;。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/2022/docker_practice/docker-on-linux-16488874880822.png&quot; alt=&quot;Docker在Linux中的架构&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;传统虚拟机-VS-Docker&quot;&gt;&lt;a href=&quot;#传统虚拟机-VS-Docker&quot; class=&quot;headerlink&quot; title=&quot;传统虚拟机 VS Docker&quot;&gt;&lt;/a&gt;传统虚拟机 VS Docker&lt;/h2&gt;&lt;p&gt;传统虚拟机技术是虚拟出一套硬件后，在其上运行一个完整操作系统，在该系统上再运行所需应用进程；而容器内的应用进程直接运行于宿主的内核，容器内没有自己的内核，而且也没有进行硬件虚拟。因此容器要比传统虚拟机更为轻便。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/2022/docker_practice/vm.png&quot; alt=&quot;传统虚拟机&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/2022/docker_practice/docker.png&quot; alt=&quot;Docker&quot;&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Docker" scheme="https://ifelif.cn/categories/Docker/"/>
-    
-    
-    <category term="CNCF" scheme="https://ifelif.cn/tags/CNCF/"/>
-    
-    <category term="Docker" scheme="https://ifelif.cn/tags/Docker/"/>
     
   </entry>
   
