@@ -638,7 +638,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2024-04-09T03:26:49.886Z</updated>
+    <updated>2024-04-18T11:30:12.393Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
@@ -661,7 +661,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2024-04-09T03:26:49.914Z</updated>
+    <updated>2024-04-18T11:30:12.417Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -690,7 +690,7 @@
     <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
     <id>https://ifelif.cn/2022/ansible_user_guide/</id>
     <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2024-04-09T03:26:49.886Z</updated>
+    <updated>2024-04-18T11:30:12.393Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
