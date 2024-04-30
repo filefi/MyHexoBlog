@@ -116,7 +116,111 @@ Also, try playing around with the value and click 'Hit me'.
 
 ## Step 4
 
+```text
+Step 4: Floating points (PW=890124)
+In the previous tutorial we used bytes to scan, but some games store information in so called 'floating point' notations. 
+(probably to prevent simple memory scanners from finding it the easy way)
+a floating point is a value with some digits behind the point. (like 5.12 or 11321.1)
 
+Below you see your health and ammo. Both are stored as Floating point notations, but health is stored as a float and ammo is stored as a double.
+Click on hit me to lose some health, and on shoot to decrease your ammo with 0.5
+ 
+You have to set BOTH values to 5000 or higher to proceed.
+
+Exact value scan will work fine here, but you may want to experiment with other types too.
+
+
+
+Hint: It is recommended to disable "Fast Scan" for type double
+```
+
+Step 4 主要是介绍了 float 和 double 值类型的精确值扫描，基本操作和整型的精确值扫描类似。
+
+![](image-20240430100922143.png)
+
+执行`Exact Value`扫描，并将`Value Type`设为`Float`，填入要扫描的值，开始扫描：
+
+![](image-20240430101837596.png)
+
+点击`Hit me`修改 Health 的值：
+
+![](image-20240430102319944.png)
+
+填入修改后的值，执行下一次精确值扫描：
+
+![](image-20240430102652795.png)
+
+将得到的备选地址加入 addresslist 进行验证：
+
+![](image-20240430103435764.png)
+
+修改地址保存的值之后，需要点击`Hit me`触发一下显示的值的修改：
+
+![](image-20240430103942060.png)
+
+可以看到，点击`Hit me`之后，地址中保存的值也相应地变化了：
+
+![](image-20240430104225544.png)
+
+开始新扫描，准备扫描 Ammo 的地址：
+
+![](image-20240430104504605.png)
+
+设置值类型为`Double`，填入值，开始首次扫描：
+
+![](image-20240430104955721.png)
+
+点击`Fire`修改 Ammo 的值：
+
+![](image-20240430105152459.png)
+
+填入修改后的值，进行下一次扫描：
+
+![](image-20240430105312568.png)
+
+得到两个备选地址：
+
+![](image-20240430105529833.png)
+
+再次修改值，以便对备选地址进行过滤：
+
+![](image-20240430105631230.png)
+
+填入修改后的值，进行下一次扫描：
+
+![](image-20240430105741906.png)
+
+依然还是得到两个地址，将它们加入 addresslist 逐个进行验证：
+
+![](image-20240430105850638.png)
+
+修改地址中的值：
+
+![](image-20240430110323596.png)
+
+可以看到，点击`Fire`后，addresslist中的第一个备选地址中的值也相应地改变了，而第二个备选地址中的值则没有变化。那么，基本可以断定，第一个备选地址是我们要找的。
+
+![](image-20240430110755464.png)
+
+修改第二个备选地址中的值，对第二个备选地址进行验证：
+
+![](image-20240430111148365.png)
+
+修改第二个备选地址中的值后，点击`Fire`触发 Ammo 显示值的变化。可以看到，修改第二个备选地址中的值后，没有对 Ammo 的值产生影响，点击`Fire`后，第二个备选地址中值依旧没有变化。那么，现在可以确定第一个备选地址是我们要找的，第二个则不是。
+
+![](image-20240430111509913.png)
+
+将第二个备选地址从 addresslist 中删除：
+
+![](image-20240430111946289.png)
+
+接下来，由于 Step 4 这一关需要 Health 和 Ammo两个值同时大于或等于5000，我们再修改一下 Health 地址中的值，使其满足过关条件：
+
+![](image-20240430112302524.png)
+
+修改 Health 地址中的值后，甚至还没有点击`Hit me`触发显示的值变化，Next 按钮就已经可以点击了：
+
+![](image-20240430112531318.png)
 
 # 模糊值扫描
 
@@ -152,5 +256,4 @@ Now change the health to 5000, to proceed to the next step.
 ![](image-20220215174649344.png)
 
 ![](image-20220215174800299.png)![](image-20220215174937499.png)![](image-20220215175020697.png)
-
 
