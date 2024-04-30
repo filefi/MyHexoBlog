@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2024-04-30T15:13:06.236Z</updated>
+  <updated>2024-04-30T15:15:06.504Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -17,11 +17,44 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Cheat Engine Tutorial 学习笔记2：指令查找</title>
+    <link href="https://ifelif.cn/2024/cheat_engine_tutorial2/"/>
+    <id>https://ifelif.cn/2024/cheat_engine_tutorial2/</id>
+    <published>2024-04-30T03:41:21.000Z</published>
+    <updated>2024-04-30T15:15:06.504Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本文重点介绍：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如何查找对特定地址进行访问或修改的操作指令&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CE版本如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Cheat Engine Version: 7.4和7.5&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Tutorial Version: v3.6&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    <category term="Reverse" scheme="https://ifelif.cn/categories/Reverse/"/>
+    
+    
+    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
+    
+    <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
+    
+    <category term="CheatEngine" scheme="https://ifelif.cn/tags/CheatEngine/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针</title>
     <link href="https://ifelif.cn/2024/cheat_engine_tutorial3/"/>
     <id>https://ifelif.cn/2024/cheat_engine_tutorial3/</id>
     <published>2024-04-28T15:17:21.000Z</published>
-    <updated>2024-04-30T15:13:06.236Z</updated>
+    <updated>2024-04-30T15:15:06.504Z</updated>
     
     
     <summary type="html">&lt;p&gt;本文重点介绍：&lt;/p&gt;
@@ -671,7 +704,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2024-04-30T15:13:06.192Z</updated>
+    <updated>2024-04-30T15:15:06.460Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
@@ -686,35 +719,6 @@
     <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
     
     <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>gobyexample 学习笔记</title>
-    <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
-    <id>https://ifelif.cn/2022/learn_gobyexample/</id>
-    <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2024-04-30T15:13:06.224Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
-&lt;figure class=&quot;highlight go&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;package&lt;/span&gt; main&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&amp;quot;fmt&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    fmt.Println(&lt;span class=&quot;string&quot;&gt;&amp;quot;hello world&amp;quot;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;要运行这个程序，将这些代码放到 &lt;code&gt;hello-world.go&lt;/code&gt; 中并且使用 &lt;code&gt;go run&lt;/code&gt; 命令。&lt;/p&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ go run hello-world.go&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;hello world&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;有时候我们想将我们的程序编译成二进制文件。我们可以通过 go build 命来达到目的。&lt;/p&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ go build hello-world.go&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;$ &lt;span class=&quot;built_in&quot;&gt;ls&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;hello-world	hello-world.go&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;然后我们可以直接运行这个二进制文件。&lt;/p&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ ./hello-world&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;hello world&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
-    
-    
-    
-    <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
-    
-    
-    <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
     
   </entry>
   

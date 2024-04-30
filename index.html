@@ -210,6 +210,102 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2024/cheat_engine_tutorial2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="filefi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/cheat_engine_tutorial2/" class="post-title-link" itemprop="url">Cheat Engine Tutorial 学习笔记2：指令查找</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-04-30 11:41:21 / 修改时间：23:15:06" itemprop="dateCreated datePublished" datetime="2024-04-30T11:41:21+08:00">2024-04-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Reverse/" itemprop="url" rel="index"><span itemprop="name">Reverse</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>本文重点介绍：</p>
+<ul>
+<li>如何查找对特定地址进行访问或修改的操作指令</li>
+</ul>
+<p>CE版本如下：</p>
+<ul>
+<li><p>Cheat Engine Version: 7.4和7.5</p>
+</li>
+<li><p>Tutorial Version: v3.6</p>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/cheat_engine_tutorial2/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2024/cheat_engine_tutorial3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -246,7 +342,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-04-30 23:13:06" itemprop="dateModified" datetime="2024-04-30T23:13:06+08:00">2024-04-30</time>
+      <time title="修改时间：2024-04-30 23:15:06" itemprop="dateModified" datetime="2024-04-30T23:15:06+08:00">2024-04-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1073,92 +1169,6 @@
 
 
 <h3 id="func-LimitReader-r-Reader-n-int64-Reader"><a href="#func-LimitReader-r-Reader-n-int64-Reader" class="headerlink" title="func LimitReader(r Reader, n int64) Reader"></a>func LimitReader(r Reader, n int64) Reader</h3><h3 id="func-MultiReader-readers-…Reader-Reader"><a href="#func-MultiReader-readers-…Reader-Reader" class="headerlink" title="func MultiReader(readers …Reader) Reader"></a>func MultiReader(readers …Reader) Reader</h3><h3 id="func-TeeReader-r-Reader-w-Writer-Reader"><a href="#func-TeeReader-r-Reader-w-Writer-Reader" class="headerlink" title="func TeeReader(r Reader, w Writer) Reader"></a>func TeeReader(r Reader, w Writer) Reader</h3><h2 id="ByteReader-接口"><a href="#ByteReader-接口" class="headerlink" title="ByteReader 接口"></a><code>ByteReader</code> 接口</h2><h2 id="type-ByteScanner"><a href="#type-ByteScanner" class="headerlink" title="type ByteScanner"></a>type ByteScanner</h2><h2 id="type-ByteWriter"><a href="#type-ByteWriter" class="headerlink" title="type ByteWriter"></a>type ByteWriter</h2><h2 id="type-Closer"><a href="#type-Closer" class="headerlink" title="type Closer"></a>type Closer</h2><h2 id="type-LimitedReader"><a href="#type-LimitedReader" class="headerlink" title="type LimitedReader"></a>type LimitedReader</h2><h3 id="func-l-LimitedReader-Read-p-byte-n-int-err-error"><a href="#func-l-LimitedReader-Read-p-byte-n-int-err-error" class="headerlink" title="func (l *LimitedReader) Read(p []byte) (n int, err error)"></a>func (l *LimitedReader) Read(p []byte) (n int, err error)</h3><h2 id="type-OffsetWriter"><a href="#type-OffsetWriter" class="headerlink" title="type OffsetWriter"></a>type OffsetWriter</h2><h3 id="func-NewOffsetWriter-w-WriterAt-off-int64-OffsetWriter"><a href="#func-NewOffsetWriter-w-WriterAt-off-int64-OffsetWriter" class="headerlink" title="func NewOffsetWriter(w WriterAt, off int64) *OffsetWriter"></a>func NewOffsetWriter(w WriterAt, off int64) *OffsetWriter</h3><h3 id="func-o-OffsetWriter-Seek-offset-int64-whence-int-int64-error"><a href="#func-o-OffsetWriter-Seek-offset-int64-whence-int-int64-error" class="headerlink" title="func (o *OffsetWriter) Seek(offset int64, whence int) (int64, error)"></a>func (o *OffsetWriter) Seek(offset int64, whence int) (int64, error)</h3><h3 id="func-o-OffsetWriter-Write-p-byte-n-int-err-error"><a href="#func-o-OffsetWriter-Write-p-byte-n-int-err-error" class="headerlink" title="func (o *OffsetWriter) Write(p []byte) (n int, err error)"></a>func (o *OffsetWriter) Write(p []byte) (n int, err error)</h3><h3 id="func-o-OffsetWriter-WriteAt-p-byte-off-int64-n-int-err-error"><a href="#func-o-OffsetWriter-WriteAt-p-byte-off-int64-n-int-err-error" class="headerlink" title="func (o *OffsetWriter) WriteAt(p []byte, off int64) (n int, err error)"></a>func (o *OffsetWriter) WriteAt(p []byte, off int64) (n int, err error)</h3><h2 id="type-PipeReader"><a href="#type-PipeReader" class="headerlink" title="type PipeReader"></a>type PipeReader</h2><h3 id="func-r-PipeReader-Close-error"><a href="#func-r-PipeReader-Close-error" class="headerlink" title="func (r *PipeReader) Close() error"></a>func (r *PipeReader) Close() error</h3><h3 id="func-r-PipeReader-CloseWithError-err-error-error"><a href="#func-r-PipeReader-CloseWithError-err-error-error" class="headerlink" title="func (r *PipeReader) CloseWithError(err error) error"></a>func (r *PipeReader) CloseWithError(err error) error</h3><h3 id="func-r-PipeReader-Read-data-byte-n-int-err-error"><a href="#func-r-PipeReader-Read-data-byte-n-int-err-error" class="headerlink" title="func (r *PipeReader) Read(data []byte) (n int, err error)"></a>func (r *PipeReader) Read(data []byte) (n int, err error)</h3><h2 id="type-PipeWriter"><a href="#type-PipeWriter" class="headerlink" title="type PipeWriter"></a>type PipeWriter</h2><h3 id="func-w-PipeWriter-Close-error"><a href="#func-w-PipeWriter-Close-error" class="headerlink" title="func (w *PipeWriter) Close() error"></a>func (w *PipeWriter) Close() error</h3><h3 id="func-w-PipeWriter-CloseWithError-err-error-error"><a href="#func-w-PipeWriter-CloseWithError-err-error-error" class="headerlink" title="func (w *PipeWriter) CloseWithError(err error) error"></a>func (w *PipeWriter) CloseWithError(err error) error</h3><h3 id="func-w-PipeWriter-Write-data-byte-n-int-err-error"><a href="#func-w-PipeWriter-Write-data-byte-n-int-err-error" class="headerlink" title="func (w *PipeWriter) Write(data []byte) (n int, err error)"></a>func (w *PipeWriter) Write(data []byte) (n int, err error)</h3><h2 id="type-ReadCloser"><a href="#type-ReadCloser" class="headerlink" title="type ReadCloser"></a>type ReadCloser</h2><h3 id="func-NopCloser-r-Reader-ReadCloser"><a href="#func-NopCloser-r-Reader-ReadCloser" class="headerlink" title="func NopCloser(r Reader) ReadCloser"></a>func NopCloser(r Reader) ReadCloser</h3><h2 id="type-ReadSeekCloser"><a href="#type-ReadSeekCloser" class="headerlink" title="type ReadSeekCloser"></a>type ReadSeekCloser</h2><h2 id="type-ReadSeeker"><a href="#type-ReadSeeker" class="headerlink" title="type ReadSeeker"></a>type ReadSeeker</h2><h2 id="type-ReadWriteCloser"><a href="#type-ReadWriteCloser" class="headerlink" title="type ReadWriteCloser"></a>type ReadWriteCloser</h2><h2 id="type-ReadWriteSeeker"><a href="#type-ReadWriteSeeker" class="headerlink" title="type ReadWriteSeeker"></a>type ReadWriteSeeker</h2><h2 id="type-ReadWriter"><a href="#type-ReadWriter" class="headerlink" title="type ReadWriter"></a>type ReadWriter</h2><h2 id="type-Reader"><a href="#type-Reader" class="headerlink" title="type Reader"></a>type Reader</h2><h2 id="type-ReaderAt"><a href="#type-ReaderAt" class="headerlink" title="type ReaderAt"></a>type ReaderAt</h2><h2 id="type-ReaderFrom"><a href="#type-ReaderFrom" class="headerlink" title="type ReaderFrom"></a>type ReaderFrom</h2><h2 id="type-RuneReader"><a href="#type-RuneReader" class="headerlink" title="type RuneReader"></a>type RuneReader</h2><h2 id="type-RuneScanner"><a href="#type-RuneScanner" class="headerlink" title="type RuneScanner"></a>type RuneScanner</h2><h2 id="type-SectionReader"><a href="#type-SectionReader" class="headerlink" title="type SectionReader"></a>type SectionReader</h2><h3 id="func-NewSectionReader-r-ReaderAt-off-int64-n-int64-SectionReader"><a href="#func-NewSectionReader-r-ReaderAt-off-int64-n-int64-SectionReader" class="headerlink" title="func NewSectionReader(r ReaderAt, off int64, n int64) *SectionReader"></a>func NewSectionReader(r ReaderAt, off int64, n int64) *SectionReader</h3><h3 id="func-s-SectionReader-Read-p-byte-n-int-err-error"><a href="#func-s-SectionReader-Read-p-byte-n-int-err-error" class="headerlink" title="func (s *SectionReader) Read(p []byte) (n int, err error)"></a>func (s *SectionReader) Read(p []byte) (n int, err error)</h3><h3 id="func-s-SectionReader-ReadAt-p-byte-off-int64-n-int-err-error"><a href="#func-s-SectionReader-ReadAt-p-byte-off-int64-n-int-err-error" class="headerlink" title="func (s *SectionReader) ReadAt(p []byte, off int64) (n int, err error)"></a>func (s *SectionReader) ReadAt(p []byte, off int64) (n int, err error)</h3><h3 id="func-s-SectionReader-Seek-offset-int64-whence-int-int64-error"><a href="#func-s-SectionReader-Seek-offset-int64-whence-int-int64-error" class="headerlink" title="func (s *SectionReader) Seek(offset int64, whence int) (int64, error)"></a>func (s *SectionReader) Seek(offset int64, whence int) (int64, error)</h3><h3 id="func-s-SectionReader-Size-int64"><a href="#func-s-SectionReader-Size-int64" class="headerlink" title="func (s *SectionReader) Size() int64"></a>func (s *SectionReader) Size() int64</h3><h2 id="type-Seeker"><a href="#type-Seeker" class="headerlink" title="type Seeker"></a>type Seeker</h2><h2 id="type-StringWriter"><a href="#type-StringWriter" class="headerlink" title="type StringWriter"></a>type StringWriter</h2><h2 id="type-WriteCloser"><a href="#type-WriteCloser" class="headerlink" title="type WriteCloser"></a>type WriteCloser</h2><h2 id="type-WriteSeeker"><a href="#type-WriteSeeker" class="headerlink" title="type WriteSeeker"></a>type WriteSeeker</h2><h2 id="type-Writer"><a href="#type-Writer" class="headerlink" title="type Writer"></a>type Writer</h2><h3 id="func-MultiWriter-writers-…Writer-Writer"><a href="#func-MultiWriter-writers-…Writer-Writer" class="headerlink" title="func MultiWriter(writers …Writer) Writer"></a>func MultiWriter(writers …Writer) Writer</h3><h2 id="type-WriterAt"><a href="#type-WriterAt" class="headerlink" title="type WriterAt"></a>type WriterAt</h2><h2 id="type-WriterTo"><a href="#type-WriterTo" class="headerlink" title="type WriterTo"></a>type WriterTo</h2>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2023/How-does-Windows-decide-whether-your-computer-has-limited-or-full-Internet-access/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/How-does-Windows-decide-whether-your-computer-has-limited-or-full-Internet-access/" class="post-title-link" itemprop="url">How does Windows decide whether your computer has limited or full Internet access</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2023-01-24 20:52:23" itemprop="dateCreated datePublished" datetime="2023-01-24T20:52:23+08:00">2023-01-24</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Windows/" itemprop="url" rel="index"><span itemprop="name">Windows</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>reference <a target="_blank" rel="noopener" href="https://devblogs.microsoft.com/oldnewthing/20221115-00/?p=107399">How does Windows decide whether your computer has limited or full Internet<br>  access?</a></p>
-</blockquote>
-<p>Windows lets you know when your computer’s Internet connection is limited or absent entirely. What is this sorcery?</p>
-<p>Windows attempts to download a file from a dedicated Web server. Depending on which version of Windows, it’s <a target="_blank" rel="noopener" href="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</a> or <a target="_blank" rel="noopener" href="http://www.msftconnecttest.com/connecttest.txt">http://www.msftconnecttest.com/connecttest.txt</a>. If the download is successful and contains the correct contents, then Windows concludes that you have full Internet access.</p>
-<p>If something goes wrong, Windows will report either limited or no Internet access, depending on what exactly went wrong.</p>
-<p>You can <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/troubleshoot/windows-client/networking/internet-explorer-edge-open-connect-corporate-public-network">read more details on docs.microsoft.com</a>.</p>
-<p>Linux distros do something similar… e.g. on a current Fedora version, it’s <a target="_blank" rel="noopener" href="http://fedoraproject.org/static/hotspot.txt">http://fedoraproject.org/static/hotspot.txt</a>.</p>
-<p>Note that as with the Windows version, the protocol is HTTP, not HTTPS – because captive portals completely break TLS, but plaintext HTTP will result in a clean redirect to the portal, allowing the network service to detect the presence of the portal and to bring up a browser window to let the user authenticate.</p>
-
       
     </div>
 
