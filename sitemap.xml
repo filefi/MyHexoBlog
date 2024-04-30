@@ -56,6 +56,15 @@
   </url>
   
   <url>
+    <loc>https://ifelif.cn/2022/some_pieces_of_nginx/</loc>
+    
+    <lastmod>2024-04-30</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://ifelif.cn/2022/tkinter_geometry_manager/</loc>
     
     <lastmod>2024-04-30</lastmod>
@@ -66,15 +75,6 @@
   
   <url>
     <loc>https://ifelif.cn/2022/tkinter_input_in_entry_widget%EF%BC%8Coutput_in_text_widget_in_real_time/</loc>
-    
-    <lastmod>2024-04-30</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/2022/some_pieces_of_nginx/</loc>
     
     <lastmod>2024-04-30</lastmod>
     
@@ -539,27 +539,6 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/Programming/</loc>
-    <lastmod>2024-04-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/CNCF/</loc>
-    <lastmod>2024-04-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/Docker/</loc>
-    <lastmod>2024-04-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/tags/iptables/</loc>
     <lastmod>2024-04-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -575,6 +554,13 @@
   
   <url>
     <loc>https://ifelif.cn/tags/nftables/</loc>
+    <lastmod>2024-04-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Programming/</loc>
     <lastmod>2024-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -624,6 +610,13 @@
   
   <url>
     <loc>https://ifelif.cn/tags/NPM/</loc>
+    <lastmod>2024-04-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Docker/</loc>
     <lastmod>2024-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -778,6 +771,13 @@
   
   <url>
     <loc>https://ifelif.cn/tags/DHCP/</loc>
+    <lastmod>2024-04-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/CNCF/</loc>
     <lastmod>2024-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
