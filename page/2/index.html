@@ -153,7 +153,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -201,6 +201,170 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/Slice-Tricks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="filefi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 正经人谁写日记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/Slice-Tricks/" class="post-title-link" itemprop="url">Slice Tricks</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-12-08 20:22:09" itemprop="dateCreated datePublished" datetime="2022-12-08T20:22:09+08:00">2022-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>reference from <a target="_blank" rel="noopener" href="https://github.com/golang/go/wiki/SliceTricks">https://github.com/golang/go/wiki/SliceTricks</a></p>
+</blockquote>
+<p>Since the introduction of the <code>append</code> built-in, most of the functionality of the <code>container/vector</code> package, which was removed in Go 1, can be replicated using <code>append</code> and <code>copy</code>.</p>
+<p>Here are the vector methods and their slice-manipulation analogues:</p>
+<h4 id="AppendVector"><a href="#AppendVector" class="headerlink" title="AppendVector"></a>AppendVector</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>(a, b...)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Copy"><a href="#Copy" class="headerlink" title="Copy"></a>Copy</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">b := <span class="built_in">make</span>([]T, <span class="built_in">len</span>(a))</span><br><span class="line"><span class="built_in">copy</span>(b, a)</span><br><span class="line"></span><br><span class="line"><span class="comment">// These two are often a little slower than the above one,</span></span><br><span class="line"><span class="comment">// but they would be more efficient if there are more</span></span><br><span class="line"><span class="comment">// elements to be appended to b after copying.</span></span><br><span class="line">b = <span class="built_in">append</span>([]T(<span class="literal">nil</span>), a...)</span><br><span class="line">b = <span class="built_in">append</span>(a[:<span class="number">0</span>:<span class="number">0</span>], a...)</span><br><span class="line"></span><br><span class="line"><span class="comment">// This one-line implementation is equivalent to the above</span></span><br><span class="line"><span class="comment">// two-line make+copy implementation logically. But it is</span></span><br><span class="line"><span class="comment">// actually a bit slower (as of Go toolchain v1.16).</span></span><br><span class="line">b = <span class="built_in">append</span>(<span class="built_in">make</span>([]T, <span class="number">0</span>, <span class="built_in">len</span>(a)), a...)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Cut"><a href="#Cut" class="headerlink" title="Cut"></a>Cut</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>(a[:i], a[j:]...)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Delete"><a href="#Delete" class="headerlink" title="Delete"></a>Delete</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>(a[:i], a[i+<span class="number">1</span>:]...)</span><br><span class="line"><span class="comment">// or</span></span><br><span class="line">a = a[:i+<span class="built_in">copy</span>(a[i:], a[i+<span class="number">1</span>:])]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Delete-without-preserving-order"><a href="#Delete-without-preserving-order" class="headerlink" title="Delete without preserving order"></a>Delete without preserving order</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a[i] = a[<span class="built_in">len</span>(a)<span class="number">-1</span>] </span><br><span class="line">a = a[:<span class="built_in">len</span>(a)<span class="number">-1</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>NOTE</strong> If the type of the element is a <em>pointer</em> or a struct with pointer fields, which need to be garbage collected, the above implementations of <code>Cut</code> and <code>Delete</code> have a potential <em>memory leak</em> problem: some elements with values are still referenced by slice <code>a</code> and thus can not be collected. The following code can fix this problem:</p>
+<blockquote>
+<p><strong>Cut</strong></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="built_in">copy</span>(a[i:], a[j:])</span><br><span class="line"><span class="keyword">for</span> k, n := <span class="built_in">len</span>(a)-j+i, <span class="built_in">len</span>(a); k &lt; n; k++ &#123;</span><br><span class="line">	a[k] = <span class="literal">nil</span> <span class="comment">// or the zero value of T</span></span><br><span class="line">&#125;</span><br><span class="line">a = a[:<span class="built_in">len</span>(a)-j+i]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>Delete</strong></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="built_in">copy</span>(a[i:], a[i+<span class="number">1</span>:])</span><br><span class="line">a[<span class="built_in">len</span>(a)<span class="number">-1</span>] = <span class="literal">nil</span> <span class="comment">// or the zero value of T</span></span><br><span class="line">a = a[:<span class="built_in">len</span>(a)<span class="number">-1</span>]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>Delete without preserving order</strong></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a[i] = a[<span class="built_in">len</span>(a)<span class="number">-1</span>]</span><br><span class="line">a[<span class="built_in">len</span>(a)<span class="number">-1</span>] = <span class="literal">nil</span></span><br><span class="line">a = a[:<span class="built_in">len</span>(a)<span class="number">-1</span>]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Expand"><a href="#Expand" class="headerlink" title="Expand"></a>Expand</h4><p>Insert <code>n</code> elements at position <code>i</code>:</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>(a[:i], <span class="built_in">append</span>(<span class="built_in">make</span>([]T, n), a[i:]...)...)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Extend"><a href="#Extend" class="headerlink" title="Extend"></a>Extend</h4><p>Append <code>n</code> elements:</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>(a, <span class="built_in">make</span>([]T, n)...)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Extend-Capacity"><a href="#Extend-Capacity" class="headerlink" title="Extend Capacity"></a>Extend Capacity</h4><p>Make sure there is space to append <code>n</code> elements without re-allocating:</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="built_in">cap</span>(a)-<span class="built_in">len</span>(a) &lt; n &#123;</span><br><span class="line">	a = <span class="built_in">append</span>(<span class="built_in">make</span>([]T, <span class="number">0</span>, <span class="built_in">len</span>(a)+n), a...)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Filter-in-place"><a href="#Filter-in-place" class="headerlink" title="Filter (in place)"></a>Filter (in place)</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">n := <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> _, x := <span class="keyword">range</span> a &#123;</span><br><span class="line">	<span class="keyword">if</span> keep(x) &#123;</span><br><span class="line">		a[n] = x</span><br><span class="line">		n++</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">a = a[:n]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>(a[:i], <span class="built_in">append</span>([]T&#123;x&#125;, a[i:]...)...)</span><br></pre></td></tr></table></figure>
+<p><strong>NOTE</strong>: The second <code>append</code> creates a new slice with its own underlying storage and  copies elements in <code>a[i:]</code> to that slice, and these elements are then copied back to slice <code>a</code> (by the first <code>append</code>). The creation of the new slice (and thus memory garbage) and the second copy can be avoided by using an alternative way:</p>
+<blockquote>
+<p><strong>Insert</strong></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">s = <span class="built_in">append</span>(s, <span class="number">0</span> <span class="comment">/* use the zero value of the element type */</span>)</span><br><span class="line"><span class="built_in">copy</span>(s[i+<span class="number">1</span>:], s[i:])</span><br><span class="line">s[i] = x</span><br></pre></td></tr></table></figure>
+
+<h4 id="InsertVector"><a href="#InsertVector" class="headerlink" title="InsertVector"></a>InsertVector</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>(a[:i], <span class="built_in">append</span>(b, a[i:]...)...)</span><br><span class="line"></span><br><span class="line"><span class="comment">// The above one-line way copies a[i:] twice and</span></span><br><span class="line"><span class="comment">// allocates at least once.</span></span><br><span class="line"><span class="comment">// The following verbose way only copies elements</span></span><br><span class="line"><span class="comment">// in a[i:] once and allocates at most once.</span></span><br><span class="line"><span class="comment">// But, as of Go toolchain 1.16, due to lacking of</span></span><br><span class="line"><span class="comment">// optimizations to avoid elements clearing in the</span></span><br><span class="line"><span class="comment">// &quot;make&quot; call, the verbose way is not always faster.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Future compiler optimizations might implement</span></span><br><span class="line"><span class="comment">// both in the most efficient ways.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Assume element type is int.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Insert</span><span class="params">(s []<span class="type">int</span>, k <span class="type">int</span>, vs ...<span class="type">int</span>)</span></span> []<span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> n := <span class="built_in">len</span>(s) + <span class="built_in">len</span>(vs); n &lt;= <span class="built_in">cap</span>(s) &#123;</span><br><span class="line">		s2 := s[:n]</span><br><span class="line">		<span class="built_in">copy</span>(s2[k+<span class="built_in">len</span>(vs):], s[k:])</span><br><span class="line">		<span class="built_in">copy</span>(s2[k:], vs)</span><br><span class="line">		<span class="keyword">return</span> s2</span><br><span class="line">	&#125;</span><br><span class="line">	s2 := <span class="built_in">make</span>([]<span class="type">int</span>, <span class="built_in">len</span>(s) + <span class="built_in">len</span>(vs))</span><br><span class="line">	<span class="built_in">copy</span>(s2, s[:k])</span><br><span class="line">	<span class="built_in">copy</span>(s2[k:], vs)</span><br><span class="line">	<span class="built_in">copy</span>(s2[k+<span class="built_in">len</span>(vs):], s[k:])</span><br><span class="line">	<span class="keyword">return</span> s2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a = Insert(a, i, b...)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Push"><a href="#Push" class="headerlink" title="Push"></a>Push</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>(a, x)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Pop"><a href="#Pop" class="headerlink" title="Pop"></a>Pop</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">x, a = a[<span class="built_in">len</span>(a)<span class="number">-1</span>], a[:<span class="built_in">len</span>(a)<span class="number">-1</span>]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Push-Front-Unshift"><a href="#Push-Front-Unshift" class="headerlink" title="Push Front&#x2F;Unshift"></a>Push Front&#x2F;Unshift</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">a = <span class="built_in">append</span>([]T&#123;x&#125;, a...)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Pop-Front-Shift"><a href="#Pop-Front-Shift" class="headerlink" title="Pop Front&#x2F;Shift"></a>Pop Front&#x2F;Shift</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">x, a = a[<span class="number">0</span>], a[<span class="number">1</span>:]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Additional-Tricks"><a href="#Additional-Tricks" class="headerlink" title="Additional Tricks"></a>Additional Tricks</h2><h3 id="Filtering-without-allocating"><a href="#Filtering-without-allocating" class="headerlink" title="Filtering without allocating"></a>Filtering without allocating</h3><p>This trick uses the fact that a slice shares the same backing array and capacity as the original, so the storage is reused for the filtered slice. Of course, the original contents are modified.</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">b := a[:<span class="number">0</span>]</span><br><span class="line"><span class="keyword">for</span> _, x := <span class="keyword">range</span> a &#123;</span><br><span class="line">	<span class="keyword">if</span> f(x) &#123;</span><br><span class="line">		b = <span class="built_in">append</span>(b, x)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>For elements which must be garbage collected, the following code can be included afterwards:</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="built_in">len</span>(b); i &lt; <span class="built_in">len</span>(a); i++ &#123;</span><br><span class="line">	a[i] = <span class="literal">nil</span> <span class="comment">// or the zero value of T</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Reversing"><a href="#Reversing" class="headerlink" title="Reversing"></a>Reversing</h3><p>To replace the contents of a slice with the same elements but in reverse order:</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="built_in">len</span>(a)/<span class="number">2</span><span class="number">-1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">	opp := <span class="built_in">len</span>(a)<span class="number">-1</span>-i</span><br><span class="line">	a[i], a[opp] = a[opp], a[i]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The same thing, except with two indices:</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> left, right := <span class="number">0</span>, <span class="built_in">len</span>(a)<span class="number">-1</span>; left &lt; right; left, right = left+<span class="number">1</span>, right<span class="number">-1</span> &#123;</span><br><span class="line">	a[left], a[right] = a[right], a[left]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Shuffling"><a href="#Shuffling" class="headerlink" title="Shuffling"></a>Shuffling</h3><p>Fisher–Yates algorithm:</p>
+<blockquote>
+<p>Since go1.10, this is available at <a target="_blank" rel="noopener" href="https://pkg.go.dev/math/rand#Shuffle">math&#x2F;rand.Shuffle</a></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="built_in">len</span>(a) - <span class="number">1</span>; i &gt; <span class="number">0</span>; i-- &#123;</span><br><span class="line">    j := rand.Intn(i + <span class="number">1</span>)</span><br><span class="line">    a[i], a[j] = a[j], a[i]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Batching-with-minimal-allocation"><a href="#Batching-with-minimal-allocation" class="headerlink" title="Batching with minimal allocation"></a>Batching with minimal allocation</h3><p>Useful if you want to do batch processing on large slices.</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">actions := []<span class="type">int</span>&#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>&#125;</span><br><span class="line">batchSize := <span class="number">3</span></span><br><span class="line">batches := <span class="built_in">make</span>([][]<span class="type">int</span>, <span class="number">0</span>, (<span class="built_in">len</span>(actions) + batchSize - <span class="number">1</span>) / batchSize)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> batchSize &lt; <span class="built_in">len</span>(actions) &#123;</span><br><span class="line">    actions, batches = actions[batchSize:], <span class="built_in">append</span>(batches, actions[<span class="number">0</span>:batchSize:batchSize])</span><br><span class="line">&#125;</span><br><span class="line">batches = <span class="built_in">append</span>(batches, actions)</span><br></pre></td></tr></table></figure>
+
+<p>Yields the following:</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">[[<span class="number">0</span> <span class="number">1</span> <span class="number">2</span>] [<span class="number">3</span> <span class="number">4</span> <span class="number">5</span>] [<span class="number">6</span> <span class="number">7</span> <span class="number">8</span>] [<span class="number">9</span>]]</span><br></pre></td></tr></table></figure>
+
+<h3 id="In-place-deduplicate-comparable"><a href="#In-place-deduplicate-comparable" class="headerlink" title="In-place deduplicate (comparable)"></a>In-place deduplicate (comparable)</h3><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;sort&quot;</span></span><br><span class="line"></span><br><span class="line">in := []<span class="type">int</span>&#123;<span class="number">3</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">1</span>&#125; <span class="comment">// any item can be sorted</span></span><br><span class="line">sort.Ints(in)</span><br><span class="line">j := <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(in); i++ &#123;</span><br><span class="line">	<span class="keyword">if</span> in[j] == in[i] &#123;</span><br><span class="line">		<span class="keyword">continue</span></span><br><span class="line">	&#125;</span><br><span class="line">	j++</span><br><span class="line">	<span class="comment">// preserve the original data</span></span><br><span class="line">	<span class="comment">// in[i], in[j] = in[j], in[i]</span></span><br><span class="line">	<span class="comment">// only set what is required</span></span><br><span class="line">	in[j] = in[i]</span><br><span class="line">&#125;</span><br><span class="line">result := in[:j+<span class="number">1</span>]</span><br><span class="line">fmt.Println(result) <span class="comment">// [1 2 3 4]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Move-to-front-or-prepend-if-not-present-in-place-if-possible"><a href="#Move-to-front-or-prepend-if-not-present-in-place-if-possible" class="headerlink" title="Move to front, or prepend if not present, in place if possible."></a>Move to front, or prepend if not present, in place if possible.</h3><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">// moveToFront moves needle to the front of haystack, in place if possible.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">moveToFront</span><span class="params">(needle <span class="type">string</span>, haystack []<span class="type">string</span>)</span></span> []<span class="type">string</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(haystack) != <span class="number">0</span> &amp;&amp; haystack[<span class="number">0</span>] == needle &#123;</span><br><span class="line">		<span class="keyword">return</span> haystack</span><br><span class="line">	&#125;</span><br><span class="line">	prev := needle</span><br><span class="line">	<span class="keyword">for</span> i, elem := <span class="keyword">range</span> haystack &#123;</span><br><span class="line">		<span class="keyword">switch</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> i == <span class="number">0</span>:</span><br><span class="line">			haystack[<span class="number">0</span>] = needle</span><br><span class="line">			prev = elem</span><br><span class="line">		<span class="keyword">case</span> elem == needle:</span><br><span class="line">			haystack[i] = prev</span><br><span class="line">			<span class="keyword">return</span> haystack</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			haystack[i] = prev</span><br><span class="line">			prev = elem</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">append</span>(haystack, prev)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">haystack := []<span class="type">string</span>&#123;<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>, <span class="string">&quot;d&quot;</span>, <span class="string">&quot;e&quot;</span>&#125; <span class="comment">// [a b c d e]</span></span><br><span class="line">haystack = moveToFront(<span class="string">&quot;c&quot;</span>, haystack)         <span class="comment">// [c a b d e]</span></span><br><span class="line">haystack = moveToFront(<span class="string">&quot;f&quot;</span>, haystack)         <span class="comment">// [f c a b d e]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Sliding-Window"><a href="#Sliding-Window" class="headerlink" title="Sliding Window"></a>Sliding Window</h3><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">slidingWindow</span><span class="params">(size <span class="type">int</span>, input []<span class="type">int</span>)</span></span> [][]<span class="type">int</span> &#123;</span><br><span class="line">	<span class="comment">// returns the input slice as the first element</span></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(input) &lt;= size &#123;</span><br><span class="line">		<span class="keyword">return</span> [][]<span class="type">int</span>&#123;input&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// allocate slice at the precise size we need</span></span><br><span class="line">	r := <span class="built_in">make</span>([][]<span class="type">int</span>, <span class="number">0</span>, <span class="built_in">len</span>(input)-size+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i, j := <span class="number">0</span>, size; j &lt;= <span class="built_in">len</span>(input); i, j = i+<span class="number">1</span>, j+<span class="number">1</span> &#123;</span><br><span class="line">		r = <span class="built_in">append</span>(r, input[i:j])</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> r</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InsertOne</span><span class="params">(s []<span class="type">int</span>, pos <span class="type">int</span>, num <span class="type">int</span>)</span></span> []<span class="type">int</span> &#123;</span><br><span class="line">	s = <span class="built_in">append</span>(s, <span class="number">0</span>)</span><br><span class="line">	<span class="built_in">copy</span>(s[pos+<span class="number">1</span>:], s[pos:<span class="built_in">len</span>(s)<span class="number">-1</span>])</span><br><span class="line">	s[pos] = num</span><br><span class="line">	<span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InsertOneP</span><span class="params">(s *[]<span class="type">int</span>, pos <span class="type">int</span>, num <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	*s = <span class="built_in">append</span>(*s, <span class="number">0</span>)</span><br><span class="line">	<span class="built_in">copy</span>((*s)[pos+<span class="number">1</span>:], (*s)[pos:<span class="built_in">len</span>(*s)<span class="number">-1</span>])</span><br><span class="line">	(*s)[pos] = num</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InsertMany</span><span class="params">(dst []<span class="type">int</span>, pos <span class="type">int</span>, src []<span class="type">int</span>)</span></span> []<span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">append</span>(dst[:pos], <span class="built_in">append</span>(src, dst[pos:]...)...)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InsertManyP</span><span class="params">(dst *[]<span class="type">int</span>, pos <span class="type">int</span>, src *[]<span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	*dst = <span class="built_in">append</span>((*dst)[:pos], <span class="built_in">append</span>(*src, (*dst)[pos:]...)...)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Slice []<span class="type">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Slice)</span></span> InsertOne(pos <span class="type">int</span>, num <span class="type">int</span>) &#123;</span><br><span class="line">	*s = <span class="built_in">append</span>(*s, <span class="number">0</span>)</span><br><span class="line">	<span class="built_in">copy</span>((*s)[pos+<span class="number">1</span>:], (*s)[pos:<span class="built_in">len</span>(*s)<span class="number">-1</span>])</span><br><span class="line">	(*s)[pos] = num</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -922,7 +1086,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-04-28 23:21:22" itemprop="dateModified" datetime="2024-04-28T23:21:22+08:00">2024-04-28</time>
+      <time title="修改时间：2024-04-30 09:44:17" itemprop="dateModified" datetime="2024-04-30T09:44:17+08:00">2024-04-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1014,7 +1178,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-04-28 23:21:22" itemprop="dateModified" datetime="2024-04-28T23:21:22+08:00">2024-04-28</time>
+      <time title="修改时间：2024-04-30 09:44:17" itemprop="dateModified" datetime="2024-04-30T09:44:17+08:00">2024-04-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1050,121 +1214,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2022/learn_gobyexample/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://ifelif.cn/2022/ansible_user_guide/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="filefi">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 正经人谁写日记">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/ansible_user_guide/" class="post-title-link" itemprop="url">Ansible 用户指南</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-05-17 00:01:21" itemprop="dateCreated datePublished" datetime="2022-05-17T00:01:21+08:00">2022-05-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-04-28 23:21:22" itemprop="dateModified" datetime="2024-04-28T23:21:22+08:00">2024-04-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="安装指南"><a href="#安装指南" class="headerlink" title="安装指南"></a>安装指南</h1><h2 id="安装-Ansible"><a href="#安装-Ansible" class="headerlink" title="安装 Ansible"></a>安装 Ansible</h2><h3 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h3><h4 id="控制节点要求-（Control-node-requirements）"><a href="#控制节点要求-（Control-node-requirements）" class="headerlink" title="控制节点要求 （Control node requirements）"></a>控制节点要求 （<a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8">Control node requirements</a>）</h4><p>除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。</p>
-<h4 id="被管理节点要求-（Managed-node-requirements）"><a href="#被管理节点要求-（Managed-node-requirements）" class="headerlink" title="被管理节点要求 （Managed node requirements）"></a>被管理节点要求 （<a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id9">Managed node requirements</a>）</h4><p>对于大多数被管理的节点，Ansible使用SSH和SFTP来创建连接。但如果SFTP不可用，也可以使用SCP。同时，还需要运行Python。</p>
-<h3 id="选择要安装的Ansible版本"><a href="#选择要安装的Ansible版本" class="headerlink" title="选择要安装的Ansible版本"></a>选择要安装的Ansible版本</h3><p>有2种方式安装Ansible：S</p>
-<ul>
-<li>使用各操作系统的包管理器安装预编译的Ansible包</li>
-<li>使用<code>pip</code>安装Ansible</li>
-</ul>
-<h3 id="使用pip安装并升级Ansible"><a href="#使用pip安装并升级Ansible" class="headerlink" title="使用pip安装并升级Ansible"></a>使用<code>pip</code>安装并升级Ansible</h3><h4 id="使用pip安装Ansible"><a href="#使用pip安装Ansible" class="headerlink" title="使用pip安装Ansible"></a>使用<code>pip</code>安装Ansible</h4><p>安装Ansible：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ python -m pip install --user ansible</span><br></pre></td></tr></table></figure>
-
-<p>安装paramiko：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ python -m pip install --user paramiko</span><br></pre></td></tr></table></figure>
-
-<p>全局安装Ansible：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo python -m pip install ansible</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Running <code>pip</code> with <code>sudo</code> will make global changes to the system. Since <code>pip</code> does not coordinate with system package managers, it could make changes to your system that leaves it in an inconsistent or non-functioning state. This is particularly true for macOS. Installing with <code>--user</code> is recommended unless you understand fully the implications of modifying global files on the system.</p>
-</blockquote>
-<h4 id="在虚拟环境中使用pip安装Ansible"><a href="#在虚拟环境中使用pip安装Ansible" class="headerlink" title="在虚拟环境中使用pip安装Ansible"></a>在虚拟环境中使用<code>pip</code>安装Ansible</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ python -m virtualenv ansible  <span class="comment"># Create a virtualenv if one does not already exist</span></span><br><span class="line">$ <span class="built_in">source</span> ansible/bin/activate   <span class="comment"># Activate the virtual environment</span></span><br><span class="line">$ python -m pip install ansible</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>高版本的Python3都自带了虚拟环境模块<code>venv</code>，不需要单独安装<code>virtualenv</code></p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/ansible_user_guide/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2024-04-06T14:35:21.000Z</updated>
+  <updated>2024-04-30T01:44:17.248Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -15,6 +15,39 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Cheat Engine Tutorial 学习笔记2：手动查找指针、多级指针与基地址指针</title>
+    <link href="https://ifelif.cn/2024/cheat_engine_tutorial2/"/>
+    <id>https://ifelif.cn/2024/cheat_engine_tutorial2/</id>
+    <published>2024-04-28T15:17:21.000Z</published>
+    <updated>2024-04-30T01:44:17.248Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本文重点介绍：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;手动查找指针、多级指针与基地址指针&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CE版本如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Cheat Engine Version: 7.4和7.5&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Tutorial Version: v3.6&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    <category term="Reverse" scheme="https://ifelif.cn/categories/Reverse/"/>
+    
+    
+    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
+    
+    <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
+    
+    <category term="CheatEngine" scheme="https://ifelif.cn/tags/CheatEngine/"/>
+    
+  </entry>
   
   <entry>
     <title>在Tampermonkey中创建并使用WebWorker</title>
@@ -638,7 +671,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2024-04-28T15:21:22.346Z</updated>
+    <updated>2024-04-30T01:44:17.212Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
@@ -661,7 +694,7 @@
     <link href="https://ifelif.cn/2022/learn_gobyexample/"/>
     <id>https://ifelif.cn/2022/learn_gobyexample/</id>
     <published>2022-05-28T16:10:21.000Z</published>
-    <updated>2024-04-28T15:21:22.382Z</updated>
+    <updated>2024-04-30T01:44:17.236Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hello-World&quot;&gt;&lt;a href=&quot;#Hello-World&quot; class=&quot;headerlink&quot; title=&quot;Hello World&quot;&gt;&lt;/a&gt;Hello World&lt;/h1&gt;&lt;p&gt;我们的第一个程序将打印传说中的 “hello world” 消息，右边是完整的程序代码。&lt;/p&gt;
@@ -682,50 +715,6 @@
     
     
     <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Ansible 用户指南</title>
-    <link href="https://ifelif.cn/2022/ansible_user_guide/"/>
-    <id>https://ifelif.cn/2022/ansible_user_guide/</id>
-    <published>2022-05-16T16:01:21.000Z</published>
-    <updated>2024-04-28T15:21:22.346Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;安装指南&quot;&gt;&lt;a href=&quot;#安装指南&quot; class=&quot;headerlink&quot; title=&quot;安装指南&quot;&gt;&lt;/a&gt;安装指南&lt;/h1&gt;&lt;h2 id=&quot;安装-Ansible&quot;&gt;&lt;a href=&quot;#安装-Ansible&quot; class=&quot;headerlink&quot; title=&quot;安装 Ansible&quot;&gt;&lt;/a&gt;安装 Ansible&lt;/h2&gt;&lt;h3 id=&quot;前提条件&quot;&gt;&lt;a href=&quot;#前提条件&quot; class=&quot;headerlink&quot; title=&quot;前提条件&quot;&gt;&lt;/a&gt;前提条件&lt;/h3&gt;&lt;h4 id=&quot;控制节点要求-（Control-node-requirements）&quot;&gt;&lt;a href=&quot;#控制节点要求-（Control-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;控制节点要求 （Control node requirements）&quot;&gt;&lt;/a&gt;控制节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id8&quot;&gt;Control node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;除Windows外，其他任何安装了 Python 3.8 或更新版本的计算机都能成为控制节点，包括 RHEL，Debian，CentOS 以及任何 BSD 等等。&lt;/p&gt;
-&lt;h4 id=&quot;被管理节点要求-（Managed-node-requirements）&quot;&gt;&lt;a href=&quot;#被管理节点要求-（Managed-node-requirements）&quot; class=&quot;headerlink&quot; title=&quot;被管理节点要求 （Managed node requirements）&quot;&gt;&lt;/a&gt;被管理节点要求 （&lt;a href=&quot;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#id9&quot;&gt;Managed node requirements&lt;/a&gt;）&lt;/h4&gt;&lt;p&gt;对于大多数被管理的节点，Ansible使用SSH和SFTP来创建连接。但如果SFTP不可用，也可以使用SCP。同时，还需要运行Python。&lt;/p&gt;
-&lt;h3 id=&quot;选择要安装的Ansible版本&quot;&gt;&lt;a href=&quot;#选择要安装的Ansible版本&quot; class=&quot;headerlink&quot; title=&quot;选择要安装的Ansible版本&quot;&gt;&lt;/a&gt;选择要安装的Ansible版本&lt;/h3&gt;&lt;p&gt;有2种方式安装Ansible：S&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;使用各操作系统的包管理器安装预编译的Ansible包&lt;/li&gt;
-&lt;li&gt;使用&lt;code&gt;pip&lt;/code&gt;安装Ansible&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&quot;使用pip安装并升级Ansible&quot;&gt;&lt;a href=&quot;#使用pip安装并升级Ansible&quot; class=&quot;headerlink&quot; title=&quot;使用pip安装并升级Ansible&quot;&gt;&lt;/a&gt;使用&lt;code&gt;pip&lt;/code&gt;安装并升级Ansible&lt;/h3&gt;&lt;h4 id=&quot;使用pip安装Ansible&quot;&gt;&lt;a href=&quot;#使用pip安装Ansible&quot; class=&quot;headerlink&quot; title=&quot;使用pip安装Ansible&quot;&gt;&lt;/a&gt;使用&lt;code&gt;pip&lt;/code&gt;安装Ansible&lt;/h4&gt;&lt;p&gt;安装Ansible：&lt;/p&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ python -m pip install --user ansible&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;安装paramiko：&lt;/p&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ python -m pip install --user paramiko&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;全局安装Ansible：&lt;/p&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ sudo python -m pip install ansible&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Running &lt;code&gt;pip&lt;/code&gt; with &lt;code&gt;sudo&lt;/code&gt; will make global changes to the system. Since &lt;code&gt;pip&lt;/code&gt; does not coordinate with system package managers, it could make changes to your system that leaves it in an inconsistent or non-functioning state. This is particularly true for macOS. Installing with &lt;code&gt;--user&lt;/code&gt; is recommended unless you understand fully the implications of modifying global files on the system.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h4 id=&quot;在虚拟环境中使用pip安装Ansible&quot;&gt;&lt;a href=&quot;#在虚拟环境中使用pip安装Ansible&quot; class=&quot;headerlink&quot; title=&quot;在虚拟环境中使用pip安装Ansible&quot;&gt;&lt;/a&gt;在虚拟环境中使用&lt;code&gt;pip&lt;/code&gt;安装Ansible&lt;/h4&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ python -m virtualenv ansible  &lt;span class=&quot;comment&quot;&gt;# Create a virtualenv if one does not already exist&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;$ &lt;span class=&quot;built_in&quot;&gt;source&lt;/span&gt; ansible/bin/activate   &lt;span class=&quot;comment&quot;&gt;# Activate the virtual environment&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;$ python -m pip install ansible&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;高版本的Python3都自带了虚拟环境模块&lt;code&gt;venv&lt;/code&gt;，不需要单独安装&lt;code&gt;virtualenv&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;</summary>
-    
-    
-    
-    <category term="Linux" scheme="https://ifelif.cn/categories/Linux/"/>
-    
-    
-    <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
-    
-    <category term="ansible" scheme="https://ifelif.cn/tags/ansible/"/>
     
   </entry>
   
