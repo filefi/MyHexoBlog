@@ -1,6 +1,6 @@
 ---
 title: Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针
-date: 2024-04-28 23:17:21
+date: 2024-04-30 23:17:21
 tags: [PWN, Reverse, CheatEngine]
 categories: Reverse
 ---
