@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"ifelif.cn","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.20.0/source/js/config.min.js"></script>
 
-    <meta name="description" content="本文重点介绍：  手动查找指针、多级指针与基地址指针  CE版本如下：  Cheat Engine Version: 7.4和7.5  Tutorial Version: v3.6">
+    <meta name="description" content="本文重点介绍：  手动查找指针与基地址指针  CE版本如下：  Cheat Engine Version: 7.4和7.5  Tutorial Version: v3.6">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针">
+<meta property="og:title" content="Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针">
 <meta property="og:url" content="https://ifelif.cn/2024/cheat_engine_tutorial3/index.html">
 <meta property="og:site_name" content="正经人谁写日记">
-<meta property="og:description" content="本文重点介绍：  手动查找指针、多级指针与基地址指针  CE版本如下：  Cheat Engine Version: 7.4和7.5  Tutorial Version: v3.6">
+<meta property="og:description" content="本文重点介绍：  手动查找指针与基地址指针  CE版本如下：  Cheat Engine Version: 7.4和7.5  Tutorial Version: v3.6">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240427192717805.png">
 <meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240427193150926.png">
@@ -69,8 +69,19 @@
 <meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240428230410805.png">
 <meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240428230713755.png">
 <meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240428231014800.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503225106866.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503225239581.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503225310433.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503225631632.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503230106200.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503230326615.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503230830300.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503231002732.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503231651592.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503232231809.png">
+<meta property="og:image" content="https://ifelif.cn/2024/cheat_engine_tutorial3/image-20240503232748147.png">
 <meta property="article:published_time" content="2024-04-28T15:17:21.000Z">
-<meta property="article:modified_time" content="2024-05-03T14:05:20.432Z">
+<meta property="article:modified_time" content="2024-05-03T15:28:33.367Z">
 <meta property="article:author" content="filefi">
 <meta property="article:tag" content="Reverse">
 <meta property="article:tag" content="PWN">
@@ -83,10 +94,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ifelif.cn/2024/cheat_engine_tutorial3/","path":"2024/cheat_engine_tutorial3/","title":"Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ifelif.cn/2024/cheat_engine_tutorial3/","path":"2024/cheat_engine_tutorial3/","title":"Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针 | 正经人谁写日记</title>
+<title>Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针 | 正经人谁写日记</title>
   
 
   <script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.20.0/source/js/third-party/analytics/baidu-analytics.min.js"></script>
@@ -188,7 +199,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E3%80%81%E5%A4%9A%E7%BA%A7%E6%8C%87%E9%92%88%E4%B8%8E%E5%9F%BA%E5%9C%B0%E5%9D%80%E6%8C%87%E9%92%88"><span class="nav-number">1.</span> <span class="nav-text">指针、多级指针与基地址指针</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E6%9F%A5%E6%89%BE"><span class="nav-number">1.1.</span> <span class="nav-text">手动查找</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-2"><span class="nav-number">1.1.1.</span> <span class="nav-text">Step 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-3"><span class="nav-number">1.1.2.</span> <span class="nav-text">Step 3</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E4%B8%8E%E5%9F%BA%E5%9C%B0%E5%9D%80%E6%8C%87%E9%92%88"><span class="nav-number">1.</span> <span class="nav-text">指针与基地址指针</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E6%9F%A5%E6%89%BE"><span class="nav-number">1.1.</span> <span class="nav-text">手动查找</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-2"><span class="nav-number">1.1.1.</span> <span class="nav-text">Step 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-3"><span class="nav-number">1.1.2.</span> <span class="nav-text">Step 3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-6"><span class="nav-number">1.1.3.</span> <span class="nav-text">Step 6</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -274,12 +285,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针 | 正经人谁写日记">
+      <meta itemprop="name" content="Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针 | 正经人谁写日记">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针<a href="https://github.com/filefi/MyHexoBlog/tree/master/source/_posts/2024/cheat_engine_tutorial3.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+          Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针<a href="https://github.com/filefi/MyHexoBlog/tree/master/source/_posts/2024/cheat_engine_tutorial3.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
         </h1>
 
         <div class="post-meta-container">
@@ -297,7 +308,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-05-03 22:05:20" itemprop="dateModified" datetime="2024-05-03T22:05:20+08:00">2024-05-03</time>
+      <time title="修改时间：2024-05-03 23:28:33" itemprop="dateModified" datetime="2024-05-03T23:28:33+08:00">2024-05-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -320,7 +331,7 @@
     
     <div class="post-body" itemprop="articleBody"><p>本文重点介绍：</p>
 <ul>
-<li>手动查找指针、多级指针与基地址指针</li>
+<li>手动查找指针与基地址指针</li>
 </ul>
 <p>CE版本如下：</p>
 <ul>
@@ -332,7 +343,7 @@
 <span id="more"></span>
 
 
-<h1 id="指针、多级指针与基地址指针"><a href="#指针、多级指针与基地址指针" class="headerlink" title="指针、多级指针与基地址指针"></a>指针、多级指针与基地址指针</h1><p>使用精确或模糊值扫描找到的值的地址，在每次重新运行程序后可能都是会变的。甚至，很多情况下，不需要重新运行程序，只是切换了程序或游戏的菜单，或是游戏结束了一轮战斗，或者游戏切换了地图，就足以让刚才找到值所在地址引用失效。</p>
+<h1 id="指针与基地址指针"><a href="#指针与基地址指针" class="headerlink" title="指针与基地址指针"></a>指针与基地址指针</h1><p>使用精确或模糊值扫描找到的值的地址，在每次重新运行程序后可能都是会变的。甚至，很多情况下，不需要重新运行程序，只是切换了程序或游戏的菜单，或是游戏结束了一轮战斗，或者游戏切换了地图，就足以让刚才找到值所在地址引用失效。</p>
 <p>为了让外挂在每次重新运行程序后都能准确地定位到特定目标值所在的地址，就需要找到基于程序基地址指向特定目标值所在地址的指针。换句话说，就是需要找到这样一个指针，这个指针指向特定目标值所在的地址，同时，这个指针还必须由程序基地址偏移得到。</p>
 <p><strong>要找到基地址指针通常有2种方法：</strong></p>
 <ul>
@@ -435,6 +446,29 @@
 <p>修改基地址指针所指向地址的值，验证一下：</p>
 <p><img src="/2024/cheat_engine_tutorial3/image-20240428231014800.png"></p>
 <p>到这里，Step 3 中 Health 的基地址指针也找到了。</p>
+<h3 id="Step-6"><a href="#Step-6" class="headerlink" title="Step 6"></a>Step 6</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Step 6: Pointers: (PW=098712)</span><br><span class="line">In the previous step I explained how to use the Code finder to handle changing locations. But that method alone makes it difficult to find the address to set the values you want.</span><br><span class="line">That&#x27;s why there are pointers:</span><br><span class="line"></span><br><span class="line">At the bottom you&#x27;ll find 2 buttons. One will change the value, and the other changes the value AND the location of the value.</span><br><span class="line">For this step you don&#x27;t really need to know assembler, but it helps a lot if you do.</span><br><span class="line"></span><br><span class="line">First find the address of the value. When you&#x27;ve found it use the function to find out what accesses this address.</span><br><span class="line">Change the value again, and an item will show up in the list. Double click that item. (or select and click on more info) and a new window will open with detailed information on what happened when the instruction ran.</span><br><span class="line">If the assembler instruction doesn&#x27;t have anything between a &#x27;[&#x27; and &#x27;]&#x27; then use another item in the list.</span><br><span class="line">If it does it will say what it think will be the value of the pointer you need.</span><br><span class="line">Go back to the main cheat engine window (you can keep this extra info window open if you want, but if you close it, remember what is between the &#x27;[&#x27; and &#x27;]&#x27; ) and do a 4 byte scan in hexadecimal for the value the extra info told you.</span><br><span class="line">When done scanning it may return 1 or a few hundred addresses. Most of the time the address you need will be the smallest one. Now click on the &quot;Add Address Manually&quot; button and select the pointer checkbox.</span><br><span class="line"></span><br><span class="line">The window will change and allow you to type in the address of a pointer and an offset.</span><br><span class="line">Fill in the address you just found. It can be in the form: &quot;Tutorial-i386.exe&quot;+xxxxxx (relative to the process), </span><br><span class="line">or you can double click the address to add it to the address list and use the absolute address which appears there.</span><br><span class="line">If the assembler instruction has a calculation (e.g: [esi+12]) at the end then type the value in that&#x27;s at the end above the address field. This is the offset. Otherwise leave it 0. If it was a more complicated instruction look at the following calculation.</span><br><span class="line"></span><br><span class="line">Example of a more complicated instruction:</span><br><span class="line">[EAX*2+EDX+00000310] eax=4C and edx=00801234.</span><br><span class="line">In this case EDX would be the value the pointer has, and EAX*2+00000310 the offset, so the offset you&#x27;d fill in would be 2*4C+00000310=3A8. (This is all in hex, use calc.exe from Windows in Programmer mode to calculate hex values.)</span><br><span class="line"></span><br><span class="line">Back to the tutorial, click OK and the address will be added. If all went right the address will show P-&gt;xxxxxxx, with xxxxxxx being the address of the value you found. If that&#x27;s not right, you&#x27;ve done something wrong.</span><br><span class="line">Now, change the value using the pointer you added in to 5000 and click in the &#x27;Active&#x27; coloumn to freeze it. Then click Change pointer, and if all went right the Next button will become visible.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">extra:</span><br><span class="line">You could also use the pointer scanner to find the pointer to this address. https://cheatengine.org/help/pointer-scan.htm</span><br></pre></td></tr></table></figure>
+
+<p>Step 6 主要介绍了如何手动查找基于基地址的指针。</p>
+<p>首先，在明确知道初始值的情况下，使用精确值扫描找到变量的直接地址：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503225106866.png"></p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503225239581.png"></p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503225310433.png"></p>
+<p>由于修改变量通常是一个写入操作，我们直接查找对这个地址进行写入操作指令：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503225631632.png"></p>
+<p>点击<code>Change value</code>修改值，以便 debugger 跟踪对此地址进行写入的操作指令：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503230106200.png"></p>
+<p>双击条目查看详细信息：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503230326615.png"></p>
+<p>可以看到，地址<code>015A7F80</code>可能是我们要找的指针的值。使用这个值进行精确值扫描，查找保存了这个值的指针：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503230830300.png"></p>
+<p>找到了1个保存了这个值的指针，同时这个指针还是一个基于基地址的指针。双击将其加入 addresslist：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503231002732.png"></p>
+<p>将此地址修改为指针：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503231651592.png"></p>
+<p>点击<code>Change pointer</code>修改目标变量的地址，验证基于基地址的指针指向是否还依然正确：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503232231809.png"></p>
+<p>修改基于基地址指针所指向的地址中的值，并勾选<code>Active</code>锁定值：</p>
+<p><img src="/2024/cheat_engine_tutorial3/image-20240503232748147.png"></p>
 
     </div>
 
@@ -470,7 +504,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://ifelif.cn/2024/cheat_engine_tutorial3/" title="Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针">https://ifelif.cn/2024/cheat_engine_tutorial3/</a>
+      <a href="https://ifelif.cn/2024/cheat_engine_tutorial3/" title="Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针">https://ifelif.cn/2024/cheat_engine_tutorial3/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！

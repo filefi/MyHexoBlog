@@ -6,7 +6,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   
   <link href="https://ifelif.cn/"/>
-  <updated>2024-05-03T14:05:20.428Z</updated>
+  <updated>2024-05-03T15:28:33.363Z</updated>
   <id>https://ifelif.cn/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://ifelif.cn/2024/cheat_engine_tutorial2/"/>
     <id>https://ifelif.cn/2024/cheat_engine_tutorial2/</id>
     <published>2024-04-30T03:41:21.000Z</published>
-    <updated>2024-05-03T14:05:20.428Z</updated>
+    <updated>2024-05-03T15:28:33.363Z</updated>
     
     
     <summary type="html">&lt;p&gt;本文重点介绍：&lt;/p&gt;
@@ -50,16 +50,16 @@
   </entry>
   
   <entry>
-    <title>Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针</title>
+    <title>Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针</title>
     <link href="https://ifelif.cn/2024/cheat_engine_tutorial3/"/>
     <id>https://ifelif.cn/2024/cheat_engine_tutorial3/</id>
     <published>2024-04-28T15:17:21.000Z</published>
-    <updated>2024-05-03T14:05:20.432Z</updated>
+    <updated>2024-05-03T15:28:33.367Z</updated>
     
     
     <summary type="html">&lt;p&gt;本文重点介绍：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;手动查找指针、多级指针与基地址指针&lt;/li&gt;
+&lt;li&gt;手动查找指针与基地址指针&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;CE版本如下：&lt;/p&gt;
 &lt;ul&gt;
@@ -704,7 +704,7 @@
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2024-05-03T14:05:20.384Z</updated>
+    <updated>2024-05-03T15:28:33.319Z</updated>
     
     
     <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
