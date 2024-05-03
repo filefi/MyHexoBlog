@@ -1,5 +1,5 @@
 ---
-title: Cheat Engine Tutorial 学习笔记3：手动查找指针、多级指针与基地址指针
+title: Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针
 date: 2024-04-28 23:17:21
 tags: [PWN, Reverse, CheatEngine]
 categories: Reverse
@@ -8,7 +8,7 @@ categories: Reverse
 
 
 本文重点介绍：
-- 手动查找指针、多级指针与基地址指针
+- 手动查找指针与基地址指针
 
 CE版本如下：
 
@@ -21,7 +21,7 @@ CE版本如下：
 <!-- more -->
 
 
-# 指针、多级指针与基地址指针
+# 指针与基地址指针
 
 使用精确或模糊值扫描找到的值的地址，在每次重新运行程序后可能都是会变的。甚至，很多情况下，不需要重新运行程序，只是切换了程序或游戏的菜单，或是游戏结束了一轮战斗，或者游戏切换了地图，就足以让刚才找到值所在地址引用失效。
 
@@ -213,3 +213,80 @@ Step 2 的按钮`Next`现在变为可点击：
 ![](image-20240428231014800.png)
 
 到这里，Step 3 中 Health 的基地址指针也找到了。
+
+### Step 6
+
+```text
+Step 6: Pointers: (PW=098712)
+In the previous step I explained how to use the Code finder to handle changing locations. But that method alone makes it difficult to find the address to set the values you want.
+That's why there are pointers:
+
+At the bottom you'll find 2 buttons. One will change the value, and the other changes the value AND the location of the value.
+For this step you don't really need to know assembler, but it helps a lot if you do.
+
+First find the address of the value. When you've found it use the function to find out what accesses this address.
+Change the value again, and an item will show up in the list. Double click that item. (or select and click on more info) and a new window will open with detailed information on what happened when the instruction ran.
+If the assembler instruction doesn't have anything between a '[' and ']' then use another item in the list.
+If it does it will say what it think will be the value of the pointer you need.
+Go back to the main cheat engine window (you can keep this extra info window open if you want, but if you close it, remember what is between the '[' and ']' ) and do a 4 byte scan in hexadecimal for the value the extra info told you.
+When done scanning it may return 1 or a few hundred addresses. Most of the time the address you need will be the smallest one. Now click on the "Add Address Manually" button and select the pointer checkbox.
+
+The window will change and allow you to type in the address of a pointer and an offset.
+Fill in the address you just found. It can be in the form: "Tutorial-i386.exe"+xxxxxx (relative to the process), 
+or you can double click the address to add it to the address list and use the absolute address which appears there.
+If the assembler instruction has a calculation (e.g: [esi+12]) at the end then type the value in that's at the end above the address field. This is the offset. Otherwise leave it 0. If it was a more complicated instruction look at the following calculation.
+
+Example of a more complicated instruction:
+[EAX*2+EDX+00000310] eax=4C and edx=00801234.
+In this case EDX would be the value the pointer has, and EAX*2+00000310 the offset, so the offset you'd fill in would be 2*4C+00000310=3A8. (This is all in hex, use calc.exe from Windows in Programmer mode to calculate hex values.)
+
+Back to the tutorial, click OK and the address will be added. If all went right the address will show P->xxxxxxx, with xxxxxxx being the address of the value you found. If that's not right, you've done something wrong.
+Now, change the value using the pointer you added in to 5000 and click in the 'Active' coloumn to freeze it. Then click Change pointer, and if all went right the Next button will become visible.
+
+
+extra:
+You could also use the pointer scanner to find the pointer to this address. https://cheatengine.org/help/pointer-scan.htm
+```
+
+Step 6 主要介绍了如何手动查找基于基地址的指针。
+
+首先，在明确知道初始值的情况下，使用精确值扫描找到变量的直接地址：
+
+![](image-20240503225106866.png)
+
+![](image-20240503225239581.png)
+
+![](image-20240503225310433.png)
+
+由于修改变量通常是一个写入操作，我们直接查找对这个地址进行写入操作指令：
+
+![](image-20240503225631632.png)
+
+点击`Change value`修改值，以便 debugger 跟踪对此地址进行写入的操作指令：
+
+![](image-20240503230106200.png)
+
+双击条目查看详细信息：
+
+![](image-20240503230326615.png)
+
+可以看到，地址`015A7F80`可能是我们要找的指针的值。使用这个值进行精确值扫描，查找保存了这个值的指针：
+
+![](image-20240503230830300.png)
+
+找到了1个保存了这个值的指针，同时这个指针还是一个基于基地址的指针。双击将其加入 addresslist：
+
+![](image-20240503231002732.png)
+
+将此地址修改为指针：
+
+![](image-20240503231651592.png)
+
+点击`Change pointer`修改目标变量的地址，验证基于基地址的指针指向是否还依然正确：
+
+![](image-20240503232231809.png)
+
+修改基于基地址指针所指向的地址中的值，并勾选`Active`锁定值：
+
+![](image-20240503232748147.png)
+
