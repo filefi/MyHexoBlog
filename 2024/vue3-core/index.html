@@ -370,7 +370,7 @@
 <h3 id="Setup-上下文"><a href="#Setup-上下文" class="headerlink" title="Setup 上下文"></a>Setup 上下文</h3><p>传入 <code>setup</code> 函数的第2个参数是一个 <strong>Setup 上下文</strong>对象。上下文对象暴露了其他一些在 <code>setup</code> 中可能会用到的值：</p>
 <figure class="highlight ts"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="title function_">setup</span>(<span class="params">props, context</span>) &#123;</span><br><span class="line">    <span class="comment">// 该上下文对象是非响应式的，可以安全地解构</span></span><br><span class="line">    <span class="keyword">const</span> &#123; attrs, slots, emit, expose &#125; = context</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 透传 Attributes（非响应式的对象，等价于 $attrs）</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(attrs)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 插槽（非响应式的对象，等价于 $slots）</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(slots)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 触发事件（函数，等价于 $emit）</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(emit)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 暴露公共属性（函数）</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(expose)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><code>attrs</code> 和 <code>slots</code> 都是<strong>有状态（但不是响应式）</strong>的对象：</p>
+<p><code>attrs</code> 和 <code>slots</code> 都是**有状态（但不是响应式）**的对象：</p>
 <ul>
 <li>它们总是会随着组件自身的更新而更新。</li>
 <li>应当避免解构它们，并始终通过 <code>attrs.x</code> 或 <code>slots.x</code> 的形式使用其中的属性。</li>
@@ -859,7 +859,7 @@
 
 <p>可以看到eslint报错了：</p>
 <p><img src="/2024/vue3-core/image-20240330141835059.png"></p>
-<p>*<em>这其实由于Vue只支持 <em>单向数据流</em>，即：</em>*</p>
+<p><strong>这其实由于Vue只支持 <em>单向数据流</em>，即：</strong></p>
 <ul>
 <li>父级组件传递给props的响应式变量更新时会向下传递给子组件，子组件中所有的props都会更新为最新的值；</li>
 <li>但是反过来则不行，不应该在一个子组件内修改props。</li>
@@ -1141,7 +1141,7 @@
 
   <div class="copyright">
     &copy; 
-    <span itemprop="copyrightYear">2024</span>
+    <span itemprop="copyrightYear">2025</span>
     <span class="with-love">
       <i class="fa fa-heart"></i>
     </span>

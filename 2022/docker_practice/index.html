@@ -40,7 +40,7 @@
 <meta property="og:image" content="https://ifelif.cn/2022/docker_practice/wordpress.png">
 <meta property="og:image" content="https://ifelif.cn/2022/docker_practice/cmd_logic.png">
 <meta property="article:published_time" content="2022-04-28T15:56:21.000Z">
-<meta property="article:modified_time" content="2024-11-26T01:44:15.444Z">
+<meta property="article:modified_time" content="2025-01-03T01:36:40.146Z">
 <meta property="article:author" content="filefi">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="CNCF">
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-11-26 09:44:15" itemprop="dateModified" datetime="2024-11-26T09:44:15+08:00">2024-11-26</time>
+      <time title="修改时间：2025-01-03 09:36:40" itemprop="dateModified" datetime="2025-01-03T09:36:40+08:00">2025-01-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -369,7 +369,7 @@
 <p>镜像、容器、数据卷实际所占用的空间通过 <code>docker system df</code> 或<code>docker system df -v</code>命令查看：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker system <span class="built_in">df</span></span><br><span class="line"></span><br><span class="line">TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE</span><br><span class="line">Images              24                  0                   1.992GB             1.992GB (100%)</span><br><span class="line">Containers          1                   0                   62.82MB             62.82MB (100%)</span><br><span class="line">Local Volumes       9                   0                   652.2MB             652.2MB (100%)</span><br><span class="line">Build Cache                                                 0B                  0B</span><br></pre></td></tr></table></figure>
 
-<h3 id="虚悬镜像-dangling-image"><a href="#虚悬镜像-dangling-image" class="headerlink" title="虚悬镜像 (dangling image)"></a>虚悬镜像 (dangling image)</h3><p><code>docker pull</code> 和<code>docker build</code> 操作可能导致**虚悬镜像 (dangling image)**。由于新旧镜像同名，旧镜像名称被取消，从而出现仓库名、标签均为 <code>&lt;none&gt;</code> 的镜像。</p>
+<h3 id="虚悬镜像-dangling-image"><a href="#虚悬镜像-dangling-image" class="headerlink" title="虚悬镜像 (dangling image)"></a>虚悬镜像 (dangling image)</h3><p><code>docker pull</code> 和<code>docker build</code> 操作可能导致<strong>虚悬镜像 (dangling image)</strong>。由于新旧镜像同名，旧镜像名称被取消，从而出现仓库名、标签均为 <code>&lt;none&gt;</code> 的镜像。</p>
 <p>上面的镜像列表中，还可以看到一个特殊的镜像，这个镜像既没有仓库名，也没有标签，均为 <code>&lt;none&gt;</code>：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;none&gt;               &lt;none&gt;              00285df0df87        5 days ago          342 MB</span><br></pre></td></tr></table></figure>
 
@@ -475,7 +475,7 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost docker]<span class="comment"># docker image history from-ub:latest</span></span><br><span class="line">IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT</span><br><span class="line">ccc63c912efa   35 seconds ago   bash                                            73B       create file f1.txt</span><br><span class="line">825d55fb6340   5 days ago       /bin/sh -c <span class="comment">#(nop)  CMD [&quot;bash&quot;]                 0B        </span></span><br><span class="line">&lt;missing&gt;      5 days ago       /bin/sh -c <span class="comment">#(nop) ADD file:b83df51ab7caf8a4d…   72.8MB    </span></span><br><span class="line">[root@localhost docker]<span class="comment"># docker image history ubuntu:latest </span></span><br><span class="line">IMAGE          CREATED      CREATED BY                                      SIZE      COMMENT</span><br><span class="line">825d55fb6340   5 days ago   /bin/sh -c <span class="comment">#(nop)  CMD [&quot;bash&quot;]                 0B        </span></span><br><span class="line">&lt;missing&gt;      5 days ago   /bin/sh -c <span class="comment">#(nop) ADD file:b83df51ab7caf8a4d…   72.8MB</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="慎用-docker-commit"><a href="#慎用-docker-commit" class="headerlink" title="慎用 docker commit"></a>慎用 <code>docker commit</code></h3><p>由于容器是动态的，在容器运行过程中，容器文件系统中的很多文件都可能被修改过。所以由<code>docker commit</code>生成镜像，可能会有大量的无关内容被添加进来，将会导致镜像极为臃肿。而且对于这些修改，我们是无法确切知道到底是做了哪些修改的。</p>
-<h2 id="使用-Dockerfile-定制镜像"><a href="#使用-Dockerfile-定制镜像" class="headerlink" title="使用 Dockerfile 定制镜像"></a>使用 Dockerfile 定制镜像</h2><p>使用Dockerfile允许我们以一个镜像作为基础，在其上进行定制。Dockerfile 是一个文本文件，其内包含了一条条的 <em><em>指令(Instruction)<strong>，</strong></em>每一条指令构建一层</em>**，因此每一条指令的内容，就是描述该层应当如何构建。</p>
+<h2 id="使用-Dockerfile-定制镜像"><a href="#使用-Dockerfile-定制镜像" class="headerlink" title="使用 Dockerfile 定制镜像"></a>使用 Dockerfile 定制镜像</h2><p>使用Dockerfile允许我们以一个镜像作为基础，在其上进行定制。Dockerfile 是一个文本文件，其内包含了一条条的 <strong>指令(Instruction)</strong>，<em><strong>每一条指令构建一层</strong></em>，因此每一条指令的内容，就是描述该层应当如何构建。</p>
 <p>在 <a target="_blank" rel="noopener" href="https://hub.docker.com/search?q=&type=image&image_filter=official">Docker Hub</a> 上有非常多的高质量的官方镜像，可以在其中寻找一个最符合我们最终目标的镜像为基础镜像进行定制。</p>
 <p>下面以定制 <code>nginx</code> 镜像为例，使用 Dockerfile 来定制镜像<code>mynginx</code>。在一个空白目录中，建立一个文本文件，并命名为 <code>Dockerfile</code>：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ <span class="built_in">mkdir</span> mynginx</span><br><span class="line">$ <span class="built_in">cd</span> mynginx</span><br><span class="line">$ <span class="built_in">touch</span> Dockerfile</span><br></pre></td></tr></table></figure>
@@ -544,7 +544,7 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">COPY hom* /mydir/</span><br><span class="line">COPY hom?.txt /mydir/</span><br></pre></td></tr></table></figure>
 
 <p><code>&lt;目标路径&gt;</code> 可以是容器内的绝对路径，也可以是相对于工作目录的相对路径（工作目录可以用 <code>WORKDIR</code> 指令来指定）。目标路径不需要事先创建，如果目录不存在会在复制文件前先行创建缺失目录。</p>
-<p><strong>使用 <code>COPY</code> 指令，源文件的各种元数据都会保留。</strong>比如读、写、执行权限、文件变更时间等。这个特性对于镜像定制很有用。特别是构建相关文件都在使用 Git 进行管理的时候。</p>
+<p>**使用 <code>COPY</code> 指令，源文件的各种元数据都会保留。**比如读、写、执行权限、文件变更时间等。这个特性对于镜像定制很有用。特别是构建相关文件都在使用 Git 进行管理的时候。</p>
 <p>在使用该指令的时候还可以加上 <code>--chown=&lt;user&gt;:&lt;group&gt;</code> 选项来改变文件的所属用户及所属组。</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">COPY --<span class="built_in">chown</span>=55:mygroup files* /mydir/</span><br><span class="line">COPY --<span class="built_in">chown</span>=bin files* /mydir/</span><br><span class="line">COPY --<span class="built_in">chown</span>=1 files* /mydir/</span><br><span class="line">COPY --<span class="built_in">chown</span>=10:11 files* /mydir/</span><br></pre></td></tr></table></figure>
 
@@ -668,7 +668,7 @@
 <p>之前提到一些初学者常犯的错误是把 <code>Dockerfile</code> 等同于 Shell 脚本来书写，这种错误的理解还可能会导致出现下面这样的错误：</p>
 <figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">cd</span> /app</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;hello&quot;</span> &gt; world.txt</span></span><br></pre></td></tr></table></figure>
 
-<p>如果将这个 <code>Dockerfile</code> 进行构建镜像运行后，会发现找不到 <code>/app/world.txt</code> 文件，或者其内容不是 <code>hello</code>。原因其实很简单，在 Shell 中，连续两行是同一个进程执行环境，因此前一个命令修改的内存状态，会直接影响后一个命令；<strong>而在 <code>Dockerfile</code> 中，这两行 <code>RUN</code> 命令的执行环境根本不同，是两个完全不同的容器。</strong>这就是对 <code>Dockerfile</code> 构建分层存储的概念不了解所导致的错误。</p>
+<p>如果将这个 <code>Dockerfile</code> 进行构建镜像运行后，会发现找不到 <code>/app/world.txt</code> 文件，或者其内容不是 <code>hello</code>。原因其实很简单，在 Shell 中，连续两行是同一个进程执行环境，因此前一个命令修改的内存状态，会直接影响后一个命令；**而在 <code>Dockerfile</code> 中，这两行 <code>RUN</code> 命令的执行环境根本不同，是两个完全不同的容器。**这就是对 <code>Dockerfile</code> 构建分层存储的概念不了解所导致的错误。</p>
 <p>之前说过每一个 <code>RUN</code> 都是启动一个容器、执行命令、然后提交存储层文件变更。第一层 <code>RUN cd /app</code> 的执行仅仅是当前进程的工作目录变更，一个内存上的变化而已，其结果不会造成任何文件变更。而到第二层的时候，启动的是一个全新的容器，跟第一层的容器更完全没关系，自然不可能继承前一层构建过程中的内存变化。</p>
 <p>因此如果需要改变以后各层的工作目录的位置，那么应该使用 <code>WORKDIR</code> 指令。</p>
 <figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;hello&quot;</span> &gt; world.txt</span></span><br></pre></td></tr></table></figure>
@@ -1975,7 +1975,7 @@
 <p>工作节点是任务执行节点，管理节点将服务 (<code>service</code>) 下发至工作节点执行。管理节点默认也作为工作节点。你也可以通过配置让服务只运行在管理节点。</p>
 <p>来自 Docker 官网的这张图片形象的展示了集群中管理节点与工作节点的关系。</p>
 <p><img src="/2022/docker_practice/swarm-diagram.png"></p>
-<h3 id="服务和任务"><a href="#服务和任务" class="headerlink" title="服务和任务"></a>服务和任务</h3><p><em><strong>任务 （<code>Task</code>）</strong></em>是 <code>Swarm</code> 中的最小的调度单位，目前来说就是一个单一的容器。</p>
+<h3 id="服务和任务"><a href="#服务和任务" class="headerlink" title="服务和任务"></a>服务和任务</h3><p>***任务 （<code>Task</code>）***是 <code>Swarm</code> 中的最小的调度单位，目前来说就是一个单一的容器。</p>
 <p><em><strong>服务 （<code>Services</code>）</strong></em> 是指一组任务的集合，服务定义了任务的属性。服务有2种模式：</p>
 <ul>
 <li><p><code>replicated services</code> 按照一定规则在各个工作节点上运行指定个数的任务。</p>
@@ -2215,7 +2215,7 @@
 <td align="left"><code>overlay2</code></td>
 </tr>
 </tbody></table>
-<p><strong>在可能的情况下，<a target="_blank" rel="noopener" href="https://docs.docker.com/storage/storagedriver/select-storage-driver/">推荐</a> 使用 <code>overlay2</code> 存储驱动，<code>overlay2</code> 是目前 Docker 默认的存储驱动，以前则是 <code>aufs</code>。</strong>你可以通过配置来使用以上提到的其他类型的存储驱动。</p>
+<p>**在可能的情况下，<a target="_blank" rel="noopener" href="https://docs.docker.com/storage/storagedriver/select-storage-driver/">推荐</a> 使用 <code>overlay2</code> 存储驱动，<code>overlay2</code> 是目前 Docker 默认的存储驱动，以前则是 <code>aufs</code>。**你可以通过配置来使用以上提到的其他类型的存储驱动。</p>
 <h2 id="容器格式"><a href="#容器格式" class="headerlink" title="容器格式"></a>容器格式</h2><p><strong>最初，Docker 采用了 <code>LXC</code> 中的容器格式。从 0.7 版本以后开始去除 LXC，转而使用自行开发的 <a target="_blank" rel="noopener" href="https://github.com/docker/libcontainer">libcontainer</a>，从 1.11 开始，则进一步演进为使用 <a target="_blank" rel="noopener" href="https://github.com/opencontainers/runc">runC</a> 和 <a target="_blank" rel="noopener" href="https://github.com/containerd/containerd">containerd</a>。</strong></p>
 <h2 id="Docker-网络实现"><a href="#Docker-网络实现" class="headerlink" title="Docker 网络实现"></a>Docker 网络实现</h2><p>Docker 的网络实现其实就是利用了 Linux 上的 <em>网络命名空间</em> 和 <em>虚拟网络设备</em>（特别是 veth pair）。</p>
 <p>首先，要实现网络通信，机器需要至少一个网络接口（物理接口或虚拟接口）来收发数据包；此外，如果不同子网之间要进行通信，需要路由机制。</p>
@@ -2964,7 +2964,7 @@
 
   <div class="copyright">
     &copy; 
-    <span itemprop="copyrightYear">2024</span>
+    <span itemprop="copyrightYear">2025</span>
     <span class="with-love">
       <i class="fa fa-heart"></i>
     </span>

@@ -361,7 +361,7 @@
 <h2 id="包名"><a href="#包名" class="headerlink" title="包名"></a>包名</h2><p>Go源文件中的第一个语句必须是</p>
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> 名称</span><br></pre></td></tr></table></figure>
 
-<p>这里的 <strong><code>名称</code></strong> 即为导入该包时使用的默认名称。 （一个包中的所有文件都必须使用相同的 **<code>名称</code>**。）</p>
+<p>这里的 <strong><code>名称</code></strong> 即为导入该包时使用的默认名称。 （一个包中的所有文件都必须使用相同的 <strong><code>名称</code></strong>。）</p>
 <p>Go的约定是包名为导入路径的最后一个元素：作为 <code>crypto/rot13</code> 导入的包应命名为 <code>rot13</code>。</p>
 <p>可执行命令必须使用 <code>package main</code>。</p>
 <p>链接成单个二进制文件的所有包，其包名无需是唯一的，只有导入路径（它们的完整文件名） 才是唯一的。</p>
@@ -1064,7 +1064,7 @@
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *ReadWriter)</span></span> Read(p []<span class="type">byte</span>) (n <span class="type">int</span>, err <span class="type">error</span>) &#123;</span><br><span class="line">	<span class="keyword">return</span> rw.reader.Read(p)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>而<strong>通过直接内嵌结构体，我们就能避免如此繁琐。 内嵌类型的方法可以直接引用，这意味着 <code>bufio.ReadWriter</code> 不仅包括 <code>bufio.Reader</code> 和 <code>bufio.Writer</code> 的方法，它还同时满足下列三个接口： <code>io.Reader</code>、<code>io.Writer</code> 以及 <code>io.ReadWriter</code>。</strong></p>
-<p>还有种区分内嵌与子类的重要手段。<strong>当内嵌一个类型时，该类型的方法会成为外部类型的方法， 但当它们被调用时，该方法的接收者是内部类型，而非外部的。</strong>在我们的例子中，当 <code>bufio.ReadWriter</code> 的 <code>Read</code> 方法被调用时， 它与之前写的转发方法具有同样的效果；接收者是 <code>ReadWriter</code> 的 <code>reader</code> 字段，而非 <code>ReadWriter</code> 本身。</p>
+<p>还有种区分内嵌与子类的重要手段。**当内嵌一个类型时，该类型的方法会成为外部类型的方法， 但当它们被调用时，该方法的接收者是内部类型，而非外部的。**在我们的例子中，当 <code>bufio.ReadWriter</code> 的 <code>Read</code> 方法被调用时， 它与之前写的转发方法具有同样的效果；接收者是 <code>ReadWriter</code> 的 <code>reader</code> 字段，而非 <code>ReadWriter</code> 本身。</p>
 <p><strong>内嵌同样可以提供便利。这个例子展示了一个内嵌字段和一个常规的命名字段。</strong></p>
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> Job <span class="keyword">struct</span> &#123;</span><br><span class="line">	Command <span class="type">string</span></span><br><span class="line">	*log.Logger</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1073,8 +1073,7 @@
 
 <blockquote>
 <p>go 1.19.1 没有 <code>Log</code>、<code>Logf</code>方法，但 <code>job</code> 依然有了 <code>log.Logger</code>的其他方法，如：<code>Println</code>、<code>Print</code>、<code>Fatal</code>。</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 以下结果运行于 go 1.19.1</span></span><br><span class="line"></span><br><span class="line">job := &amp;Job&#123;<span class="string">&quot;cmd&quot;</span>, log.New(os.Stderr, <span class="string">&quot;Job: &quot;</span>, log.Ldate)&#125;</span><br><span class="line">fmt.Println(job.Command) <span class="comment">// cmd</span></span><br><span class="line">job.Println(<span class="string">&quot;starting now...&quot;</span>) <span class="comment">// Job: 2022/09/14 starting now...</span></span><br></pre></td></tr></table></figure>
-</blockquote>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 以下结果运行于 go 1.19.1</span></span><br><span class="line"></span><br><span class="line">job := &amp;Job&#123;<span class="string">&quot;cmd&quot;</span>, log.New(os.Stderr, <span class="string">&quot;Job: &quot;</span>, log.Ldate)&#125;</span><br><span class="line">fmt.Println(job.Command) <span class="comment">// cmd</span></span><br><span class="line">job.Println(<span class="string">&quot;starting now...&quot;</span>) <span class="comment">// Job: 2022/09/14 starting now...</span></span><br></pre></td></tr></table></figure></blockquote>
 <p><code>Logger</code> 是 <code>Job</code> 结构体的常规字段， 因此我们可在 <code>Job</code> 的构造函数中，通过一般的方式来初始化它，就像这样：</p>
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewJob</span><span class="params">(command <span class="type">string</span>, logger *log.Logger)</span></span> *Job &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Job&#123;command, logger&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1093,7 +1092,7 @@
 </blockquote>
 <p>这种方法意义深远。例如，引用计数通过为整数变量添加互斥锁来很好地实现。 但作为一种高级方法，通过信道来控制访问能够让你写出更简洁，正确的程序。</p>
 <p>我们可以从典型的单线程运行在单CPU之上的情形来审视这种模型。它无需提供同步原语。 现在考虑另一种情况，它也无需同步。现在让它们俩进行通信。若将通信过程看做同步着， 那就完全不需要其它同步了。例如，Unix管道就与这种模型完美契合。 尽管Go的并发处理方式来源于Hoare的通信顺序处理（CSP）， 它依然可以看做是类型安全的Unix管道的实现。</p>
-<h2 id="Goroutines"><a href="#Goroutines" class="headerlink" title="Goroutines"></a>Goroutines</h2><p>我们称之为<strong>Go程（Goroutines）</strong>是因为现有的术语—线程、协程、进程等等—无法准确传达它的含义。 <strong>Go程</strong>具有简单的模型：它是与其它Go程并发运行在同一地址空间的函数。它是轻量级的， 所有消耗几乎就只有栈空间的分配。而且栈最开始是非常小的，所以它们很廉价， 仅在需要时才会随着堆空间的分配（和释放）而变化。</p>
+<h2 id="Goroutines"><a href="#Goroutines" class="headerlink" title="Goroutines"></a>Goroutines</h2><p>我们称之为**Go程（Goroutines）**是因为现有的术语—线程、协程、进程等等—无法准确传达它的含义。 <strong>Go程</strong>具有简单的模型：它是与其它Go程并发运行在同一地址空间的函数。它是轻量级的， 所有消耗几乎就只有栈空间的分配。而且栈最开始是非常小的，所以它们很廉价， 仅在需要时才会随着堆空间的分配（和释放）而变化。</p>
 <p>Go程在多线程操作系统上可实现多路复用，因此若一个线程阻塞，比如说等待I&#x2F;O， 那么其它的线程就会运行。Go程的设计隐藏了线程创建和管理的诸多复杂性。</p>
 <p><strong>在函数或方法前添加 <code>go</code> 关键字能够在新的Go程中调用它。当调用完成后， 该Go程也会安静地退出。（效果有点像Unix Shell中的 <code>&amp;</code> 符号，它能让命令在后台运行。）</strong></p>
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">go</span> list.Sort()  <span class="comment">// 并发运行 list.Sort，无需等它结束。</span></span><br></pre></td></tr></table></figure>
@@ -1358,7 +1357,7 @@
 
   <div class="copyright">
     &copy; 
-    <span itemprop="copyrightYear">2024</span>
+    <span itemprop="copyrightYear">2025</span>
     <span class="with-love">
       <i class="fa fa-heart"></i>
     </span>
