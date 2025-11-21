@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -369,7 +369,7 @@
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">R4(config)<span class="meta">#router bgp 1</span></span><br><span class="line">R4(config-router)<span class="meta">#address-family ipv4 vrf A-Site2</span></span><br><span class="line">R4(config-router-af)<span class="meta">#redistribute connected</span></span><br><span class="line">R4(config-router-af)<span class="meta">#redistribute static</span></span><br><span class="line">R4(config-router-af)<span class="meta">#exit-address-family</span></span><br></pre></td></tr></table></figure>
 
 <h1 id="实验与调试"><a href="#实验与调试" class="headerlink" title="实验与调试"></a>实验与调试</h1><p>在VPN A站点1的C路由器R6上ping远程VPN A站点2的C路由器R8，并且指定源为R6的接口Loopback0；</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">R6(config)<span class="meta">#do p 8.8.8.8 source 6.6.6.6</span></span><br><span class="line">Type escape sequence to <span class="built_in">abort</span>.</span><br><span class="line">Sending <span class="number">5</span>, <span class="number">100</span>-byte ICMP Echos to <span class="number">8.8</span><span class="number">.8</span><span class="number">.8</span>, timeout is <span class="number">2</span> seconds:</span><br><span class="line">Packet sent with a source address of <span class="number">6.6</span><span class="number">.6</span><span class="number">.6</span> </span><br><span class="line">!!!!!</span><br><span class="line">Success rate is <span class="number">100</span> percent (<span class="number">5</span>/<span class="number">5</span>), round-trip min/avg/max = <span class="number">128</span>/<span class="number">159</span>/<span class="number">200</span> ms</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">R6(config)<span class="meta">#do p 8.8.8.8 source 6.6.6.6</span></span><br><span class="line">Type escape sequence to <span class="built_in">abort</span>.</span><br><span class="line">Sending <span class="number">5</span>, <span class="number">100</span>-byte ICMP Echos to <span class="number">8.8</span>.<span class="number">8.8</span>, timeout is <span class="number">2</span> seconds:</span><br><span class="line">Packet sent with a source address of <span class="number">6.6</span>.<span class="number">6.6</span> </span><br><span class="line">!!!!!</span><br><span class="line">Success rate is <span class="number">100</span> percent (<span class="number">5</span>/<span class="number">5</span>), round-trip min/avg/max = <span class="number">128</span>/<span class="number">159</span>/<span class="number">200</span> ms</span><br></pre></td></tr></table></figure>
 <p>成功！</p>
 
     </div>
