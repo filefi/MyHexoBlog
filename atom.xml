@@ -1,725 +1,564 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>正经人谁写日记</title>
-  <icon>https://ifelif.cn/icon.png</icon>
-  
-  <link href="https://ifelif.cn/atom.xml" rel="self"/>
-  
-  <link href="https://ifelif.cn/"/>
-  <updated>2026-02-27T07:35:15.536Z</updated>
-  <id>https://ifelif.cn/</id>
-  
   <author>
     <name>filefi</name>
-    
   </author>
-  
   <generator uri="https://hexo.io/">Hexo</generator>
-  
+  <icon>https://ifelif.cn/icon.png</icon>
+  <id>https://ifelif.cn/</id>
+  <link href="https://ifelif.cn/" rel="alternate"/>
+  <link href="https://ifelif.cn/atom.xml" rel="self"/>
+  <rights>All rights reserved 2026, filefi</rights>
+  <title>正经人谁写日记</title>
+  <updated>2026-02-27T07:36:04.264Z</updated>
   <entry>
-    <title>Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针</title>
-    <link href="https://ifelif.cn/2024/cheat_engine_tutorial3/"/>
+    <author>
+      <name>filefi</name>
+    </author>
+    <category term="Reverse" scheme="https://ifelif.cn/categories/Reverse/"/>
+    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
+    <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
+    <category term="CheatEngine" scheme="https://ifelif.cn/tags/CheatEngine/"/>
     <id>https://ifelif.cn/2024/cheat_engine_tutorial3/</id>
+    <link href="https://ifelif.cn/2024/cheat_engine_tutorial3/"/>
     <published>2024-04-30T15:17:21.000Z</published>
-    <updated>2026-02-27T07:35:15.536Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;本文重点介绍：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;手动查找指针与基地址指针&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;CE版本如下：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Cheat Engine Version: 7.4和7.5&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Tutorial Version: v3.6&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;</summary>
-    
-    
-    
-    <category term="Reverse" scheme="https://ifelif.cn/categories/Reverse/"/>
-    
-    
-    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
-    
-    <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
-    
-    <category term="CheatEngine" scheme="https://ifelif.cn/tags/CheatEngine/"/>
-    
+    <summary>
+      <![CDATA[<p>本文重点介绍：</p>
+<ul>
+<li>手动查找指针与基地址指针</li>
+</ul>
+<p>CE版本如下：</p>
+<ul>
+<li><p>Cheat Engine Version: 7.4和7.5</p>
+</li>
+<li><p>Tutorial Version: v3.6</p>
+</li>
+</ul>]]>
+    </summary>
+    <title>Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针</title>
+    <updated>2026-02-27T07:36:04.264Z</updated>
   </entry>
-  
   <entry>
-    <title>Cheat Engine Tutorial 学习笔记2：指令查找</title>
-    <link href="https://ifelif.cn/2024/cheat_engine_tutorial2/"/>
+    <author>
+      <name>filefi</name>
+    </author>
+    <category term="Reverse" scheme="https://ifelif.cn/categories/Reverse/"/>
+    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
+    <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
+    <category term="CheatEngine" scheme="https://ifelif.cn/tags/CheatEngine/"/>
     <id>https://ifelif.cn/2024/cheat_engine_tutorial2/</id>
+    <link href="https://ifelif.cn/2024/cheat_engine_tutorial2/"/>
     <published>2024-04-30T03:41:21.000Z</published>
-    <updated>2026-02-27T07:35:15.532Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;本文重点介绍：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;如何查找对特定地址进行访问或修改的操作指令&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;CE版本如下：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Cheat Engine Version: 7.4和7.5&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Tutorial Version: v3.6&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;</summary>
-    
-    
-    
-    <category term="Reverse" scheme="https://ifelif.cn/categories/Reverse/"/>
-    
-    
-    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
-    
-    <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
-    
-    <category term="CheatEngine" scheme="https://ifelif.cn/tags/CheatEngine/"/>
-    
+    <summary>
+      <![CDATA[<p>本文重点介绍：</p>
+<ul>
+<li>如何查找对特定地址进行访问或修改的操作指令</li>
+</ul>
+<p>CE版本如下：</p>
+<ul>
+<li><p>Cheat Engine Version: 7.4和7.5</p>
+</li>
+<li><p>Tutorial Version: v3.6</p>
+</li>
+</ul>]]>
+    </summary>
+    <title>Cheat Engine Tutorial 学习笔记2：指令查找</title>
+    <updated>2026-02-27T07:36:04.261Z</updated>
   </entry>
-  
   <entry>
-    <title>在Tampermonkey中创建并使用WebWorker</title>
-    <link href="https://ifelif.cn/2024/create-web-worker-in-tampermonkey-userscript/"/>
-    <id>https://ifelif.cn/2024/create-web-worker-in-tampermonkey-userscript/</id>
-    <published>2024-04-06T14:35:21.000Z</published>
-    <updated>2024-04-06T14:35:21.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;figure class=&quot;highlight js&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//</summary>
-        
-      
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Tampermonkey" scheme="https://ifelif.cn/categories/Tampermonkey/"/>
-    
-    
     <category term="JavaScript" scheme="https://ifelif.cn/tags/JavaScript/"/>
-    
     <category term="Tampermonkey" scheme="https://ifelif.cn/tags/Tampermonkey/"/>
-    
     <category term="UserScript" scheme="https://ifelif.cn/tags/UserScript/"/>
-    
     <category term="Front-End" scheme="https://ifelif.cn/tags/Front-End/"/>
-    
     <category term="WebWorker" scheme="https://ifelif.cn/tags/WebWorker/"/>
-    
+    <id>https://ifelif.cn/2024/create-web-worker-in-tampermonkey-userscript/</id>
+    <link href="https://ifelif.cn/2024/create-web-worker-in-tampermonkey-userscript/"/>
+    <published>2024-04-06T14:35:21.000Z</published>
+    <summary>
+      <![CDATA[<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//]]>
+    </summary>
+    <title>在Tampermonkey中创建并使用WebWorker</title>
+    <updated>2024-04-06T14:35:21.000Z</updated>
   </entry>
-  
   <entry>
-    <title>Vue3 核心笔记</title>
-    <link href="https://ifelif.cn/2024/vue3-core/"/>
-    <id>https://ifelif.cn/2024/vue3-core/</id>
-    <published>2024-03-23T04:39:46.000Z</published>
-    <updated>2024-03-23T04:39:46.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;本文使用以下版本：&lt;/p&gt;
-&lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;pinia&amp;quot;: &amp;quot;2.1.7&amp;quot;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;vue&amp;quot;: &amp;quot;3.4.21&amp;quot;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;vue-router&amp;quot;: &amp;quot;4.3.0&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Vue" scheme="https://ifelif.cn/categories/Vue/"/>
-    
-    
     <category term="Front-End" scheme="https://ifelif.cn/tags/Front-End/"/>
-    
     <category term="Vue" scheme="https://ifelif.cn/tags/Vue/"/>
-    
     <category term="Vue3" scheme="https://ifelif.cn/tags/Vue3/"/>
-    
+    <id>https://ifelif.cn/2024/vue3-core/</id>
+    <link href="https://ifelif.cn/2024/vue3-core/"/>
+    <published>2024-03-23T04:39:46.000Z</published>
+    <summary>
+      <![CDATA[<p>本文使用以下版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;pinia&quot;: &quot;2.1.7&quot;,</span><br><span class="line">&quot;vue&quot;: &quot;3.4.21&quot;,</span><br><span class="line">&quot;vue-router&quot;: &quot;4.3.0&quot;</span><br></pre></td></tr></table></figure>]]>
+    </summary>
+    <title>Vue3 核心笔记</title>
+    <updated>2024-03-23T04:39:46.000Z</updated>
   </entry>
-  
   <entry>
-    <title>使用 colly.Context 在 colly.Collector 之间传递自定义数据</title>
-    <link href="https://ifelif.cn/2023/passing-custom-data-between-colly-collectors/"/>
-    <id>https://ifelif.cn/2023/passing-custom-data-between-colly-collectors/</id>
-    <published>2023-08-15T13:54:03.000Z</published>
-    <updated>2023-08-15T13:54:03.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;爬虫通常需要进行&lt;strong&gt;横向爬取&lt;/strong&gt;和&lt;strong&gt;纵向爬取&lt;/strong&gt;：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;横向&lt;/strong&gt;：从一个索引页到另外一个索引页。也叫做&lt;strong&gt;水平爬取&lt;/strong&gt;，因为这种情况是在同一层级下爬取页面（比如索引页或列表页）。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;纵向&lt;/strong&gt;：从一个索引页到详情页，并在详情页中抽取数据填充Item。也叫做&lt;strong&gt;垂直爬取&lt;/strong&gt;，因为这种方式是从一个更高的层级（比如索引页）到一个更低的层级（比如详情页）。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Colly官方文档建议，如果单个爬取作业过于复杂，或者有多个不同的子任务，则应该使用多个&lt;code&gt;colly.Colletor&lt;/code&gt;负责不同的子任务。比如，一个负责横向，从索引页获得更多链接。一个负责纵向，爬取详情页中的数据或下载文件。&lt;/p&gt;
-&lt;p&gt;编写爬虫时，经常需要把一个页面中爬取到的数据传递给下一个请求。例如，由页面A中的数据拼接出下一个Request的URL；或者，由页面A中的数据拼接得到文件名，并将文件名传递给下载文件的Request，用来设置下载文件的文件名。&lt;/p&gt;
-&lt;p&gt;在 Scrapy 中，我们可以通过&lt;code&gt;Request&lt;/code&gt;的&lt;code&gt;meta&lt;/code&gt;属性向&lt;code&gt;Response&lt;/code&gt;传递数据。例如：&lt;/p&gt;
-&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;start_requests&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;self&lt;/span&gt;):&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;# 将数据存放如 request的meta属性中&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  	&lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; Request(url, meta=&amp;#123;&lt;span class=&quot;string&quot;&gt;&amp;#x27;name&amp;#x27;&lt;/span&gt;:&lt;span class=&quot;string&quot;&gt;&amp;#x27;Mike&amp;#x27;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;#x27;age&amp;#x27;&lt;/span&gt;:&lt;span class=&quot;number&quot;&gt;12&lt;/span&gt;&amp;#125;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;parse&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;self, response&lt;/span&gt;):&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		item = Item()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;# 从response.meta中取出数据&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    item[&lt;span class=&quot;string&quot;&gt;&amp;#x27;name&amp;#x27;&lt;/span&gt;] = response.meta[&lt;span class=&quot;string&quot;&gt;&amp;#x27;name&amp;#x27;&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    item[&lt;span class=&quot;string&quot;&gt;&amp;#x27;age&amp;#x27;&lt;/span&gt;] = response.meta[&lt;span class=&quot;string&quot;&gt;&amp;#x27;age&amp;#x27;&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;或者&lt;/p&gt;
-&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;start_requests&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;self&lt;/span&gt;):&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  	request = Request(url)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;# 将数据存放如 request的meta属性中&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    request.meta = &amp;#123;&lt;span class=&quot;string&quot;&gt;&amp;#x27;name&amp;#x27;&lt;/span&gt;:&lt;span class=&quot;string&quot;&gt;&amp;#x27;Mike&amp;#x27;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&amp;#x27;age&amp;#x27;&lt;/span&gt;:&lt;span class=&quot;number&quot;&gt;12&lt;/span&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; request&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;parse&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;self, response&lt;/span&gt;):&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		item = Item()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;# 从response.meta中取出数据&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    item[&lt;span class=&quot;string&quot;&gt;&amp;#x27;name&amp;#x27;&lt;/span&gt;] = response.meta[&lt;span class=&quot;string&quot;&gt;&amp;#x27;name&amp;#x27;&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    item[&lt;span class=&quot;string&quot;&gt;&amp;#x27;age&amp;#x27;&lt;/span&gt;] = response.meta[&lt;span class=&quot;string&quot;&gt;&amp;#x27;age&amp;#x27;&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;那么，在 &lt;a href=&quot;http://go-colly.org/&quot;&gt;Colly&lt;/a&gt; 中该如何在 &lt;code&gt;colly.Collector&lt;/code&gt; 之间传递数据呢？&lt;/p&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
-    
-    
     <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
-    
     <category term="Spider" scheme="https://ifelif.cn/tags/Spider/"/>
-    
     <category term="Colly" scheme="https://ifelif.cn/tags/Colly/"/>
-    
     <category term="Web Scraping" scheme="https://ifelif.cn/tags/Web-Scraping/"/>
-    
     <category term="Scraper" scheme="https://ifelif.cn/tags/Scraper/"/>
-    
     <category term="Crawler" scheme="https://ifelif.cn/tags/Crawler/"/>
-    
+    <id>https://ifelif.cn/2023/passing-custom-data-between-colly-collectors/</id>
+    <link href="https://ifelif.cn/2023/passing-custom-data-between-colly-collectors/"/>
+    <published>2023-08-15T13:54:03.000Z</published>
+    <summary>
+      <![CDATA[<p>爬虫通常需要进行<strong>横向爬取</strong>和<strong>纵向爬取</strong>：</p>
+<ul>
+<li><p><strong>横向</strong>：从一个索引页到另外一个索引页。也叫做<strong>水平爬取</strong>，因为这种情况是在同一层级下爬取页面（比如索引页或列表页）。</p>
+</li>
+<li><p><strong>纵向</strong>：从一个索引页到详情页，并在详情页中抽取数据填充Item。也叫做<strong>垂直爬取</strong>，因为这种方式是从一个更高的层级（比如索引页）到一个更低的层级（比如详情页）。</p>
+</li>
+</ul>
+<p>Colly官方文档建议，如果单个爬取作业过于复杂，或者有多个不同的子任务，则应该使用多个<code>colly.Colletor</code>负责不同的子任务。比如，一个负责横向，从索引页获得更多链接。一个负责纵向，爬取详情页中的数据或下载文件。</p>
+<p>编写爬虫时，经常需要把一个页面中爬取到的数据传递给下一个请求。例如，由页面A中的数据拼接出下一个Request的URL；或者，由页面A中的数据拼接得到文件名，并将文件名传递给下载文件的Request，用来设置下载文件的文件名。</p>
+<p>在 Scrapy 中，我们可以通过<code>Request</code>的<code>meta</code>属性向<code>Response</code>传递数据。例如：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">start_requests</span>(<span class="params">self</span>):</span><br><span class="line">    <span class="comment"># 将数据存放如 request的meta属性中</span></span><br><span class="line">  	<span class="keyword">yield</span> Request(url, meta=&#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;Mike&#x27;</span>, <span class="string">&#x27;age&#x27;</span>:<span class="number">12</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self, response</span>):</span><br><span class="line">		item = Item()</span><br><span class="line">    <span class="comment"># 从response.meta中取出数据</span></span><br><span class="line">    item[<span class="string">&#x27;name&#x27;</span>] = response.meta[<span class="string">&#x27;name&#x27;</span>]</span><br><span class="line">    item[<span class="string">&#x27;age&#x27;</span>] = response.meta[<span class="string">&#x27;age&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">start_requests</span>(<span class="params">self</span>):</span><br><span class="line">  	request = Request(url)</span><br><span class="line">    <span class="comment"># 将数据存放如 request的meta属性中</span></span><br><span class="line">    request.meta = &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;Mike&#x27;</span>, <span class="string">&#x27;age&#x27;</span>:<span class="number">12</span>&#125;</span><br><span class="line">    <span class="keyword">yield</span> request</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self, response</span>):</span><br><span class="line">		item = Item()</span><br><span class="line">    <span class="comment"># 从response.meta中取出数据</span></span><br><span class="line">    item[<span class="string">&#x27;name&#x27;</span>] = response.meta[<span class="string">&#x27;name&#x27;</span>]</span><br><span class="line">    item[<span class="string">&#x27;age&#x27;</span>] = response.meta[<span class="string">&#x27;age&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>那么，在 <a href="http://go-colly.org/">Colly</a> 中该如何在 <code>colly.Collector</code> 之间传递数据呢？</p>]]>
+    </summary>
+    <title>使用 colly.Context 在 colly.Collector 之间传递自定义数据</title>
+    <updated>2023-08-15T13:54:03.000Z</updated>
   </entry>
-  
   <entry>
-    <title>Learning Scrapy</title>
-    <link href="https://ifelif.cn/2023/learning-scrapy/"/>
-    <id>https://ifelif.cn/2023/learning-scrapy/</id>
-    <published>2023-08-11T04:14:24.000Z</published>
-    <updated>2023-08-11T04:14:24.000Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;Scrapy基本抓取流程UR²IM&quot;&gt;&lt;a href=&quot;#Scrapy基本抓取流程UR²IM&quot; class=&quot;headerlink&quot; title=&quot;Scrapy基本抓取流程UR²IM&quot;&gt;&lt;/a&gt;Scrapy基本抓取流程UR²IM&lt;/h1&gt;&lt;p&gt;一切始于URL，发起Request，由Response检索抽取需要的数据（可能包含更多URL），将数据填充于Item中，方便pipelines对Item进行二次加工（校验、清洗、存储等）。由Response获取更多URL，继续对URL发起抓取流程。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/2023/learning-scrapy/webwxgetmsgimg.jpg&quot; alt=&quot;img&quot;&gt;&lt;/p&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Python" scheme="https://ifelif.cn/categories/Python/"/>
-    
-    
     <category term="Python" scheme="https://ifelif.cn/tags/Python/"/>
-    
     <category term="Scrapy" scheme="https://ifelif.cn/tags/Scrapy/"/>
-    
     <category term="Scraping" scheme="https://ifelif.cn/tags/Scraping/"/>
-    
     <category term="Spider" scheme="https://ifelif.cn/tags/Spider/"/>
-    
+    <id>https://ifelif.cn/2023/learning-scrapy/</id>
+    <link href="https://ifelif.cn/2023/learning-scrapy/"/>
+    <published>2023-08-11T04:14:24.000Z</published>
+    <summary>
+      <![CDATA[<h1 id="Scrapy基本抓取流程UR²IM"><a href="#Scrapy基本抓取流程UR²IM" class="headerlink" title="Scrapy基本抓取流程UR²IM"></a>Scrapy基本抓取流程UR²IM</h1><p>一切始于URL，发起Request，由Response检索抽取需要的数据（可能包含更多URL），将数据填充于Item中，方便pipelines对Item进行二次加工（校验、清洗、存储等）。由Response获取更多URL，继续对URL发起抓取流程。</p>
+<p><img src="/2023/learning-scrapy/webwxgetmsgimg.jpg" alt="img"></p>]]>
+    </summary>
+    <title>Learning Scrapy</title>
+    <updated>2023-08-11T04:14:24.000Z</updated>
   </entry>
-  
   <entry>
-    <title>Learning Vbird Server 3e</title>
-    <link href="https://ifelif.cn/2023/learning-vbird-server-3e/"/>
-    <id>https://ifelif.cn/2023/learning-vbird-server-3e/</id>
-    <published>2023-07-19T14:25:01.000Z</published>
-    <updated>2023-07-19T14:25:01.000Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;Chapter-1-架设服务器前的准备工作&quot;&gt;&lt;a href=&quot;#Chapter-1-架设服务器前的准备工作&quot; class=&quot;headerlink&quot; title=&quot;Chapter 1 架设服务器前的准备工作&quot;&gt;&lt;/a&gt;Chapter 1 架设服务器前的准备工作&lt;/h1&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Linux" scheme="https://ifelif.cn/categories/Linux/"/>
-    
-    
     <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
-    
     <category term="FTP" scheme="https://ifelif.cn/tags/FTP/"/>
-    
     <category term="NFS" scheme="https://ifelif.cn/tags/NFS/"/>
-    
     <category term="SELinux" scheme="https://ifelif.cn/tags/SELinux/"/>
-    
     <category term="NTP" scheme="https://ifelif.cn/tags/NTP/"/>
-    
     <category term="SSH" scheme="https://ifelif.cn/tags/SSH/"/>
-    
     <category term="RDP" scheme="https://ifelif.cn/tags/RDP/"/>
-    
     <category term="VNC" scheme="https://ifelif.cn/tags/VNC/"/>
-    
     <category term="WWW" scheme="https://ifelif.cn/tags/WWW/"/>
-    
     <category term="NIS" scheme="https://ifelif.cn/tags/NIS/"/>
-    
     <category term="SMB" scheme="https://ifelif.cn/tags/SMB/"/>
-    
     <category term="Samba" scheme="https://ifelif.cn/tags/Samba/"/>
-    
     <category term="Telnet" scheme="https://ifelif.cn/tags/Telnet/"/>
-    
     <category term="DNS" scheme="https://ifelif.cn/tags/DNS/"/>
-    
     <category term="TCP Wrappers" scheme="https://ifelif.cn/tags/TCP-Wrappers/"/>
-    
     <category term="DHCP" scheme="https://ifelif.cn/tags/DHCP/"/>
-    
+    <id>https://ifelif.cn/2023/learning-vbird-server-3e/</id>
+    <link href="https://ifelif.cn/2023/learning-vbird-server-3e/"/>
+    <published>2023-07-19T14:25:01.000Z</published>
+    <summary>
+      <![CDATA[<h1 id="Chapter-1-架设服务器前的准备工作"><a href="#Chapter-1-架设服务器前的准备工作" class="headerlink" title="Chapter 1 架设服务器前的准备工作"></a>Chapter 1 架设服务器前的准备工作</h1>]]>
+    </summary>
+    <title>Learning Vbird Server 3e</title>
+    <updated>2023-07-19T14:25:01.000Z</updated>
   </entry>
-  
   <entry>
-    <title>Learning vbird 4e</title>
-    <link href="https://ifelif.cn/2023/learning-vbird-4e/"/>
-    <id>https://ifelif.cn/2023/learning-vbird-4e/</id>
-    <published>2023-06-25T15:02:39.000Z</published>
-    <updated>2023-06-25T15:02:39.000Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;Chapter-0-计算机概论&quot;&gt;&lt;a href=&quot;#Chapter-0-计算机概论&quot; class=&quot;headerlink&quot; title=&quot;Chapter 0 计算机概论&quot;&gt;&lt;/a&gt;Chapter 0 计算机概论&lt;/h1&gt;&lt;h2 id=&quot;计算机&quot;&gt;&lt;a href=&quot;#计算机&quot; class=&quot;headerlink&quot; title=&quot;计算机&quot;&gt;&lt;/a&gt;计算机&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;计算机&lt;/strong&gt;：接受使用者输入指令与数据，经由中央处理器的数学与逻辑单元运算处理后， 以产生或储存成有用的信息。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;计算机5大单元&lt;/strong&gt;：计算机由5大单元所组成，包括&lt;strong&gt;输入单元&lt;/strong&gt;、 &lt;strong&gt;输出单元&lt;/strong&gt;、&lt;strong&gt;CPU 内部的&lt;em&gt;控制单元&lt;/em&gt; 和&lt;em&gt;算数逻辑单元&lt;/em&gt;&lt;/strong&gt;，以及&lt;strong&gt;内存&lt;/strong&gt;五大部分。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;输入单元&lt;/strong&gt;：包括键盘、鼠标、读卡机、扫描仪、手写板、触摸屏等等一堆；&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;输出单元&lt;/strong&gt;：例如屏幕、打印机等等；&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;CPU控制单元&lt;/strong&gt;：控制单元则主要在协调各周边元件与各单元间的工作；&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;CPU算数逻辑单元&lt;/strong&gt;：算数逻辑单元主要负责程序运算与逻辑判断；&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;内存&lt;/strong&gt;：CPU片内高速缓存价格高昂，使用内存暂存数据。 内存内的数据则是从输入单元所传输进来。而 CPU 处理完毕的数据也必须要先写回内存中，最后数据才从内存传输到输出单元。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/2023/learning-vbird-4e/computer02.gif&quot; alt=&quot;电脑的五大单元&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;CPU架构&lt;/strong&gt;&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;精简指令集 （Reduced Instruction Set Computer, RISC）&lt;/strong&gt;：这种 CPU 的设计中，微指令集较为精简，每个指令的执行时间都很短，完成的动作也很单纯，指令的执行性能较佳； 但是若要做复杂的事情，就要由多个指令来完成。常见的 RISC 微指令集 CPU 主要例如甲骨文 （Oracle） 公司的 SPARC 系列、 IBM 公司的 Power Architecture （包括 PowerPC） 系列、与安谋公司 （ARM Holdings） 的 ARM CPU 系列等。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;复杂指令集（Complex Instruction Set Computer, CISC）&lt;/strong&gt;：与RISC不同的，CISC在微指令集的每个小指令可以执行一些较低阶的硬件操作，指令数目多而且复杂， 每条指令的长度并不相同。因为指令执行较为复杂所以每条指令花费的时间较长， 但每条个别指令可以处理的工作较为丰富。常见的CISC微指令集CPU主要有AMD、Intel、VIA等的x86架构的CPU。&lt;/li&gt;
-&lt;li&gt;最新的Intel&amp;#x2F;AMD的x86架构中，针对多媒体、虚拟化、省电功能各有哪些重要的微指令集：&lt;ul&gt;
-&lt;li&gt;多媒体微指令集：MMX, SSE, SSE2, SSE3, SSE4, AMD-3DNow!&lt;/li&gt;
-&lt;li&gt;虚拟化微指令集：Intel-VT, AMD-SVM&lt;/li&gt;
-&lt;li&gt;省电功能：Intel-SpeedStep, AMD-PowerNow!&lt;/li&gt;
-&lt;li&gt;64&amp;#x2F;32位相容技术：AMD-AMD64, Intel-EM64T&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;计算机的分类&lt;/strong&gt;：如果以计算机的复杂度与运算能力进行分类的话，主要可以分为这几类：&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;超级计算机（Supercomputer）&lt;/strong&gt;： 超级计算机是运行速度最快的电脑，但是他的维护、操作费用也最高！主要是用于需要有高速计算的计划中。 例如：国防军事、气象预测、太空科技，用在仿真的领域较多。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;大型计算机（Mainframe Computer）&lt;/strong&gt; ：大型计算机通常也具有数个高速的CPU，功能上虽不及超级计算机，但也可用来处理大量数据与复杂的运算。 例如大型企业的主机、全国性的证券交易所等每天需要处理数百万笔数据的企业机构， 或者是大型企业的数据库服务器等等。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;迷你电脑（Minicomputer）&lt;/strong&gt;： 迷你电脑仍保有大型计算机同时支持多使用者的特性，但是主机可以放在一般作业场所， 不必像前两个大型计算机需要特殊的空调场所。通常用来作为科学研究、工程分析与工厂的流程管理等。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;工作站（Workstation）&lt;/strong&gt;：工作站的价格又比迷你电脑便宜许多，是针对特殊用途而设计的电脑。在个人电脑的性能还没有提升到目前的状况之前， 工作站电脑的性能&amp;#x2F;价格比是所有电脑当中较佳的，因此在学术研究与工程分析方面相当常见。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;微电脑（Microcomputer）&lt;/strong&gt;： 个人电脑就属于这部份的电脑分类。体积最小，价格最低，但功能还是五脏俱全的！ 大致又可分为桌上型、笔记型等等。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;容量单位&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;进位制&lt;/th&gt;
-&lt;th&gt;bit&lt;/th&gt;
-&lt;th&gt;Byte&lt;/th&gt;
-&lt;th&gt;Kilo&lt;/th&gt;
-&lt;th&gt;Mega&lt;/th&gt;
-&lt;th&gt;Giga&lt;/th&gt;
-&lt;th&gt;Tera&lt;/th&gt;
-&lt;th&gt;Peta&lt;/th&gt;
-&lt;th&gt;Exa&lt;/th&gt;
-&lt;th&gt;Zetta&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;&lt;tr&gt;
-&lt;td&gt;二进制&lt;/td&gt;
-&lt;td&gt;1&lt;/td&gt;
-&lt;td&gt;8 bit&lt;/td&gt;
-&lt;td&gt;1024B&lt;/td&gt;
-&lt;td&gt;1024K&lt;/td&gt;
-&lt;td&gt;1024M&lt;/td&gt;
-&lt;td&gt;1024G&lt;/td&gt;
-&lt;td&gt;1024T&lt;/td&gt;
-&lt;td&gt;1024P&lt;/td&gt;
-&lt;td&gt;1024E&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;十进制&lt;/td&gt;
-&lt;td&gt;1&lt;/td&gt;
-&lt;td&gt;8 bit&lt;/td&gt;
-&lt;td&gt;1000B&lt;/td&gt;
-&lt;td&gt;1000K&lt;/td&gt;
-&lt;td&gt;1000M&lt;/td&gt;
-&lt;td&gt;1000G&lt;/td&gt;
-&lt;td&gt;1000T&lt;/td&gt;
-&lt;td&gt;1000P&lt;/td&gt;
-&lt;td&gt;1000E&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;&lt;/table&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Linux" scheme="https://ifelif.cn/categories/Linux/"/>
-    
-    
     <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
-    
     <category term="Shell" scheme="https://ifelif.cn/tags/Shell/"/>
-    
+    <id>https://ifelif.cn/2023/learning-vbird-4e/</id>
+    <link href="https://ifelif.cn/2023/learning-vbird-4e/"/>
+    <published>2023-06-25T15:02:39.000Z</published>
+    <summary>
+      <![CDATA[<h1 id="Chapter-0-计算机概论"><a href="#Chapter-0-计算机概论" class="headerlink" title="Chapter 0 计算机概论"></a>Chapter 0 计算机概论</h1><h2 id="计算机"><a href="#计算机" class="headerlink" title="计算机"></a>计算机</h2><ul>
+<li><p><strong>计算机</strong>：接受使用者输入指令与数据，经由中央处理器的数学与逻辑单元运算处理后， 以产生或储存成有用的信息。</p>
+</li>
+<li><p><strong>计算机5大单元</strong>：计算机由5大单元所组成，包括<strong>输入单元</strong>、 <strong>输出单元</strong>、<strong>CPU 内部的<em>控制单元</em> 和<em>算数逻辑单元</em></strong>，以及<strong>内存</strong>五大部分。</p>
+<ul>
+<li><strong>输入单元</strong>：包括键盘、鼠标、读卡机、扫描仪、手写板、触摸屏等等一堆；</li>
+<li><strong>输出单元</strong>：例如屏幕、打印机等等；</li>
+<li><strong>CPU控制单元</strong>：控制单元则主要在协调各周边元件与各单元间的工作；</li>
+<li><strong>CPU算数逻辑单元</strong>：算数逻辑单元主要负责程序运算与逻辑判断；</li>
+<li><strong>内存</strong>：CPU片内高速缓存价格高昂，使用内存暂存数据。 内存内的数据则是从输入单元所传输进来。而 CPU 处理完毕的数据也必须要先写回内存中，最后数据才从内存传输到输出单元。</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2023/learning-vbird-4e/computer02.gif" alt="电脑的五大单元"></p>
+<ul>
+<li><strong>CPU架构</strong><ul>
+<li><strong>精简指令集 （Reduced Instruction Set Computer, RISC）</strong>：这种 CPU 的设计中，微指令集较为精简，每个指令的执行时间都很短，完成的动作也很单纯，指令的执行性能较佳； 但是若要做复杂的事情，就要由多个指令来完成。常见的 RISC 微指令集 CPU 主要例如甲骨文 （Oracle） 公司的 SPARC 系列、 IBM 公司的 Power Architecture （包括 PowerPC） 系列、与安谋公司 （ARM Holdings） 的 ARM CPU 系列等。</li>
+<li><strong>复杂指令集（Complex Instruction Set Computer, CISC）</strong>：与RISC不同的，CISC在微指令集的每个小指令可以执行一些较低阶的硬件操作，指令数目多而且复杂， 每条指令的长度并不相同。因为指令执行较为复杂所以每条指令花费的时间较长， 但每条个别指令可以处理的工作较为丰富。常见的CISC微指令集CPU主要有AMD、Intel、VIA等的x86架构的CPU。</li>
+<li>最新的Intel&#x2F;AMD的x86架构中，针对多媒体、虚拟化、省电功能各有哪些重要的微指令集：<ul>
+<li>多媒体微指令集：MMX, SSE, SSE2, SSE3, SSE4, AMD-3DNow!</li>
+<li>虚拟化微指令集：Intel-VT, AMD-SVM</li>
+<li>省电功能：Intel-SpeedStep, AMD-PowerNow!</li>
+<li>64&#x2F;32位相容技术：AMD-AMD64, Intel-EM64T</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>计算机的分类</strong>：如果以计算机的复杂度与运算能力进行分类的话，主要可以分为这几类：<ul>
+<li><strong>超级计算机（Supercomputer）</strong>： 超级计算机是运行速度最快的电脑，但是他的维护、操作费用也最高！主要是用于需要有高速计算的计划中。 例如：国防军事、气象预测、太空科技，用在仿真的领域较多。</li>
+<li><strong>大型计算机（Mainframe Computer）</strong> ：大型计算机通常也具有数个高速的CPU，功能上虽不及超级计算机，但也可用来处理大量数据与复杂的运算。 例如大型企业的主机、全国性的证券交易所等每天需要处理数百万笔数据的企业机构， 或者是大型企业的数据库服务器等等。</li>
+<li><strong>迷你电脑（Minicomputer）</strong>： 迷你电脑仍保有大型计算机同时支持多使用者的特性，但是主机可以放在一般作业场所， 不必像前两个大型计算机需要特殊的空调场所。通常用来作为科学研究、工程分析与工厂的流程管理等。</li>
+<li><strong>工作站（Workstation）</strong>：工作站的价格又比迷你电脑便宜许多，是针对特殊用途而设计的电脑。在个人电脑的性能还没有提升到目前的状况之前， 工作站电脑的性能&#x2F;价格比是所有电脑当中较佳的，因此在学术研究与工程分析方面相当常见。</li>
+<li><strong>微电脑（Microcomputer）</strong>： 个人电脑就属于这部份的电脑分类。体积最小，价格最低，但功能还是五脏俱全的！ 大致又可分为桌上型、笔记型等等。</li>
+</ul>
+</li>
+<li><strong>容量单位</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>进位制</th>
+<th>bit</th>
+<th>Byte</th>
+<th>Kilo</th>
+<th>Mega</th>
+<th>Giga</th>
+<th>Tera</th>
+<th>Peta</th>
+<th>Exa</th>
+<th>Zetta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>二进制</td>
+<td>1</td>
+<td>8 bit</td>
+<td>1024B</td>
+<td>1024K</td>
+<td>1024M</td>
+<td>1024G</td>
+<td>1024T</td>
+<td>1024P</td>
+<td>1024E</td>
+</tr>
+<tr>
+<td>十进制</td>
+<td>1</td>
+<td>8 bit</td>
+<td>1000B</td>
+<td>1000K</td>
+<td>1000M</td>
+<td>1000G</td>
+<td>1000T</td>
+<td>1000P</td>
+<td>1000E</td>
+</tr>
+</tbody></table>]]>
+    </summary>
+    <title>Learning vbird 4e</title>
+    <updated>2023-06-25T15:02:39.000Z</updated>
   </entry>
-  
   <entry>
-    <title>更新 Rocket.Chat</title>
-    <link href="https://ifelif.cn/2023/Updating-Rocket-Chat/"/>
-    <id>https://ifelif.cn/2023/Updating-Rocket-Chat/</id>
-    <published>2023-05-28T11:46:31.000Z</published>
-    <updated>2023-05-28T11:46:31.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;本文将对使用Docker Compose部署的Rocket.Chat&lt;a href=&quot;https://github.com/filefi/RocketChatDeployment&quot;&gt;项目&lt;/a&gt;进行升级。&lt;/p&gt;
-&lt;p&gt;根据官网文档，官方不建议跨大版本升级。理想状态下，甚至不应该跨越2个小版本进行升级。&lt;/p&gt;
-&lt;details class=&quot;note default&quot;&gt;&lt;summary&gt;&lt;p&gt;&lt;a href=&quot;https://docs.rocket.chat/deploy/updating-rocket.chat&quot;&gt;官方文档&lt;/a&gt;原文&lt;/p&gt;
-&lt;/summary&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;For a successful update, you must not skip any major version. That is, say you want to move from version 1.x.x to say 4.x.x, you need to traverse chronologically 1.x.x -&amp;gt; 2.x.x -&amp;gt; 3.x.x -&amp;gt; 4.x.x. Ideally, it’s even better to make more granular steps, and not skip more than two minor versions at a time.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Upgrading to v5 requires you to be on at least 4.x.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;/details&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Docker" scheme="https://ifelif.cn/categories/Docker/"/>
-    
-    
     <category term="Docker" scheme="https://ifelif.cn/tags/Docker/"/>
-    
     <category term="RocketChat" scheme="https://ifelif.cn/tags/RocketChat/"/>
-    
     <category term="MongoDB" scheme="https://ifelif.cn/tags/MongoDB/"/>
-    
     <category term="Docker Compose" scheme="https://ifelif.cn/tags/Docker-Compose/"/>
-    
+    <id>https://ifelif.cn/2023/Updating-Rocket-Chat/</id>
+    <link href="https://ifelif.cn/2023/Updating-Rocket-Chat/"/>
+    <published>2023-05-28T11:46:31.000Z</published>
+    <summary>
+      <![CDATA[<p>本文将对使用Docker Compose部署的Rocket.Chat<a href="https://github.com/filefi/RocketChatDeployment">项目</a>进行升级。</p>
+<p>根据官网文档，官方不建议跨大版本升级。理想状态下，甚至不应该跨越2个小版本进行升级。</p>
+<details class="note default"><summary><p><a href="https://docs.rocket.chat/deploy/updating-rocket.chat">官方文档</a>原文</p>
+</summary>
+<ul>
+<li><p>For a successful update, you must not skip any major version. That is, say you want to move from version 1.x.x to say 4.x.x, you need to traverse chronologically 1.x.x -&gt; 2.x.x -&gt; 3.x.x -&gt; 4.x.x. Ideally, it’s even better to make more granular steps, and not skip more than two minor versions at a time.</p>
+</li>
+<li><p>Upgrading to v5 requires you to be on at least 4.x.</p>
+</li>
+</ul>
+
+</details>]]>
+    </summary>
+    <title>更新 Rocket.Chat</title>
+    <updated>2023-05-28T11:46:31.000Z</updated>
   </entry>
-  
   <entry>
-    <title>Go Standard Library by Example</title>
-    <link href="https://ifelif.cn/2023/Go-Standard-Library-by-Example/"/>
+    <author>
+      <name>filefi</name>
+    </author>
+    <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
+    <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
     <id>https://ifelif.cn/2023/Go-Standard-Library-by-Example/</id>
+    <link href="https://ifelif.cn/2023/Go-Standard-Library-by-Example/"/>
     <published>2023-05-28T10:25:04.000Z</published>
+    <summary>
+      <![CDATA[<span id="more"></span>
+
+<h1 id="io-基本I-O接口"><a href="#io-基本I-O接口" class="headerlink" title="io 基本I&#x2F;O接口"></a><code>io</code>]]>
+    </summary>
+    <title>Go Standard Library by Example</title>
     <updated>2023-05-28T10:25:04.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;span id=&quot;more&quot;&gt;&lt;/span&gt;
-
-&lt;h1 id=&quot;io-基本I-O接口&quot;&gt;&lt;a href=&quot;#io-基本I-O接口&quot; class=&quot;headerlink&quot; title=&quot;io 基本I&amp;#x2F;O接口&quot;&gt;&lt;/a&gt;&lt;code&gt;io&lt;/code&gt;</summary>
-        
-      
-    
-    
-    
-    <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
-    
-    
-    <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
-    
   </entry>
-  
   <entry>
-    <title>How does Windows decide whether your computer has limited or full Internet access</title>
-    <link href="https://ifelif.cn/2023/How-does-Windows-decide-whether-your-computer-has-limited-or-full-Internet-access/"/>
+    <author>
+      <name>filefi</name>
+    </author>
+    <category term="Windows" scheme="https://ifelif.cn/categories/Windows/"/>
+    <category term="Windows" scheme="https://ifelif.cn/tags/Windows/"/>
     <id>https://ifelif.cn/2023/How-does-Windows-decide-whether-your-computer-has-limited-or-full-Internet-access/</id>
+    <link href="https://ifelif.cn/2023/How-does-Windows-decide-whether-your-computer-has-limited-or-full-Internet-access/"/>
     <published>2023-01-24T12:52:23.000Z</published>
+    <summary>
+      <![CDATA[<blockquote>
+<p>reference <a href="https://devblogs.microsoft.com/oldnewthing/20221115-00/?p=107399">How does Windows decide whether your]]>
+    </summary>
+    <title>How does Windows decide whether your computer has limited or full Internet access</title>
     <updated>2023-01-24T12:52:23.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;reference &lt;a href=&quot;https://devblogs.microsoft.com/oldnewthing/20221115-00/?p=107399&quot;&gt;How does Windows decide whether your</summary>
-        
-      
-    
-    
-    
-    <category term="Windows" scheme="https://ifelif.cn/categories/Windows/"/>
-    
-    
-    <category term="Windows" scheme="https://ifelif.cn/tags/Windows/"/>
-    
   </entry>
-  
   <entry>
-    <title>Slice Tricks</title>
-    <link href="https://ifelif.cn/2022/Slice-Tricks/"/>
-    <id>https://ifelif.cn/2022/Slice-Tricks/</id>
-    <published>2022-12-08T12:22:09.000Z</published>
-    <updated>2022-12-08T12:22:09.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;reference from &lt;a</summary>
-        
-      
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
-    
-    
     <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
-    
     <category term="slice" scheme="https://ifelif.cn/tags/slice/"/>
-    
+    <id>https://ifelif.cn/2022/Slice-Tricks/</id>
+    <link href="https://ifelif.cn/2022/Slice-Tricks/"/>
+    <published>2022-12-08T12:22:09.000Z</published>
+    <summary>
+      <![CDATA[<blockquote>
+<p>reference from <a]]>
+    </summary>
+    <title>Slice Tricks</title>
+    <updated>2022-12-08T12:22:09.000Z</updated>
   </entry>
-  
   <entry>
-    <title>How does the Recycle Bin in Windows work?</title>
-    <link href="https://ifelif.cn/2022/How-does-the-Recycle-Bin-in-Windows-work/"/>
-    <id>https://ifelif.cn/2022/How-does-the-Recycle-Bin-in-Windows-work/</id>
-    <published>2022-10-28T01:28:39.000Z</published>
-    <updated>2022-10-28T01:28:39.000Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;References from:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://superuser.com/questions/368890/how-does-the-recycle-bin-in-windows-work/1736690#1736690&quot;&gt;https://superuser.com/questions/368890/how-does-the-recycle-bin-in-windows-work/1736690#1736690&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Trash_(computing)#Microsoft_Windows&quot;&gt;https://en.wikipedia.org/wiki/Trash_(computing)#Microsoft_Windows&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Windows" scheme="https://ifelif.cn/categories/Windows/"/>
-    
-    
     <category term="Windows" scheme="https://ifelif.cn/tags/Windows/"/>
-    
+    <id>https://ifelif.cn/2022/How-does-the-Recycle-Bin-in-Windows-work/</id>
+    <link href="https://ifelif.cn/2022/How-does-the-Recycle-Bin-in-Windows-work/"/>
+    <published>2022-10-28T01:28:39.000Z</published>
+    <summary>
+      <![CDATA[<blockquote>
+<p>References from:</p>
+<p><a href="https://superuser.com/questions/368890/how-does-the-recycle-bin-in-windows-work/1736690#1736690">https://superuser.com/questions/368890/how-does-the-recycle-bin-in-windows-work/1736690#1736690</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Trash_(computing)#Microsoft_Windows">https://en.wikipedia.org/wiki/Trash_(computing)#Microsoft_Windows</a></p>
+</blockquote>]]>
+    </summary>
+    <title>How does the Recycle Bin in Windows work?</title>
+    <updated>2022-10-28T01:28:39.000Z</updated>
   </entry>
-  
   <entry>
-    <title>《The Go Programming Language》学习笔记</title>
-    <link href="https://ifelif.cn/2022/notes-of-gopl/"/>
+    <author>
+      <name>filefi</name>
+    </author>
+    <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
+    <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
     <id>https://ifelif.cn/2022/notes-of-gopl/</id>
+    <link href="https://ifelif.cn/2022/notes-of-gopl/"/>
     <published>2022-09-30T06:24:21.000Z</published>
+    <summary>
+      <![CDATA[<blockquote>
+<p>本文为《The Go Programming Language》学习笔记，内容主要为<a href="https://books.studygolang.com/gopl-zh/%E7%9A%84%E7%BF%BB%E8%AF%91%E7%89%88%EF%BC%8C%E5%B9%B6%E5%9C%A8%E6%AD%A4%E7%BF%BB%E8%AF%91%E7%89%88%E5%9F%BA%E7%A1%80%E4%B8%8A%E8%B0%83%E6%95%B4%E6%A0%BC%E5%BC%8F%E6%88%96%E6%B7%BB%E5%8A%A0%E6%B3%A8%E9%87%8A%EF%BC%8C%E4%BB%A5%E6%96%B9%E4%BE%BF%E5%AD%A6%E4%B9%A0%E5%92%8C%E8%AE%B0%E5%BF%86%E3%80%82%E9%83%A8%E5%88%86%E9%9A%BE%E7%90%86%E8%A7%A3%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BC%9A%E5%AF%B9%E7%85%A7%E8%8B%B1%E6%96%87%E7%89%88%E9%87%8D%E6%96%B0%E7%BF%BB%E8%AF%91%E3%80%82">https://books.studygolang.com/gopl-zh/的翻译版，并在此翻译版基础上调整格式或添加注释，以方便学习和记忆。部分难理解的内容，会对照英文版重新翻译。</a></p>
+</blockquote>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><h2 id="Go语言起源"><a href="#Go语言起源" class="headerlink" title="Go语言起源"></a><a href="https://gopl-zh.github.io/preface.html#go%E8%AF%AD%E8%A8%80%E8%B5%B7%E6%BA%90">Go语言起源</a></h2><p>下图展示了有哪些早期的编程语言对Go语言的设计产生了重要影响。</p>
+<p><img src="/2022/notes-of-gopl/ch0-01.png" alt="img"></p>
+<h2 id="Go语言项目"><a href="#Go语言项目" class="headerlink" title="Go语言项目"></a><a href="https://gopl-zh.github.io/preface.html#go%E8%AF%AD%E8%A8%80%E9%A1%B9%E7%9B%AE">Go语言项目</a></h2><p>Go项目包括编程语言本身，附带了相关的工具和标准库，最后但并非代表不重要的是，关于简洁编程哲学的宣言。</p>
+<p>Go语言的这些地方都做的还不错：</p>
+<ul>
+<li><p>拥有自动垃圾回收</p>
+</li>
+<li><p>一个包系统</p>
+</li>
+<li><p>函数作为一等公民</p>
+</li>
+<li><p>词法作用域</p>
+</li>
+<li><p>系统调用接口</p>
+</li>
+<li><p>只读的UTF8字符串等</p>
+</li>
+</ul>
+<p>但是Go语言本身只有很少的特性：</p>
+<ul>
+<li>没有隐式的数值转换</li>
+<li>没有构造函数和析构函数</li>
+<li>没有运算符重载</li>
+<li>没有默认参数</li>
+<li>没有继承</li>
+<li><del>没有泛型</del></li>
+<li>没有异常</li>
+<li>没有宏</li>
+<li>没有函数修饰</li>
+<li>没有线程局部存储</li>
+</ul>
+<p>在实践中，Go语言简洁的类型系统给程序员带来了更多的安全性和更好的运行时性能。</p>
+<p>Go语言提供了基于<code>CSP</code>的并发特性支持。Go语言的动态栈使得轻量级线程<code>goroutine</code>的初始栈可以很小，因此，创建一个<code>goroutine</code>的代价很小，创建百万级的<code>goroutine</code>完全是可行的。</p>
+<p>Go语言的标准库（通常被称为语言自带的电池），提供了清晰的构建模块和公共接口，包含I&#x2F;O操作、文本处理、图像、密码学、网络和分布式应用程序等，并支持许多标准化的文件格式和编解码协议。</p>]]>
+    </summary>
+    <title>《The Go Programming Language》学习笔记</title>
     <updated>2022-09-30T06:24:21.000Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;本文为《The Go Programming Language》学习笔记，内容主要为&lt;a href=&quot;https://books.studygolang.com/gopl-zh/%E7%9A%84%E7%BF%BB%E8%AF%91%E7%89%88%EF%BC%8C%E5%B9%B6%E5%9C%A8%E6%AD%A4%E7%BF%BB%E8%AF%91%E7%89%88%E5%9F%BA%E7%A1%80%E4%B8%8A%E8%B0%83%E6%95%B4%E6%A0%BC%E5%BC%8F%E6%88%96%E6%B7%BB%E5%8A%A0%E6%B3%A8%E9%87%8A%EF%BC%8C%E4%BB%A5%E6%96%B9%E4%BE%BF%E5%AD%A6%E4%B9%A0%E5%92%8C%E8%AE%B0%E5%BF%86%E3%80%82%E9%83%A8%E5%88%86%E9%9A%BE%E7%90%86%E8%A7%A3%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BC%9A%E5%AF%B9%E7%85%A7%E8%8B%B1%E6%96%87%E7%89%88%E9%87%8D%E6%96%B0%E7%BF%BB%E8%AF%91%E3%80%82&quot;&gt;https://books.studygolang.com/gopl-zh/的翻译版，并在此翻译版基础上调整格式或添加注释，以方便学习和记忆。部分难理解的内容，会对照英文版重新翻译。&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;h2 id=&quot;Go语言起源&quot;&gt;&lt;a href=&quot;#Go语言起源&quot; class=&quot;headerlink&quot; title=&quot;Go语言起源&quot;&gt;&lt;/a&gt;&lt;a href=&quot;https://gopl-zh.github.io/preface.html#go%E8%AF%AD%E8%A8%80%E8%B5%B7%E6%BA%90&quot;&gt;Go语言起源&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;下图展示了有哪些早期的编程语言对Go语言的设计产生了重要影响。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/2022/notes-of-gopl/ch0-01.png&quot; alt=&quot;img&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;Go语言项目&quot;&gt;&lt;a href=&quot;#Go语言项目&quot; class=&quot;headerlink&quot; title=&quot;Go语言项目&quot;&gt;&lt;/a&gt;&lt;a href=&quot;https://gopl-zh.github.io/preface.html#go%E8%AF%AD%E8%A8%80%E9%A1%B9%E7%9B%AE&quot;&gt;Go语言项目&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Go项目包括编程语言本身，附带了相关的工具和标准库，最后但并非代表不重要的是，关于简洁编程哲学的宣言。&lt;/p&gt;
-&lt;p&gt;Go语言的这些地方都做的还不错：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;拥有自动垃圾回收&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;一个包系统&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;函数作为一等公民&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;词法作用域&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;系统调用接口&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;只读的UTF8字符串等&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;但是Go语言本身只有很少的特性：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;没有隐式的数值转换&lt;/li&gt;
-&lt;li&gt;没有构造函数和析构函数&lt;/li&gt;
-&lt;li&gt;没有运算符重载&lt;/li&gt;
-&lt;li&gt;没有默认参数&lt;/li&gt;
-&lt;li&gt;没有继承&lt;/li&gt;
-&lt;li&gt;&lt;del&gt;没有泛型&lt;/del&gt;&lt;/li&gt;
-&lt;li&gt;没有异常&lt;/li&gt;
-&lt;li&gt;没有宏&lt;/li&gt;
-&lt;li&gt;没有函数修饰&lt;/li&gt;
-&lt;li&gt;没有线程局部存储&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;在实践中，Go语言简洁的类型系统给程序员带来了更多的安全性和更好的运行时性能。&lt;/p&gt;
-&lt;p&gt;Go语言提供了基于&lt;code&gt;CSP&lt;/code&gt;的并发特性支持。Go语言的动态栈使得轻量级线程&lt;code&gt;goroutine&lt;/code&gt;的初始栈可以很小，因此，创建一个&lt;code&gt;goroutine&lt;/code&gt;的代价很小，创建百万级的&lt;code&gt;goroutine&lt;/code&gt;完全是可行的。&lt;/p&gt;
-&lt;p&gt;Go语言的标准库（通常被称为语言自带的电池），提供了清晰的构建模块和公共接口，包含I&amp;#x2F;O操作、文本处理、图像、密码学、网络和分布式应用程序等，并支持许多标准化的文件格式和编解码协议。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
-    
-    
-    <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
-    
   </entry>
-  
   <entry>
-    <title>从《A Tour of Go》到《Effective Go》</title>
-    <link href="https://ifelif.cn/2022/from_A-Tour-of-Go_to_Effective-Go/"/>
-    <id>https://ifelif.cn/2022/from_A-Tour-of-Go_to_Effective-Go/</id>
-    <published>2022-08-26T01:36:11.000Z</published>
-    <updated>2022-08-26T01:36:11.000Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;本文是Golang的学习笔记，内容涵盖 &lt;a href=&quot;https://go.dev/tour/&quot;&gt;A Tour of Go&lt;/a&gt; 官方文档 &lt;a href=&quot;https://go.dev/doc/effective_go&quot;&gt;Effective Go&lt;/a&gt; 以及 &lt;a href=&quot;https://go-zh.org/doc/effective_go.html&quot;&gt;翻译&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;引言&quot;&gt;&lt;a href=&quot;#引言&quot; class=&quot;headerlink&quot; title=&quot;引言&quot;&gt;&lt;/a&gt;引言&lt;/h1&gt;&lt;p&gt;Go 是一门全新的语言。尽管它从既有的语言中借鉴了许多理念，但其与众不同的特性， 使得使用Go编程在本质上就不同于其它语言。将现有的C++或Java程序直译为Go 程序并不能令人满意——毕竟Java程序是用Java编写的，而不是Go。 另一方面，若从Go的角度去分析问题，你就能编写出同样可行但大不相同的程序。 换句话说，要想将Go程序写得好，就必须理解其特性和风格。了解命名、格式化、 程序结构等既定规则也同样重要，这样你编写的程序才能更容易被其他程序员所理解。&lt;/p&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
-    
-    
     <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
-    
     <category term="Programming" scheme="https://ifelif.cn/tags/Programming/"/>
-    
+    <id>https://ifelif.cn/2022/from_A-Tour-of-Go_to_Effective-Go/</id>
+    <link href="https://ifelif.cn/2022/from_A-Tour-of-Go_to_Effective-Go/"/>
+    <published>2022-08-26T01:36:11.000Z</published>
+    <summary>
+      <![CDATA[<blockquote>
+<p>本文是Golang的学习笔记，内容涵盖 <a href="https://go.dev/tour/">A Tour of Go</a> 官方文档 <a href="https://go.dev/doc/effective_go">Effective Go</a> 以及 <a href="https://go-zh.org/doc/effective_go.html">翻译</a></p>
+</blockquote>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>Go 是一门全新的语言。尽管它从既有的语言中借鉴了许多理念，但其与众不同的特性， 使得使用Go编程在本质上就不同于其它语言。将现有的C++或Java程序直译为Go 程序并不能令人满意——毕竟Java程序是用Java编写的，而不是Go。 另一方面，若从Go的角度去分析问题，你就能编写出同样可行但大不相同的程序。 换句话说，要想将Go程序写得好，就必须理解其特性和风格。了解命名、格式化、 程序结构等既定规则也同样重要，这样你编写的程序才能更容易被其他程序员所理解。</p>]]>
+    </summary>
+    <title>从《A Tour of Go》到《Effective Go》</title>
+    <updated>2022-08-26T01:36:11.000Z</updated>
   </entry>
-  
   <entry>
-    <title>This beta version of Typora is expired</title>
-    <link href="https://ifelif.cn/2022/This-beta-version-of-Typora-is-expired/"/>
-    <id>https://ifelif.cn/2022/This-beta-version-of-Typora-is-expired/</id>
-    <published>2022-08-25T13:33:53.000Z</published>
-    <updated>2022-08-25T13:33:53.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;span id=&quot;more&quot;&gt;&lt;/span&gt;
-
-&lt;p&gt;&lt;img</summary>
-        
-      
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Miscellaneous" scheme="https://ifelif.cn/categories/Miscellaneous/"/>
-    
-    
     <category term="Editor" scheme="https://ifelif.cn/tags/Editor/"/>
-    
+    <id>https://ifelif.cn/2022/This-beta-version-of-Typora-is-expired/</id>
+    <link href="https://ifelif.cn/2022/This-beta-version-of-Typora-is-expired/"/>
+    <published>2022-08-25T13:33:53.000Z</published>
+    <summary>
+      <![CDATA[<span id="more"></span>
+
+<p><img]]>
+    </summary>
+    <title>This beta version of Typora is expired</title>
+    <updated>2022-08-25T13:33:53.000Z</updated>
   </entry>
-  
   <entry>
-    <title>配置和管理逻辑卷管理器 (Logical Volume Manager)</title>
-    <link href="https://ifelif.cn/2022/Logical_Volume_Manager_Administration/"/>
-    <id>https://ifelif.cn/2022/Logical_Volume_Manager_Administration/</id>
-    <published>2022-08-25T06:22:08.000Z</published>
-    <updated>2022-08-25T06:22:08.000Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;1-逻辑卷管理概述&quot;&gt;&lt;a href=&quot;#1-逻辑卷管理概述&quot; class=&quot;headerlink&quot; title=&quot;1. 逻辑卷管理概述&quot;&gt;&lt;/a&gt;1. 逻辑卷管理概述&lt;/h1&gt;&lt;p&gt;逻辑卷管理 (LVM) 在物理存储上创建抽象层，帮助您创建逻辑存储卷。这比直接使用物理存储的方式具有更大的灵活性。&lt;/p&gt;
-&lt;p&gt;此外，硬件存储配置在软件中隐藏，因此可以调整大小并移动，无需停止应用或卸载文件系统。这可降低操作成本。&lt;/p&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="Linux" scheme="https://ifelif.cn/categories/Linux/"/>
-    
-    
     <category term="Linux" scheme="https://ifelif.cn/tags/Linux/"/>
-    
     <category term="LVM" scheme="https://ifelif.cn/tags/LVM/"/>
-    
+    <id>https://ifelif.cn/2022/Logical_Volume_Manager_Administration/</id>
+    <link href="https://ifelif.cn/2022/Logical_Volume_Manager_Administration/"/>
+    <published>2022-08-25T06:22:08.000Z</published>
+    <summary>
+      <![CDATA[<h1 id="1-逻辑卷管理概述"><a href="#1-逻辑卷管理概述" class="headerlink" title="1. 逻辑卷管理概述"></a>1. 逻辑卷管理概述</h1><p>逻辑卷管理 (LVM) 在物理存储上创建抽象层，帮助您创建逻辑存储卷。这比直接使用物理存储的方式具有更大的灵活性。</p>
+<p>此外，硬件存储配置在软件中隐藏，因此可以调整大小并移动，无需停止应用或卸载文件系统。这可降低操作成本。</p>]]>
+    </summary>
+    <title>配置和管理逻辑卷管理器 (Logical Volume Manager)</title>
+    <updated>2022-08-25T06:22:08.000Z</updated>
   </entry>
-  
   <entry>
-    <title>使用 http-proxy-middleware 创建 npm 代理</title>
-    <link href="https://ifelif.cn/2022/using-http-proxy-middleware-as-npm-proxy/"/>
+    <author>
+      <name>filefi</name>
+    </author>
+    <category term="Node.js" scheme="https://ifelif.cn/categories/Node-js/"/>
+    <category term="Proxy" scheme="https://ifelif.cn/tags/Proxy/"/>
+    <category term="Node.js" scheme="https://ifelif.cn/tags/Node-js/"/>
+    <category term="NPM" scheme="https://ifelif.cn/tags/NPM/"/>
     <id>https://ifelif.cn/2022/using-http-proxy-middleware-as-npm-proxy/</id>
+    <link href="https://ifelif.cn/2022/using-http-proxy-middleware-as-npm-proxy/"/>
     <published>2022-06-09T15:34:01.000Z</published>
+    <summary>
+      <![CDATA[<p>在上一篇中，我们使用 <a href="https://github.com/snail007/goproxy/releases">goproxy</a> 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 <code>http-proxy-middleware</code> 包，我们也可以使用 Node.js 来创建 HTTP 代理。</p>
+<p><strong>环境</strong></p>
+<ul>
+<li>开发计算机：<ul>
+<li>Windows 10</li>
+<li>可以访问服务器，也可访问互联网</li>
+<li>IP: 192.168.200.1</li>
+</ul>
+</li>
+<li>服务器：<ul>
+<li>CentOS 8 </li>
+<li>仅可访问开发主机，无法直接访问互联网</li>
+<li>IP: 192.168.200.129</li>
+</ul>
+</li>
+</ul>]]>
+    </summary>
+    <title>使用 http-proxy-middleware 创建 npm 代理</title>
     <updated>2022-06-09T15:34:01.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;在上一篇中，我们使用 &lt;a href=&quot;https://github.com/snail007/goproxy/releases&quot;&gt;goproxy&lt;/a&gt; 创建 HTTP 代理，供内网中服务器使用 npm 下载并安装第三方外部依赖。其实，借助 &lt;code&gt;http-proxy-middleware&lt;/code&gt; 包，我们也可以使用 Node.js 来创建 HTTP 代理。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;环境&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;开发计算机：&lt;ul&gt;
-&lt;li&gt;Windows 10&lt;/li&gt;
-&lt;li&gt;可以访问服务器，也可访问互联网&lt;/li&gt;
-&lt;li&gt;IP: 192.168.200.1&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;服务器：&lt;ul&gt;
-&lt;li&gt;CentOS 8 &lt;/li&gt;
-&lt;li&gt;仅可访问开发主机，无法直接访问互联网&lt;/li&gt;
-&lt;li&gt;IP: 192.168.200.129&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;</summary>
-    
-    
-    
-    <category term="Node.js" scheme="https://ifelif.cn/categories/Node-js/"/>
-    
-    
-    <category term="Proxy" scheme="https://ifelif.cn/tags/Proxy/"/>
-    
-    <category term="Node.js" scheme="https://ifelif.cn/tags/Node-js/"/>
-    
-    <category term="NPM" scheme="https://ifelif.cn/tags/NPM/"/>
-    
   </entry>
-  
   <entry>
-    <title>使用 goproxy 为处于内网环境的开发服务器提供 npm 代理</title>
-    <link href="https://ifelif.cn/2022/using_goproxy_as_npm_proxy/"/>
+    <author>
+      <name>filefi</name>
+    </author>
+    <category term="Node.js" scheme="https://ifelif.cn/categories/Node-js/"/>
+    <category term="Proxy" scheme="https://ifelif.cn/tags/Proxy/"/>
+    <category term="Node.js" scheme="https://ifelif.cn/tags/Node-js/"/>
+    <category term="NPM" scheme="https://ifelif.cn/tags/NPM/"/>
     <id>https://ifelif.cn/2022/using_goproxy_as_npm_proxy/</id>
+    <link href="https://ifelif.cn/2022/using_goproxy_as_npm_proxy/"/>
     <published>2022-06-09T12:40:55.000Z</published>
+    <summary>
+      <![CDATA[<p>通常，企业内部使用的 Web 应用，其服务器通常无法直接与外网通信，导致没法直接在服务器上使用 npm 或 yarn 等工具安装第三方外部依赖。而开发使用的电脑通常是可以访问互联网的，那么，就可以在开发电脑上使用 goproxy 创建一个 http 代理，通过这个 http 代理临时为服务器提供外网访问，以便可以使用 npm 或 yarn 安装第三方外部依赖。</p>
+<p><strong>环境</strong></p>
+<ul>
+<li>开发计算机：<ul>
+<li>Windows 10</li>
+<li>可以访问服务器，也可访问互联网</li>
+<li>IP: 192.168.200.1</li>
+</ul>
+</li>
+<li>服务器：<ul>
+<li>CentOS 8 </li>
+<li>仅可访问开发主机，无法直接访问互联网</li>
+<li>IP: 192.168.200.129</li>
+</ul>
+</li>
+</ul>]]>
+    </summary>
+    <title>使用 goproxy 为处于内网环境的开发服务器提供 npm 代理</title>
     <updated>2022-06-09T12:40:55.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;通常，企业内部使用的 Web 应用，其服务器通常无法直接与外网通信，导致没法直接在服务器上使用 npm 或 yarn 等工具安装第三方外部依赖。而开发使用的电脑通常是可以访问互联网的，那么，就可以在开发电脑上使用 goproxy 创建一个 http 代理，通过这个 http 代理临时为服务器提供外网访问，以便可以使用 npm 或 yarn 安装第三方外部依赖。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;环境&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;开发计算机：&lt;ul&gt;
-&lt;li&gt;Windows 10&lt;/li&gt;
-&lt;li&gt;可以访问服务器，也可访问互联网&lt;/li&gt;
-&lt;li&gt;IP: 192.168.200.1&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;服务器：&lt;ul&gt;
-&lt;li&gt;CentOS 8 &lt;/li&gt;
-&lt;li&gt;仅可访问开发主机，无法直接访问互联网&lt;/li&gt;
-&lt;li&gt;IP: 192.168.200.129&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;</summary>
-    
-    
-    
-    <category term="Node.js" scheme="https://ifelif.cn/categories/Node-js/"/>
-    
-    
-    <category term="Proxy" scheme="https://ifelif.cn/tags/Proxy/"/>
-    
-    <category term="Node.js" scheme="https://ifelif.cn/tags/Node-js/"/>
-    
-    <category term="NPM" scheme="https://ifelif.cn/tags/NPM/"/>
-    
   </entry>
-  
   <entry>
-    <title>批量将某li某li特定关注组中的UP修改为悄悄关注</title>
-    <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
-    <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
-    <published>2022-06-01T15:21:23.000Z</published>
-    <updated>2026-02-27T07:35:15.492Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。&lt;/p&gt;</summary>
-    
-    
-    
+    <author>
+      <name>filefi</name>
+    </author>
     <category term="JavaScript" scheme="https://ifelif.cn/categories/JavaScript/"/>
-    
-    
     <category term="JavaScript" scheme="https://ifelif.cn/tags/JavaScript/"/>
-    
     <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
-    
     <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
-    
+    <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
+    <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
+    <published>2022-06-01T15:21:23.000Z</published>
+    <summary>
+      <![CDATA[<p>如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。</p>]]>
+    </summary>
+    <title>批量将某li某li特定关注组中的UP修改为悄悄关注</title>
+    <updated>2026-02-27T07:36:04.223Z</updated>
   </entry>
-  
 </feed>
