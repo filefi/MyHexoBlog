@@ -10,14 +10,14 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   <rights>All rights reserved 2026, filefi</rights>
   <title>正经人谁写日记</title>
-  <updated>2026-02-27T07:37:23.659Z</updated>
+  <updated>2026-02-27T07:39:15.452Z</updated>
   <entry>
     <author>
       <name>filefi</name>
     </author>
     <category term="Reverse" scheme="https://ifelif.cn/categories/Reverse/"/>
-    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
     <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
+    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
     <category term="CheatEngine" scheme="https://ifelif.cn/tags/CheatEngine/"/>
     <id>https://ifelif.cn/2024/cheat_engine_tutorial3/</id>
     <link href="https://ifelif.cn/2024/cheat_engine_tutorial3/"/>
@@ -36,15 +36,15 @@
 </ul>]]>
     </summary>
     <title>Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针</title>
-    <updated>2026-02-27T07:37:23.659Z</updated>
+    <updated>2026-02-27T07:39:15.452Z</updated>
   </entry>
   <entry>
     <author>
       <name>filefi</name>
     </author>
     <category term="Reverse" scheme="https://ifelif.cn/categories/Reverse/"/>
-    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
     <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
+    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
     <category term="CheatEngine" scheme="https://ifelif.cn/tags/CheatEngine/"/>
     <id>https://ifelif.cn/2024/cheat_engine_tutorial2/</id>
     <link href="https://ifelif.cn/2024/cheat_engine_tutorial2/"/>
@@ -63,7 +63,7 @@
 </ul>]]>
     </summary>
     <title>Cheat Engine Tutorial 学习笔记2：指令查找</title>
-    <updated>2026-02-27T07:37:23.655Z</updated>
+    <updated>2026-02-27T07:39:15.449Z</updated>
   </entry>
   <entry>
     <author>
@@ -549,9 +549,9 @@
       <name>filefi</name>
     </author>
     <category term="JavaScript" scheme="https://ifelif.cn/categories/JavaScript/"/>
-    <category term="JavaScript" scheme="https://ifelif.cn/tags/JavaScript/"/>
-    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
     <category term="PWN" scheme="https://ifelif.cn/tags/PWN/"/>
+    <category term="Reverse" scheme="https://ifelif.cn/tags/Reverse/"/>
+    <category term="JavaScript" scheme="https://ifelif.cn/tags/JavaScript/"/>
     <id>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</id>
     <link href="https://ifelif.cn/2022/batch_modify_bilibili_follow_group/"/>
     <published>2022-06-01T15:21:23.000Z</published>
@@ -559,6 +559,6 @@
       <![CDATA[<p>如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。</p>]]>
     </summary>
     <title>批量将某li某li特定关注组中的UP修改为悄悄关注</title>
-    <updated>2026-02-27T07:37:23.616Z</updated>
+    <updated>2026-02-27T07:39:15.408Z</updated>
   </entry>
 </feed>
