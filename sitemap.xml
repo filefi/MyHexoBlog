@@ -119,15 +119,6 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/2022/ansible_user_guide/</loc>
-    
-    <lastmod>2026-07-29</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/2022/batch_modify_bilibili_follow_group/</loc>
     
     <lastmod>2026-07-29</lastmod>
@@ -138,6 +129,15 @@
   
   <url>
     <loc>https://ifelif.cn/2022/cheat_engine_tutorial1/</loc>
+    
+    <lastmod>2026-07-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/2022/ansible_user_guide/</loc>
     
     <lastmod>2026-07-29</lastmod>
     
@@ -457,20 +457,6 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/F5/</loc>
-    <lastmod>2026-07-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/LoadBalance/</loc>
-    <lastmod>2026-07-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/tags/Windows/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
@@ -492,13 +478,6 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/Editor/</loc>
-    <lastmod>2026-07-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/tags/Golang/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
@@ -513,7 +492,7 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/ansible/</loc>
+    <loc>https://ifelif.cn/tags/Editor/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -548,14 +527,7 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/CNCF/</loc>
-    <lastmod>2026-07-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ifelif.cn/tags/Docker/</loc>
+    <loc>https://ifelif.cn/tags/ansible/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -583,7 +555,14 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/Programming/</loc>
+    <loc>https://ifelif.cn/tags/CNCF/</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Docker/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -660,13 +639,6 @@
   </url>
   
   <url>
-    <loc>https://ifelif.cn/tags/Shell/</loc>
-    <lastmod>2026-07-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://ifelif.cn/tags/Scrapy/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
@@ -682,6 +654,13 @@
   
   <url>
     <loc>https://ifelif.cn/tags/Spider/</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Shell/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -815,6 +794,27 @@
   
   <url>
     <loc>https://ifelif.cn/tags/Crawler/</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/F5/</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/LoadBalance/</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifelif.cn/tags/Programming/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
