@@ -10,7 +10,7 @@
   <link href="https://ifelif.cn/atom.xml" rel="self"/>
   <rights>All rights reserved 2026, filefi</rights>
   <title>正经人谁写日记</title>
-  <updated>2026-07-29T07:05:41.340Z</updated>
+  <updated>2026-08-13T07:21:15.774Z</updated>
   <entry>
     <author>
       <name>filefi</name>
@@ -36,7 +36,7 @@
 </ul>]]>
     </summary>
     <title>Cheat Engine Tutorial 学习笔记3：手动查找指针与基地址指针</title>
-    <updated>2026-07-29T07:05:41.340Z</updated>
+    <updated>2026-08-13T07:21:15.774Z</updated>
   </entry>
   <entry>
     <author>
@@ -63,7 +63,7 @@
 </ul>]]>
     </summary>
     <title>Cheat Engine Tutorial 学习笔记2：指令查找</title>
-    <updated>2026-07-29T07:05:41.337Z</updated>
+    <updated>2026-08-13T07:21:15.771Z</updated>
   </entry>
   <entry>
     <author>
@@ -108,9 +108,9 @@
     </author>
     <category term="Golang" scheme="https://ifelif.cn/categories/Golang/"/>
     <category term="Golang" scheme="https://ifelif.cn/tags/Golang/"/>
+    <category term="Spider" scheme="https://ifelif.cn/tags/Spider/"/>
     <category term="Colly" scheme="https://ifelif.cn/tags/Colly/"/>
     <category term="Web Scraping" scheme="https://ifelif.cn/tags/Web-Scraping/"/>
-    <category term="Spider" scheme="https://ifelif.cn/tags/Spider/"/>
     <category term="Scraper" scheme="https://ifelif.cn/tags/Scraper/"/>
     <category term="Crawler" scheme="https://ifelif.cn/tags/Crawler/"/>
     <id>https://ifelif.cn/2023/passing-custom-data-between-colly-collectors/</id>
@@ -143,9 +143,9 @@
     </author>
     <category term="Python" scheme="https://ifelif.cn/categories/Python/"/>
     <category term="Python" scheme="https://ifelif.cn/tags/Python/"/>
-    <category term="Spider" scheme="https://ifelif.cn/tags/Spider/"/>
     <category term="Scrapy" scheme="https://ifelif.cn/tags/Scrapy/"/>
     <category term="Scraping" scheme="https://ifelif.cn/tags/Scraping/"/>
+    <category term="Spider" scheme="https://ifelif.cn/tags/Spider/"/>
     <id>https://ifelif.cn/2023/learning-scrapy/</id>
     <link href="https://ifelif.cn/2023/learning-scrapy/"/>
     <published>2023-08-11T04:14:24.000Z</published>
@@ -559,6 +559,6 @@
       <![CDATA[<p>如题，调用batchModify函数即可批量将某li某li特定关注组中的UP修改为悄悄关注。</p>]]>
     </summary>
     <title>批量将某li某li特定关注组中的UP修改为悄悄关注</title>
-    <updated>2026-07-29T07:05:41.299Z</updated>
+    <updated>2026-08-13T07:21:15.739Z</updated>
   </entry>
 </feed>
